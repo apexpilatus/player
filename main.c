@@ -11,6 +11,9 @@
 #include <alsa/pcm.h>
 #include <alsa/error.h>
 
+
+const int fuck = 8;
+
 const int time_out = 3;
 const char play_file_path[] = "/home/player/play";
 const char music_root[] = "/home/music";
