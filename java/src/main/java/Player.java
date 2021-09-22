@@ -8,8 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class Player extends HttpServlet {
-    String playFilePath = "/home/player/play";
-    String albumFilePath = "/home/player/album";
+    String playFilePath = "/home/disk/player/play";
+    String albumFilePath = "/home/disk/player/album";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
