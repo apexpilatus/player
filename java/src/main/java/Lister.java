@@ -18,7 +18,7 @@ public class Lister extends HttpServlet {
             if (Objects.requireNonNull(albums).length != 0) {
                 resp.setContentType("text/html");
                 for (String album:albums){
-                    resp.getWriter().println("<p style=\"font-size:3em\"><a href=http://72.12.120.1:8080/player?album=" + album.replace(" ","%20") + ">" + album + "</a></p>");
+                    resp.getWriter().println("<p style=\"font-size:3em\"><a href=http://nuc:8080/player?album=" + album.replace(" ","%20") + ">" + album + "</a></p>");
                 }
                 resp.getWriter().println("<p style=\"font-size:3em\">_ _ _ _ _ _ _</p>");
             }
