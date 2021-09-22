@@ -21,7 +21,7 @@ public class Player extends HttpServlet {
             ) {
                 playFileWriter.write(1);
                 albumFileWriter.write(album);
-                resp.sendRedirect("http://72.12.120.1:8080/lister");
+                resp.sendRedirect("http://nuc:8080/lister");
             } catch (IOException e) {
                 e.printStackTrace();
             }
