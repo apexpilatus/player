@@ -8,8 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class Player extends HttpServlet {
-    String playFilePath = "/home/disk/player/play";
-    String albumFilePath = "/home/disk/player/album";
+    String playFilePath = "/home/sd/player/play";
+    String albumFilePath = "/home/sd/player/album";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
@@ -21,7 +21,7 @@ public class Player extends HttpServlet {
             ) {
                 playFileWriter.write(1);
                 albumFileWriter.write(album);
-                resp.sendRedirect("http://nuc:8080/lister");
+                resp.sendRedirect("http://nano:8080/lister");
             } catch (IOException e) {
                 e.printStackTrace();
             }
