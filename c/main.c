@@ -13,7 +13,7 @@
 
 const int time_out = 3;
 const char play_file_path[] = "/home/sd/player/play";
-const char music_root[] = "/home/music";
+const char music_root[] = "/home/disk/music";
 const char album_file_path[] = "/home/sd/player/album";
 
 void write_0_to_play_file() {
