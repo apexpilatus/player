@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class Lister extends HttpServlet {
-    File musicDir = new File("/home/music");
+    File musicDir = new File("/home/disk/music");
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
