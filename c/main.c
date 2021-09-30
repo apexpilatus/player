@@ -50,7 +50,6 @@ int main() {
 		char play_val;
 		fread(&play_val, 1, 1, play_file);
 		fclose(play_file);
-		printf("%d\n", play_val);
 		if (play_val != 1) {
 			sleep(time_out);
 		} else {
