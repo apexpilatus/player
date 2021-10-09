@@ -55,7 +55,7 @@ int main() {
 		} else {
 			snd_pcm_t *pcm_p;
 			unsigned long buf_size;
-			if (snd_pcm_open(&pcm_p, "hw:2,1", SND_PCM_STREAM_PLAYBACK, 0)) {
+			if (snd_pcm_open(&pcm_p, "hw:2,0", SND_PCM_STREAM_PLAYBACK, 0)) {
 				write_0_to_play_file();
 				continue;
 			}
