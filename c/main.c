@@ -34,7 +34,7 @@ void get_album(void *ret) {
 	while ((album_file_dstr = open(album_file_path, O_NONBLOCK|O_RDONLY)) == -1) {
 		sleep(time_out);
 	}
-	read(album_file_dstr, ret, 1024);
+	printf("fuck - %d\n", read(album_file_dstr, ret, 1024));
 	close(album_file_dstr);
 }
 
