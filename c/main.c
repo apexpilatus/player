@@ -34,8 +34,9 @@ void get_album(char *ret) {
 	while ((album_file_dstr = open(album_file_path, O_NONBLOCK|O_RDONLY)) == -1) {
 		sleep(time_out);
 	}
-	ret[read(album_file_dstr, ret, 1024)] = 0;
-	printf("fook - %s", ret);
+	ssize_t size = read(album_file_dstr, ret, 1024);
+	ret[size] = 0;
+	printf("fuck - %s", ret);
 	close(album_file_dstr);
 }
 
