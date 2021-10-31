@@ -3,6 +3,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include <alsa/global.h>
 #include <alsa/input.h>
 #include <alsa/output.h>
@@ -43,13 +46,13 @@ int check_album(char current[]) {
 
 int main() {
 	while (1) {
-		FILE *play_file;
-		while (!(play_file = fopen(play_file_path, "rb"))) {
+		int play_file_dstr;
+		while ((play_file_dstr = open(play_file_path, O_NONBLOCK|O_RDONLY)) == -1) {
 			sleep(time_out);
 		}
 		char play_val;
-		fread(&play_val, 1, 1, play_file);
-		fclose(play_file);
+		read(play_file_dstr, &play_val, 1);
+		close(play_file_dstr);
 		if (play_val != 1) {
 			sleep(time_out);
 		} else {
