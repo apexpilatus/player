@@ -29,12 +29,14 @@ void write_0_to_play_file() {
 	fclose(play_file);
 }
 
-void get_album(void *ret) {
+void get_album(char *ret) {
 	int album_file_dstr;
 	while ((album_file_dstr = open(album_file_path, O_NONBLOCK|O_RDONLY)) == -1) {
 		sleep(time_out);
 	}
 	printf("fuck - %d\n", read(album_file_dstr, ret, 1024));
+	ret[album_file_dstr] = 0;
+	printf("fook - %s", ret);
 	close(album_file_dstr);
 }
 
