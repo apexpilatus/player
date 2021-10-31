@@ -14,19 +14,19 @@
 #include <alsa/pcm.h>
 #include <alsa/error.h>
 
-const int time_out = 3;
+const int time_out = 1;
 const char play_file_path[] = "/home/sd/player/play";
 const char music_root[] = "/home/disk/music";
 const char album_file_path[] = "/home/sd/player/album";
 
 void write_0_to_play_file() {
-	FILE *play_file;
-	while (!(play_file = fopen(play_file_path, "wb"))) {
+	int play_file_dstr;
+	while ((play_file_dstr = open(play_file_path, O_NONBLOCK|O_WRONLY)) == -1) {
 		sleep(time_out);
 	}
 	char play_val = 0;
-	fwrite(&play_val, 1, 1, play_file);
-	fclose(play_file);
+	write(play_file_dstr, &play_val, 1);
+	close(play_file_dstr);
 }
 
 void get_album(char *ret) {
@@ -36,7 +36,6 @@ void get_album(char *ret) {
 	}
 	ssize_t size = read(album_file_dstr, ret, 1024);
 	ret[size] = 0;
-	printf("fuck - %s", ret);
 	close(album_file_dstr);
 }
 
