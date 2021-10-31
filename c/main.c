@@ -29,13 +29,13 @@ void write_0_to_play_file() {
 	fclose(play_file);
 }
 
-void get_album(char *ret) {
-	FILE *album_file;
-	while (!(album_file = fopen(album_file_path, "r"))) {
+void get_album(void *ret) {
+	int album_file_dstr;
+	while ((album_file_dstr = open(album_file_path, O_NONBLOCK|O_RDONLY)) == -1) {
 		sleep(time_out);
 	}
-	fgets(ret, 1024, album_file);
-	fclose(album_file);
+	read(album_file_dstr, ret, 1024);
+	close(album_file_dstr);
 }
 
 int check_album(char current[]) {
