@@ -58,7 +58,7 @@ int main() {
 			sleep(time_out);
 		} else {
 			snd_pcm_t *pcm_p;
-			unsigned long buf_size;
+			unsigned long buf_size_in_frames;
 			if (snd_pcm_open(&pcm_p, "hw:2,0", SND_PCM_STREAM_PLAYBACK, 0)) {
 				write_0_to_play_file();
 				continue;
@@ -83,10 +83,10 @@ int main() {
 			}
 
 			snd_pcm_hw_params_get_buffer_size(pcm_hw,
-					(snd_pcm_uframes_t*) &buf_size);
+					(snd_pcm_uframes_t*) &buf_size_in_frames);
 			snd_pcm_hw_params_free(pcm_hw);
 
-			unsigned int buf[buf_size];
+			unsigned int buf[buf_size_in_frames];
 			unsigned long read_size = 0;
 			char album_val[1024];
 			get_album(album_val);
@@ -98,29 +98,29 @@ int main() {
 					char ch[50];
 					fread(ch, 4, 11, music_file);
 					long play_err;
-					if (read_size < buf_size && read_size > 0) {
+					if (read_size < buf_size_in_frames && read_size > 0) {
 						read_size += fread(buf + read_size, 4,
-								buf_size - read_size, music_file);
-						if (read_size < buf_size) {
+								buf_size_in_frames - read_size, music_file);
+						if (read_size < buf_size_in_frames) {
 							fclose(music_file);
 							continue;
 						}
 						if ((play_err = snd_pcm_mmap_writei(pcm_p, buf,
-								(snd_pcm_uframes_t) read_size)) < 0) {
+								(snd_pcm_uframes_t) buf_size_in_frames)) < 0) {
 							fclose(music_file);
 							write_0_to_play_file();
 							break;
 						}
 					}
-					while ((read_size = fread(buf, 4, buf_size, music_file))) {
+					while ((read_size = fread(buf, 4, buf_size_in_frames, music_file))) {
 						if (check_album(album_val) != 0) {
 							break;
 						}
-						if (read_size < buf_size) {
+						if (read_size < buf_size_in_frames) {
 							break;
 						}
 						if ((play_err = snd_pcm_mmap_writei(pcm_p, buf,
-								(snd_pcm_uframes_t) read_size)) < 0) {
+								(snd_pcm_uframes_t) buf_size_in_frames)) < 0) {
 							break;
 						}
 					}
@@ -133,7 +133,7 @@ int main() {
 						break;
 					}
 				} else {
-					if (read_size < buf_size && read_size > 0) {
+					if (read_size < buf_size_in_frames && read_size > 0) {
 						if (snd_pcm_mmap_writei(pcm_p, buf,
 								(snd_pcm_uframes_t) read_size) >= 0) {
 							snd_pcm_drain(pcm_p);
