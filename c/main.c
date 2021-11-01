@@ -2,10 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
 #include <sys/stat.h>
 #include <fcntl.h>
-
 #include <alsa/global.h>
 #include <alsa/input.h>
 #include <alsa/output.h>
@@ -70,8 +68,7 @@ int main() {
 				continue;
 			}
 			snd_pcm_hw_params_any(pcm_p, pcm_hw);
-			snd_pcm_hw_params_set_access(pcm_p, pcm_hw,
-					SND_PCM_ACCESS_MMAP_INTERLEAVED);
+			snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
 			unsigned int rate = 44100;
 			int dir = -1;
 			snd_pcm_hw_params_set_rate_near(pcm_p, pcm_hw, &rate, &dir);
@@ -81,11 +78,8 @@ int main() {
 				write_0_to_play_file();
 				continue;
 			}
-
-			snd_pcm_hw_params_get_buffer_size(pcm_hw,
-					(snd_pcm_uframes_t*) &buf_size_in_frames);
+			snd_pcm_hw_params_get_buffer_size(pcm_hw, (snd_pcm_uframes_t*) &buf_size_in_frames);
 			snd_pcm_hw_params_free(pcm_hw);
-
 			unsigned int buf[buf_size_in_frames];
 			unsigned long read_size = 0, buf_size_in_bytes = buf_size_in_frames * 4;
 			char album_val[1024];
@@ -110,8 +104,7 @@ int main() {
 							close(music_file_dstr);
 							continue;
 						}
-						if ((play_err = snd_pcm_mmap_writei(pcm_p, buf,
-								(snd_pcm_uframes_t) buf_size_in_frames)) < 0) {
+						if ((play_err = snd_pcm_mmap_writei(pcm_p, buf, (snd_pcm_uframes_t) buf_size_in_frames)) < 0) {
 							close(music_file_dstr);
 							write_0_to_play_file();
 							break;
@@ -127,8 +120,7 @@ int main() {
 						if (read_size < buf_size_in_bytes) {
 							break;
 						}
-						if ((play_err = snd_pcm_mmap_writei(pcm_p, buf,
-								(snd_pcm_uframes_t) buf_size_in_frames)) < 0) {
+						if ((play_err = snd_pcm_mmap_writei(pcm_p, buf, (snd_pcm_uframes_t) buf_size_in_frames)) < 0) {
 							break;
 						}
 					}
@@ -143,8 +135,7 @@ int main() {
 				} else {
 					if (read_size < buf_size_in_bytes && read_size > 0) {
 						read_size/=4;
-						if (snd_pcm_mmap_writei(pcm_p, buf,
-								(snd_pcm_uframes_t) read_size) >= 0) {
+						if (snd_pcm_mmap_writei(pcm_p, buf, (snd_pcm_uframes_t) read_size) >= 0) {
 							snd_pcm_drain(pcm_p);
 						}
 					}
