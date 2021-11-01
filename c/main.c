@@ -87,36 +87,44 @@ int main() {
 			snd_pcm_hw_params_free(pcm_hw);
 
 			unsigned int buf[buf_size_in_frames];
-			unsigned long read_size = 0;
+			unsigned long read_size = 0, buf_size_in_bytes = buf_size_in_frames * 4;
 			char album_val[1024];
 			get_album(album_val);
 			for (int i = 1; i < 100; i++) {
 				char file_name[2048];
 				sprintf(file_name, "%s/%s/%d.wav", music_root, album_val, i);
-				FILE *music_file = fopen(file_name, "rb");
-				if (music_file) {
+				
+				//FILE *music_file = fopen(file_name, "rb");
+				int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
+				
+				if (music_file_dstr != -1) {
 					char ch[50];
-					fread(ch, 4, 11, music_file);
+					read(music_file_dstr, ch, 44);
 					long play_err;
-					if (read_size < buf_size_in_frames && read_size > 0) {
-						read_size += fread(buf + read_size, 4,
-								buf_size_in_frames - read_size, music_file);
-						if (read_size < buf_size_in_frames) {
-							fclose(music_file);
+					if (read_size < buf_size_in_bytes && read_size > 0) {
+						
+						//read_size += fread(buf + read_size, 4, buf_size_in_frames - read_size, music_file);
+						read_size += read(music_file_dstr, (char *)buf + read_size, buf_size_in_bytes - read_size);
+						
+						if (read_size < buf_size_in_bytes) {
+							close(music_file_dstr);
 							continue;
 						}
 						if ((play_err = snd_pcm_mmap_writei(pcm_p, buf,
 								(snd_pcm_uframes_t) buf_size_in_frames)) < 0) {
-							fclose(music_file);
+							fclose(music_file_dstr);
 							write_0_to_play_file();
 							break;
 						}
 					}
-					while ((read_size = fread(buf, 4, buf_size_in_frames, music_file))) {
+					
+					//while ((read_size = fread(buf, 4, buf_size_in_frames, music_file))) {
+					while ((read_size = read(music_file_dstr, buf, buf_size_in_bytes))) {
+						
 						if (check_album(album_val) != 0) {
 							break;
 						}
-						if (read_size < buf_size_in_frames) {
+						if (read_size < buf_size_in_bytes) {
 							break;
 						}
 						if ((play_err = snd_pcm_mmap_writei(pcm_p, buf,
