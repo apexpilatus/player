@@ -112,7 +112,7 @@ int main() {
 						}
 						if ((play_err = snd_pcm_mmap_writei(pcm_p, buf,
 								(snd_pcm_uframes_t) buf_size_in_frames)) < 0) {
-							fclose(music_file_dstr);
+							close(music_file_dstr);
 							write_0_to_play_file();
 							break;
 						}
@@ -132,7 +132,7 @@ int main() {
 							break;
 						}
 					}
-					fclose(music_file);
+					close(music_file_dstr);
 					if (play_err < 0) {
 						write_0_to_play_file();
 						break;
@@ -141,7 +141,8 @@ int main() {
 						break;
 					}
 				} else {
-					if (read_size < buf_size_in_frames && read_size > 0) {
+					if (read_size < buf_size_in_bytes && read_size > 0) {
+						read_size/=4;
 						if (snd_pcm_mmap_writei(pcm_p, buf,
 								(snd_pcm_uframes_t) read_size) >= 0) {
 							snd_pcm_drain(pcm_p);
