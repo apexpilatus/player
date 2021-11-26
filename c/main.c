@@ -36,9 +36,9 @@ void get_album(char *ret) {
 	close(album_file_dstr);
 }
 
-void get_params(char *album) {
+void get_params(char *album_val) {
 	char file_name[2048];
-	sprintf(file_name, "%s/%d.wav", album_val, i);
+	sprintf(file_name, "%s/1.wav", album_val);
 	int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
 	if (music_file_dstr != -1) {
 		lseek(music_file_dstr, 2, SEEK_SET);
