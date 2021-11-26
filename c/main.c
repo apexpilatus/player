@@ -54,6 +54,8 @@ int main() {
 		if (play_val != 1) {
 			sleep(time_out);
 		} else {
+			char album_val[1024];
+			get_album(album_val);
 			snd_pcm_t *pcm_p;
 			unsigned long buf_size_in_frames;
 			if (snd_pcm_open(&pcm_p, "hw:2,0", SND_PCM_STREAM_PLAYBACK, 0)) {
@@ -81,8 +83,6 @@ int main() {
 			snd_pcm_hw_params_free(pcm_hw);
 			unsigned int buf[buf_size_in_frames];
 			unsigned long read_size = 0, buf_size_in_bytes = buf_size_in_frames * 4;
-			char album_val[1024];
-			get_album(album_val);
 			for (int i = 1; i < 100; i++) {
 				char file_name[2048];
 				sprintf(file_name, "%s/%d.wav", album_val, i);
