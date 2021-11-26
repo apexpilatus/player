@@ -36,13 +36,13 @@ void get_album(char *ret) {
 	close(album_file_dstr);
 }
 
-void get_params(char *album_val) {
+void get_params(char *album_val, unsigned int *rate) {
 	char file_name[2048];
 	sprintf(file_name, "%s/1.wav", album_val);
 	int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
 	if (music_file_dstr != -1) {
-		lseek(music_file_dstr, 2, SEEK_SET);
-		
+		lseek(music_file_dstr, 24, SEEK_SET);
+		read(music_file_dstr, rate, 4);
 		close(music_file_dstr);
 	}
 }
@@ -67,7 +67,8 @@ int main() {
 		} else {
 			char album_val[1024];
 			get_album(album_val);
-			get_params(album_val);
+			unsigned int rate;
+			get_params(album_val, &rate);
 			snd_pcm_t *pcm_p;
 			unsigned long buf_size_in_frames;
 			if (snd_pcm_open(&pcm_p, "hw:2,0", SND_PCM_STREAM_PLAYBACK, 0)) {
@@ -82,7 +83,6 @@ int main() {
 			}
 			snd_pcm_hw_params_any(pcm_p, pcm_hw);
 			snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
-			unsigned int rate = 44100;
 			int dir = -1;
 			snd_pcm_hw_params_set_rate_near(pcm_p, pcm_hw, &rate, &dir);
 			if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
