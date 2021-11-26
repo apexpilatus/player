@@ -36,6 +36,17 @@ void get_album(char *ret) {
 	close(album_file_dstr);
 }
 
+void get_params(char *album) {
+	char file_name[2048];
+	sprintf(file_name, "%s/%d.wav", album_val, i);
+	int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
+	if (music_file_dstr != -1) {
+		lseek(music_file_dstr, 2, SEEK_SET);
+		
+		close(music_file_dstr);
+	}
+}
+
 int check_album(char current[]) {
 	char next[1024];
 	get_album(next);
@@ -56,6 +67,7 @@ int main() {
 		} else {
 			char album_val[1024];
 			get_album(album_val);
+			get_params(album_val);
 			snd_pcm_t *pcm_p;
 			unsigned long buf_size_in_frames;
 			if (snd_pcm_open(&pcm_p, "hw:2,0", SND_PCM_STREAM_PLAYBACK, 0)) {
