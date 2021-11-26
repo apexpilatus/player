@@ -88,7 +88,7 @@ int main() {
 			snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
 			int dir = -1;
 			snd_pcm_hw_params_set_rate_near(pcm_p, pcm_hw, &rate, &dir);
-			snd_pcm_hw_params_set_format(pcm_p, pcm_hw, frame_size == 4 ? SND_PCM_FORMAT_S16_LE : SND_PCM_FORMAT_S24_LE);
+			snd_pcm_hw_params_set_format(pcm_p, pcm_hw, frame_size == 4 ? SND_PCM_FORMAT_S16_LE : SND_PCM_FORMAT_S24_3LE);
 			if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
 				snd_pcm_hw_params_free(pcm_hw);
 				snd_pcm_close(pcm_p);
@@ -97,8 +97,8 @@ int main() {
 			}
 			snd_pcm_hw_params_get_buffer_size(pcm_hw, (snd_pcm_uframes_t*) &buf_size_in_frames);
 			snd_pcm_hw_params_free(pcm_hw);
-			unsigned int buf[buf_size_in_frames];
 			unsigned long read_size = 0, buf_size_in_bytes = buf_size_in_frames * frame_size;
+			char buf[buf_size_in_bytes];
 			for (int i = 1; i < 100; i++) {
 				char file_name[2048];
 				sprintf(file_name, "%s/%d.wav", album_val, i);
