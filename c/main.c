@@ -104,8 +104,7 @@ int main() {
 				sprintf(file_name, "%s/%d.wav", album_val, i);
 				int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
 				if (music_file_dstr != -1) {
-					char ch[50];
-					read(music_file_dstr, ch, 44);
+					lseek(music_file_dstr, 44, SEEK_SET);
 					long play_err;
 					if (read_size < buf_size_in_bytes && read_size > 0) {
 						read_size += read(music_file_dstr, (char *)buf + read_size, buf_size_in_bytes - read_size);
