@@ -68,6 +68,7 @@ int main() {
 			char album_val[1024];
 			get_album(album_val);
 			unsigned int rate;
+			unsigned short frame_size = 4;
 			get_params(album_val, &rate);
 			snd_pcm_t *pcm_p;
 			unsigned long buf_size_in_frames;
@@ -94,7 +95,7 @@ int main() {
 			snd_pcm_hw_params_get_buffer_size(pcm_hw, (snd_pcm_uframes_t*) &buf_size_in_frames);
 			snd_pcm_hw_params_free(pcm_hw);
 			unsigned int buf[buf_size_in_frames];
-			unsigned long read_size = 0, buf_size_in_bytes = buf_size_in_frames * 4;
+			unsigned long read_size = 0, buf_size_in_bytes = buf_size_in_frames * frame_size;
 			for (int i = 1; i < 100; i++) {
 				char file_name[2048];
 				sprintf(file_name, "%s/%d.wav", album_val, i);
@@ -136,7 +137,7 @@ int main() {
 					}
 				} else {
 					if (read_size < buf_size_in_bytes && read_size > 0) {
-						read_size/=4;
+						read_size/=frame_size;
 						if (snd_pcm_mmap_writei(pcm_p, buf, (snd_pcm_uframes_t) read_size) >= 0) {
 							snd_pcm_drain(pcm_p);
 						}
