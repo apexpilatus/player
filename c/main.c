@@ -14,7 +14,6 @@
 
 const int time_out = 1;
 const char play_file_path[] = "/home/sd/player/play";
-const char music_root[] = "/home/disk/music";
 const char album_file_path[] = "/home/sd/player/album";
 
 void write_0_to_play_file() {
@@ -86,7 +85,7 @@ int main() {
 			get_album(album_val);
 			for (int i = 1; i < 100; i++) {
 				char file_name[2048];
-				sprintf(file_name, "%s/%s/%d.wav", music_root, album_val, i);
+				sprintf(file_name, "%s/%d.wav", album_val, i);
 				int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
 				if (music_file_dstr != -1) {
 					char ch[50];
