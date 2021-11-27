@@ -107,7 +107,7 @@ int main() {
 					lseek(music_file_dstr, 44, SEEK_SET);
 					long play_err;
 					if (read_size < buf_size_in_bytes && read_size > 0) {
-						read_size += read(music_file_dstr, (char *)buf + read_size, buf_size_in_bytes - read_size);
+						read_size += read(music_file_dstr, buf + read_size, buf_size_in_bytes - read_size);
 						if (read_size < buf_size_in_bytes) {
 							close(music_file_dstr);
 							continue;
