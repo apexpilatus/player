@@ -21,7 +21,7 @@ public class Lister extends HttpServlet {
                 for (String album:albums){
                     resp.getWriter().println("<p style=\"font-size:1em\"><a href=http://jetson:8080/player?album=" + musicPath + "/" + album.replace(" ","%20") + ">" + album + "</a></p>");
                 }
-                resp.getWriter().println("<p style=\"font-size:3em\">_ _ _ _ _ _ _</p>");
+                resp.getWriter().println("<p style=\"font-size:1em\">_ _ _ _ _ _ _</p>");
             }
         }
     }
