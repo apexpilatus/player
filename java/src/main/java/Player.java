@@ -16,7 +16,6 @@ public class Player extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        
         File musicDir = new File(musicPath);
         if (musicDir.exists() && musicDir.isDirectory()) {
             String albumToPlay = req.getParameter("album");
@@ -35,8 +34,8 @@ public class Player extends HttpServlet {
             Arrays.sort(albums);
             if (Objects.requireNonNull(albums).length != 0) {
                 resp.setContentType("text/html");
-                for (String album:albums){
-                    try {
+                try {
+                    for (String album:albums){
                         resp.getWriter().println("<p style=\"font-size:1em\"><a href=http://jetson:8080/player?album=" +
                                                  musicPath + "/" + album.replace(" ","%20") + ">" + "<b>" +
                                                  album.replace("fuckingslash","/").
@@ -44,12 +43,11 @@ public class Player extends HttpServlet {
                                                  replace("fuckingblackstar","&#9733").
                                                  replace("___","</b> ")+
                                                  "</b></a></p>");
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
-
+                    resp.getWriter().println("<p style=\"font-size:1em\">_ _ _ _ _ _ _</p>");
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                resp.getWriter().println("<p style=\"font-size:1em\">_ _ _ _ _ _ _</p>");
             }
         }
     }
