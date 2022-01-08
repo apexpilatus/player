@@ -35,7 +35,7 @@ public class Player extends HttpServlet {
             Arrays.sort(albums);
             if (Objects.requireNonNull(albums).length != 0) {
                 resp.setContentType("text/html");
-                for (String album:albums){
+                for (album:albums){
                     resp.getWriter().println("<p style=\"font-size:1em\"><a href=http://jetson:8080/player?album=" +
                                              musicPath + "/" + album.replace(" ","%20") + ">" + "<b>" +
                                              album.replace("fuckingslash","/").
