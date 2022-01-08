@@ -19,14 +19,14 @@ public class Player extends HttpServlet {
         
         File musicDir = new File(musicPath);
         if (musicDir.exists() && musicDir.isDirectory()) {
-            String album = req.getParameter("album");
-            if (album != null) {
+            String albumToPlay = req.getParameter("album");
+            if (albumToPlay != null) {
                 try (
                         BufferedWriter playFileWriter = new BufferedWriter(new FileWriter(new File(playFilePath)));
                         BufferedWriter albumFileWriter = new BufferedWriter(new FileWriter(new File(albumFilePath)));
                 ) {
                     playFileWriter.write(1);
-                    albumFileWriter.write(album);
+                    albumFileWriter.write(albumToPlay);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -35,7 +35,7 @@ public class Player extends HttpServlet {
             Arrays.sort(albums);
             if (Objects.requireNonNull(albums).length != 0) {
                 resp.setContentType("text/html");
-                for (album:albums){
+                for (String album:albums){
                     resp.getWriter().println("<p style=\"font-size:1em\"><a href=http://jetson:8080/player?album=" +
                                              musicPath + "/" + album.replace(" ","%20") + ">" + "<b>" +
                                              album.replace("fuckingslash","/").
