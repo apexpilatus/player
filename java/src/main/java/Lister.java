@@ -24,8 +24,8 @@ public class Lister extends HttpServlet {
                                              album.replace("fuckingslash","/").
                                              replace("fuckingquestion","?").
                                              replace("fuckingblackstar","&#9733").
-                                             replace("___","</b>")+
-                                             "</b></a></p>");
+                                             replace("___","</b> ")+
+                                             "</a></p>");
                 }
                 resp.getWriter().println("<p style=\"font-size:1em\">_ _ _ _ _ _ _</p>");
             }
