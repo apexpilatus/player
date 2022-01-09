@@ -7,7 +7,7 @@ int main(int argsn, char *args[]){
 		} else {
 			char album_val[1024];
 			get_album(album_val);
-			execl("a.out", album_val, NULL);
+			execl(exec_play_path, album_val, NULL);
 		}
 	}
 }
