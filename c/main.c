@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include <stdlib.h>
 #include <alsa/global.h>
 #include <alsa/input.h>
@@ -6,7 +7,6 @@
 #include <alsa/control.h>
 #include <alsa/pcm.h>
 #include <alsa/error.h>
-#include "funcs.h"
 
 int main() {
 	while (1) {
