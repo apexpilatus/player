@@ -16,13 +16,13 @@ int main(int argsn, char *args[]) {
 	unsigned long buf_size_in_frames;
 	if (snd_pcm_open(&pcm_p, "hw:2,0", SND_PCM_STREAM_PLAYBACK, 0)) {
 		write_0_to_play_file();
-		execl("waiter", "cannot open pcm", NULL);
+		execl(exec_waiter_path, "cannot open pcm", NULL);
 	}
 	snd_pcm_hw_params_t *pcm_hw;
 	if (snd_pcm_hw_params_malloc(&pcm_hw)){
 		snd_pcm_close(pcm_p);
 		write_0_to_play_file();
-		execl("waiter", "cannot alocate memory for hw params", NULL);
+		execl(exec_waiter_path, "cannot alocate memory for hw params", NULL);
 	}
 	snd_pcm_hw_params_any(pcm_p, pcm_hw);
 	snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
@@ -33,7 +33,7 @@ int main(int argsn, char *args[]) {
 		snd_pcm_hw_params_free(pcm_hw);
 		snd_pcm_close(pcm_p);
 		write_0_to_play_file();
-		execl("waiter", "cannot start playing", NULL);
+		execl(exec_waiter_path, "cannot start playing", NULL);
 	}
 	snd_pcm_hw_params_get_buffer_size(pcm_hw, (snd_pcm_uframes_t*) &buf_size_in_frames);
 	snd_pcm_hw_params_free(pcm_hw);
@@ -58,7 +58,7 @@ int main(int argsn, char *args[]) {
 				if ((play_err = snd_pcm_mmap_writei(pcm_p, buf, (snd_pcm_uframes_t) buf_size_in_frames)) < 0) {
 					close(music_file_dstr);
 					write_0_to_play_file();
-					execl("waiter", "play error", NULL);
+					execl(exec_waiter_path, "play error", NULL);
 				}
 			}
 			while ((read_size = read(music_file_dstr, buf, buf_size_in_bytes))) {
@@ -75,10 +75,10 @@ int main(int argsn, char *args[]) {
 			close(music_file_dstr);
 			if (play_err < 0) {
 				write_0_to_play_file();
-				execl("waiter", "play error", NULL);
+				execl(exec_waiter_path, "play error", NULL);
 			}
 			if (check_album(args[0]) != 0) {
-				execl("waiter", "new album", NULL);
+				execl(exec_waiter_path, "new album", NULL);
 			}
 		} else {
 			if (read_size < buf_size_in_bytes && read_size > 0) {
@@ -88,7 +88,7 @@ int main(int argsn, char *args[]) {
 				}
 			}
 			write_0_to_play_file();
-			execl("waiter", "the end", NULL);
+			execl(exec_waiter_path, "the end", NULL);
 		}
 	}
 }
