@@ -8,7 +8,7 @@ extern const int time_out;
 extern const char play_file_path[];
 extern const char album_file_path[];
 extern const char exec_play_path[];
-exyern const char exec_waiter_path[];
+extern const char exec_waiter_path[];
 
 extern void write_0_to_play_file();
 extern int check_play_file();
