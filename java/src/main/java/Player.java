@@ -29,25 +29,24 @@ public class Player extends HttpServlet {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            } else {
-                String[] albums = musicDir.list();
-                Arrays.sort(albums);
-                if (Objects.requireNonNull(albums).length != 0) {
-                    resp.setContentType("text/html");
-                    try {
-                        for (String album:albums){
-                            resp.getWriter().println("<p style=\"font-size:1em\"><a href=http://jetson:8080/player?album=" +
-                                                     musicPath + "/" + album.replace(" ","%20") + ">" + "<b>" +
-                                                     album.replace("fuckingslash","/").
-                                                     replace("fuckingquestion","?").
-                                                     replace("fuckingblackstar","&#9733").
-                                                     replace("___","</b> ")+
-                                                     "</b></a></p>");
-                        }
-                        resp.getWriter().println("<p style=\"font-size:1em\">_ _ _ _ _ _ _</p>");
-                    } catch (IOException e) {
-                        e.printStackTrace();
+            }
+            String[] albums = musicDir.list();
+            Arrays.sort(albums);
+            if (Objects.requireNonNull(albums).length != 0) {
+                resp.setContentType("text/html");
+                try {
+                    for (String album:albums){
+                        resp.getWriter().println("<p style=\"font-size:1em\"><a href=http://jetson:8080/player?album=" +
+                                                 musicPath + "/" + album.replace(" ","%20") + ">" + "<b>" +
+                                                 album.replace("fuckingslash","/").
+                                                 replace("fuckingquestion","?").
+                                                 replace("fuckingblackstar","&#9733").
+                                                 replace("___","</b> ")+
+                                                 "</b></a></p>");
                     }
+                    resp.getWriter().println("<p style=\"font-size:1em\">_ _ _ _ _ _ _</p>");
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
