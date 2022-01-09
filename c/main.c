@@ -9,8 +9,6 @@
 #include <alsa/error.h>
 
 int main(int argsn, char *args[]) {
-	char album_val[1024];
-	get_album(album_val);
 	unsigned int rate;
 	unsigned short frame_size;
 	get_params(args[0], &rate, &frame_size);
