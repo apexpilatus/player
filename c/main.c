@@ -3,7 +3,6 @@
 #include <alsa/input.h>
 #include <alsa/output.h>
 #include <alsa/conf.h>
-#include <alsa/control.h>
 #include <alsa/pcm.h>
 #include <alsa/error.h>
 
