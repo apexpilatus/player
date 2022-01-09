@@ -1,9 +1,4 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <alsa/global.h>
 #include <alsa/input.h>
 #include <alsa/output.h>
@@ -11,6 +6,7 @@
 #include <alsa/control.h>
 #include <alsa/pcm.h>
 #include <alsa/error.h>
+#include "funcs.h"
 
 const int time_out = 1;
 const char play_file_path[] = "/home/sd/player/play";
