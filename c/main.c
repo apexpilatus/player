@@ -4,7 +4,6 @@
 #include <alsa/output.h>
 #include <alsa/conf.h>
 #include <alsa/pcm.h>
-#include <alsa/error.h>
 
 int main(int argsn, char *args[]) {
 	unsigned int rate;
