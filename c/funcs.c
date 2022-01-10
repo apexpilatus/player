@@ -1,4 +1,6 @@
+#ifndef waiter_h
 #include "funcs.h"
+#endif
 
 void write_0_to_play_file() {
 	int play_file_dstr;
