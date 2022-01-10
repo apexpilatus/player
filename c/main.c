@@ -1,4 +1,7 @@
-#include "funcs.h"
+#ifndef waiter_h
+	#include "funcs.h"
+#endif
+
 #include <alsa/global.h>
 #include <alsa/input.h>
 #include <alsa/output.h>
