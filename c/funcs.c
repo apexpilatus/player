@@ -1,11 +1,5 @@
 #include "funcs.h"
 
-const int time_out = 1;
-const char play_file_path[] = "/home/sd/player/play";
-const char album_file_path[] = "/home/sd/player/album";
-const char exec_play_path[] = "/home/sd/player/a.out";
-const char exec_waiter_path[] = "/home/sd/player/play.waiter";
-
 void write_0_to_play_file() {
 	int play_file_dstr;
 	while ((play_file_dstr = open(play_file_path, O_NONBLOCK|O_WRONLY)) == -1) {
