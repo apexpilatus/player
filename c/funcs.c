@@ -1,5 +1,5 @@
 #ifndef waiter_h
-#include "funcs.h"
+	#include "funcs.h"
 #endif
 
 void write_0_to_play_file() {
