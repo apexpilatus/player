@@ -1,4 +1,6 @@
-#include "funcs.h"
+#ifndef waiter_h
+	#include "funcs.h"
+#endif
 
 int main(int argsn, char *args[]){
 	while (1) {
