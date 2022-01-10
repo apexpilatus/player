@@ -1,14 +1,16 @@
+#define waiter_h
+
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
 #include <stdio.h>
 
-extern const int time_out;
-extern const char play_file_path[];
-extern const char album_file_path[];
-extern const char exec_play_path[];
-extern const char exec_waiter_path[];
+#define time_out 1
+#define play_file_path "/home/sd/player/play"
+#define album_file_path "/home/sd/player/album"
+#define exec_play_path "/home/sd/player/a.out"
+#define exec_waiter_path "/home/sd/player/play.waiter"
 
 extern void write_0_to_play_file();
 extern int check_play_file();
