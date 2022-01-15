@@ -36,13 +36,13 @@ public class Player extends HttpServlet {
                 resp.setContentType("text/html");
                 try {
                     for (String album:albums){
-                        resp.getWriter().println("<p style=\"font-size:1em\"><a href=http://jetson:8080/player?album=" +
+                        resp.getWriter().println("<p style=\"font-size:120%\"><a href=http://jetson:8080/player?album=" +
                                                  musicPath + "/" + album.replace(" ","%20") + ">" +
                                                  album.replace("fuckingslash","/").
                                                  replace("fuckingquestion","?").
                                                  replace("fuckingblackstar","&#9733").
-                                                 replace("___","</a> ")+
-                                                 "</p>");
+                                                 replace("___","</a> <small>") +
+                                                 "</small></p>");
                     }
                     resp.getWriter().println("<p style=\"font-size:1em\">_ _ _ _ _ _ _</p>");
                 } catch (IOException e) {
