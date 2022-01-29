@@ -8,7 +8,7 @@ int main(int argsn, char *args[]){
 			void *fuck=malloc(1024);
 			sleep(time_out);
 		} else {
-			char album_val[1024];
+			char album_val[1024000];
 			get_album(album_val);
 			execl(exec_play_path, "play.waiter", album_val, NULL);
 		}
