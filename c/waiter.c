@@ -5,7 +5,7 @@
 int main(int argsn, char *args[]){
 	while (1) {
 		if (check_play_file() != 1) {
-			void *fuck=malloc(1024000);
+			void *fuck=malloc(10240000);
 			sleep(time_out);
 		} else {
 			char album_val[1024000];
