@@ -41,7 +41,7 @@ public class Player extends HttpServlet {
                                                  album.replace("fuckingslash","/").
                                                  replace("fuckingquestion","?").
                                                  replace("fuckingblackstar","&#9733").
-                                                 replace(" and "," & ").
+                                                 replace(" anD "," & ").
                                                  replace("___","</a> <small>") +
                                                  "</small></p>");
                     }
