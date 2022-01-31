@@ -39,7 +39,6 @@ public class Player extends HttpServlet {
                         resp.getWriter().println("<p style=\"text-align:center;color:green;font-size:200%\"><a href=http://jetson:8080/player?album=" +
                                                  musicPath + "/" + album.replace(" ","%20") + ">" +
                                                  album.replace("fuckingslash","/").
-                                                 replace("fuckingquestion","?").
                                                  replace("fuckingblackstar","&#9733").
                                                  replace(" anD "," & ").
                                                  replace("___","</a> <small>") +
