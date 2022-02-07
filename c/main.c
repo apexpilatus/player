@@ -21,6 +21,7 @@ int main(int argsn, char *args[]) {
 	snd_pcm_hw_params_t *pcm_hw;
 	if (snd_pcm_hw_params_malloc(&pcm_hw)){
 		write_0_to_play_file();
+		snd_pcm_close(pcm_p);
 		execl(exec_waiter_path, "play.waiter", "cannot alocate memory for hw params", NULL);
 	}
 	snd_pcm_hw_params_any(pcm_p, pcm_hw);
@@ -30,6 +31,7 @@ int main(int argsn, char *args[]) {
 	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, frame_size == 4 ? SND_PCM_FORMAT_S16_LE : SND_PCM_FORMAT_S24_3LE);
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
 		write_0_to_play_file();
+		snd_pcm_close(pcm_p);
 		execl(exec_waiter_path, "play.waiter", "cannot start playing", NULL);
 	}
 	snd_pcm_hw_params_get_buffer_size(pcm_hw, (snd_pcm_uframes_t*) &buf_size_in_frames);
@@ -55,6 +57,7 @@ int main(int argsn, char *args[]) {
 				if ((play_err = snd_pcm_mmap_writei(pcm_p, buf, (snd_pcm_uframes_t) buf_size_in_frames)) < 0) {
 					close(music_file_dstr);
 					write_0_to_play_file();
+					snd_pcm_close(pcm_p);
 					execl(exec_waiter_path, "play.waiter", "play error", NULL);
 				}
 			}
@@ -72,9 +75,11 @@ int main(int argsn, char *args[]) {
 			close(music_file_dstr);
 			if (play_err < 0) {
 				write_0_to_play_file();
+				snd_pcm_close(pcm_p);
 				execl(exec_waiter_path, "play.waiter", "play error", NULL);
 			}
 			if (check_album(args[1]) != 0) {
+				snd_pcm_close(pcm_p);
 				execl(exec_waiter_path, "play.waiter", "new album", NULL);
 			}
 		} else {
@@ -85,6 +90,7 @@ int main(int argsn, char *args[]) {
 				}
 			}
 			write_0_to_play_file();
+			snd_pcm_close(pcm_p);
 			execl(exec_waiter_path, "play.waiter", "the end", NULL);
 		}
 	}
