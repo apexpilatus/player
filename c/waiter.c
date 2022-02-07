@@ -12,7 +12,7 @@ int main(int argsn, char *args[]){
 			
 			snd_ctl_t *ctl_p;
 			char **card_name;
-			if (!snd_card_get_name(2, card_name)) {
+			if (!snd_card_get_name(2, card_name) && !memcmp(*card_name, "irDAC II", 8)) {
 				execl(exec_play_path, "play.waiter", *card_name, album_val, NULL);
 			}
 			
