@@ -11,7 +11,7 @@ int main(int argsn, char *args[]){
 			get_album(album_val);
 			
 			snd_ctl_t *ctl_p;
-			if (!snd_ctl_open(&ctl_p, "hw:2,0", SND_CTL_NONBLOCK)) {
+			if (!snd_ctl_open(&ctl_p, "hw:2,0", SND_CTL_ASYNC)) {
 				execl(exec_play_path, "play.waiter", snd_ctl_name(ctl_p), album_val, NULL);
 			}
 			
