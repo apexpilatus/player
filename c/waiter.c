@@ -17,7 +17,7 @@ int main(int argsn, char *args[]){
 				if (!snd_card_get_name(i, card_name) && !memcmp(*card_name, frame_size == 4 ? "irDAC II" : "USB Audi", 8)) {
 					sprintf(*card_name, "hw:%d,0", i);
 					char rate_as_str[10];
-					sprintf(rate_as_str, "%d", rate);
+					sprintf(rate_as_str, "%d\0", rate);
 					execl(exec_play_path, "play.waiter", *card_name, rate_as_str, album_val, NULL);
 				}				
 			}
