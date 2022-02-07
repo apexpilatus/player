@@ -22,7 +22,7 @@ int main(int argsn, char *args[]){
 				}				
 			}
 			write_0_to_play_file();
-			
+			execl(exec_waiter_path, "play.waiter", "no card to play", NULL);
 		}
 	}
 }
