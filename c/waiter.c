@@ -10,10 +10,11 @@ int main(int argsn, char *args[]){
 			char album_val[1024];
 			get_album(album_val);
 			
-			snd_ctl_t *pcm_c;
-			if (snd_ctl_open (&pcm_c, "hw:2,0", SND_CTL_NONBLOCK)) {
-				//execl(exec_waiter_path, "play.waiter", "cannot open pcm", NULL);
-				execl(exec_play_path, "play.waiter", "fuck", album_val, NULL);
+			snd_pcm_t *pcm_p;
+			if (snd_pcm_open(&pcm_p, "hw:2,0", SND_PCM_STREAM_PLAYBACK, 0)) {
+				snd_pcm_info_t * pcm_info = malloc(snd_pcm_info_sizeof());
+				snd_pcm_info(pcm_p, pcm_info);
+				execl(exec_play_path, "play.waiter", snd_pcm_info_get_name(pcm_info), album_val, NULL);
 			}
 			
 			execl(exec_play_path, "play.waiter", "fook", album_val, NULL);
