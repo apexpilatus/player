@@ -91,11 +91,7 @@ int main(int argsn, char *args[]) {
 			}
 			write_0_to_play_file();
 			snd_pcm_close(pcm_p);
-			
-			char fuck[1024];
-			sprintf(fuck, "%d", argsn);
-			
-			execl(exec_waiter_path, "play.waiter", /*"the end"*/ fuck, NULL);
+			execl(exec_waiter_path, "play.waiter", "the end", NULL);
 		}
 	}
 }
