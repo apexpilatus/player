@@ -12,6 +12,7 @@
 #include <alsa/output.h>
 #include <alsa/conf.h>
 #include <alsa/pcm.h>
+#include <alsa/control.h>
 
 #define time_out 1
 #define play_file_path "/home/sd/player/play"
