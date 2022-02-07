@@ -9,6 +9,9 @@ int main(int argsn, char *args[]){
 		} else {
 			char album_val[1024];
 			get_album(album_val);
+			unsigned int rate;
+			unsigned short frame_size;
+			get_params(album_val, &rate, &frame_size);
 			char **card_name;
 			for (int i=0; i<6; i++) {
 				if (!snd_card_get_name(i, card_name) && !memcmp(*card_name, "USB Audi" /*"irDAC II"*/, 8)) {
