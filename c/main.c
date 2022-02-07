@@ -20,7 +20,7 @@ int main(int argsn, char *args[]) {
 	snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
 	int dir = -1;
 	snd_pcm_hw_params_set_rate_near(pcm_p, pcm_hw, &rate, &dir);
-	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, frame_size == 4 ? SND_PCM_FORMAT_S16_LE : SND_PCM_FORMAT_S24_3LE);
+	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, 4 == 4 ? SND_PCM_FORMAT_S16_LE : SND_PCM_FORMAT_S24_3LE);
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
 		write_0_to_play_file();
 		snd_pcm_close(pcm_p);
@@ -32,7 +32,7 @@ int main(int argsn, char *args[]) {
 	char buf[buf_size_in_bytes];
 	for (int i = 1; i < 100; i++) {
 		char file_name[2048];
-		sprintf(file_name, "%s/%d.wav", args[3], i);
+		sprintf(file_name, "%s/%d.wav", args[4], i);
 		int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
 		if (music_file_dstr != -1) {
 			lseek(music_file_dstr, 16, SEEK_SET);
@@ -54,7 +54,7 @@ int main(int argsn, char *args[]) {
 				}
 			}
 			while ((read_size = read(music_file_dstr, buf, buf_size_in_bytes))) {
-				if (check_album(args[3]) != 0) {
+				if (check_album(args[4]) != 0) {
 					break;
 				}
 				if (read_size < buf_size_in_bytes) {
@@ -70,7 +70,7 @@ int main(int argsn, char *args[]) {
 				snd_pcm_close(pcm_p);
 				execl(exec_waiter_path, "play.waiter", "play error", NULL);
 			}
-			if (check_album(args[3]) != 0) {
+			if (check_album(args[4]) != 0) {
 				snd_pcm_close(pcm_p);
 				execl(exec_waiter_path, "play.waiter", "new album", NULL);
 			}
