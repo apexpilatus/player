@@ -18,7 +18,7 @@ int main(int argsn, char *args[]){
 			char **card_name;
 			for (int i=0; i<6; i++) {
 				printf("%d\n", i);
-				if (!snd_card_get_name(i, card_name){
+				if (!snd_card_get_name(i, card_name)){
 					printf("%s\n", *card_name);
 				}
 				    
