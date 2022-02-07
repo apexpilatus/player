@@ -8,7 +8,7 @@ int main(int argsn, char *args[]) {
 	get_params(args[2], &rate, &frame_size);
 	snd_pcm_t *pcm_p;
 	unsigned long buf_size_in_frames;
-	if (snd_pcm_open(&pcm_p, "hw:2,0", SND_PCM_STREAM_PLAYBACK, 0)) {
+	if (snd_pcm_open(&pcm_p, args[1], SND_PCM_STREAM_PLAYBACK, 0)) {
 		write_0_to_play_file();
 		execl(exec_waiter_path, "play.waiter", "cannot open pcm", NULL);
 	}
