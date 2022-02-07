@@ -16,7 +16,7 @@ int main(int argsn, char *args[]){
 				execl(exec_play_path, "play.waiter", album_val, /*snd_ctl_name(pcm_c)*/ "fuck", NULL);
 			}
 			
-			execl(exec_play_path, "play.waiter", album_val, NULL);
+			execl(exec_play_path, "play.waiter", album_val, "fook", NULL);
 		}
 	}
 }
