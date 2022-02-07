@@ -6,6 +6,12 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <alsa/global.h>
+#include <alsa/input.h>
+#include <alsa/output.h>
+#include <alsa/conf.h>
+#include <alsa/pcm.h>
+
 #define time_out 1
 #define play_file_path "/home/sd/player/play"
 #define album_file_path "/home/sd/player/album"
