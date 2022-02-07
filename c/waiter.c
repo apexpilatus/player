@@ -21,6 +21,8 @@ int main(int argsn, char *args[]){
 					execl(exec_play_path, "play.waiter", *card_name, rate_as_str, album_val, NULL);
 				}				
 			}
+			write_0_to_play_file();
+			
 		}
 	}
 }
