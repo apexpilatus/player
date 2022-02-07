@@ -12,7 +12,7 @@ int main(int argsn, char *args[]){
 			unsigned int rate;
 			unsigned short frame_size;
 			get_params(album_val, &rate, &frame_size);
-			char rate_as_str[100], frame_size_as_str[100];
+			char rate_as_str[1024], frame_size_as_str[1024];
 			sprintf(rate_as_str, "%d", rate);
 			sprintf(frame_size_as_str, "%d", frame_size);
 			char **card_name;
