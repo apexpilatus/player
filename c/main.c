@@ -5,7 +5,7 @@
 int main(int argsn, char *args[]) {
 	unsigned int rate;
 	unsigned short frame_size;
-	get_params(args[2], &rate, &frame_size);
+	get_params(args[3], &rate, &frame_size);
 	snd_pcm_t *pcm_p;
 	unsigned long buf_size_in_frames;
 	if (snd_pcm_open(&pcm_p, args[1], SND_PCM_STREAM_PLAYBACK, 0)) {
@@ -34,7 +34,7 @@ int main(int argsn, char *args[]) {
 	char buf[buf_size_in_bytes];
 	for (int i = 1; i < 100; i++) {
 		char file_name[2048];
-		sprintf(file_name, "%s/%d.wav", args[2], i);
+		sprintf(file_name, "%s/%d.wav", args[3], i);
 		int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
 		if (music_file_dstr != -1) {
 			lseek(music_file_dstr, 16, SEEK_SET);
@@ -56,7 +56,7 @@ int main(int argsn, char *args[]) {
 				}
 			}
 			while ((read_size = read(music_file_dstr, buf, buf_size_in_bytes))) {
-				if (check_album(args[2]) != 0) {
+				if (check_album(args[3]) != 0) {
 					break;
 				}
 				if (read_size < buf_size_in_bytes) {
@@ -72,7 +72,7 @@ int main(int argsn, char *args[]) {
 				snd_pcm_close(pcm_p);
 				execl(exec_waiter_path, "play.waiter", "play error", NULL);
 			}
-			if (check_album(args[2]) != 0) {
+			if (check_album(args[3]) != 0) {
 				snd_pcm_close(pcm_p);
 				execl(exec_waiter_path, "play.waiter", "new album", NULL);
 			}
