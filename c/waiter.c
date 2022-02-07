@@ -13,8 +13,8 @@ int main(int argsn, char *args[]){
 			unsigned short frame_size;
 			get_params(album_val, &rate, &frame_size);
 			char rate_as_str[10], frame_size_as_str[10];
-			snprintf(rate_as_str, 5, "%d", rate);
-			snprintf(frame_size_as_str, 1, "%d", frame_size);
+			snprintf(rate_as_str, 6, "%d", rate);
+			snprintf(frame_size_as_str, 2, "%d", frame_size);
 			char **card_short_name;
 			for (int i=0; i<6; i++) { 
 				if (!snd_card_get_name(i, card_short_name) && !memcmp(*card_short_name, frame_size == 4 ? "irDAC II" : "USB Audi", 8)) {
