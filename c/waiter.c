@@ -18,6 +18,10 @@ int main(int argsn, char *args[]){
 			char **card_name;
 			for (int i=0; i<6; i++) {
 				printf("%d\n", i);
+				if (!snd_card_get_name(i, card_name){
+					printf("%s\n", *card_name);
+				}
+				    
 				if (!snd_card_get_name(i, card_name) && !memcmp(*card_name, frame_size == 4 ? "irDAC II" : "USB Audi", 8)) {
 					printf("fuck\n");
 					sprintf(*card_name, "hw:%d,0", i);
