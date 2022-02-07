@@ -3,7 +3,7 @@
 #endif
 
 int main(int argsn, char *args[]) {
-	unsigned int rate = atoi(args[2]);
+	unsigned int rate;
 	unsigned short frame_size;
 	get_params(args[3], &rate, &frame_size);
 	snd_pcm_t *pcm_p;
