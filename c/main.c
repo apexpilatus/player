@@ -21,7 +21,7 @@ int main(int argsn, char *args[]) {
 	snd_pcm_hw_params_any(pcm_p, pcm_hw);
 	snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
 	int dir = -1;
-	snd_pcm_hw_params_set_rate_near(pcm_p, pcm_hw, &rate, &dir);
+	snd_pcm_hw_params_set_rate_near(pcm_p, pcm_hw, atoi(args[2]), &dir);
 	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, frame_size == 4 ? SND_PCM_FORMAT_S16_LE : SND_PCM_FORMAT_S24_3LE);
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
 		write_0_to_play_file();
