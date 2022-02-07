@@ -12,9 +12,9 @@ int main(int argsn, char *args[]){
 			unsigned int rate;
 			unsigned short frame_size;
 			get_params(album_val, &rate, &frame_size);
-			char rate_as_str[1024], frame_size_as_str[1024];
+			/*char rate_as_str[1024], frame_size_as_str[1024];
 			sprintf(rate_as_str, "%d", rate);
-			sprintf(frame_size_as_str, "%d", frame_size);
+			sprintf(frame_size_as_str, "%d", frame_size);*/
 			char **card_short_name;
 			for (int i=0; i<6; i++) {
 				printf("%d\n", i);
@@ -25,7 +25,7 @@ int main(int argsn, char *args[]){
 				if (!snd_card_get_name(i, card_short_name) && !memcmp(*card_short_name, frame_size == 4 ? "irDAC II" : "USB Audi", 8)) {
 					printf("fuck\n");
 					sprintf(*card_short_name, "hw:%d,0", i);
-					execl(exec_play_path, "play.waiter", *card_short_name, rate_as_str, frame_size_as_str, album_val, NULL);
+					execl(exec_play_path, "play.waiter", *card_short_name, "rate_as_str", "frame_size_as_str", album_val, NULL);
 				}				
 			}
 			write_0_to_play_file();
