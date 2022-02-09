@@ -60,7 +60,7 @@ int get_params(char *album_val, unsigned int *rate, unsigned short *frame_size) 
 					return 1;
 				}
 			}
-		} esle {
+		} else {
 			return 0;
 		}
 	}
