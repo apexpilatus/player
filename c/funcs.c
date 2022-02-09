@@ -39,15 +39,29 @@ int check_album(char current[]) {
 	return strcmp(current, next);
 }
 
-void get_params(char *album_val, unsigned int *rate, unsigned short *frame_size) {
+int get_params(char *album_val, unsigned int *rate, unsigned short *frame_size) {
 	char file_name[2048];
-	sprintf(file_name, "%s/1.wav", album_val);
-	int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
-	if (music_file_dstr != -1) {
-		lseek(music_file_dstr, 24, SEEK_SET);
-		read(music_file_dstr, rate, 4);
-		lseek(music_file_dstr, 32, SEEK_SET);
-		read(music_file_dstr, frame_size, 2);
-		close(music_file_dstr);
+	unsigned int rate_1st;
+	unsigned short frame_size_1st;
+	for (int i = 1; i < 100; i++) {
+		sprintf(file_name, "%s/%d.wav", album_val, i);
+		int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
+		if (music_file_dstr != -1) {
+			lseek(music_file_dstr, 24, SEEK_SET);
+			read(music_file_dstr, rate, 4);
+			lseek(music_file_dstr, 32, SEEK_SET);
+			read(music_file_dstr, frame_size, 2);
+			close(music_file_dstr);
+			if (i == 1) {
+				rate_1st = *rate;
+				frame_size_1st = *frame_size;
+			} else {
+				if (rate_1st != *rate || frame_size_1st != *frame_size) {
+					return 1;
+				}
+			}
+		} esle {
+			return 0;
+		}
 	}
 }
