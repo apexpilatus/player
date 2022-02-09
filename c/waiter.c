@@ -11,7 +11,10 @@ int main(int argsn, char *args[]){
 			get_album(album_val);
 			unsigned int rate;
 			unsigned short frame_size;
-			get_params(album_val, &rate, &frame_size);
+			if (get_params(album_val, &rate, &frame_size)){
+				write_0_to_play_file();
+				execl(exec_waiter_path, "play.waiter", "files have different format", NULL);
+			}
 			char rate_as_str[10], frame_size_as_str[10];
 			snprintf(rate_as_str, 6, "%d", rate);
 			snprintf(frame_size_as_str, 2, "%d", frame_size);
