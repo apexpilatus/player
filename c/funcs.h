@@ -24,4 +24,4 @@ extern void write_0_to_play_file();
 extern int check_play_file();
 extern void get_album(char *ret);
 extern int check_album(char current[]);
-extern void get_params(char *album_val, unsigned int *rate, unsigned short *frame_size);
+extern int get_params(char *album_val, unsigned int *rate, unsigned short *frame_size);
