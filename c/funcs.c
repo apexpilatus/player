@@ -61,7 +61,11 @@ int get_params(char *album_val, unsigned int *rate, unsigned short *frame_size) 
 				}
 			}
 		} else {
-			return 0;
+			if (i == 1) {
+				return 1;
+			} else {
+				return 0;
+			}
 		}
 	}
 }
