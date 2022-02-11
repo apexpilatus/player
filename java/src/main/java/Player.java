@@ -44,7 +44,7 @@ public class Player extends HttpServlet {
                                                  replace("___","</a> <b><small>") +
                                                  "</a></b></small></p>");
                     }
-                    resp.getWriter().println("<p style=\"font-size:1em\">_ _ _ _ _ _ _</p>");
+                    resp.getWriter().println("<p style=\"font-size:1em;text-align:center\">_ _ _ _ _ _ _</p>");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
