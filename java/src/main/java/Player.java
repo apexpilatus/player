@@ -35,8 +35,9 @@ public class Player extends HttpServlet {
             if (Objects.requireNonNull(albums).length != 0) {
                 resp.setContentType("text/html");
                 try {
+                    resp.getWriter().println("<body style=\"background-color:gray\">");
                     for (String album:albums){
-                        resp.getWriter().println("<p style=\"text-align:center;color:gray;font-size:150%\"><a href=http://jetson:8080/player?album=" +
+                        resp.getWriter().println("<p style=\"text-align:center;color:green;font-size:150%\"><a href=http://jetson:8080/player?album=" +
                                                  musicPath + "/" + album.replace(" ","%20") + ">" +
                                                  album.replace("fuckingslash","/").
                                                  replace("fuckingblackstar","&#9733").
@@ -45,6 +46,7 @@ public class Player extends HttpServlet {
                                                  "</a></b></small></p>");
                     }
                     resp.getWriter().println("<p style=\"font-size:1em;text-align:center\">_ _ _ _ _ _ _</p>");
+                    resp.getWriter().println("</body>");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
