@@ -18,20 +18,11 @@ int main(int argsn, char *args[]){
 			char rate_as_str[10], frame_size_as_str[10];
 			snprintf(rate_as_str, 6, "%d", rate);
 			snprintf(frame_size_as_str, 2, "%d", frame_size);
-			
-			/*char **card_short_name;
-			for (int i=0; i<6; i++) { 
-				if (!snd_card_get_name(i, card_short_name) && !memcmp(*card_short_name, frame_size == 4 ? "irDAC II" : "USB Audi", 8)) {
-					sprintf(*card_short_name, "hw:%d,0", i);
-					execl(exec_play_path, "play.waiter", *card_short_name, rate_as_str, frame_size_as_str, album_val, NULL);
-				}				
-			}*/
-			
 			int card_num = snd_card_get_index(frame_size == 4 ? "II" : "U96khz");
 			if (card_num > 0){
 				char card_name[1024];
 				sprintf(card_name, "hw:%d,0", card_num);
-				execl(exec_play_path, "play.waiter", card_name, rate_as_str, frame_size_as_str, album_val, NULL);
+				execl(exec_play_path, "play.waiter", card_name, rate_as_str, frame_size, album_val, NULL);
 			}
 			write_0_to_play_file();
 			execl(exec_waiter_path, "play.waiter", "no card to play", NULL);
