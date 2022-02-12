@@ -36,6 +36,8 @@ int main(int argsn, char *args[]){
 					snd_ctl_elem_list_free_space(elist);
 					snd_ctl_elem_list_free(elist);
 					
+					printf("fuck\n");
+					
 					snd_ctl_close(ctl_p);
 				}
 				
