@@ -61,6 +61,7 @@ int main(int argsn, char *args[]){
 								snd_ctl_elem_value_set_integer(eval, 0, 80);
 								snd_ctl_elem_value_set_integer(eval, 1, 80);
 								snd_ctl_elem_write(ctl_p, eval);
+							}
 						}
 					}
 					snd_ctl_close(ctl_p);
