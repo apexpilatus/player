@@ -36,7 +36,11 @@ int main(int argsn, char *args[]){
 					
 					char **check_name;
 					if (!snd_card_get_name(card_num, check_name) && !strcmp(*check_name, "USB Audio 24bit 96khz")){
-						printf("fuck\n");
+						for (int i=0; i<ecount; i++){
+							if (!strcmp(snd_ctl_elem_list_get_name(elist, i)+13, "Switch")){
+								printf("fuck\n");
+							}
+						}
 					}
 					
 					snd_ctl_close(ctl_p);
