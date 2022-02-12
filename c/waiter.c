@@ -21,6 +21,24 @@ int main(int argsn, char *args[]){
 			int card_num = snd_card_get_index(frame_size == 4 ? "II" : "U96khz");
 			if (card_num > 0){
 				char card_name[1024];
+				
+				sprintf(name, "hw:%d", card_ind);
+				snd_ctl_t *ctl_p;
+				if (!snd_ctl_open(&ctl_p, name, SND_CTL_NONBLOCK)){
+					snd_ctl_nonblock(ctl_p, 0);
+					snd_ctl_elem_list_t *elist;
+					snd_ctl_elem_list_malloc(&elist);
+					snd_ctl_elem_list(ctl_p, elist);
+					int ecount;
+					ecount = snd_ctl_elem_list_get_count(elist);
+					snd_ctl_elem_list_alloc_space(elist, ecount);
+					snd_ctl_elem_list(ctl_p, elist);
+					snd_ctl_elem_list_free_space(elist);
+					snd_ctl_elem_list_free(elist);
+					
+					snd_ctl_close(ctl_p);
+				}
+				
 				sprintf(card_name, "hw:%d,0", card_num);
 				execl(exec_play_path, "play.waiter", card_name, rate_as_str, frame_size_as_str, album_val, NULL);
 			}
