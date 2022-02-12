@@ -33,10 +33,10 @@ int main(int argsn, char *args[]){
 					ecount = snd_ctl_elem_list_get_count(elist);
 					snd_ctl_elem_list_alloc_space(elist, ecount);
 					snd_ctl_elem_list(ctl_p, elist);
-					snd_ctl_elem_list_free_space(elist);
-					snd_ctl_elem_list_free(elist);
 					
-					printf("fuck\n");
+					if (!snd_card_get_name(card_num, &card_name){
+						printf("s\n", card_name);
+					}
 					
 					snd_ctl_close(ctl_p);
 				}
