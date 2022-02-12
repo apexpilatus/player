@@ -21,7 +21,6 @@ int main(int argsn, char *args[]){
 			int card_num = snd_card_get_index(frame_size == 4 ? "II" : "U96khz");
 			if (card_num > 0){
 				char card_name[1024];
-				
 				sprintf(card_name, "hw:%d", card_num);
 				snd_ctl_t *ctl_p;
 				if (!snd_ctl_open(&ctl_p, card_name, SND_CTL_NONBLOCK)){
@@ -58,15 +57,14 @@ int main(int argsn, char *args[]){
 								snd_ctl_elem_value_set_id(eval, e_id);
 								snd_ctl_elem_value_set_numid(eval, snd_ctl_elem_list_get_numid(elist, i));
 								snd_ctl_elem_read(ctl_p, eval);
-								snd_ctl_elem_value_set_integer(eval, 0, 80);
-								snd_ctl_elem_value_set_integer(eval, 1, 80);
+								snd_ctl_elem_value_set_integer(eval, 0, 110);
+								snd_ctl_elem_value_set_integer(eval, 1, 110);
 								snd_ctl_elem_write(ctl_p, eval);
 							}
 						}
 					}
 					snd_ctl_close(ctl_p);
 				}
-				
 				sprintf(card_name, "hw:%d,0", card_num);
 				execl(exec_play_path, "play.waiter", card_name, rate_as_str, frame_size_as_str, album_val, NULL);
 			}
