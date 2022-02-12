@@ -34,8 +34,9 @@ int main(int argsn, char *args[]){
 					snd_ctl_elem_list_alloc_space(elist, ecount);
 					snd_ctl_elem_list(ctl_p, elist);
 					
-					if (!snd_card_get_name(card_num, &card_name)){
-						printf("%s\n", card_name);
+					char **check_name;
+					if (!snd_card_get_name(card_num, check_name)){
+						printf("%s\n", *check_name);
 					}
 					
 					snd_ctl_close(ctl_p);
