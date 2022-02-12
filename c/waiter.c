@@ -22,7 +22,7 @@ int main(int argsn, char *args[]){
 			if (card_num > 0){
 				char card_name[1024];
 				
-				sprintf(name, "hw:%d", card_ind);
+				sprintf(card_name, "hw:%d", card_num);
 				snd_ctl_t *ctl_p;
 				if (!snd_ctl_open(&ctl_p, name, SND_CTL_NONBLOCK)){
 					snd_ctl_nonblock(ctl_p, 0);
