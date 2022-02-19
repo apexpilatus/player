@@ -5,6 +5,7 @@
 int main(int argsn, char *args[]){
 	while (1) {
 		if (check_play_file() != 1) {
+			printf("fuck\n");
 			sleep(time_out);
 		} else {
 			char album_val[1024];
