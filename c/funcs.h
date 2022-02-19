@@ -15,10 +15,10 @@
 #include <alsa/control.h>
 
 #define time_out 1
-#define play_file_path "/home/sd/player/play"
-#define album_file_path "/home/sd/player/album"
-#define exec_play_path "/home/sd/player/a.out"
-#define exec_waiter_path "/home/sd/player/play.waiter"
+#define play_file_path "/home/storage/player/play"
+#define album_file_path "/home/storage/player/album"
+#define exec_play_path "/home/storage/player/a.out"
+#define exec_waiter_path "/home/storage/player/play.waiter"
 
 extern void write_0_to_play_file();
 extern int check_play_file();
