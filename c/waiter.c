@@ -18,7 +18,12 @@ int main(int argsn, char *args[]){
 			char rate_as_str[10], frame_size_as_str[10];
 			snprintf(rate_as_str, 6, "%d", rate);
 			snprintf(frame_size_as_str, 2, "%d", frame_size);
-			printf("%d %d\n", rate, frame_size);
+			
+			char **fuckname;
+			snd_card_get_name(1, fuckname);
+			printf("%d %d %s\n", rate, frame_size, *fuckname);
+			
+			
 			int card_num = snd_card_get_index(frame_size == 4 ? "II" : "U96khz");
 			if (card_num > 0){
 				char card_name[1024];
