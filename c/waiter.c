@@ -3,6 +3,7 @@
 #endif
 
 int main(int argsn, char *args[]){
+	printf("wtf,,,\n");
 	while (1) {
 		if (check_play_file() != 1) {
 			printf("fuck\n");
