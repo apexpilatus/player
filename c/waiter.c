@@ -8,6 +8,7 @@ int main(int argsn, char *args[]){
 			printf("fuck\n");
 			sleep(time_out);
 		} else {
+			printf("fook\n");
 			char album_val[1024];
 			get_album(album_val);
 			unsigned int rate;
