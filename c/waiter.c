@@ -17,9 +17,7 @@ int main(int argsn, char *args[]){
 			}
 			char rate_as_str[10], frame_size_as_str[10];
 			snprintf(rate_as_str, 6, "%d", rate);
-			rate_as_str[5]=0;
 			snprintf(frame_size_as_str, 2, "%d", frame_size);
-			frame_size_as_str[1]=0;
 			int card_num = snd_card_get_index(frame_size == 4 ? "II" : "U96khz");
 			if (card_num >= 0){
 				char card_name[10];
@@ -48,8 +46,11 @@ int main(int argsn, char *args[]){
 					snd_card_get_name(card_num, check_name);
 					printf("%s\n", *check_name);
 					
-					if (!snd_card_get_name(card_num, check_name) && !strcmp(*check_name, "USB Audio 24bit 96khz")){
+					if (!snd_card_get_name(card_num, check_name)){
 						printf("%d\n", ecount);
+						if (!strcmp(*check_name, "USB Audio 24bit 96khz")) {
+							printf("56");
+						}
 						
 						/*for (int i=0; i<3; i++){
 							printf("56");
