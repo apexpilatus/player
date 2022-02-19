@@ -24,7 +24,7 @@ int main(int argsn, char *args[]){
 					printf("fuck %s\n", *fucking);
 			
 			int card_num = snd_card_get_index(frame_size == 4 ? "II" : "U96khz");
-			if (card_num > 0){
+			if (card_num >= 0){
 				char card_name[1024];
 				snprintf(card_name, 5, "hw:%d", card_num);
 				
