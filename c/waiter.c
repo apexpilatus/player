@@ -3,13 +3,10 @@
 #endif
 
 int main(int argsn, char *args[]){
-	printf("wtf,,,\n");
 	while (1) {
 		if (check_play_file() != 1) {
-			printf("fuck\n");
 			sleep(time_out);
 		} else {
-			printf("fook\n");
 			char album_val[1024];
 			get_album(album_val);
 			unsigned int rate;
@@ -21,6 +18,7 @@ int main(int argsn, char *args[]){
 			char rate_as_str[10], frame_size_as_str[10];
 			snprintf(rate_as_str, 6, "%d", rate);
 			snprintf(frame_size_as_str, 2, "%d", frame_size);
+			printf("%d %d\n", rate, frame_size);
 			int card_num = snd_card_get_index(frame_size == 4 ? "II" : "U96khz");
 			if (card_num > 0){
 				char card_name[1024];
