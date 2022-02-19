@@ -20,7 +20,7 @@ int main(int argsn, char *args[]){
 			snprintf(frame_size_as_str, 2, "%d", frame_size);
 			
 			char **fucking;
-			snd_card_get_name(1, fucking);
+			snd_card_get_name(2, fucking);
 					printf("fuck %s\n", *fucking);
 			
 			int card_num = snd_card_get_index(frame_size == 4 ? "II" : "U96khz");
