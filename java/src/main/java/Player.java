@@ -10,9 +10,9 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class Player extends HttpServlet {
-    String musicPath = "/home/disk/music";
-    String playFilePath = "/home/sd/player/play";
-    String albumFilePath = "/home/sd/player/album";
+    String musicPath = "/home/store/music";
+    String playFilePath = "/home/store/player/play";
+    String albumFilePath = "/home/store/player/album";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
