@@ -32,7 +32,6 @@ int main(int argsn, char *args[]){
 					ecount = snd_ctl_elem_list_get_count(elist);
 					snd_ctl_elem_list_alloc_space(elist, ecount);
 					snd_ctl_elem_list(ctl_p, elist);
-					printf("fook\n");
 					char **check_name;
 					if (!snd_card_get_name(card_num, check_name) && !strcmp(*check_name, "USB Audio 24bit 96khz")){
 						for (int i=0; i<ecount; i++){
@@ -63,6 +62,7 @@ int main(int argsn, char *args[]){
 							}
 						}
 					}
+					printf("fuck\n");
 					snd_ctl_close(ctl_p);
 				}
 				sprintf(card_name, "hw:%d,0", card_num);
