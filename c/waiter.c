@@ -18,6 +18,10 @@ int main(int argsn, char *args[]){
 			char rate_as_str[10], frame_size_as_str[10];
 			snprintf(rate_as_str, 6, "%d", rate);
 			snprintf(frame_size_as_str, 2, "%d", frame_size);
+			
+			snd_card_get_name(1, check_name);
+					printf("fuck %s\n", *check_name);
+			
 			int card_num = snd_card_get_index(frame_size == 4 ? "II" : "U96khz");
 			if (card_num > 0){
 				char card_name[1024];
@@ -33,10 +37,13 @@ int main(int argsn, char *args[]){
 					snd_ctl_elem_list_alloc_space(elist, ecount);
 					snd_ctl_elem_list(ctl_p, elist);
 					char **check_name;
+					
 					snd_card_get_name(1, check_name);
 					printf("fuck %s\n", *check_name);
+					
 					if (!snd_card_get_name(card_num, check_name) /*&& !strcmp(*check_name, "USB Audio 24bit 96khz")*/){
 						printf("fiik\n");
+						
 						for (int i=0; i<ecount; i++){
 							if (!strcmp(snd_ctl_elem_list_get_name(elist, i)+13, "Switch")) {
 								snd_ctl_elem_value_t *eval;
