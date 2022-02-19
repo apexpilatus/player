@@ -34,6 +34,7 @@ int main(int argsn, char *args[]){
 					snd_ctl_elem_list(ctl_p, elist);
 					char **check_name;
 					if (!snd_card_get_name(card_num, check_name) && !strcmp(*check_name, "USB Audio 24bit 96khz")){
+						printf("fiik\n");
 						for (int i=0; i<ecount; i++){
 							if (!strcmp(snd_ctl_elem_list_get_name(elist, i)+13, "Switch")) {
 								snd_ctl_elem_value_t *eval;
