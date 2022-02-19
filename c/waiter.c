@@ -51,9 +51,9 @@ int main(int argsn, char *args[]){
 					if (!snd_card_get_name(card_num, check_name) && !strcmp(*check_name, "USB Audio 24bit 96khz")){
 						printf("%d\n", ecount);
 						
-						for (int i=0; i<3; i++){
+						/*for (int i=0; i<3; i++){
 							printf("56");
-							/*if (!strcmp(snd_ctl_elem_list_get_name(elist, i)+13, "Switch")) {
+							if (!strcmp(snd_ctl_elem_list_get_name(elist, i)+13, "Switch")) {
 								snd_ctl_elem_value_t *eval;
 								snd_ctl_elem_value_malloc(&eval);
 								snd_ctl_elem_id_t *e_id;
@@ -77,8 +77,8 @@ int main(int argsn, char *args[]){
 								snd_ctl_elem_value_set_integer(eval, 0, 110);
 								snd_ctl_elem_value_set_integer(eval, 1, 110);
 								snd_ctl_elem_write(ctl_p, eval);
-							}*/
-						}
+							}
+						}*/
 					}
 					snd_ctl_close(ctl_p);
 				}
