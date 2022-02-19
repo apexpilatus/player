@@ -41,7 +41,7 @@ int main(int argsn, char *args[]){
 					
 					snd_card_get_name(card_num, check_name);
 					printf("%s\n", *check_name);
-					
+					/*
 					if (!snd_card_get_name(card_num, check_name) && !strcmp(*check_name, "USB Audio 24bit 96khz")){
 						printf("fiik\n");
 						
@@ -72,7 +72,7 @@ int main(int argsn, char *args[]){
 								snd_ctl_elem_write(ctl_p, eval);
 							}
 						}
-					}
+					}*/
 					snd_ctl_close(ctl_p);
 				}
 				sprintf(card_name, "hw:%d,0", card_num);
