@@ -22,9 +22,10 @@ int main(int argsn, char *args[]){
 			if (card_num > 0){
 				char card_name[1024];
 				sprintf(card_name, "hw:%d", card_num);
-				printf("%s\n", card_name);
 				snd_ctl_t *ctl_p;
 				if (!snd_ctl_open(&ctl_p, card_name, SND_CTL_NONBLOCK)){
+					printf("fuck\n");
+					
 					snd_ctl_nonblock(ctl_p, 0);
 					snd_ctl_elem_list_t *elist;
 					snd_ctl_elem_list_malloc(&elist);
