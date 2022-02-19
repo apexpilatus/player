@@ -18,21 +18,16 @@ int main(int argsn, char *args[]){
 			char rate_as_str[10], frame_size_as_str[10];
 			snprintf(rate_as_str, 6, "%d", rate);
 			snprintf(frame_size_as_str, 2, "%d", frame_size);
-			
-			char **fucking;
-			snd_card_get_name(0, fucking);
-					printf("fuck %s\n", *fucking);
-			
 			int card_num = snd_card_get_index(frame_size == 4 ? "II" : "U96khz");
 			if (card_num >= 0){
 				char card_name[10];
 				snprintf(card_name, 5, "hw:%d", card_num);
 				
-				printf("%s ffff\n", card_name);
+				printf("%s\n", card_name);
 				
 				snd_ctl_t *ctl_p;
 				if (!snd_ctl_open(&ctl_p, card_name, SND_CTL_NONBLOCK)){
-					//snd_ctl_nonblock(ctl_p, 0);
+					snd_ctl_nonblock(ctl_p, 0);
 					snd_ctl_elem_list_t *elist;
 					snd_ctl_elem_list_malloc(&elist);
 					snd_ctl_elem_list(ctl_p, elist);
@@ -43,7 +38,7 @@ int main(int argsn, char *args[]){
 					char **check_name;
 					
 					snd_card_get_name(1, check_name);
-					printf("fuck %s\n", *check_name);
+					printf("fook\n");
 					
 					if (!snd_card_get_name(card_num, check_name) /*&& !strcmp(*check_name, "USB Audio 24bit 96khz")*/){
 						printf("fiik\n");
