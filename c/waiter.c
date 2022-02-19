@@ -27,14 +27,14 @@ int main(int argsn, char *args[]){
 				
 				snd_ctl_t *ctl_p;
 				if (!snd_ctl_open(&ctl_p, card_name, SND_CTL_NONBLOCK)){
-					snd_ctl_nonblock(ctl_p, 0);
+					/*snd_ctl_nonblock(ctl_p, 0);
 					snd_ctl_elem_list_t *elist;
 					snd_ctl_elem_list_malloc(&elist);
 					snd_ctl_elem_list(ctl_p, elist);
 					int ecount;
 					ecount = snd_ctl_elem_list_get_count(elist);
 					snd_ctl_elem_list_alloc_space(elist, ecount);
-					snd_ctl_elem_list(ctl_p, elist);
+					snd_ctl_elem_list(ctl_p, elist);*/
 					char **check_name;
 					
 					snd_card_get_name(1, check_name);
