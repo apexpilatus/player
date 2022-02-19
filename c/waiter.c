@@ -49,7 +49,9 @@ int main(int argsn, char *args[]){
 					if (!snd_card_get_name(card_num, check_name)){
 						printf("%d\n", ecount);
 						if (!strcmp(*check_name, "USB Audio 24bit 96khz")) {
-							printf("56");
+							for (int ind=0;i<5;i++){
+printf("56");
+							}
 						}
 						
 						/*for (int i=0; i<3; i++){
