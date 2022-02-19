@@ -33,6 +33,8 @@ int main(int argsn, char *args[]){
 					snd_ctl_elem_list(ctl_p, elist);
 					int ecount;
 					ecount = snd_ctl_elem_list_get_count(elist);
+					
+					printf("%d\n", ecount);
 					/*snd_ctl_elem_list_alloc_space(elist, ecount);
 					snd_ctl_elem_list(ctl_p, elist);*/
 					char **check_name;
