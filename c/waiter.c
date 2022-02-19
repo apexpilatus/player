@@ -35,8 +35,8 @@ int main(int argsn, char *args[]){
 					ecount = snd_ctl_elem_list_get_count(elist);
 					
 					printf("%d\n", ecount);
-					/*snd_ctl_elem_list_alloc_space(elist, ecount);
-					snd_ctl_elem_list(ctl_p, elist);*/
+					snd_ctl_elem_list_alloc_space(elist, ecount);
+					snd_ctl_elem_list(ctl_p, elist);
 					
 					char **check_name;
 					snd_card_get_name(card_num, check_name);
@@ -47,7 +47,7 @@ int main(int argsn, char *args[]){
 					printf("%s\n", *check_name);
 					
 					if (!snd_card_get_name(card_num, check_name) && !strcmp(*check_name, "USB Audio 24bit 96khz")){
-						printf("fiik\n");
+						printf("%d\n", ecount);
 						/*
 						for (int i=0; i<ecount; i++){
 							if (!strcmp(snd_ctl_elem_list_get_name(elist, i)+13, "Switch")) {
