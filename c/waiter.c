@@ -42,7 +42,7 @@ int main(int argsn, char *args[]){
 								snd_ctl_elem_value_set_id(eval, e_id);
 								snd_ctl_elem_value_set_numid(eval, snd_ctl_elem_list_get_numid(elist, i));
 								snd_ctl_elem_read(ctl_p, eval);
-								snd_ctl_elem_value_set_boolean(eval, 0, 1);
+								snd_ctl_elem_value_set_boolean(eval, 0, 0);
 								snd_ctl_elem_write(ctl_p, eval);
 							}
 							if (!strcmp(snd_ctl_elem_list_get_name(elist, i)+13, "Volume")){
