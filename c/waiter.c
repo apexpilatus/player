@@ -32,9 +32,7 @@ int main(int argsn, char *args[]){
 						ecount = snd_ctl_elem_list_get_count(elist);
 						snd_ctl_elem_list_alloc_space(elist, ecount);
 						snd_ctl_elem_list(ctl_p, elist);
-
-						/*for (int i=0; i<3; i++){
-							printf("56");
+						for (int i=0; i<3; i++){
 							if (!strcmp(snd_ctl_elem_list_get_name(elist, i)+13, "Switch")) {
 								snd_ctl_elem_value_t *eval;
 								snd_ctl_elem_value_malloc(&eval);
@@ -60,7 +58,7 @@ int main(int argsn, char *args[]){
 								snd_ctl_elem_value_set_integer(eval, 1, 110);
 								snd_ctl_elem_write(ctl_p, eval);
 							}
-						}*/
+						}
 						snd_ctl_close(ctl_p);
 					}
 				}
