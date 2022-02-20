@@ -33,15 +33,6 @@ int main(int argsn, char *args[]){
 						snd_ctl_elem_list_alloc_space(elist, ecount);
 						snd_ctl_elem_list(ctl_p, elist);
 
-						char **check_name;
-						snd_card_get_name(card_num, check_name);
-						printf("%s\n", *check_name);
-						snd_card_get_name(card_num, check_name);
-						printf("%s\n", *check_name);
-						snd_card_get_name(card_num, check_name);
-						printf("%s\n", *check_name);
-
-
 						/*for (int i=0; i<3; i++){
 							printf("56");
 							if (!strcmp(snd_ctl_elem_list_get_name(elist, i)+13, "Switch")) {
@@ -73,8 +64,9 @@ int main(int argsn, char *args[]){
 						snd_ctl_close(ctl_p);
 					}
 				}
-				snprintf(card_name, 7, "hw:%d,0", card_num);
-				execl(exec_play_path, "play.waiter", card_name, rate_as_str, frame_size_as_str, album_val, NULL);
+				char card_pcm_name[10];
+				snprintf(card_pcm_name, 7, "hw:%d,0", card_num);
+				execl(exec_play_path, "play.waiter", card_pcm_name, rate_as_str, frame_size_as_str, album_val, NULL);
 			}
 			write_0_to_play_file();
 			execl(exec_waiter_path, "play.waiter", "no card to play", NULL);
