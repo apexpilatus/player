@@ -32,7 +32,7 @@ int main(int argsn, char *args[]){
 						ecount = snd_ctl_elem_list_get_count(elist);
 						snd_ctl_elem_list_alloc_space(elist, ecount);
 						snd_ctl_elem_list(ctl_p, elist);
-						for (int i=0; i<3; i++){
+						for (int i=0; i<ecount; i++){
 							if (!strcmp(snd_ctl_elem_list_get_name(elist, i)+13, "Switch")) {
 								snd_ctl_elem_value_t *eval;
 								snd_ctl_elem_value_malloc(&eval);
