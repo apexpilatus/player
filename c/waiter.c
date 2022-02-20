@@ -20,40 +20,28 @@ int main(int argsn, char *args[]){
 			snprintf(frame_size_as_str, 2, "%d", frame_size);
 			int card_num = snd_card_get_index(frame_size == 4 ? "II" : "U96khz");
 			if (card_num >= 0){
-				char card_name[10];
-				snprintf(card_name, 5, "hw:%d", card_num);
-				
-				printf("%s\n", card_name);
-				
-				snd_ctl_t *ctl_p;
-				if (!snd_ctl_open(&ctl_p, card_name, SND_CTL_NONBLOCK)){
-					snd_ctl_nonblock(ctl_p, 0);
-					snd_ctl_elem_list_t *elist;
-					snd_ctl_elem_list_malloc(&elist);
-					snd_ctl_elem_list(ctl_p, elist);
-					int ecount;
-					ecount = snd_ctl_elem_list_get_count(elist);
-					
-					printf("%d\n", ecount);
-					snd_ctl_elem_list_alloc_space(elist, ecount);
-					snd_ctl_elem_list(ctl_p, elist);
-					
-					char **check_name;
-					snd_card_get_name(card_num, check_name);
-					printf("%s\n", *check_name);
-					snd_card_get_name(card_num, check_name);
-					printf("%s\n", *check_name);
-					snd_card_get_name(card_num, check_name);
-					printf("%s\n", *check_name);
-					
-					if (!snd_card_get_name(card_num, check_name)){
-						printf("%d\n", ecount);
-						if (!strcmp(*check_name, "USB Audio 24bit 96khz")) {
-							for (int ind=0;ind<5;ind++){
-printf("56");
-							}
-						}
-						
+				if (frame_size != 4) {
+					char card_name[10];
+					snprintf(card_name, 5, "hw:%d", card_num);
+					snd_ctl_t *ctl_p;
+					if (!snd_ctl_open(&ctl_p, card_name, SND_CTL_NONBLOCK)){
+						snd_ctl_elem_list_t *elist;
+						snd_ctl_elem_list_malloc(&elist);
+						snd_ctl_elem_list(ctl_p, elist);
+						int ecount;
+						ecount = snd_ctl_elem_list_get_count(elist);
+						snd_ctl_elem_list_alloc_space(elist, ecount);
+						snd_ctl_elem_list(ctl_p, elist);
+
+						char **check_name;
+						snd_card_get_name(card_num, check_name);
+						printf("%s\n", *check_name);
+						snd_card_get_name(card_num, check_name);
+						printf("%s\n", *check_name);
+						snd_card_get_name(card_num, check_name);
+						printf("%s\n", *check_name);
+
+
 						/*for (int i=0; i<3; i++){
 							printf("56");
 							if (!strcmp(snd_ctl_elem_list_get_name(elist, i)+13, "Switch")) {
@@ -82,8 +70,8 @@ printf("56");
 								snd_ctl_elem_write(ctl_p, eval);
 							}
 						}*/
+						snd_ctl_close(ctl_p);
 					}
-					snd_ctl_close(ctl_p);
 				}
 				snprintf(card_name, 7, "hw:%d,0", card_num);
 				execl(exec_play_path, "play.waiter", card_name, rate_as_str, frame_size_as_str, album_val, NULL);
