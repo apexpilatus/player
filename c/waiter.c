@@ -3,9 +3,6 @@
 #endif
 
 int main(int argsn, char *args[]){
-	
-	int fuck=0;
-	
 	while (1) {
 		if (check_play_file() == 0) {
 			sleep(time_out);
