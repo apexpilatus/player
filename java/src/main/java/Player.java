@@ -22,7 +22,6 @@ public class Player extends HttpServlet {
                 try (
                         BufferedWriter albumFileWriter = new BufferedWriter(new FileWriter(new File(albumFilePath)));
                 ) {
-                    playFileWriter.write(1);
                     albumFileWriter.write(albumToPlay);
                 } catch (IOException e) {
                     e.printStackTrace();
