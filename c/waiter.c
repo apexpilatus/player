@@ -3,10 +3,14 @@
 #endif
 
 int main(int argsn, char *args[]){
+	
+	int fuck=0;
+	
 	while (1) {
 		if (check_play_file() == 0) {
 			sleep(time_out);
 		} else {
+			fuck++;
 			char album_val[1024];
 			get_album(album_val);
 			unsigned int rate;
@@ -67,7 +71,9 @@ int main(int argsn, char *args[]){
 				execl(exec_play_path, "play.waiter", card_pcm_name, rate_as_str, frame_size_as_str, album_val, NULL);
 			}
 			write_0_to_play_file();
-			execl(exec_waiter_path, "play.waiter", "no card to play", NULL);
+			char fook[1024];
+			sprintf(fook, "%d", fuck);
+			execl(exec_waiter_path, "play.waiter", "no card to play", fook, NULL);
 		}
 	}
 }
