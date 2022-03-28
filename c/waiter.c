@@ -67,7 +67,6 @@ int main(int argsn, char *args[]){
 				execl(exec_play_path, "play.waiter", card_pcm_name, rate_as_str, frame_size_as_str, album_val, NULL);
 			}
 			write_0_to_play_file();
-			char fook[1024];
 			sprintf(fook, "%d", fuck);
 			execl(exec_waiter_path, "play.waiter", "no card to play", fook, NULL);
 		}
