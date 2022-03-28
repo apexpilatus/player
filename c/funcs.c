@@ -4,7 +4,7 @@
 
 void write_0_to_play_file() {
 	int play_file_dstr;
-	while ((play_file_dstr = open(play_file_path, O_NONBLOCK|O_WRONLY)) == -1) {
+	while ((play_file_dstr = open(album_file_path, O_NONBLOCK|O_WRONLY)) == -1) {
 		sleep(time_out);
 	}
 	int play_val = 0;
@@ -14,7 +14,7 @@ void write_0_to_play_file() {
 
 int check_play_file(){
         int play_file_dstr;
-        while ((play_file_dstr = open(play_file_path, O_NONBLOCK|O_RDONLY)) == -1) {
+        while ((play_file_dstr = open(album_file_path, O_NONBLOCK|O_RDONLY)) == -1) {
                 sleep(time_out);
         }
         int play_val;
