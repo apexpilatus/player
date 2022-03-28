@@ -11,7 +11,6 @@ import java.util.Objects;
 
 public class Player extends HttpServlet {
     String musicPath = "/home/store/music";
-    String playFilePath = "/home/store/player/play";
     String albumFilePath = "/home/store/player/album";
 
     @Override
