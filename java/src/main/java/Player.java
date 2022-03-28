@@ -20,7 +20,6 @@ public class Player extends HttpServlet {
             String albumToPlay = req.getParameter("album");
             if (albumToPlay != null) {
                 try (
-                        BufferedWriter playFileWriter = new BufferedWriter(new FileWriter(new File(playFilePath)));
                         BufferedWriter albumFileWriter = new BufferedWriter(new FileWriter(new File(albumFilePath)));
                 ) {
                     playFileWriter.write(1);
