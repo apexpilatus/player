@@ -7,7 +7,6 @@ int main(int argsn, char *args[]){
 		if (check_play_file() == 0) {
 			sleep(time_out);
 		} else {
-			fuck++;
 			char album_val[1024];
 			get_album(album_val);
 			unsigned int rate;
