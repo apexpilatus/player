@@ -15,7 +15,6 @@
 #include <alsa/control.h>
 
 #define time_out 1
-#define play_file_path "/home/store/player/play"
 #define album_file_path "/home/store/player/album"
 #define exec_play_path "/home/store/player/a.out"
 #define exec_waiter_path "/home/store/player/play.waiter"
