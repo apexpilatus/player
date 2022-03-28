@@ -7,17 +7,17 @@ void write_0_to_play_file() {
 	while ((play_file_dstr = open(album_file_path, O_NONBLOCK|O_WRONLY)) == -1) {
 		sleep(time_out);
 	}
-	int play_val = 0;
+	char play_val = 0;
 	write(play_file_dstr, &play_val, 1);
 	close(play_file_dstr);
 }
 
-int check_play_file(){
+char check_play_file(){
         int play_file_dstr;
         while ((play_file_dstr = open(album_file_path, O_NONBLOCK|O_RDONLY)) == -1) {
                 sleep(time_out);
         }
-        int play_val;
+        char play_val;
         read(play_file_dstr, &play_val, 1);
         close(play_file_dstr);
         return play_val;
