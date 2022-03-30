@@ -14,7 +14,7 @@ int main(int argsn, char *args[]) {
 	if (snd_pcm_hw_params_malloc(&pcm_hw)){
 		write_0_to_play_file();
 		snd_pcm_close(pcm_p);
-		execl(exec_waiter_path, "play.waiter", "cannot alocate memory for hw params", NULL);
+		execl(exec_waiter_path, "play.waiter", "cannot allocate memory for hw params", NULL);
 	}
 	snd_pcm_hw_params_any(pcm_p, pcm_hw);
 	snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
