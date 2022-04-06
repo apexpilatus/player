@@ -40,27 +40,11 @@ int main(int argsn, char *args[]) {
 			read(music_file_dstr, &format_chank_size, 4);
 			lseek(music_file_dstr, format_chank_size + 8, SEEK_CUR);
 			long play_err;
-			if (read_size < buf_size_in_bytes && read_size > 0) {
-				read_size += read(music_file_dstr, buf + read_size, buf_size_in_bytes - read_size);
-				if (read_size < buf_size_in_bytes) {
-					close(music_file_dstr);
-					continue;
-				}
-				if ((play_err = snd_pcm_mmap_writei(pcm_p, buf, (snd_pcm_uframes_t) buf_size_in_frames)) < 0) {
-					close(music_file_dstr);
-					write_0_to_play_file();
-					snd_pcm_close(pcm_p);
-					execl(exec_waiter_path, "play.waiter", "play error", NULL);
-				}
-			}
 			while ((read_size = read(music_file_dstr, buf, buf_size_in_bytes))) {
 				if (check_album(args[4]) != 0) {
 					break;
 				}
-				if (read_size < buf_size_in_bytes) {
-					break;
-				}
-				if ((play_err = snd_pcm_mmap_writei(pcm_p, buf, (snd_pcm_uframes_t) buf_size_in_frames)) < 0) {
+				if ((play_err = snd_pcm_mmap_writei(pcm_p, buf, (snd_pcm_uframes_t) read_size/frame_size)) < 0) {
 					break;
 				}
 			}
@@ -75,12 +59,6 @@ int main(int argsn, char *args[]) {
 				execl(exec_waiter_path, "play.waiter", "new album", NULL);
 			}
 		} else {
-			if (read_size < buf_size_in_bytes && read_size > 0) {
-				read_size/=frame_size;
-				if (snd_pcm_mmap_writei(pcm_p, buf, (snd_pcm_uframes_t) read_size) >= 0) {
-					snd_pcm_drain(pcm_p);
-				}
-			}
 			write_0_to_play_file();
 			snd_pcm_close(pcm_p);
 			execl(exec_waiter_path, "play.waiter", "the end", NULL);
