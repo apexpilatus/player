@@ -59,10 +59,14 @@ int main(int argsn, char *args[]) {
 				snd_pcm_close(pcm_p);
 				execl(exec_waiter_path, "play.waiter", "new album", NULL);
 			}
-			files=files->next;
+		} else {
+			write_0_to_play_file();
+			snd_pcm_close(pcm_p);
+			execl(exec_waiter_path, "play.waiter", "cannot open file", files->name, NULL);
 		}
-		write_0_to_play_file();
-		snd_pcm_close(pcm_p);
-		execl(exec_waiter_path, "play.waiter", "the end", NULL);
+		files=files->next;
 	}
+	write_0_to_play_file();
+	snd_pcm_close(pcm_p);
+	execl(exec_waiter_path, "play.waiter", "the end", NULL);
 }
