@@ -31,7 +31,7 @@ int main(int argsn, char *args[]) {
 	unsigned long read_size = 0, buf_size_in_bytes = buf_size_in_frames * frame_size;
 	char buf[buf_size_in_bytes];
 	file_lst *files=get_file_lst(album_val);
-	for (int i = 1; i < 100; i++) {
+	while (files->next) {
 		char file_name[2048];
 		sprintf(file_name, "%s/%d.wav", args[4], i);
 		int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
@@ -59,6 +59,7 @@ int main(int argsn, char *args[]) {
 				snd_pcm_close(pcm_p);
 				execl(exec_waiter_path, "play.waiter", "new album", NULL);
 			}
+			
 		} else {
 			write_0_to_play_file();
 			snd_pcm_close(pcm_p);
