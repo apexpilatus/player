@@ -45,6 +45,20 @@ extern file_lst* get_file_lst(char *dir){
 
 	DIR *dp;
 	struct dirent *ep;
+	dp = opendir(args[1]);
+	
+	if (dp != NULL) {
+		while ((ep = readdir(dp))) {
+			if (ep->d_type == DT_REG) {
+				cur_ptr->name=malloc(strlen(ep->d_name)+1);
+				memcpy(cur_ptr->name, ep->d_name, strlen(ep->d_name)+1);
+				cur_ptr->next=malloc(sizeof(flst));
+				cur_ptr=cur_ptr->next;
+				cur_ptr->next=NULL;
+			}
+		}
+		(void) closedir(dp);
+	}
 }
 
 int get_params(char *album_val, unsigned int *rate, unsigned short *frame_size) {
