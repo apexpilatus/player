@@ -24,7 +24,7 @@ typedef struct lst{
   struct lst *next;
 } file_lst;
 
-extern *file_lst get_file_lst(char *dir);
+extern file_lst* get_file_lst(char *dir);
 extern void write_0_to_play_file();
 extern char check_play_file();
 extern void get_album(char *ret);
