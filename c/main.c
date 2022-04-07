@@ -30,6 +30,7 @@ int main(int argsn, char *args[]) {
 	snd_pcm_hw_params_free(pcm_hw);
 	unsigned long read_size = 0, buf_size_in_bytes = buf_size_in_frames * frame_size;
 	char buf[buf_size_in_bytes];
+	file_lst *files=get_file_lst(album_val);
 	for (int i = 1; i < 100; i++) {
 		char file_name[2048];
 		sprintf(file_name, "%s/%d.wav", args[4], i);
