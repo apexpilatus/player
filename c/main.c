@@ -33,7 +33,7 @@ int main(int argsn, char *args[]) {
 	file_lst *files=get_file_lst(album_val);
 	while (files->next) {
 		char file_name[2048];
-		sprintf(file_name, "%s/%d.wav", args[4], i);
+		sprintf(file_name, "%s/%s", args[4], files->name);
 		int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
 		if (music_file_dstr != -1) {
 			lseek(music_file_dstr, 16, SEEK_SET);
@@ -59,11 +59,10 @@ int main(int argsn, char *args[]) {
 				snd_pcm_close(pcm_p);
 				execl(exec_waiter_path, "play.waiter", "new album", NULL);
 			}
-			
-		} else {
-			write_0_to_play_file();
-			snd_pcm_close(pcm_p);
-			execl(exec_waiter_path, "play.waiter", "the end", NULL);
+			files=files->next;
 		}
+		write_0_to_play_file();
+		snd_pcm_close(pcm_p);
+		execl(exec_waiter_path, "play.waiter", "the end", NULL);
 	}
 }
