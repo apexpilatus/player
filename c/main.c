@@ -30,7 +30,7 @@ int main(int argsn, char *args[]) {
 	snd_pcm_hw_params_free(pcm_hw);
 	unsigned long read_size = 0, buf_size_in_bytes = buf_size_in_frames * frame_size;
 	char buf[buf_size_in_bytes];
-	file_lst *files=get_file_lst(album_val);
+	file_lst *files=get_file_lst(args[4]);
 	while (files->next) {
 		char file_name[2048];
 		sprintf(file_name, "%s/%s", args[4], files->name);
