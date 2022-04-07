@@ -77,15 +77,16 @@ extern file_lst* get_file_lst(char *dirname){
 		cur_ptr=cur_ptr->next;
 		sort_ptr = cur_ptr;
 	}
-	return cur_ptr;
+	return main_ptr;
 }
 
-int get_params(char *album_val, unsigned int *rate, unsigned short *frame_size) {
+int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned short *frame_size) {
 	char file_name[2048];
+	file_lst *1st_file=files;
 	unsigned int rate_1st;
 	unsigned short frame_size_1st;
-	for (int i = 1; i < 100; i++) {
-		sprintf(file_name, "%s/%d.wav", album_val, i);
+	while (files->next) {
+		sprintf(file_name, "%s/%s", album_val, files->name);
 		int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
 		if (music_file_dstr != -1) {
 			lseek(music_file_dstr, 24, SEEK_SET);
@@ -93,7 +94,7 @@ int get_params(char *album_val, unsigned int *rate, unsigned short *frame_size) 
 			lseek(music_file_dstr, 32, SEEK_SET);
 			read(music_file_dstr, frame_size, 2);
 			close(music_file_dstr);
-			if (i == 1) {
+			if (1st_file == files) {
 				rate_1st = *rate;
 				frame_size_1st = *frame_size;
 			} else {
@@ -102,11 +103,8 @@ int get_params(char *album_val, unsigned int *rate, unsigned short *frame_size) 
 				}
 			}
 		} else {
-			if (i == 1) {
-				return 1;
-			} else {
-				return 0;
-			}
+			return 1;
 		}
+		files=files->next;
 	}
 }
