@@ -11,7 +11,7 @@ int main(int argsn, char *args[]){
 			get_album(album_val);
 			unsigned int rate;
 			unsigned short frame_size;
-			if (get_params(album_val, &rate, &frame_size)){
+			if (get_params(album_val, get_file_lst(album_val), &rate, &frame_size)){
 				write_0_to_play_file();
 				execl(exec_waiter_path, "play.waiter", "files have different format or cannot read first file", NULL);
 			}
