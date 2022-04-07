@@ -41,6 +41,7 @@ int check_album(char current[]) {
 extern file_lst* get_file_lst(char *dirname){
 	file_lst *main_ptr = malloc(sizeof(file_lst));
 	file_lst *cur_ptr = main_ptr;
+	cur_ptr->name=NULL;
 	cur_ptr->next=NULL;
 
 	DIR *dp;
@@ -59,6 +60,24 @@ extern file_lst* get_file_lst(char *dirname){
 		}
 		(void) closedir(dp);
 	}
+	cur_ptr=main_ptr;
+	if (!cur_ptr->next){
+		return cur_ptr;
+	}
+	flst *sort_ptr = cur_ptr;
+	while (cur_ptr->next->next) {
+		while(sort_ptr->next->next) {
+			sort_ptr=sort_ptr->next;
+			if (strcmp(cur_ptr->name, sort_ptr->name)>0){
+				char *tmp=cur_ptr->name;
+				cur_ptr->name=sort_ptr->name;
+				sort_ptr->name=tmp;
+			}
+		}
+		cur_ptr=cur_ptr->next;
+		sort_ptr = cur_ptr;
+	}
+	return cur_ptr;
 }
 
 int get_params(char *album_val, unsigned int *rate, unsigned short *frame_size) {
