@@ -52,7 +52,7 @@ extern file_lst* get_file_lst(char *dirname){
 			if (ep->d_type == DT_REG) {
 				cur_ptr->name=malloc(strlen(ep->d_name)+1);
 				memcpy(cur_ptr->name, ep->d_name, strlen(ep->d_name)+1);
-				cur_ptr->next=malloc(sizeof(flst));
+				cur_ptr->next=malloc(sizeof(file_lst));
 				cur_ptr=cur_ptr->next;
 				cur_ptr->next=NULL;
 			}
