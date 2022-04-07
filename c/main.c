@@ -66,6 +66,7 @@ int main(int argsn, char *args[]) {
 		}
 		files=files->next;
 	}
+	snd_pcm_drain(pcm_p);
 	write_0_to_play_file();
 	snd_pcm_close(pcm_p);
 	execl(exec_waiter_path, "play.waiter", "the end", NULL);
