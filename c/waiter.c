@@ -16,7 +16,7 @@ int main(int argsn, char *args[]){
 				write_0_to_play_file();
 				execl(exec_waiter_path, "play.waiter", "directoryyyy is empty", NULL);
 			}
-			if (get_params(album_val, , &rate, &frame_size)){
+			if (get_params(album_val, files, &rate, &frame_size)){
 				write_0_to_play_file();
 				execl(exec_waiter_path, "play.waiter", "files have different format or cannot read first file", NULL);
 			}
