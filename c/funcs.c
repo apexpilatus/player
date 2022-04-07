@@ -38,15 +38,15 @@ int check_album(char current[]) {
 	get_album(next);
 	return strcmp(current, next);
 }
-extern file_lst* get_file_lst(char *dir){
+extern file_lst* get_file_lst(char *dirname){
 	file_lst *main_ptr = malloc(sizeof(file_lst));
 	file_lst *cur_ptr = main_ptr;
 	cur_ptr->next=NULL;
 
 	DIR *dp;
 	struct dirent *ep;
-	dp = opendir(args[1]);
 	
+	dp = opendir(dirname);
 	if (dp != NULL) {
 		while ((ep = readdir(dp))) {
 			if (ep->d_type == DT_REG) {
