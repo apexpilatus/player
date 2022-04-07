@@ -14,7 +14,7 @@ int main(int argsn, char *args[]){
 			file_lst *files=get_file_lst(album_val);
 			if (!files->next && !files->name){
 				write_0_to_play_file();
-				execl(exec_waiter_path, "play.waiter", "directoryyyy is empty", NULL);
+				execl(exec_waiter_path, "play.waiter", "directory is empty", NULL);
 			}
 			if (get_params(album_val, files, &rate, &frame_size)){
 				write_0_to_play_file();
