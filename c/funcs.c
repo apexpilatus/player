@@ -82,7 +82,7 @@ extern file_lst* get_file_lst(char *dirname){
 
 int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned short *frame_size) {
 	char file_name[2048];
-	file_lst *1st_file=files;
+	file_lst *fst_file=files;
 	unsigned int rate_1st;
 	unsigned short frame_size_1st;
 	while (files->next) {
@@ -94,7 +94,7 @@ int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned sh
 			lseek(music_file_dstr, 32, SEEK_SET);
 			read(music_file_dstr, frame_size, 2);
 			close(music_file_dstr);
-			if (1st_file == files) {
+			if (fst_file == files) {
 				rate_1st = *rate;
 				frame_size_1st = *frame_size;
 			} else {
