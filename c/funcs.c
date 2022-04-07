@@ -39,8 +39,8 @@ int check_album(char current[]) {
 	return strcmp(current, next);
 }
 extern file_lst* get_file_lst(char *dir){
-	flst *main_ptr = malloc(sizeof(flst));
-	flst *cur_ptr = main_ptr;
+	file_lst *main_ptr = malloc(sizeof(file_lst));
+	file_lst *cur_ptr = main_ptr;
 	cur_ptr->next=NULL;
 
 	DIR *dp;
