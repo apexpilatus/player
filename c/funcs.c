@@ -38,6 +38,14 @@ int check_album(char current[]) {
 	get_album(next);
 	return strcmp(current, next);
 }
+extern file_lst* get_file_lst(char *dir){
+	flst *main_ptr = malloc(sizeof(flst));
+	flst *cur_ptr = main_ptr;
+	cur_ptr->next=NULL;
+
+	DIR *dp;
+	struct dirent *ep;
+}
 
 int get_params(char *album_val, unsigned int *rate, unsigned short *frame_size) {
 	char file_name[2048];
