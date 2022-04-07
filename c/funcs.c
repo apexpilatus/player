@@ -64,7 +64,7 @@ extern file_lst* get_file_lst(char *dirname){
 	if (!cur_ptr->next){
 		return cur_ptr;
 	}
-	flst *sort_ptr = cur_ptr;
+	file_lst *sort_ptr = cur_ptr;
 	while (cur_ptr->next->next) {
 		while(sort_ptr->next->next) {
 			sort_ptr=sort_ptr->next;
