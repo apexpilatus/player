@@ -75,7 +75,7 @@ int main(int argsn, char *args[]) {
 		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
 			FLAC__bool process_stat;
-			while ((process_stat = FLAC__stream_decoder_process_single(decoder));
+			while ((process_stat = FLAC__stream_decoder_process_single(decoder)));
 			if (!process_stat){
 				write_0_to_play_file();
 				snd_pcm_close(pcm_p);
