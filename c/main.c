@@ -3,6 +3,7 @@
 #endif
 
 int main(int argsn, char *args[]) {
+	unsigned long buf_size_in_frames;
 	int rate = atoi(args[2]), frame_size = atoi(args[3]);
 	snd_pcm_t *pcm_p;
 	FLAC__StreamDecoder *decoder = NULL;
