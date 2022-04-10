@@ -105,3 +105,6 @@ int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned sh
 		files=files->next;
 	}
 }
+FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data){
+	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
+}
