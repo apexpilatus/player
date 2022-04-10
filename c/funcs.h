@@ -17,6 +17,7 @@
 #include <alsa/control.h>
 
 #include <FLAC/metadata.h>
+#include <FLAC/stream_decoder.h>
 
 #define time_out 1
 #define album_file_path "/home/store/player/album"
