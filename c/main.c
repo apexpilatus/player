@@ -5,7 +5,11 @@
 int main(int argsn, char *args[]) {
 	int rate = atoi(args[2]), frame_size = atoi(args[3]);
 	snd_pcm_t *pcm_p;
-	unsigned long buf_size_in_frames;
+	FLAC__StreamDecoder *decoder = NULL;
+	if((decoder = FLAC__stream_decoder_new()) == NULL) {
+		write_0_to_play_file();
+		execl(exec_waiter_path, "play.waiter", "cannot allocate decoder", NULL);
+	}
 	if (snd_pcm_open(&pcm_p, args[1], SND_PCM_STREAM_PLAYBACK, 0)) {
 		write_0_to_play_file();
 		execl(exec_waiter_path, "play.waiter", "cannot open pcm", NULL);
@@ -69,5 +73,6 @@ int main(int argsn, char *args[]) {
 	snd_pcm_drain(pcm_p);
 	write_0_to_play_file();
 	snd_pcm_close(pcm_p);
+	FLAC__stream_decoder_delete(decoder);
 	execl(exec_waiter_path, "play.waiter", "the end", NULL);
 }
