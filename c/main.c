@@ -3,7 +3,6 @@
 #endif
 
 int main(int argsn, char *args[]) {
-	unsigned long buf_size_in_frames;
 	int rate = atoi(args[2]), frame_size = atoi(args[3]);
 	snd_pcm_t *pcm_p;
 	FLAC__StreamDecoder *decoder = NULL;
@@ -37,44 +36,14 @@ int main(int argsn, char *args[]) {
 	}
 	snd_pcm_hw_params_get_buffer_size(pcm_hw, (snd_pcm_uframes_t*) &buf_size_in_frames);
 	snd_pcm_hw_params_free(pcm_hw);
-	unsigned long read_size = 0, buf_size_in_bytes = buf_size_in_frames * frame_size;
-	char buf[buf_size_in_bytes];
 	file_lst *files=get_file_lst(args[4]);
 	while (files->next) {
 		char file_name[2048];
 		sprintf(file_name, "%s/%s", args[4], files->name);
-		
-		/*int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
-		if (music_file_dstr != -1) {
-			lseek(music_file_dstr, 16, SEEK_SET);
-			int format_chank_size;
-			read(music_file_dstr, &format_chank_size, 4);
-			lseek(music_file_dstr, format_chank_size + 8, SEEK_CUR);
-			long play_err;
-			while ((read_size = read(music_file_dstr, buf, buf_size_in_bytes))) {
-				if (check_album(args[4]) != 0) {
-					break;
-				}
-				if ((play_err = snd_pcm_mmap_writei(pcm_p, buf, (snd_pcm_uframes_t) read_size/frame_size)) < 0) {
-					break;
-				}
-			}
-			close(music_file_dstr);
-			if (play_err < 0) {
-				write_0_to_play_file();
-				snd_pcm_close(pcm_p);
-				FLAC__stream_decoder_delete(decoder);
-				execl(exec_waiter_path, "play.waiter", "play error", NULL);
-			}
-			if (check_album(args[4]) != 0) {
-				snd_pcm_close(pcm_p);
-				FLAC__stream_decoder_delete(decoder);
-				execl(exec_waiter_path, "play.waiter", "new album", NULL);
-			}*/
 		FLAC__StreamDecoderInitStatus init_status;
 		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
-			if (!FLAC__stream_decoder_process_single(decoder)){
+			if (!FLAC__stream_decoder_process_until_end_of_stream(decoder)){
 				write_0_to_play_file();
 				snd_pcm_close(pcm_p);
 				FLAC__StreamDecoderState dec_state = FLAC__stream_decoder_get_state(decoder);
