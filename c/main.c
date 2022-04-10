@@ -73,13 +73,13 @@ int main(int argsn, char *args[]) {
 			}*/
 		FLAC__StreamDecoderInitStatus init_status;
 		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
-		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK && FLAC__stream_decoder_process_until_end_of_stream(decoder)) {
+		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
 			FLAC__stream_decoder_finish(decoder);
 		} else {
 			write_0_to_play_file();
 			snd_pcm_close(pcm_p);
 			FLAC__stream_decoder_delete(decoder);
-			execl(exec_waiter_path, "play.waiter", "error with file", files->name, FLAC__StreamDecoderInitStatusString[init_status], FLAC__StreamDecoderStateString[FLAC__stream_decoder_get_state(decoder)], NULL);
+			execl(exec_waiter_path, "play.waiter", "cannot init file", files->name, FLAC__StreamDecoderInitStatusString[init_status], NULL);
 		}
 		files=files->next;
 	}
