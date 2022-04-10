@@ -74,6 +74,12 @@ int main(int argsn, char *args[]) {
 		FLAC__StreamDecoderInitStatus init_status;
 		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
+			if (!FLAC__stream_decoder_process_until_end_of_stream(decoder)){
+				write_0_to_play_file();
+				snd_pcm_close(pcm_p);
+				FLAC__stream_decoder_delete(decoder);
+				execl(exec_waiter_path, "play.waiter", "cannot init file", files->name, FLAC__StreamDecoderInitStatusString[init_status], NULL);
+			}
 			FLAC__stream_decoder_finish(decoder);
 		} else {
 			write_0_to_play_file();
