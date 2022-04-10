@@ -107,7 +107,14 @@ int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned sh
 }
 
 FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data){
-	snd_pcm_t pcm_p = (snd_pcm_t*)client_data;
+	snd_pcm_t *pcm_p = (snd_pcm_t*)client_data;
+	
+	if (snd_pcm_hw_params_malloc(&pcm_hw)){
+		write_0_to_play_file();
+		snd_pcm_close(pcm_p);
+		FLAC__stream_decoder_delete(decoder);
+		execl(exec_waiter_path, "play.waiter", "cannot allocate memory for hw params", NULL);
+	}
 	
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
