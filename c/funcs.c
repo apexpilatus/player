@@ -122,14 +122,12 @@ FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder
 	}
 	int samplesize=snd_pcm_hw_params_get_sbits(pcm_hw)/8;
 	snd_pcm_hw_params_free(pcm_hw);
-	int buf_size_in_frames = 2*frame->header.blocksize;
-	int buf_size_in_bytes = buf_size_in_frames*samplesize*2;
-	char * playbuf = malloc(buf_size_in_bytes);
+	char * playbuf = malloc(samplesize*2*frame->header.blocksize);
 	for(size_t i = 0; i < frame->header.blocksize; i++) {
 		cp_little_endian(playbuf+(i*samplesize*2), buffer[0][i], samplesize);
 		cp_little_endian(playbuf+(i*samplesize*2)+samplesize, buffer[1][i], samplesize);
 	}
-	if (snd_pcm_mmap_writei(pcm_p, playbuf, (snd_pcm_uframes_t) buf_size_in_frames) < 0){
+	if (snd_pcm_mmap_writei(pcm_p, playbuf, (snd_pcm_uframes_t) samplesize*2*frame->header.blocksize) < 0){
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
