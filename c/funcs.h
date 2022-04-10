@@ -36,3 +36,5 @@ extern void get_album(char *ret);
 extern int check_album(char current[]);
 extern int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned short *frame_size);
 extern FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data);
+extern void metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data);
+extern void error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data);
