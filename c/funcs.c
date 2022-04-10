@@ -121,7 +121,9 @@ FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
 	int framesize=snd_pcm_hw_params_get_sbits(pcm_hw)/4;
-	execl(exec_waiter_path, "play.waiter", framesize, NULL);
+	char fuck[10];
+	sprintf(fuck,"%d",framesize);
+	execl(exec_waiter_path, "play.waiter", fuck, NULL);
 	snd_pcm_hw_params_free(pcm_hw);
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
