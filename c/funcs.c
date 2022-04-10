@@ -107,7 +107,9 @@ int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned sh
 }
 
 FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data){
-	return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+	snd_pcm_t pcm_p = (snd_pcm_t*)client_data;
+	
+	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
 void metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data){
