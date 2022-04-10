@@ -125,7 +125,7 @@ FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder
 	int buf_size_in_frames = 2*frame->header.blocksize;
 	int buf_size_in_bytes = buf_size_in_frames*framesize;
 	char * playbuf = malloc(buf_size_in_bytes);
-	for(i = 0; i < frame->header.blocksize; i++) {
+	for(size_t i = 0; i < frame->header.blocksize; i++) {
 		cp_little_endian(playbuf+(i*framesize*2), buffer[0][i], framesize);
 		cp_little_endian(playbuf+(i*framesize*2)+framesize, buffer[1][i], framesize);
 	}
