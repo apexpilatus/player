@@ -38,7 +38,7 @@ int check_album(char current[]) {
 	get_album(next);
 	return strcmp(current, next);
 }
-extern file_lst* get_file_lst(char *dirname){
+file_lst* get_file_lst(char *dirname){
 	file_lst *main_ptr = malloc(sizeof(file_lst));
 	file_lst *cur_ptr = main_ptr;
 	cur_ptr->name=NULL;
@@ -106,7 +106,7 @@ int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned sh
 	}
 }
 
-static void cp_little_endian(char *buf, FLAC__uint32 data, int samplesize)
+void cp_little_endian(char *buf, FLAC__uint32 data, int samplesize)
 {
 	for (int i=0;i<samplesize;i++){
 		*buf = data >> (8*i);
