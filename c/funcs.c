@@ -106,9 +106,9 @@ int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned sh
 	}
 }
 
-static void cp_little_endian(char *buf, FLAC__uint32 data, int framesize)
+static void cp_little_endian(char *buf, FLAC__uint32 data, int samplesize)
 {
-	for (int i=0;i<framesize;i++){
+	for (int i=0;i<samplesize;i++){
 		*buf = data >> (8*i);
 		buf++;
 	}
@@ -120,14 +120,14 @@ FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder
 	if (snd_pcm_hw_params_malloc(&pcm_hw) || snd_pcm_hw_params_current(pcm_p, pcm_hw)){
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
-	int framesize=snd_pcm_hw_params_get_sbits(pcm_hw)/4;
+	int samplesize=snd_pcm_hw_params_get_sbits(pcm_hw)/8;
 	snd_pcm_hw_params_free(pcm_hw);
 	int buf_size_in_frames = 2*frame->header.blocksize;
-	int buf_size_in_bytes = buf_size_in_frames*framesize;
+	int buf_size_in_bytes = buf_size_in_frames*samplesize;
 	char * playbuf = malloc(buf_size_in_bytes);
 	for(size_t i = 0; i < frame->header.blocksize; i++) {
-		cp_little_endian(playbuf+(i*framesize*2), buffer[0][i], framesize);
-		cp_little_endian(playbuf+(i*framesize*2)+framesize, buffer[1][i], framesize);
+		cp_little_endian(playbuf+(i*samplesize*2), buffer[0][i], samplesize);
+		cp_little_endian(playbuf+(i*samplesize*2)+samplesize, buffer[1][i], samplesize);
 	}
 	if (snd_pcm_mmap_writei(pcm_p, playbuf, (snd_pcm_uframes_t) buf_size_in_frames) < 0){
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
