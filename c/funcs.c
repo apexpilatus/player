@@ -129,7 +129,9 @@ FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder
 		cp_little_endian(playbuf+(i*framesize*2), buffer[0][i], framesize);
 		cp_little_endian(playbuf+(i*framesize*2)+framesize, buffer[1][i], framesize);
 	}
-	
+	if (snd_pcm_mmap_writei(pcm_p, playbuf, (snd_pcm_uframes_t) buf_size_in_frames) < 0){
+		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+	}
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
