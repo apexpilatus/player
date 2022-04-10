@@ -21,6 +21,7 @@ int main(int argsn, char *args[]) {
 	if (snd_pcm_hw_params_malloc(&pcm_hw)){
 		write_0_to_play_file();
 		snd_pcm_close(pcm_p);
+		FLAC__stream_decoder_delete(decoder);
 		execl(exec_waiter_path, "play.waiter", "cannot allocate memory for hw params", NULL);
 	}
 	snd_pcm_hw_params_any(pcm_p, pcm_hw);
@@ -31,6 +32,7 @@ int main(int argsn, char *args[]) {
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
 		write_0_to_play_file();
 		snd_pcm_close(pcm_p);
+		FLAC__stream_decoder_delete(decoder);
 		execl(exec_waiter_path, "play.waiter", "cannot start playing", NULL);
 	}
 	snd_pcm_hw_params_get_buffer_size(pcm_hw, (snd_pcm_uframes_t*) &buf_size_in_frames);
@@ -60,15 +62,18 @@ int main(int argsn, char *args[]) {
 			if (play_err < 0) {
 				write_0_to_play_file();
 				snd_pcm_close(pcm_p);
+				FLAC__stream_decoder_delete(decoder);
 				execl(exec_waiter_path, "play.waiter", "play error", NULL);
 			}
 			if (check_album(args[4]) != 0) {
 				snd_pcm_close(pcm_p);
+				FLAC__stream_decoder_delete(decoder);
 				execl(exec_waiter_path, "play.waiter", "new album", NULL);
 			}
 		} else {
 			write_0_to_play_file();
 			snd_pcm_close(pcm_p);
+			FLAC__stream_decoder_delete(decoder);
 			execl(exec_waiter_path, "play.waiter", "cannot open file", files->name, NULL);
 		}
 		files=files->next;
