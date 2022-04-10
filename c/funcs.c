@@ -130,6 +130,7 @@ FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder
 	if (snd_pcm_mmap_writei(pcm_p, playbuf, (snd_pcm_uframes_t) frame->header.blocksize) < 0){
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
+	free(playbuf);
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
