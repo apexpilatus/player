@@ -42,7 +42,7 @@ int main(int argsn, char *args[]) {
 	file_lst *files=get_file_lst(args[4]);
 	while (files->next) {
 		char file_name[2048];
-		sprintf(file_name, "%s%s", args[4], files->name);
+		sprintf(file_name, "%s/%s", args[4], files->name);
 		
 		/*int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
 		if (music_file_dstr != -1) {
@@ -78,7 +78,7 @@ int main(int argsn, char *args[]) {
 				write_0_to_play_file();
 				snd_pcm_close(pcm_p);
 				FLAC__stream_decoder_delete(decoder);
-				execl(exec_waiter_path, "play.waiter", "cannot init file", files->name, FLAC__StreamDecoderInitStatusString[init_status], NULL);
+				execl(exec_waiter_path, "play.waiter", "play file", files->name, FLAC__StreamDecoderStateString[FLAC__stream_decoder_get_state(decoder)], NULL);
 			}
 			FLAC__stream_decoder_finish(decoder);
 		} else {
