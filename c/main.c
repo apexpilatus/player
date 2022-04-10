@@ -80,7 +80,7 @@ int main(int argsn, char *args[]) {
 				FLAC__StreamDecoderState dec_state = FLAC__stream_decoder_get_state(decoder);
 				FLAC__stream_decoder_finish(decoder);
 				FLAC__stream_decoder_delete(decoder);
-				execl(exec_waiter_path, "play.waiter", "play file", files->name, FLAC__StreamDecoderStateString[dec_state], NULL);
+				execl(exec_waiter_path, "play.waiter", "error during playing", files->name, FLAC__StreamDecoderStateString[dec_state], NULL);
 			}
 			FLAC__stream_decoder_finish(decoder);
 		} else {
