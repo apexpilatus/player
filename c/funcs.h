@@ -16,6 +16,8 @@
 #include <alsa/pcm.h>
 #include <alsa/control.h>
 
+#include <FLAC/metadata.h>
+
 #define time_out 1
 #define album_file_path "/home/store/player/album"
 #define exec_play_path "/home/store/player/a.out"
