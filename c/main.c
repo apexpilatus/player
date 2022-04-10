@@ -76,7 +76,7 @@ int main(int argsn, char *args[]) {
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
 			FLAC__bool process_stat;
 			while ((process_stat = FLAC__stream_decoder_process_single(decoder))){
-				if (!check_album(args[4])){
+				if (check_album(args[4])){
 					break;
 				}
 			}
