@@ -11,6 +11,8 @@ int main(int argsn, char *args[]) {
 		write_0_to_play_file();
 		execl(exec_waiter_path, "play.waiter", "cannot allocate decoder", NULL);
 	}
+	(void)FLAC__stream_decoder_set_md5_checking(decoder, false);
+	(void)FLAC__stream_decoder_set_metadata_ignore_all(decoder);
 	if (snd_pcm_open(&pcm_p, args[1], SND_PCM_STREAM_PLAYBACK, 0)) {
 		write_0_to_play_file();
 		execl(exec_waiter_path, "play.waiter", "cannot open pcm", NULL);
