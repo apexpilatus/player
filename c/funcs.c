@@ -116,7 +116,7 @@ static void cp_little_endian(char *buf, FLAC__uint32 data, int samplesize)
 
 FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data){
 	static int fuck=0;
-	if (fuck>3){
+	if (fuck>33){
 return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
 	fuck++;
