@@ -127,7 +127,7 @@ FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder
 		cp_little_endian(playbuf+(i*samplesize*2), buffer[0][i], samplesize);
 		cp_little_endian(playbuf+(i*samplesize*2)+samplesize, buffer[1][i], samplesize);
 	}
-	if (snd_pcm_mmap_writei(pcm_p, playbuf, (snd_pcm_uframes_t) samplesize*2*frame->header.blocksize) < 0){
+	if (snd_pcm_mmap_writei(pcm_p, playbuf, (snd_pcm_uframes_t) frame->header.blocksize) < 0){
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
