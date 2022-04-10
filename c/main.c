@@ -42,7 +42,7 @@ int main(int argsn, char *args[]) {
 	file_lst *files=get_file_lst(args[4]);
 	while (files->next) {
 		char file_name[2048];
-		sprintf(file_name, "%s/%s", args[4], files->name);
+		sprintf(file_name, "%s%s", args[4], files->name);
 		
 		/*int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
 		if (music_file_dstr != -1) {
