@@ -18,8 +18,7 @@ int main(int argsn, char *args[]){
 			}
 			if (get_params(album_val, files, &rate, &frame_size)){
 				write_0_to_play_file();
-				//execl(exec_waiter_path, "play.waiter", "files have different format or cannot read first file", NULL);
-				execl(exec_waiter_path, "play.waiter", files->name, NULL);
+				execl(exec_waiter_path, "play.waiter", "files have different format or cannot read", files->name, NULL);
 			}
 			char rate_as_str[10], frame_size_as_str[10];
 			snprintf(rate_as_str, 6, "%d", rate);
