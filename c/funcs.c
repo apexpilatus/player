@@ -112,7 +112,9 @@ FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder
 	if (snd_pcm_hw_params_malloc(&pcm_hw) || snd_pcm_hw_params_current(pcm_p, pcm_hw)){
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
-	execl(exec_waiter_path, "play.waiter", "fuck", NULL);
+	char sbits[10];
+	sprintf(sbits, "%d", snd_pcm_hw_params_get_sbits(pcm_hw));
+	execl(exec_waiter_path, "play.waiter", sbits, NULL);
 	snd_pcm_hw_params_free(pcm_hw);
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
