@@ -90,7 +90,7 @@ int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned sh
 		FLAC__StreamMetadata streaminfo;
 		if (FLAC__metadata_get_streaminfo(file_name, &streaminfo)) {
 			*rate = streaminfo.data.stream_info.sample_rate;
-			*frame_size = streaminfo.data.stream_info.bits_per_sample/8;
+			*frame_size = streaminfo.data.stream_info.bits_per_sample/4;
 			if (first_file == files) {
 				rate_1st = *rate;
 				frame_size_1st = *frame_size;
