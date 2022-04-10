@@ -106,15 +106,22 @@ int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned sh
 	}
 }
 
+static void cp_little_endian(char *buf, FLAC__uint32 data, int framesize)
+{
+	for (int i=0;i<framesize;i++){
+		*buf = data >> (8*i);
+		buf++;
+	}
+}
+
 FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data){
 	snd_pcm_t *pcm_p = (snd_pcm_t*)client_data;
 	snd_pcm_hw_params_t *pcm_hw;
 	if (snd_pcm_hw_params_malloc(&pcm_hw) || snd_pcm_hw_params_current(pcm_p, pcm_hw)){
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
-	char sbits[10];
-	sprintf(sbits, "%d", snd_pcm_hw_params_get_sbits(pcm_hw));
-	execl(exec_waiter_path, "play.waiter", sbits, NULL);
+	int framesize=snd_pcm_hw_params_get_sbits(pcm_hw)/4;
+	execl(exec_waiter_path, "play.waiter", framesize, NULL);
 	snd_pcm_hw_params_free(pcm_hw);
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
