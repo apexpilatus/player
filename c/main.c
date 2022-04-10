@@ -11,7 +11,7 @@ int main(int argsn, char *args[]) {
 		write_0_to_play_file();
 		execl(exec_waiter_path, "play.waiter", "cannot allocate decoder", NULL);
 	}
-	(void)FLAC__stream_decoder_set_md5_checking(decoder, false);
+	(void)FLAC__stream_decoder_set_md5_checking(decoder, true);
 	(void)FLAC__stream_decoder_set_metadata_ignore_all(decoder);
 	if (snd_pcm_open(&pcm_p, args[1], SND_PCM_STREAM_PLAYBACK, 0)) {
 		write_0_to_play_file();
@@ -74,7 +74,9 @@ int main(int argsn, char *args[]) {
 		FLAC__StreamDecoderInitStatus init_status;
 		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
-			if (!FLAC__stream_decoder_process_until_end_of_stream(decoder)){
+			FLAC__bool process_stat;
+			while ((process_stat = FLAC__stream_decoder_process_single(decoder));
+			if (!process_stat){
 				write_0_to_play_file();
 				snd_pcm_close(pcm_p);
 				FLAC__StreamDecoderState dec_state = FLAC__stream_decoder_get_state(decoder);
