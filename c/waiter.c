@@ -69,7 +69,7 @@ int main(int argsn, char *args[]){
 				}
 				char card_pcm_name[7];
 				snprintf(card_pcm_name, 7, "hw:%d,0", card_num);
-				execl(exec_play_path, "play.waiter", card_pcm_name, rate_as_str, frame_size_as_str, album_val, NULL);
+				execl(exec_play_path, "play.waiter", card_pcm_name, rate_as_str, frame_size_as_str, /*album_val*/ "/home/store/old/ACfuckingslashDC___The Razors Edge (24fuckingslash96)", NULL);
 			}
 			write_0_to_play_file();
 			execl(exec_waiter_path, "play.waiter", "no card to play", NULL);
