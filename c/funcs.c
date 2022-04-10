@@ -123,7 +123,7 @@ FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder
 	int samplesize=snd_pcm_hw_params_get_sbits(pcm_hw)/8;
 	snd_pcm_hw_params_free(pcm_hw);
 	int buf_size_in_frames = 2*frame->header.blocksize;
-	int buf_size_in_bytes = buf_size_in_frames*samplesize;
+	int buf_size_in_bytes = buf_size_in_frames*samplesize*2;
 	char * playbuf = malloc(buf_size_in_bytes);
 	for(size_t i = 0; i < frame->header.blocksize; i++) {
 		cp_little_endian(playbuf+(i*samplesize*2), buffer[0][i], samplesize);
