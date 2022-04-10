@@ -77,8 +77,8 @@ int main(int argsn, char *args[]) {
 			if (!FLAC__stream_decoder_process_until_end_of_stream(decoder)){
 				write_0_to_play_file();
 				snd_pcm_close(pcm_p);
-				FLAC__stream_decoder_finish(decoder);
 				FLAC__StreamDecoderState dec_state = FLAC__stream_decoder_get_state(decoder);
+				FLAC__stream_decoder_finish(decoder);
 				FLAC__stream_decoder_delete(decoder);
 				execl(exec_waiter_path, "play.waiter", "play file", files->name, FLAC__StreamDecoderStateString[dec_state], NULL);
 			}
