@@ -71,6 +71,7 @@ int main(int argsn, char *args[]) {
 				FLAC__stream_decoder_delete(decoder);
 				execl(exec_waiter_path, "play.waiter", "new album", NULL);
 			}*/
+		FLAC__StreamDecoderInitStatus init_status;
 		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
 			FLAC__stream_decoder_finish(decoder);
