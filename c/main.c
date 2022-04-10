@@ -34,7 +34,6 @@ int main(int argsn, char *args[]) {
 		FLAC__stream_decoder_delete(decoder);
 		execl(exec_waiter_path, "play.waiter", "cannot start playing", NULL);
 	}
-	snd_pcm_hw_params_get_buffer_size(pcm_hw, (snd_pcm_uframes_t*) &buf_size_in_frames);
 	snd_pcm_hw_params_free(pcm_hw);
 	file_lst *files=get_file_lst(args[4]);
 	while (files->next) {
