@@ -74,13 +74,7 @@ int main(int argsn, char *args[]) {
 		FLAC__StreamDecoderInitStatus init_status;
 		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
-			FLAC__bool process_stat;
-			while ((process_stat = FLAC__stream_decoder_process_single(decoder))){
-				if (check_album(args[4])){
-					break;
-				}
-			}
-			if (!process_stat){
+			if (!FLAC__stream_decoder_process_single(decoder)){
 				write_0_to_play_file();
 				snd_pcm_close(pcm_p);
 				FLAC__StreamDecoderState dec_state = FLAC__stream_decoder_get_state(decoder);
