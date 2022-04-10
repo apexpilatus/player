@@ -42,7 +42,7 @@ int main(int argsn, char *args[]) {
 	file_lst *files=get_file_lst(args[4]);
 	while (files->next) {
 		char file_name[2048];
-		sprintf(file_name, "%s%s", args[4], files->name);
+		sprintf(file_name, "%s/%s", args[4], files->name);
 		
 		/*int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
 		if (music_file_dstr != -1) {
@@ -73,7 +73,7 @@ int main(int argsn, char *args[]) {
 			}*/
 		FLAC__StreamDecoderInitStatus init_status;
 		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
-		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
+		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK && FLAC__stream_decoder_process_until_end_of_stream(decoder)) {
 			FLAC__stream_decoder_finish(decoder);
 		} else {
 			write_0_to_play_file();
