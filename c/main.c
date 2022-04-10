@@ -43,7 +43,8 @@ int main(int argsn, char *args[]) {
 	while (files->next) {
 		char file_name[2048];
 		sprintf(file_name, "%s/%s", args[4], files->name);
-		int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
+		
+		/*int music_file_dstr = open(file_name, O_NONBLOCK|O_RDONLY);
 		if (music_file_dstr != -1) {
 			lseek(music_file_dstr, 16, SEEK_SET);
 			int format_chank_size;
@@ -69,12 +70,15 @@ int main(int argsn, char *args[]) {
 				snd_pcm_close(pcm_p);
 				FLAC__stream_decoder_delete(decoder);
 				execl(exec_waiter_path, "play.waiter", "new album", NULL);
-			}
+			}*/
+		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
+		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
+			FLAC__stream_decoder_finish(decoder);
 		} else {
 			write_0_to_play_file();
 			snd_pcm_close(pcm_p);
 			FLAC__stream_decoder_delete(decoder);
-			execl(exec_waiter_path, "play.waiter", "cannot open file", files->name, NULL);
+			execl(exec_waiter_path, "play.waiter", "cannot init file", files->name, FLAC__StreamDecoderInitStatusString[init_status], NULL);
 		}
 		files=files->next;
 	}
