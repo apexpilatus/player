@@ -6,7 +6,9 @@ int main(int argsn, char *args[]) {
 	
 	
 			write_0_to_album_file();
-		execl(exec_waiter_path, getenv("ALBM"), , NULL);
+	char fuck[1024];
+	get_album(fuck);
+		execl(exec_waiter_path, getenv("ALBM"), fuck, NULL);
 	
 	int rate = atoi(args[2]), sample_size = atoi(args[3]);
 	snd_pcm_t *pcm_p;
