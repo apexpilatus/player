@@ -4,6 +4,7 @@
 
 int main(int argsn, char *args[]) {
 	
+	write_0_to_album_file();
 	execl(exec_waiter_path, "play.waiter", getenv("BUBU"), NULL);
 	
 	int rate = atoi(args[2]), sample_size = atoi(args[3]);
