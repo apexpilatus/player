@@ -5,10 +5,10 @@
 int main(int argsn, char *args[]) {
 	
 	
-			write_0_to_album_file();
+			//write_0_to_album_file();
 	//char fuck[1024];
 	//get_album(fuck);
-		execl(exec_waiter_path, "fuck", NULL);
+		//execl(exec_waiter_path, "fuck", NULL);
 	
 	int rate = atoi(args[2]), sample_size = atoi(args[3]);
 	snd_pcm_t *pcm_p;
