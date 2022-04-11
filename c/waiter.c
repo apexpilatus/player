@@ -13,11 +13,11 @@ int main(int argsn, char *args[]){
 			unsigned short frame_size;
 			file_lst *files=get_file_lst(album_val);
 			if (!files->next && !files->name){
-				write_0_to_play_file();
+				write_0_to_album_file();
 				execl(exec_waiter_path, "play.waiter", "directory is empty", NULL);
 			}
 			if (get_params(album_val, files, &rate, &frame_size)){
-				write_0_to_play_file();
+				write_0_to_album_file();
 				execl(exec_waiter_path, "play.waiter", "files have different format or cannot read", files->name, NULL);
 			}
 			char rate_as_str[6], frame_size_as_str[2];
@@ -71,7 +71,7 @@ int main(int argsn, char *args[]){
 				snprintf(card_pcm_name, 7, "hw:%d,0", card_num);
 				execl(exec_play_path, "play.waiter", card_pcm_name, rate_as_str, frame_size_as_str, album_val, NULL);
 			}
-			write_0_to_play_file();
+			write_0_to_album_file();
 			execl(exec_waiter_path, "play.waiter", "no card to play", NULL);
 		}
 	}
