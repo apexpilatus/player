@@ -36,7 +36,7 @@ void get_album(char *ret) {
 int check_album() {
 	char next[1024];
 	get_album(next);
-	return memcmp(getenv("ALBM"), next, strlrn(next));
+	return memcmp(getenv("ALBM"), next, strlen(next));
 }
 
 file_lst* get_file_lst(char *dirname){
