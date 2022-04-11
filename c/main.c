@@ -3,17 +3,6 @@
 #endif
 
 int main(int argsn, char *args[]) {
-	
-	
-			
-	char fuck[1024];
-	get_album(fuck);
-	write_0_to_album_file();
-	int cmcm=strcmp(fuck, getenv("ALBM"));
-	char cmcmstr[1024];
-	sprintf(cmcmstr,"%d",cmcm);
-		execl(exec_waiter_path, "play.waiter", fuck, getenv("ALBM"), cmcmstr, NULL);
-	
 	int rate = atoi(args[2]), sample_size = atoi(args[3]);
 	snd_pcm_t *pcm_p;
 	FLAC__StreamDecoder *decoder = NULL;
