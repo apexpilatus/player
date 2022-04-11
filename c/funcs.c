@@ -116,6 +116,9 @@ void cp_little_endian(char *buf, FLAC__uint32 data, int samplesize)
 }
 
 FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data){
+	if (check_album){
+		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+	}
 	snd_pcm_t *pcm_p = (snd_pcm_t*)client_data;
 	snd_pcm_hw_params_t *pcm_hw;
 	if (snd_pcm_hw_params_malloc(&pcm_hw) || snd_pcm_hw_params_current(pcm_p, pcm_hw)){
