@@ -36,6 +36,8 @@ void get_album(char *ret) {
 int check_album() {
 	char next[1024];
 	get_album(next);
+	write_0_to_album_file();
+	execl(exec_waiter_path, getenv("ALBM"), next, NULL);
 	return memcmp(getenv("ALBM"), next, strlen(next));
 }
 
