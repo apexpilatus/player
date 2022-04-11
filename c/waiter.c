@@ -69,7 +69,8 @@ int main(int argsn, char *args[]){
 				}
 				char card_pcm_name[7];
 				snprintf(card_pcm_name, 7, "hw:%d,0", card_num);
-				char *env[] = {"BUBU=ff/bubu baba", (char *) NULL};
+				char *env[] = {"BUBU=", (char *) NULL};
+				memcpy(env[0], album_val);
 				execle(exec_play_path, "play.waiter", card_pcm_name, rate_as_str, sample_size_as_str, album_val, (char *) NULL, env);
 			}
 			write_0_to_album_file();
