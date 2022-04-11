@@ -3,7 +3,7 @@
 #endif
 
 int main(int argsn, char *args[]) {
-	int rate = atoi(args[2]), frame_size = atoi(args[3]);
+	int rate = atoi(args[2]), sample_size = atoi(args[3]);
 	snd_pcm_t *pcm_p;
 	FLAC__StreamDecoder *decoder = NULL;
 	if((decoder = FLAC__stream_decoder_new()) == NULL) {
@@ -27,7 +27,7 @@ int main(int argsn, char *args[]) {
 	snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
 	int dir = -1;
 	snd_pcm_hw_params_set_rate_near(pcm_p, pcm_hw, &rate, &dir);
-	if (frame_size == 24){
+	if (sample_size == 24){
 		snd_pcm_hw_params_set_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S24_3LE);
 	}
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
