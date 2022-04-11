@@ -30,7 +30,7 @@ typedef struct lst{
 } file_lst;
 
 extern file_lst* get_file_lst(char *dirname);
-extern void write_0_to_play_file();
+extern void write_0_to_album_file();
 extern char check_play_val();
 extern void get_album(char *ret);
 extern int check_album(char current[]);
