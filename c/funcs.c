@@ -80,22 +80,22 @@ file_lst* get_file_lst(char *dirname){
 	return main_ptr;
 }
 
-int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned short *frame_size) {
+int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned short *sample_size) {
 	char file_name[2048];
 	file_lst *first_file=files;
 	unsigned int rate_1st;
-	unsigned short frame_size_1st;
+	unsigned short sample_size_1st;
 	while (files->next) {
 		sprintf(file_name, "%s/%s", album_val, files->name);
 		FLAC__StreamMetadata streaminfo;
 		if (FLAC__metadata_get_streaminfo(file_name, &streaminfo)) {
 			*rate = streaminfo.data.stream_info.sample_rate;
-			*frame_size = streaminfo.data.stream_info.bits_per_sample/4;
+			*sample_size = streaminfo.data.stream_info.bits_per_sample;
 			if (first_file == files) {
 				rate_1st = *rate;
-				frame_size_1st = *frame_size;
+				sample_size_1st = *sample_size;
 			} else {
-				if (rate_1st != *rate || frame_size_1st != *frame_size) {
+				if (rate_1st != *rate || sample_size_1st != *sample_size) {
 					return 1;
 				}
 			}
