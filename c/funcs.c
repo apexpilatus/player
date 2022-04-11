@@ -33,11 +33,12 @@ void get_album(char *ret) {
 	close(album_file_dstr);
 }
 
-int check_album(char current[]) {
+int check_album() {
 	char next[1024];
 	get_album(next);
-	return strcmp(current, next);
+	return strcmp(getenv("ALBM"), next);
 }
+
 file_lst* get_file_lst(char *dirname){
 	file_lst *main_ptr = malloc(sizeof(file_lst));
 	file_lst *cur_ptr = main_ptr;
