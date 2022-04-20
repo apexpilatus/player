@@ -3,7 +3,7 @@
 #endif
 
 int main(int argsn, char *args[]) {
-	int rate = atoi(args[2]), sample_size = atoi(args[3]);
+	unsigned int rate = atoi(args[2]), sample_size = atoi(args[3]);
 	snd_pcm_t *pcm_p;
 	FLAC__StreamDecoder *decoder = NULL;
 	if((decoder = FLAC__stream_decoder_new()) == NULL) {
