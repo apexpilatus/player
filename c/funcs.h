@@ -20,9 +20,11 @@
 #include <FLAC/stream_decoder.h>
 
 #define time_out 1
-#define album_file_path "/home/store/player/album"
-#define exec_play_path "/home/store/player/a.out"
-#define exec_waiter_path "/home/store/player/play.waiter"
+
+#define album_file_path "/home/player/album"
+#define exec_play_path "/home/player/player"
+#define exec_waiter_path "/home/player/waiter"
+#define card_name "Wilkins"
 
 typedef struct lst{
   char *name;
