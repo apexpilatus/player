@@ -162,7 +162,7 @@ int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned sh
 	}
 }
 
-void cp_little_endian(char *buf, FLAC__uint32 data, int samplesize)
+static void cp_little_endian(char *buf, FLAC__uint32 data, int samplesize)
 {
 	for (int i=0;i<samplesize;i++){
 		*buf = data >> (8*i);
