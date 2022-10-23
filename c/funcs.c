@@ -2,41 +2,98 @@
 	#include "funcs.h"
 #endif
 
-void write_0_to_album_file() {
+void stop_play(void) {
 	int play_file_dstr;
-	while ((play_file_dstr = open(album_file_path, O_NONBLOCK|O_WRONLY)) == -1) {
-		sleep(time_out);
+	if ((play_file_dstr = open(album_file_path, O_NONBLOCK|O_WRONLY)) != -1) {
+		char play_val = 0;
+		write(play_file_dstr, &play_val, 1);
+		close(play_file_dstr);
 	}
-	char play_val = 0;
-	write(play_file_dstr, &play_val, 1);
-	close(play_file_dstr);
 }
 
-char check_play_val(){
-        int play_file_dstr;
-        while ((play_file_dstr = open(album_file_path, O_NONBLOCK|O_RDONLY)) == -1) {
-                sleep(time_out);
-        }
-        char play_val;
-        read(play_file_dstr, &play_val, 1);
-        close(play_file_dstr);
-        return play_val;
+char check_play(void){
+	int play_file_dstr;
+	if ((play_file_dstr = open(album_file_path, O_NONBLOCK|O_RDONLY)) != -1) {
+		char play_val;
+		read(play_file_dstr, &play_val, 1);
+		close(play_file_dstr);
+		return play_val;
+	}
+	return 0;
 }
 
 void get_album(char *ret) {
 	int album_file_dstr;
-	while ((album_file_dstr = open(album_file_path, O_NONBLOCK|O_RDONLY)) == -1) {
-		sleep(time_out);
+	if ((album_file_dstr = open(album_file_path, O_NONBLOCK|O_RDONLY)) != -1) {
+		ssize_t size = read(album_file_dstr, ret, album_str_len);
+		ret[size] = 0;
+		close(album_file_dstr);
 	}
-	ssize_t size = read(album_file_dstr, ret, 1024);
-	ret[size] = 0;
-	close(album_file_dstr);
 }
 
-int check_album() {
-	char next[1024];
+int check_album(void) {
+	char next[album_str_len];
 	get_album(next);
-	return strcmp(next, getenv("ALBM"));
+	return strcmp(next, getenv(curr_album_env));
+}
+
+static int get_volume(char *ret){
+	int vol_file_dstr;
+	if ((vol_file_dstr = open(volume_file_path, O_NONBLOCK|O_RDONLY)) == -1){
+		return 1;
+	}
+	read(vol_file_dstr, ret, 1);
+	close(vol_file_dstr);
+	return 0;
+}
+
+static void write_vol_to_file(char * vol){
+	int vol_file_dstr;
+	if ((vol_file_dstr = open(volume_file_path, O_CREAT|O_NONBLOCK|O_WRONLY, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)) != -1) {
+		write(vol_file_dstr, vol, 1);
+		close(vol_file_dstr);
+	}
+}
+
+static void set_volume(void){
+	char newvol;
+	long vol, minvol, maxvol;
+	if (get_volume(&newvol)){
+		newvol = 3;
+		write_vol_to_file(&newvol);
+	}
+	snd_mixer_t *mxr;
+	if (!snd_mixer_open(&mxr, 0)){
+		if (snd_mixer_attach(mxr, getenv(card_name_env))){
+			snd_mixer_close(mxr);
+		} else {
+			if (snd_mixer_selem_register(mxr, NULL, NULL)){
+				printf("cannot register simple mixer\n");
+				snd_mixer_close(mxr);
+			} else {
+				if (snd_mixer_load(mxr)){
+					printf("cannot load elements\n");
+					snd_mixer_close(mxr);
+				} else {
+					snd_mixer_elem_t *melem = snd_mixer_first_elem(mxr);
+					snd_mixer_selem_get_playback_volume_range(melem, &minvol, &maxvol);
+					if (newvol < minvol){
+						newvol = minvol;
+						write_vol_to_file(&newvol);
+					}
+					if (newvol > maxvol){
+						newvol = maxvol;
+						write_vol_to_file(&newvol);
+					}
+					snd_mixer_selem_get_playback_volume(melem, -1, &vol);
+					if (vol != newvol){
+						snd_mixer_selem_set_playback_volume(melem, -1, newvol);
+					}
+					snd_mixer_close(mxr);
+				}
+			}
+		}
+	}
 }
 
 file_lst* get_file_lst(char *dirname){
@@ -44,10 +101,8 @@ file_lst* get_file_lst(char *dirname){
 	file_lst *cur_ptr = main_ptr;
 	cur_ptr->name=NULL;
 	cur_ptr->next=NULL;
-
 	DIR *dp;
 	struct dirent *ep;
-	
 	dp = opendir(dirname);
 	if (dp != NULL) {
 		while ((ep = readdir(dp))) {
@@ -119,6 +174,7 @@ FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder
 	if (check_album()){
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
+	set_volume();
 	snd_pcm_t *pcm_p = (snd_pcm_t*)client_data;
 	snd_pcm_hw_params_t *pcm_hw;
 	if (snd_pcm_hw_params_malloc(&pcm_hw) || snd_pcm_hw_params_current(pcm_p, pcm_hw)){
