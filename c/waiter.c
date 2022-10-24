@@ -27,7 +27,7 @@ int main(int argsn, char *args[]){
 			if (card_num >= 0){
 				char card_pcm_name[7];
 				sprintf(card_pcm_name, "hw:%d", card_num);
-				char *env[] = {malloc(1050), malloc(50), (char *) NULL};
+				char *env[] = {malloc(album_str_len + 50), malloc(50), (char *) NULL};
 				strcpy(env[0], curr_album_env);
 				strcpy(env[0]+strlen(env[0]), "=");
 				strcpy(env[0]+strlen(env[0]), album_val);
