@@ -68,11 +68,9 @@ static void set_volume(void){
 			snd_mixer_close(mxr);
 		} else {
 			if (snd_mixer_selem_register(mxr, NULL, NULL)){
-				printf("cannot register simple mixer\n");
 				snd_mixer_close(mxr);
 			} else {
 				if (snd_mixer_load(mxr)){
-					printf("cannot load elements\n");
 					snd_mixer_close(mxr);
 				} else {
 					snd_mixer_elem_t *melem = snd_mixer_first_elem(mxr);
