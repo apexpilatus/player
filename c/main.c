@@ -32,7 +32,7 @@ int main(int argsn, char *args[]) {
 	snd_pcm_hw_params_free(pcm_hw);
 	file_lst *files=get_file_lst(getenv(curr_album_env));
 	while (files->next) {
-		char file_name[2048];
+		char file_name[album_str_len + 50];
 		sprintf(file_name, "%s/%s", getenv(curr_album_env), files->name);
 		FLAC__StreamDecoderInitStatus init_status;
 		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
