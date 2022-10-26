@@ -49,7 +49,7 @@ static int get_volume(char *ret){
 
 static void write_vol_to_file(char * vol){
 	int vol_file_dstr;
-	if ((vol_file_dstr = open(volume_file_path, O_CREAT|O_NONBLOCK|O_WRONLY, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)) != -1) {
+	if ((vol_file_dstr = open(volume_file_path, O_NONBLOCK|O_WRONLY)) != -1) {
 		write(vol_file_dstr, vol, 1);
 		close(vol_file_dstr);
 	}
@@ -60,7 +60,11 @@ static void set_volume(void){
 	long vol, minvol, maxvol;
 	if (get_volume(&newvol)){
 		newvol = 3;
-		write_vol_to_file(&newvol);
+		int vol_file_dstr;
+		if ((vol_file_dstr = open(volume_file_path, O_CREAT|O_NONBLOCK|O_WRONLY, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)) != -1) {
+			write(vol_file_dstr, &newvol, 1);
+			close(vol_file_dstr);
+		}
 	}
 	snd_mixer_t *mxr;
 	if (!snd_mixer_open(&mxr, 0)){

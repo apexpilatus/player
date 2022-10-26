@@ -2,8 +2,8 @@
 	#include "funcs.h"
 #endif
 
-int main(int argsn, char *args[]) {
-	unsigned int rate = atoi(args[1]), sample_size = atoi(args[2]);
+void main(void) {
+	unsigned int rate = atoi(getenv(rate_env)), sample_size = atoi(getenv(sample_size_env));
 	char *card_pcm_name = malloc(10);
 	strcpy(card_pcm_name, getenv(card_name_env));
 	strcpy(card_pcm_name + strlen(card_pcm_name),",0");
@@ -21,7 +21,7 @@ int main(int argsn, char *args[]) {
 	snd_pcm_hw_params_any(pcm_p, pcm_hw);
 	snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
 	int dir = 0;
-	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, rate, dir);
+	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, /*rate*/96000, dir);
 	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S24_3LE);
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
 		stop_play();
