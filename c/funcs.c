@@ -162,6 +162,7 @@ int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned sh
 		}
 		files=files->next;
 	}
+	return 0;
 }
 
 static void cp_little_endian(char *buf, FLAC__uint32 data, int samplesize)
