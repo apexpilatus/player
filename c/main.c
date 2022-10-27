@@ -13,7 +13,7 @@ void main(void) {
 	FLAC__stream_decoder_set_metadata_ignore_all(decoder);
 	if (snd_pcm_open(&pcm_p, card_pcm_name, SND_PCM_STREAM_PLAYBACK, 0)) {
 		stop_play();
-		execl(exec_waiter_path, "play.waiter", "cannot open pcm", NULL);
+		execl(exec_waiter_path, player_name, "cannot open pcm", NULL);
 	}
 	snd_pcm_hw_params_t *pcm_hw;
 	snd_pcm_hw_params_malloc(&pcm_hw);
@@ -26,7 +26,7 @@ void main(void) {
 		stop_play();
 		snd_pcm_close(pcm_p);
 		FLAC__stream_decoder_delete(decoder);
-		execl(exec_waiter_path, "play.waiter", "cannot start playing", NULL);
+		execl(exec_waiter_path, player_name, "cannot start playing", NULL);
 	}
 	snd_pcm_hw_params_free(pcm_hw);
 	file_lst *files=get_file_lst(getenv(curr_album_env));
@@ -44,14 +44,14 @@ void main(void) {
 				FLAC__StreamDecoderState dec_state = FLAC__stream_decoder_get_state(decoder);
 				FLAC__stream_decoder_finish(decoder);
 				FLAC__stream_decoder_delete(decoder);
-				execl(exec_waiter_path, "play.waiter", "error during playing", files->name, FLAC__StreamDecoderStateString[dec_state], NULL);
+				execl(exec_waiter_path, player_name, "error during playing", files->name, FLAC__StreamDecoderStateString[dec_state], NULL);
 			}
 			FLAC__stream_decoder_finish(decoder);
 		} else {
 			stop_play();
 			snd_pcm_close(pcm_p);
 			FLAC__stream_decoder_delete(decoder);
-			execl(exec_waiter_path, "play.waiter", "cannot init file", files->name, FLAC__StreamDecoderInitStatusString[init_status], NULL);
+			execl(exec_waiter_path, player_name, "cannot init file", files->name, FLAC__StreamDecoderInitStatusString[init_status], NULL);
 		}
 		files=files->next;
 	}
@@ -59,5 +59,5 @@ void main(void) {
 	stop_play();
 	snd_pcm_close(pcm_p);
 	FLAC__stream_decoder_delete(decoder);
-	execl(exec_waiter_path, "play.waiter", "the end", NULL);
+	execl(exec_waiter_path, player_name, "the end", NULL);
 }

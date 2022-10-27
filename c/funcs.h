@@ -28,11 +28,15 @@
 #define card_name_env "CARDNAME"
 #define rate_env "FLACRATE"
 #define sample_size_env "FLACSAMPLE"
+
 #define album_file_path "/home/exe/player/tmp/album"
 #define volume_file_path "/home/exe/player/tmp/volume"
 #define exec_play_path "/home/exe/player/player"
 #define exec_waiter_path "/home/exe/player/waiter"
+
 #define card_name "Wilkins"
+#define player_name "player"
+
 
 typedef struct lst{
   char *name;
