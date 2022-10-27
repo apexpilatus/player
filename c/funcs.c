@@ -179,12 +179,7 @@ FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder
 	}
 	set_volume();
 	snd_pcm_t *pcm_p = (snd_pcm_t*)client_data;
-	snd_pcm_hw_params_t *pcm_hw;
-	if (snd_pcm_hw_params_malloc(&pcm_hw) || snd_pcm_hw_params_current(pcm_p, pcm_hw)){
-		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
-	}
-	int samplesize=snd_pcm_hw_params_get_sbits(pcm_hw)/8;
-	snd_pcm_hw_params_free(pcm_hw);
+	int samplesize=3;
 	char * playbuf = malloc(samplesize*2*frame->header.blocksize);
 	for(size_t i = 0; i < frame->header.blocksize; i++) {
 		cp_little_endian(playbuf+(i*samplesize*2), buffer[0][i], samplesize);
