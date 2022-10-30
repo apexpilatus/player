@@ -14,7 +14,11 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 	if (check_album()){
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
-	//set_volume();
+
+
+	int conversion = atoi(getenv(rate_env)) != 96000 || atoi(getenv(sample_size_env)) != 24;
+
+	
 	snd_pcm_t *pcm_p = (snd_pcm_t*)client_data;
 	int samplesize = 3;
 	int bufsize = samplesize*2*frame->header.blocksize;
@@ -24,75 +28,65 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 		cp_little_endian(playbuf+(i*samplesize*2)+samplesize, buffer[1][i], samplesize);
 	}
 
+	AVCodec *decode_codec = NULL;
+	AVCodecContext *decode_context = NULL;
+	AVCodec *encode_codec = NULL;
+	AVCodecContext *encode_context = NULL;
+	AVFrame *ff_frame = NULL;
+	SwrContext *swr = NULL;
+	AVPacket *pkt = NULL;
+	int nb_out_samples = 0;
+	uint8_t *ff_output = NULL;
+	
+	if (conversion){
+		decode_codec = avcodec_find_decoder_by_name("pcm_s24le");
+		decode_context = avcodec_alloc_context3(decode_codec);
+		encode_codec = avcodec_find_encoder_by_name("pcm_s24le");
+		encode_context = avcodec_alloc_context3(encode_codec);
+		decode_context->channels = 2;
+		decode_context->sample_rate = atoi(getenv(rate_env));
+		avcodec_open2(decode_context, decode_codec, NULL);
+		pkt = av_packet_alloc();
+		pkt->data = playbuf;
+		pkt->size = bufsize;
+		ff_frame = av_frame_alloc();
+		avcodec_send_packet(decode_context, pkt);
+		avcodec_receive_frame(decode_context, ff_frame);
 
-	AVCodec *decode_codec = avcodec_find_decoder_by_name("pcm_s24le");
-	AVCodecContext *decode_context = avcodec_alloc_context3(decode_codec);
-	decode_context->channels = 2;
-	decode_context->sample_rate = 96000;
-	avcodec_open2(decode_context, decode_codec, NULL);
-	AVPacket *pkt = av_packet_alloc();
-	pkt->data = playbuf;
-	pkt->size = bufsize;
-	AVFrame *ff_frame = av_frame_alloc();
-	avcodec_send_packet(decode_context, pkt);
-	avcodec_receive_frame(decode_context, ff_frame);
+		swr = swr_alloc_set_opts(swr, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, 96000, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, atoi(getenv(rate_env)), 0, NULL);
+		swr_init(swr);
+		double ratio = (double)96000/atoi(getenv(rate_env));
+		nb_out_samples = ff_frame->nb_samples * ratio + 32;
+		av_samples_alloc(&ff_output, NULL, 2, nb_out_samples, AV_SAMPLE_FMT_S32, 0);
+		nb_out_samples = swr_convert(swr, &ff_output, nb_out_samples, ff_frame->data, ff_frame->nb_samples);
 
-	/*for (int i = 0; i<bufsize; i++){
-		playbuf[i] = 0;
+		encode_context->sample_fmt = AV_SAMPLE_FMT_S32;
+		encode_context->channels = 2;
+		encode_context->sample_rate = 96000;
+		avcodec_open2(encode_context, encode_codec, NULL);
+		ff_frame->format = encode_context->sample_fmt;
+		ff_frame->sample_rate = 96000;
+		ff_frame->nb_samples = nb_out_samples;
+		ff_frame->data[0] = ff_output;
+		avcodec_send_frame(encode_context, ff_frame);
+		int ret = 0;
+		avcodec_receive_packet(encode_context, pkt);
 	}
 
-	for(int i = 0; i < ff_frame->nb_samples; i++) {
-		cp_cp(playbuf+(i*samplesize*2), ff_frame->data[0] + 4*i*2, samplesize);
-		cp_cp(playbuf+(i*samplesize*2)+samplesize, ff_frame->data[0] + (4*i*2) + 4, samplesize);
-	}*/
-	
-	SwrContext *swr = NULL;
-	/*swr = swr_alloc();
-	/*av_opt_set_channel_layout(swr, "in_channel_layout", AV_CH_LAYOUT_STEREO, 0);
-	av_opt_set_channel_layout(swr, "out_channel_layout", AV_CH_LAYOUT_STEREO, 0);
-	av_opt_set_int(swr, "in_sample_rate", 96000, 0);
-	av_opt_set_int(swr, "out_sample_rate", 48000, 0);
-	av_opt_set_sample_fmt(swr, "in_sample_fmt", AV_SAMPLE_FMT_S32, 0);
-	av_opt_set_sample_fmt(swr, "out_sample_fmt", AV_SAMPLE_FMT_S32, 0);*/
-
-	swr = swr_alloc_set_opts(swr, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, 48000, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, 96000, 0, NULL);
-	swr_init(swr);
-	double ratio = (double)48000/96000;
-	int nb_out_samples = ff_frame->nb_samples * ratio + 32;
-	uint8_t *output = NULL;
-	av_samples_alloc(&output, NULL, 2, nb_out_samples, AV_SAMPLE_FMT_S32, 0);
-	nb_out_samples = swr_convert(swr, &output, nb_out_samples, ff_frame->data, ff_frame->nb_samples);
-	printf("out = %d; %d; %d; %d\n", output[0], output[1], output[2], output[3]);
-
-	AVCodec *encode_codec = avcodec_find_encoder_by_name("pcm_s24le");
-	AVCodecContext *encode_context = avcodec_alloc_context3(encode_codec);
-	encode_context->sample_fmt = AV_SAMPLE_FMT_S32;
-	encode_context->channels = 2;
-	encode_context->sample_rate = 48000;
-	avcodec_open2(encode_context, encode_codec, NULL);
-	ff_frame->format = encode_context->sample_fmt;
-	ff_frame->sample_rate = 48000;
-	ff_frame->nb_samples = nb_out_samples;
-	ff_frame->data[0] = output;
-	avcodec_send_frame(encode_context, ff_frame);
-	int ret = 0;
-	avcodec_receive_packet(encode_context, pkt);
-	printf("here\n");
-	
-
-	if (snd_pcm_mmap_writei(pcm_p, pkt->data, (snd_pcm_uframes_t) nb_out_samples) < 0){
+	if (snd_pcm_mmap_writei(pcm_p, conversion ? pkt->data : playbuf, conversion ? (snd_pcm_uframes_t) nb_out_samples : (snd_pcm_uframes_t) frame->header.blocksize) < 0){
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
 
-
-	av_freep(&output);
-	swr_free(&swr);
-	av_packet_free(&pkt);
-	av_frame_free(&ff_frame);
-	avcodec_free_context(&decode_context);
-	avcodec_free_context(&encode_context);
-
-
+	set_volume();
+	
+	if (conversion){
+		av_freep(&ff_output);
+		swr_free(&swr);
+		av_packet_free(&pkt);
+		av_frame_free(&ff_frame);
+		avcodec_free_context(&decode_context);
+		avcodec_free_context(&encode_context);
+	}
 
 	free(playbuf);
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
