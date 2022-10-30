@@ -69,7 +69,6 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 		ff_frame->nb_samples = nb_out_samples;
 		ff_frame->data[0] = ff_output;
 		avcodec_send_frame(encode_context, ff_frame);
-		int ret = 0;
 		avcodec_receive_packet(encode_context, pkt);
 	}
 
