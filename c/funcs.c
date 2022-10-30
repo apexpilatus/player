@@ -55,11 +55,11 @@ static void write_vol_to_file(char * vol){
 	}
 }
 
-static void set_volume(void){
+void set_volume(void){
 	char newvol;
 	long vol, minvol, maxvol;
 	if (get_volume(&newvol)){
-		newvol = 3;
+		newvol = 5;
 		int vol_file_dstr;
 		if ((vol_file_dstr = open(volume_file_path, O_CREAT|O_NONBLOCK|O_WRONLY, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)) != -1) {
 			write(vol_file_dstr, &newvol, 1);
@@ -138,7 +138,7 @@ file_lst* get_file_lst(char *dirname){
 	return main_ptr;
 }
 
-int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned short *sample_size) {
+int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned short *sample_size){
 	char file_name[2048];
 	file_lst *first_file=files;
 	unsigned int rate_1st;
@@ -165,31 +165,11 @@ int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned sh
 	return 0;
 }
 
-static void cp_little_endian(char *buf, FLAC__uint32 data, int samplesize)
-{
+void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize){
 	for (int i=0;i<samplesize;i++){
 		*buf = data >> (8*i);
 		buf++;
 	}
-}
-
-FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data){
-	if (check_album()){
-		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
-	}
-	set_volume();
-	snd_pcm_t *pcm_p = (snd_pcm_t*)client_data;
-	int samplesize=3;
-	char * playbuf = malloc(samplesize*2*frame->header.blocksize);
-	for(size_t i = 0; i < frame->header.blocksize; i++) {
-		cp_little_endian(playbuf+(i*samplesize*2), buffer[0][i], samplesize);
-		cp_little_endian(playbuf+(i*samplesize*2)+samplesize, buffer[1][i], samplesize);
-	}
-	if (snd_pcm_mmap_writei(pcm_p, playbuf, (snd_pcm_uframes_t) frame->header.blocksize) < 0){
-		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
-	}
-	free(playbuf);
-	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
 void metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data){
