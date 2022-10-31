@@ -48,7 +48,4 @@ typedef struct lst{
 
 extern file_lst* get_file_lst(char *dirname);
 extern void stop_play(void);
-extern char check_play(void);
 extern void get_album(char *ret);
-extern int check_album(void);
-extern int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned short *frame_size);

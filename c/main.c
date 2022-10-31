@@ -14,6 +14,12 @@ static int nb_out_samples;
 static uint8_t *ff_output;
 static snd_mixer_elem_t *melem;
 
+static int check_album(void) {
+	char next[album_str_len];
+	get_album(next);
+	return strcmp(next, getenv(curr_album_env));
+}
+
 static void write_vol_to_file(char * vol){
         int vol_file_dstr;
         if ((vol_file_dstr = open(volume_file_path, O_NONBLOCK|O_WRONLY)) != -1) {
