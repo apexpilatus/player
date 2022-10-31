@@ -37,67 +37,6 @@ int check_album(void) {
 	return strcmp(next, getenv(curr_album_env));
 }
 
-static int get_volume(char *ret){
-	int vol_file_dstr;
-	if ((vol_file_dstr = open(volume_file_path, O_NONBLOCK|O_RDONLY)) == -1){
-		return 1;
-	}
-	read(vol_file_dstr, ret, 1);
-	close(vol_file_dstr);
-	return 0;
-}
-
-static void write_vol_to_file(char * vol){
-	int vol_file_dstr;
-	if ((vol_file_dstr = open(volume_file_path, O_NONBLOCK|O_WRONLY)) != -1) {
-		write(vol_file_dstr, vol, 1);
-		close(vol_file_dstr);
-	}
-}
-
-void set_volume(void){
-	char newvol;
-	long vol, minvol, maxvol;
-	if (get_volume(&newvol)){
-		newvol = 5;
-		int vol_file_dstr;
-		if ((vol_file_dstr = open(volume_file_path, O_CREAT|O_NONBLOCK|O_WRONLY, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)) != -1) {
-			write(vol_file_dstr, &newvol, 1);
-			close(vol_file_dstr);
-		}
-	}
-	snd_mixer_t *mxr;
-	if (!snd_mixer_open(&mxr, 0)){
-		if (snd_mixer_attach(mxr, getenv(card_name_env))){
-			snd_mixer_close(mxr);
-		} else {
-			if (snd_mixer_selem_register(mxr, NULL, NULL)){
-				snd_mixer_close(mxr);
-			} else {
-				if (snd_mixer_load(mxr)){
-					snd_mixer_close(mxr);
-				} else {
-					snd_mixer_elem_t *melem = snd_mixer_first_elem(mxr);
-					snd_mixer_selem_get_playback_volume_range(melem, &minvol, &maxvol);
-					if (newvol < minvol){
-						newvol = minvol;
-						write_vol_to_file(&newvol);
-					}
-					if (newvol > maxvol){
-						newvol = maxvol;
-						write_vol_to_file(&newvol);
-					}
-					snd_mixer_selem_get_playback_volume(melem, -1, &vol);
-					if (vol != newvol){
-						snd_mixer_selem_set_playback_volume(melem, -1, newvol);
-					}
-					snd_mixer_close(mxr);
-				}
-			}
-		}
-	}
-}
-
 file_lst* get_file_lst(char *dirname){
 	file_lst *main_ptr = malloc(sizeof(file_lst));
 	file_lst *cur_ptr = main_ptr;
@@ -163,17 +102,4 @@ int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned sh
 		files=files->next;
 	}
 	return 0;
-}
-
-void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize){
-	for (int i=0;i<samplesize;i++){
-		*buf = data >> (8*i);
-		buf++;
-	}
-}
-
-void metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data){
-}
-
-void error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data){
 }

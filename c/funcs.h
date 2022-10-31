@@ -52,7 +52,3 @@ extern char check_play(void);
 extern void get_album(char *ret);
 extern int check_album(void);
 extern int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned short *frame_size);
-extern void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize);
-extern void set_volume(void);
-extern void metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data);
-extern void error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data);
