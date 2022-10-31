@@ -79,7 +79,7 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
 	snd_pcm_t *pcm_p = (snd_pcm_t*)client_data;
-	int samplesize = 3;
+	int samplesize = atoi(getenv(sample_size_env))/8;
 	int bufsize = samplesize*2*frame->header.blocksize;
 	unsigned char * playbuf = malloc(bufsize);
 	for(size_t i = 0; i < frame->header.blocksize; i++) {
@@ -120,7 +120,7 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 void main(void) {
 	conversion = atoi(getenv(rate_env)) != 96000 || atoi(getenv(sample_size_env)) != 24;
 	if (conversion){
-		decode_codec = avcodec_find_decoder_by_name("pcm_s24le");
+		decode_codec = avcodec_find_decoder_by_name(atoi(getenv(sample_size_env)) == 24 ? "pcm_s24le" : "pcm_s16le");
 		decode_context = avcodec_alloc_context3(decode_codec);
 		decode_context->channels = 2;
 		decode_context->sample_rate = atoi(getenv(rate_env));
@@ -131,7 +131,7 @@ void main(void) {
 		encode_context->channels = 2;
 		encode_context->sample_rate = 96000;
 		avcodec_open2(encode_context, encode_codec, NULL);
-		swr = swr_alloc_set_opts(swr, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, 96000, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, atoi(getenv(rate_env)), 0, NULL);
+		swr = swr_alloc_set_opts(swr, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, 96000, AV_CH_LAYOUT_STEREO, atoi(getenv(sample_size_env)) == 24 ? AV_SAMPLE_FMT_S32 : AV_SAMPLE_FMT_S16, atoi(getenv(rate_env)), 0, NULL);
 		swr_init(swr);
 	}
 	char *card_pcm_name = malloc(10);
