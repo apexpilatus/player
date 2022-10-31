@@ -3,6 +3,18 @@
 #endif
 
 
+static int conversion = 0;
+static AVCodec *decode_codec = NULL;
+static AVCodecContext *decode_context = NULL;
+static AVCodec *encode_codec = NULL;
+static AVCodecContext *encode_context = NULL;
+static AVFrame *ff_frame = NULL;
+static SwrContext *swr = NULL;
+static AVPacket *pkt = NULL;
+static int nb_out_samples = 0;
+static uint8_t *ff_output = NULL;
+
+
 static void cp_cp(unsigned char *buf, unsigned char *data, int samplesize){
         for (int i=1;i<=samplesize;i++){
                 *buf = data[i];
@@ -16,7 +28,6 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 	}
 
 
-	int conversion = atoi(getenv(rate_env)) != 96000 || atoi(getenv(sample_size_env)) != 24;
 
 	
 	snd_pcm_t *pcm_p = (snd_pcm_t*)client_data;
@@ -28,42 +39,18 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 		cp_little_endian(playbuf+(i*samplesize*2)+samplesize, buffer[1][i], samplesize);
 	}
 
-	AVCodec *decode_codec = NULL;
-	AVCodecContext *decode_context = NULL;
-	AVCodec *encode_codec = NULL;
-	AVCodecContext *encode_context = NULL;
-	AVFrame *ff_frame = NULL;
-	SwrContext *swr = NULL;
-	AVPacket *pkt = NULL;
-	int nb_out_samples = 0;
-	uint8_t *ff_output = NULL;
 	
 	if (conversion){
-		decode_codec = avcodec_find_decoder_by_name("pcm_s24le");
-		decode_context = avcodec_alloc_context3(decode_codec);
-		encode_codec = avcodec_find_encoder_by_name("pcm_s24le");
-		encode_context = avcodec_alloc_context3(encode_codec);
-		decode_context->channels = 2;
-		decode_context->sample_rate = atoi(getenv(rate_env));
-		avcodec_open2(decode_context, decode_codec, NULL);
 		pkt = av_packet_alloc();
 		pkt->data = playbuf;
 		pkt->size = bufsize;
 		ff_frame = av_frame_alloc();
 		avcodec_send_packet(decode_context, pkt);
 		avcodec_receive_frame(decode_context, ff_frame);
-
-		swr = swr_alloc_set_opts(swr, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, 96000, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, atoi(getenv(rate_env)), 0, NULL);
-		swr_init(swr);
 		double ratio = (double)96000/atoi(getenv(rate_env));
 		nb_out_samples = ff_frame->nb_samples * ratio + 32;
 		av_samples_alloc(&ff_output, NULL, 2, nb_out_samples, AV_SAMPLE_FMT_S32, 0);
 		nb_out_samples = swr_convert(swr, &ff_output, nb_out_samples, ff_frame->data, ff_frame->nb_samples);
-
-		encode_context->sample_fmt = AV_SAMPLE_FMT_S32;
-		encode_context->channels = 2;
-		encode_context->sample_rate = 96000;
-		avcodec_open2(encode_context, encode_codec, NULL);
 		ff_frame->format = encode_context->sample_fmt;
 		ff_frame->sample_rate = 96000;
 		ff_frame->nb_samples = nb_out_samples;
@@ -76,22 +63,39 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
 
-	set_volume();
-	
 	if (conversion){
 		av_freep(&ff_output);
-		swr_free(&swr);
 		av_packet_free(&pkt);
 		av_frame_free(&ff_frame);
-		avcodec_free_context(&decode_context);
-		avcodec_free_context(&encode_context);
 	}
+
+
+	set_volume();
 
 	free(playbuf);
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
 void main(void) {
+
+
+	conversion = atoi(getenv(rate_env)) != 96000 || atoi(getenv(sample_size_env)) != 24;
+	if (conversion){
+		decode_codec = avcodec_find_decoder_by_name("pcm_s24le");
+		decode_context = avcodec_alloc_context3(decode_codec);
+		decode_context->channels = 2;
+		decode_context->sample_rate = atoi(getenv(rate_env));
+		avcodec_open2(decode_context, decode_codec, NULL);
+		encode_codec = avcodec_find_encoder_by_name("pcm_s24le");
+		encode_context = avcodec_alloc_context3(encode_codec);
+		encode_context->sample_fmt = AV_SAMPLE_FMT_S32;
+		encode_context->channels = 2;
+		encode_context->sample_rate = 96000;
+		avcodec_open2(encode_context, encode_codec, NULL);
+		swr = swr_alloc_set_opts(swr, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, 96000, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, atoi(getenv(rate_env)), 0, NULL);
+		swr_init(swr);
+	}
+
 	char *card_pcm_name = malloc(10);
 	strcpy(card_pcm_name, getenv(card_name_env));
 	strcpy(card_pcm_name + strlen(card_pcm_name),",0");
