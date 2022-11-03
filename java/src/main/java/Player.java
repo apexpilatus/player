@@ -67,7 +67,7 @@ public class Player extends HttpServlet {
                     resp.getWriter().println("<input type=submit value=+>");
                     resp.getWriter().println("</form>");
                     resp.getWriter().println("<form action=http://" + req.getHeader("Host") +
-                            "/player?volume=down method=post target=vol style=position:fixed;top:40;left:60;>");
+                            "/player?volume=down method=post target=vol style=position:fixed;top:100;left:20;>");
                     resp.getWriter().println("<input type=submit value=->");
                     resp.getWriter().println("</form>");
                     for (String album : albums) {
