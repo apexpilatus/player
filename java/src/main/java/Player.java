@@ -2,7 +2,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.jflac.FLACDecoder;
+import org.jflac.metadata.Metadata;
+import org.jflac.metadata.Picture;
+
 import java.io.*;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -49,9 +54,24 @@ public class Player extends HttpServlet {
         if (musicDir.exists() && musicDir.isDirectory()) {
             String albumToPlay = req.getParameter("album");
             if (albumToPlay != null) {
-                try (BufferedWriter albumFileWriter = new BufferedWriter(new FileWriter(albumFilePath))) {
+                try (
+                        BufferedWriter albumFileWriter = new BufferedWriter(new FileWriter(albumFilePath));
+                        FileInputStream flacIs = new FileInputStream(albumFilePath + "/01.flac");
+                        FileOutputStream pictureOs = new FileOutputStream("picture.jpeg")) {
                     albumFileWriter.write(albumToPlay);
-                } catch (IOException e) {
+                    FLACDecoder flacDec = new FLACDecoder(flacIs);
+                    Metadata[] metas = flacDec.readMetadata();
+                    for (Metadata meta : metas) {
+                        if (meta.toString().contains("Picture")) {
+                            Picture picMeta = (Picture) meta;
+                            Class<? extends Picture> c = picMeta.getClass();
+                            Field f = c.getDeclaredField("image");
+                            f.setAccessible(true);
+                            byte[] picture = (byte[]) f.get(picMeta);
+                            pictureOs.write(picture);
+                        }
+                    }
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
