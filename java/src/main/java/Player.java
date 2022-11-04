@@ -64,11 +64,11 @@ public class Player extends HttpServlet {
                     resp.getWriter().println("<body style=\"background-color:gray\">");
                     resp.getWriter().println("<form action=http://" + req.getHeader("Host") +
                             "/player?volume=up method=post target=vol style=position:fixed;top:40;left:20;>");
-                    resp.getWriter().println("<input type=submit value=+>");
+                    resp.getWriter().println("<input type=submit value=up>");
                     resp.getWriter().println("</form>");
                     resp.getWriter().println("<form action=http://" + req.getHeader("Host") +
                             "/player?volume=down method=post target=vol style=position:fixed;top:100;left:20;>");
-                    resp.getWriter().println("<input type=submit value=->");
+                    resp.getWriter().println("<input type=submit value=dw>");
                     resp.getWriter().println("</form>");
                     for (String album : albums) {
                         resp.getWriter().println("<p style=text-align:center;color:white;font-size:150%><a href=http://" + req.getHeader("Host") +
