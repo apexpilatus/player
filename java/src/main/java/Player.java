@@ -55,16 +55,13 @@ public class Player extends HttpServlet {
         if (musicDir.exists() && musicDir.isDirectory()) {
             String albumToPlay = req.getParameter("album");
             if (albumToPlay != null) {
-	    	String picturePath = "picture.jpeg";
-	    	File exeDirFile = new File(exeDirPath);
-		for (String file : exeDirFile.list()) {
-			if (file.contains("apache-tom")) {
-				picturePath = exeDirPath + "/" + file + "/" + "webapps/ROOT/picture.jpeg";
-			}
-		}
-		System.out.println("fuck");
-		System.out.println(picturePath);
-		System.out.println("fuck");
+                String picturePath = "picture.jpeg";
+                File exeDirFile = new File(exeDirPath);
+                for (String file : Objects.requireNonNull(exeDirFile.list())) {
+                    if (file.contains("apache-tom")) {
+                        picturePath = exeDirPath + "/" + file + "/" + "webapps/ROOT/picture.jpeg";
+                    }
+                }
                 try (
                         BufferedWriter albumFileWriter = new BufferedWriter(new FileWriter(albumFilePath));
                         FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac");
@@ -91,14 +88,14 @@ public class Player extends HttpServlet {
             if (Objects.requireNonNull(albums).length != 0) {
                 resp.setContentType("text/html");
                 try {
-                    resp.getWriter().println("<iframe name=vol height=45px width=50px style=border:none;position:fixed;top:40;right:60;></iframe>");
+                    resp.getWriter().println("<iframe name=vol height=45px width=50px style=border:none;position:fixed;top:40px;right:60px;></iframe>");
                     resp.getWriter().println("<body style=\"background-color:gray\">");
                     resp.getWriter().println("<form action=http://" + req.getHeader("Host") +
-                            "/player?volume=up method=post target=vol style=position:fixed;top:40;left:20;>");
+                            "/player?volume=up method=post target=vol style=position:fixed;top:40px;left:20px;>");
                     resp.getWriter().println("<input type=submit value=up>");
                     resp.getWriter().println("</form>");
                     resp.getWriter().println("<form action=http://" + req.getHeader("Host") +
-                            "/player?volume=down method=post target=vol style=position:fixed;top:100;left:20;>");
+                            "/player?volume=down method=post target=vol style=position:fixed;top:100px;left:20px;>");
                     resp.getWriter().println("<input type=submit value=dw>");
                     resp.getWriter().println("</form>");
                     for (String album : albums) {
