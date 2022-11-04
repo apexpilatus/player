@@ -1,7 +1,6 @@
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.jflac.FLACDecoder;
 import org.jflac.metadata.Metadata;
 import org.jflac.metadata.Picture;
@@ -9,6 +8,7 @@ import org.jflac.metadata.Picture;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Objects;
 
 public class Player extends HttpServlet {
@@ -31,13 +31,10 @@ public class Player extends HttpServlet {
                 }
             }
             switch (volChangeDirection) {
-                case "up":
-                    vol++;
-                    break;
-                case "down":
-                    vol--;
-                    break;
-                default:
+                case "up" -> vol++;
+                case "down" -> vol--;
+                default -> {
+                }
             }
             resp.setContentType("text/plain");
             try (BufferedWriter albumFileWriter = new BufferedWriter(new FileWriter(volumeFilePath))) {
@@ -53,19 +50,32 @@ public class Player extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         File musicDir = new File(musicPath);
         if (musicDir.exists() && musicDir.isDirectory()) {
+            String picturePath = "picture.jpeg";
+            String pictureName = "picture.jpeg";
+            File dirFile = new File(exeDirPath);
+            for (String file : Objects.requireNonNull(dirFile.list())) {
+                if (file.contains("apache-tom")) {
+                    picturePath = exeDirPath + "/" + file + "/" + "webapps/ROOT";
+                }
+            }
+            dirFile = new File(picturePath);
+            for (File file : Objects.requireNonNull(dirFile.listFiles())) {
+                if (file.getName().contains("jpeg")) {
+                    pictureName = file.getName();
+                }
+            }
             String albumToPlay = req.getParameter("album");
             if (albumToPlay != null) {
-                String picturePath = "picture.jpeg";
-                File exeDirFile = new File(exeDirPath);
-                for (String file : Objects.requireNonNull(exeDirFile.list())) {
-                    if (file.contains("apache-tom")) {
-                        picturePath = exeDirPath + "/" + file + "/" + "webapps/ROOT/picture.jpeg";
+                for (File file : Objects.requireNonNull(dirFile.listFiles())) {
+                    if (file.getName().contains("jpeg")) {
+                        file.delete();
                     }
                 }
+                pictureName = new Date().getTime() + ".jpeg";
                 try (
                         BufferedWriter albumFileWriter = new BufferedWriter(new FileWriter(albumFilePath));
                         FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac");
-                        FileOutputStream pictureOs = new FileOutputStream(picturePath)) {
+                        FileOutputStream pictureOs = new FileOutputStream(picturePath + "/" + pictureName)) {
                     albumFileWriter.write(albumToPlay);
                     FLACDecoder flacDec = new FLACDecoder(flacIs);
                     Metadata[] metas = flacDec.readMetadata();
@@ -99,7 +109,7 @@ public class Player extends HttpServlet {
                     resp.getWriter().println("<input type=submit value=dw>");
                     resp.getWriter().println("</form>");
                     resp.getWriter().println("<img src=http://" + req.getHeader("Host") +
-                            "/picture.jpeg style=width:200px;height:200px;position:fixed;top:250px;left:20px;>");
+                            "/" + pictureName + " style=width:200px;height:200px;position:fixed;top:250px;left:20px;>");
                     for (String album : albums) {
                         resp.getWriter().println("<p style=text-align:center;color:white;font-size:150%><a href=http://" + req.getHeader("Host") +
                                 "/player?album=" + musicPath + "/" + album.replace(" ", "%20") + ">" +
