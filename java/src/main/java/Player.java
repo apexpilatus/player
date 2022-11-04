@@ -98,6 +98,8 @@ public class Player extends HttpServlet {
                             "/player?volume=down method=post target=vol style=position:fixed;top:100px;left:20px;>");
                     resp.getWriter().println("<input type=submit value=dw>");
                     resp.getWriter().println("</form>");
+                    resp.getWriter().println("<img src=http://" + req.getHeader("Host") +
+                            "/picture.jpeg style=width:200px;height:200px;position:fixed;top:250px;left:20px;>");
                     for (String album : albums) {
                         resp.getWriter().println("<p style=text-align:center;color:white;font-size:150%><a href=http://" + req.getHeader("Host") +
                                 "/player?album=" + musicPath + "/" + album.replace(" ", "%20") + ">" +
