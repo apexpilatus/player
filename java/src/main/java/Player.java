@@ -13,8 +13,9 @@ import java.util.Objects;
 
 public class Player extends HttpServlet {
     String musicPath = "/home/store/music";
-    String albumFilePath = "/home/exe/player/tmp/album";
-    String volumeFilePath = "/home/exe/player/tmp/volume";
+    String exeDirPath = "/home/exe";
+    String albumFilePath = exeDirPath + "/player/tmp/album";
+    String volumeFilePath = exeDirPath + "/player/tmp/volume";
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
@@ -54,10 +55,20 @@ public class Player extends HttpServlet {
         if (musicDir.exists() && musicDir.isDirectory()) {
             String albumToPlay = req.getParameter("album");
             if (albumToPlay != null) {
+	    	String picturePath = "picture.jpeg";
+	    	File exeDirFile = new File(exeDirPath);
+		for (String file : exeDirFile.list()) {
+			if (file.contains("apache-tom")) {
+				picturePath = exeDirPath + "/" + file + "/" + "webapps/ROOT/picture.jpeg";
+			}
+		}
+		System.out.println("fuck");
+		System.out.println(picturePath);
+		System.out.println("fuck");
                 try (
                         BufferedWriter albumFileWriter = new BufferedWriter(new FileWriter(albumFilePath));
-                        FileInputStream flacIs = new FileInputStream(albumFilePath + "/01.flac");
-                        FileOutputStream pictureOs = new FileOutputStream("picture.jpeg")) {
+                        FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac");
+                        FileOutputStream pictureOs = new FileOutputStream(picturePath)) {
                     albumFileWriter.write(albumToPlay);
                     FLACDecoder flacDec = new FLACDecoder(flacIs);
                     Metadata[] metas = flacDec.readMetadata();
