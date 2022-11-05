@@ -50,7 +50,7 @@ public class Player extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         File musicDir = new File(musicPath);
         if (musicDir.exists() && musicDir.isDirectory()) {
-            String picturePath = "picture.jpeg";
+            String picturePath = exeDirPath + "/player/tmp";
             String pictureName = "picture.jpeg";
             File dirFile = new File(exeDirPath);
             for (String file : Objects.requireNonNull(dirFile.list())) {
@@ -68,10 +68,11 @@ public class Player extends HttpServlet {
             if (albumToPlay != null) {
                 for (File file : Objects.requireNonNull(dirFile.listFiles())) {
                     if (file.getName().contains("jpeg")) {
-                        file.delete();
+                        if (file.delete()) {
+                            pictureName = new Date().getTime() + ".jpeg";
+                        }
                     }
                 }
-                pictureName = new Date().getTime() + ".jpeg";
                 try (
                         BufferedWriter albumFileWriter = new BufferedWriter(new FileWriter(albumFilePath));
                         FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac");
