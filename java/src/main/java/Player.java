@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.Objects;
 
 public class Player extends HttpServlet {
-    String musicPath = "/home/store/music";
+    String musicDirPath = "/home/store/music";
     String exeDirPath = "/home/exe";
     String albumFilePath = exeDirPath + "/player/tmp/album";
     String volumeFilePath = exeDirPath + "/player/tmp/volume";
@@ -48,17 +48,17 @@ public class Player extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        File musicDir = new File(musicPath);
-        if (musicDir.exists() && musicDir.isDirectory()) {
-            String picturePath = exeDirPath + "/player/tmp";
+        File musicDirFile = new File(musicDirPath);
+        if (musicDirFile.exists()) {
+            String pictureDirPath = exeDirPath + "/player/tmp";
             String pictureName = "picture.jpeg";
             File dirFile = new File(exeDirPath);
             for (String file : Objects.requireNonNull(dirFile.list())) {
                 if (file.contains("apache-tom")) {
-                    picturePath = exeDirPath + "/" + file + "/" + "webapps/ROOT";
+                    pictureDirPath = exeDirPath + "/" + file + "/" + "webapps/ROOT";
                 }
             }
-            dirFile = new File(picturePath);
+            dirFile = new File(pictureDirPath);
             for (File file : Objects.requireNonNull(dirFile.listFiles())) {
                 if (file.getName().contains("jpeg")) {
                     pictureName = file.getName();
@@ -76,7 +76,7 @@ public class Player extends HttpServlet {
                 try (
                         BufferedWriter albumFileWriter = new BufferedWriter(new FileWriter(albumFilePath));
                         FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac");
-                        FileOutputStream pictureOs = new FileOutputStream(picturePath + "/" + pictureName)) {
+                        FileOutputStream pictureOs = new FileOutputStream(pictureDirPath + "/" + pictureName)) {
                     albumFileWriter.write(albumToPlay);
                     FLACDecoder flacDec = new FLACDecoder(flacIs);
                     Metadata[] metas = flacDec.readMetadata();
@@ -94,7 +94,7 @@ public class Player extends HttpServlet {
                     e.printStackTrace();
                 }
             }
-            String[] albums = musicDir.list();
+            String[] albums = musicDirFile.list();
             Arrays.sort(Objects.requireNonNull(albums));
             if (Objects.requireNonNull(albums).length != 0) {
                 resp.setContentType("text/html");
@@ -113,7 +113,7 @@ public class Player extends HttpServlet {
                             "/" + pictureName + " style=width:200px;height:200px;position:fixed;top:250px;left:20px;>");
                     for (String album : albums) {
                         resp.getWriter().println("<p style=text-align:center;color:white;font-size:150%><a href=http://" + req.getHeader("Host") +
-                                "/player?album=" + musicPath + "/" + album.replace(" ", "%20") + ">" +
+                                "/player?album=" + musicDirPath + "/" + album.replace(" ", "%20") + ">" +
                                 album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace(" anD ", " & ").replace("___", "</a> <b><small>") +
                                 "</a></b></small></p>");
                     }
