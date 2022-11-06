@@ -99,8 +99,9 @@ public class Player extends HttpServlet {
             if (Objects.requireNonNull(albums).length != 0) {
                 resp.setContentType("text/html");
                 try {
+                    resp.getWriter().println("<head><meta charset=UTF-8><title>player</title></head>");
+                    resp.getWriter().println("<body style=background-color:gray>");
                     resp.getWriter().println("<iframe name=vol height=45px width=50px style=border:none;position:fixed;top:40px;right:60px;></iframe>");
-                    resp.getWriter().println("<body style=\"background-color:gray\">");
                     resp.getWriter().println("<form action=http://" + req.getHeader("Host") +
                             "/player?volume=up method=post target=vol style=position:fixed;top:40px;left:20px;>");
                     resp.getWriter().println("<input type=submit value=up>");
@@ -117,7 +118,7 @@ public class Player extends HttpServlet {
                                 album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace(" anD ", " & ").replace("___", "</a> <b><small>") +
                                 "</a></b></small></p>");
                     }
-                    resp.getWriter().println("<p style=\"font-size:1em;text-align:center\">_ _ _ _ _ _ _</p>");
+                    resp.getWriter().println("<p style=font-size:1em;text-align:center>_ _ _ _ _ _ _</p>");
                     resp.getWriter().println("</body>");
                 } catch (IOException e) {
                     e.printStackTrace();
