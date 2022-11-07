@@ -99,7 +99,7 @@ public class Player extends HttpServlet {
             if (Objects.requireNonNull(albums).length != 0) {
                 resp.setContentType("text/html");
                 try {
-                    resp.getWriter().println("<head><meta charset=UTF-8><title>player</title></head>");
+                    resp.getWriter().println("<head><meta charset=UTF-8><title>player</title><link rel=apple-touch-icon href=apple-touch-icon.png type=image/png></head>");
                     resp.getWriter().println("<body style=background-color:gray>");
                     resp.getWriter().println("<iframe name=vol height=45px width=50px style=border:none;position:fixed;top:40px;right:60px;></iframe>");
                     resp.getWriter().println("<form action=http://" + req.getHeader("Host") +
