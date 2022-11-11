@@ -14,7 +14,7 @@ static int nb_out_samples;
 static uint8_t *ff_output;
 static snd_mixer_elem_t *melem;
 
-static int check_album(void) {
+static int next_album(void) {
 	char next[album_str_len];
 	get_album(next);
 	return strcmp(next, getenv(curr_album_env));
@@ -81,7 +81,7 @@ static void error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecod
 
 
 static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data){
-	if (check_album()){
+	if (next_album()){
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
 	snd_pcm_t *pcm_p = (snd_pcm_t*)client_data;
@@ -202,7 +202,7 @@ void main(void) {
 		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
 			if (!FLAC__stream_decoder_process_until_end_of_stream(decoder)){
-				if (!check_album()){
+				if (!next_album()){
 					stop_play();
 				}
 				snd_mixer_close(mxr);
