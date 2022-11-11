@@ -2,15 +2,6 @@
 	#include "funcs.h"
 #endif
 
-void stop_play(void) {
-	int play_file_dstr;
-	if ((play_file_dstr = open(album_file_path, O_NONBLOCK|O_WRONLY)) != -1) {
-		char play_val = 0;
-		write(play_file_dstr, &play_val, 1);
-		close(play_file_dstr);
-	}
-}
-
 void get_album(char *ret) {
 	int album_file_dstr;
 	if ((album_file_dstr = open(album_file_path, O_NONBLOCK|O_RDONLY)) != -1) {
@@ -18,6 +9,13 @@ void get_album(char *ret) {
 		ret[size] = 0;
 		close(album_file_dstr);
 	}
+}
+
+char play_next(void){
+	char alb[album_str_len];
+	alb[0] = 0;
+	get_album(alb);
+	return alb[0];
 }
 
 file_lst* get_file_lst(char *dirname){

@@ -46,6 +46,6 @@ typedef struct lst{
   struct lst *next;
 } file_lst;
 
-extern file_lst* get_file_lst(char *dirname);
-extern void stop_play(void);
 extern void get_album(char *ret);
+extern char play_next(void);
+extern file_lst* get_file_lst(char *dirname);

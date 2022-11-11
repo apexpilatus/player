@@ -14,12 +14,6 @@ static int nb_out_samples;
 static uint8_t *ff_output;
 static snd_mixer_elem_t *melem;
 
-static int next_album(void) {
-	char next[album_str_len];
-	get_album(next);
-	return strcmp(next, getenv(curr_album_env));
-}
-
 static void write_vol_to_file(char * vol){
         int vol_file_dstr;
         if ((vol_file_dstr = open(volume_file_path, O_NONBLOCK|O_WRONLY)) != -1) {
@@ -81,7 +75,7 @@ static void error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecod
 
 
 static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data){
-	if (next_album()){
+	if (play_next()){
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
 	snd_pcm_t *pcm_p = (snd_pcm_t*)client_data;
@@ -149,7 +143,6 @@ void main(void) {
 	FLAC__stream_decoder_set_metadata_ignore_all(decoder);
 	snd_pcm_t *pcm_p;
 	if (snd_pcm_open(&pcm_p, card_pcm_name, SND_PCM_STREAM_PLAYBACK, 0)) {
-		stop_play();
 		execl(exec_waiter_path, player_name, "cannot open pcm", NULL);
 	}
 	snd_pcm_hw_params_t *pcm_hw;
@@ -160,34 +153,29 @@ void main(void) {
 	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, 96000, dir);
 	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S24_3LE);
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
-		stop_play();
 		snd_pcm_close(pcm_p);
 		FLAC__stream_decoder_delete(decoder);
 		execl(exec_waiter_path, player_name, "cannot start playing", NULL);
 	}
 	snd_mixer_t *mxr;
 	if (snd_mixer_open(&mxr, 0)){
-		stop_play();
 		snd_pcm_close(pcm_p);
 		FLAC__stream_decoder_delete(decoder);
 		execl(exec_waiter_path, player_name, "cannot open mixer", NULL);
 	}
 	if (snd_mixer_attach(mxr, getenv(card_name_env))){
-		stop_play();
 		snd_mixer_close(mxr);
 		snd_pcm_close(pcm_p);
 		FLAC__stream_decoder_delete(decoder);
 		execl(exec_waiter_path, player_name, "cannot attach mixer", NULL);
 	}
 	if (snd_mixer_selem_register(mxr, NULL, NULL)){
-		stop_play();
 		snd_mixer_close(mxr);
 		snd_pcm_close(pcm_p);
 		FLAC__stream_decoder_delete(decoder);
 		execl(exec_waiter_path, player_name, "cannot register simple elem", NULL);
 	}
 	if (snd_mixer_load(mxr)){
-		stop_play();
 		snd_mixer_close(mxr);
 		snd_pcm_close(pcm_p);
 		FLAC__stream_decoder_delete(decoder);
@@ -202,9 +190,6 @@ void main(void) {
 		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
 			if (!FLAC__stream_decoder_process_until_end_of_stream(decoder)){
-				if (!next_album()){
-					stop_play();
-				}
 				snd_mixer_close(mxr);
 				snd_pcm_close(pcm_p);
 				FLAC__StreamDecoderState dec_state = FLAC__stream_decoder_get_state(decoder);
@@ -214,7 +199,6 @@ void main(void) {
 			}
 			FLAC__stream_decoder_finish(decoder);
 		} else {
-			stop_play();
 			snd_mixer_close(mxr);
 			snd_pcm_close(pcm_p);
 			FLAC__stream_decoder_delete(decoder);
@@ -223,7 +207,6 @@ void main(void) {
 		files=files->next;
 	}
 	snd_pcm_drain(pcm_p);
-	stop_play();
 	snd_mixer_close(mxr);
 	snd_pcm_close(pcm_p);
 	FLAC__stream_decoder_delete(decoder);

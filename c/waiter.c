@@ -2,15 +2,13 @@
 	#include "funcs.h"
 #endif
 
-static char check_play(void){
+static void corrupt_file(void) {
 	int play_file_dstr;
-	if ((play_file_dstr = open(album_file_path, O_NONBLOCK|O_RDONLY)) != -1) {
-		char play_val;
-		read(play_file_dstr, &play_val, 1);
+	if ((play_file_dstr = open(album_file_path, O_NONBLOCK|O_WRONLY)) != -1) {
+		char play_val = 0;
+		write(play_file_dstr, &play_val, 1);
 		close(play_file_dstr);
-		return play_val;
 	}
-	return 0;
 }
 
 static int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned short *sample_size){
@@ -42,7 +40,7 @@ static int get_params(char *album_val, file_lst *files, unsigned int *rate, unsi
 
 void main(int argsn, char *args[]){
 	while (1) {
-		if (check_play() == 0) {
+		if (!play_next()) {
 			sleep(time_out);
 		} else {
 			char album_val[album_str_len];
@@ -51,11 +49,11 @@ void main(int argsn, char *args[]){
 			unsigned short sample_size;
 			file_lst *files=get_file_lst(album_val);
 			if (!files->next && !files->name){
-				stop_play();
+				corrupt_file();
 				execl(exec_waiter_path, player_name, "directory is empty", (char *) NULL);
 			}
 			if (get_params(album_val, files, &rate, &sample_size)){
-				stop_play();
+				corrupt_file();
 				execl(exec_waiter_path, player_name, "files have different format or cannot read", files->name, (char *) NULL);
 			}
 			char rate_as_str[7], sample_size_as_str[3];
@@ -78,9 +76,10 @@ void main(int argsn, char *args[]){
 				strcpy(env[3], sample_size_env);
 				strcpy(env[3]+strlen(env[3]), "=");
 				strcpy(env[3]+strlen(env[3]), sample_size_as_str);
+				corrupt_file();
 				execle(exec_play_path, player_name, (char *) NULL, env);
 			}
-			stop_play();
+			corrupt_file();
 			execl(exec_waiter_path, player_name, "no card to play", (char *) NULL);
 		}
 	}
