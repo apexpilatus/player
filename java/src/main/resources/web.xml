@@ -13,13 +13,18 @@
     </description>
     <servlet>
         <servlet-name>player</servlet-name>
-        <description>
-            player
-        </description>
         <servlet-class>Player</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>control</servlet-name>
+        <servlet-class>Control</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>player</servlet-name>
         <url-pattern>/player</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>control</servlet-name>
+        <url-pattern>/control</url-pattern>
     </servlet-mapping>
 </web-app>

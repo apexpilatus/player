@@ -13,36 +13,6 @@ public class Player extends HttpServlet {
     String[] musicDirPaths = {"/home/store/music", "/home/disk/music"};
     String exeDirPath = "/home/exe";
     String albumFilePath = exeDirPath + "/player/tmp/album";
-    String volumeFilePath = exeDirPath + "/player/tmp/volume";
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        String volChangeDirection = req.getParameter("volume");
-        File volFile = new File(volumeFilePath);
-        if (volChangeDirection != null) {
-            int vol = 5;
-            if (volFile.exists()) {
-                try (BufferedReader volumeFileReader = new BufferedReader(new FileReader(volumeFilePath))) {
-                    vol = volumeFileReader.read();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            switch (volChangeDirection) {
-                case "up" -> vol++;
-                case "down" -> vol--;
-                default -> {
-                }
-            }
-            resp.setContentType("text/plain");
-            try (BufferedWriter albumFileWriter = new BufferedWriter(new FileWriter(volumeFilePath))) {
-                albumFileWriter.write(vol);
-                resp.getWriter().println(vol);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
@@ -104,16 +74,11 @@ public class Player extends HttpServlet {
             try {
                 resp.getWriter().println("<head><meta charset=UTF-8><title>player</title><link rel=apple-touch-icon href=apple-touch-icon.png type=image/png></head>");
                 resp.getWriter().println("<body style=background-color:gray>");
-                resp.getWriter().println("<iframe name=vol height=45px width=50px style=border:none;position:fixed;top:40px;right:60px;></iframe>");
-                resp.getWriter().println("<form action=http://" + req.getHeader("Host") +
-                        "/player?volume=up method=post target=vol style=position:fixed;top:40px;left:20px;>");
-                resp.getWriter().println("<input type=submit value=up>");
-                resp.getWriter().println("</form>");
-                resp.getWriter().println("<form action=http://" + req.getHeader("Host") +
-                        "/player?volume=down method=post target=vol style=position:fixed;top:100px;left:20px;>");
-                resp.getWriter().println("<input type=submit value=dw>");
-                resp.getWriter().println("</form>");
-                resp.getWriter().println("<img src=" + pictureName + " style=width:200px;height:200px;position:fixed;top:250px;left:20px;>");
+                resp.getWriter().println("<script src=volume.js></script>");
+                resp.getWriter().println("<p id=volume style=position:fixed;top:50px;left:20px;></p>");
+                resp.getWriter().println("<button type=button onclick=volume(\"up\") style=position:fixed;top:150px;left:20px;>up</button>");
+                resp.getWriter().println("<button type=button onclick=volume(\"down\") style=position:fixed;top:200px;left:20px;>dw</button>");
+                resp.getWriter().println("<img src=" + pictureName + " style=width:200px;height:200px;position:fixed;top:300px;left:20px;>");
             } catch (IOException e) {
                 e.printStackTrace();
             }
