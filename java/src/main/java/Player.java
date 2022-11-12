@@ -94,18 +94,17 @@ public class Player extends HttpServlet {
             try {
                 resp.getWriter().println("<head><meta charset=UTF-8><title>player</title><link rel=apple-touch-icon href=apple-touch-icon.png type=image/png></head>");
                 resp.getWriter().println("<body style=background-color:gray>");
-                resp.getWriter().println("<script src=volume.js></script>");
                 resp.getWriter().println("<script src=play.js></script>");
                 resp.getWriter().println("<p id=volume style=position:fixed;top:50px;left:20px;></p>");
-                resp.getWriter().println("<button type=button onclick=volume(\"up\") style=position:fixed;top:150px;left:20px;>up</button>");
-                resp.getWriter().println("<button type=button onclick=volume(\"down\") style=position:fixed;top:200px;left:20px;>dw</button>");
+                resp.getWriter().println("<button type=button onclick=volume(\"up\") style=border-radius:50%;color:white;background-color:black;font-size:20px;position:fixed;top:150px;left:20px;>up</button>");
+                resp.getWriter().println("<button type=button onclick=volume(\"down\") style=border-radius:50%;color:white;background-color:black;font-size:20px;position:fixed;top:200px;left:20px;>dw</button>");
                 resp.getWriter().println("<img id=picture src=" + pictureName + " style=width:200px;height:200px;position:fixed;top:300px;left:20px;>");
             } catch (IOException e) {
                 e.printStackTrace();
             }
             albums.forEach((album, albumPath) -> {
                 try {
-                    resp.getWriter().println("<p style=text-align:center;color:blue;font-size:150%; onclick=play(\"" + (albumPath + "/" + album).replace(" ", "&") + "\") ><b>" +
+                    resp.getWriter().println("<p style=text-align:center;color:black;font-size:150%; onclick=play(\"" + (albumPath + "/" + album).replace(" ", "&") + "\") ><b>" +
                             album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace(" anD ", " & ").replace("___", " </b><small style=color:white;>") +
                             "</b></small></p>");
                 } catch (IOException e) {
