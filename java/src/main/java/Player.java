@@ -113,8 +113,7 @@ public class Player extends HttpServlet {
                         "/player?volume=down method=post target=vol style=position:fixed;top:100px;left:20px;>");
                 resp.getWriter().println("<input type=submit value=dw>");
                 resp.getWriter().println("</form>");
-                resp.getWriter().println("<img src=http://" + req.getHeader("Host") +
-                        "/" + pictureName + " style=width:200px;height:200px;position:fixed;top:250px;left:20px;>");
+                resp.getWriter().println("<img src=" + pictureName + " style=width:200px;height:200px;position:fixed;top:250px;left:20px;>");
             } catch (IOException e) {
                 e.printStackTrace();
             }
