@@ -39,9 +39,13 @@ public class Control extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         resp.setContentType("text/html");
+        String albumToList = req.getParameter("album");
         try {
             resp.getWriter().println("<head><meta charset=UTF-8></head>");
             resp.getWriter().println("<body style=background-color:gray>");
+            resp.getWriter().println("<p>" + albumToList + </p>");
+            resp.getWriter().println("<p style=font-size:1em;text-align:center>_ _ _ _ _ _ _</p>");
+            resp.getWriter().println("</body>");
         } catch (IOException e) {
             e.printStackTrace();
         }
