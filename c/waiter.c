@@ -44,7 +44,7 @@ void main(int argsn, char *args[]){
 			sleep(time_out);
 		} else {
 			char album_val[album_str_len];
-			get_album(album_val);
+			get_file_content(album_file_path, album_val);
 			unsigned int rate;
 			unsigned short sample_size;
 			file_lst *files=get_file_lst(album_val);

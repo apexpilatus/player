@@ -183,6 +183,14 @@ void main(void) {
 	}
 	melem = snd_mixer_first_elem(mxr);
 	file_lst *files=get_file_lst(getenv(curr_album_env));
+	char file_to_play[10];
+	get_file_content(track_file_path, file_to_play);
+	while (files->next) {
+		if(!strcmp(files->name, file_to_play)){
+			break;
+		}
+		files=files->next;
+	}
 	while (files->next) {
 		char file_name[album_str_len + 50];
 		sprintf(file_name, "%s/%s", getenv(curr_album_env), files->name);

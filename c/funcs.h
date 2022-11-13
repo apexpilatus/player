@@ -33,6 +33,7 @@
 #define sample_size_env "FLACSAMPLE"
 
 #define album_file_path "/home/exe/player/tmp/album"
+#define track_file_path "/home/exe/player/tmp/track"
 #define volume_file_path "/home/exe/player/tmp/volume"
 #define exec_play_path "/home/exe/player/player"
 #define exec_waiter_path "/home/exe/player/waiter"
@@ -46,6 +47,6 @@ typedef struct lst{
   struct lst *next;
 } file_lst;
 
-extern void get_album(char *ret);
+extern void get_file_content(char *file, char *ret);
 extern char play_next(void);
 extern file_lst* get_file_lst(char *dirname);

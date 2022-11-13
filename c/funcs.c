@@ -2,9 +2,9 @@
 	#include "funcs.h"
 #endif
 
-void get_album(char *ret) {
+void get_file_content(char *file, char *ret) {
 	int album_file_dstr;
-	if ((album_file_dstr = open(album_file_path, O_NONBLOCK|O_RDONLY)) != -1) {
+	if ((album_file_dstr = open(file, O_NONBLOCK|O_RDONLY)) != -1) {
 		ssize_t size = read(album_file_dstr, ret, album_str_len);
 		ret[size] = 0;
 		close(album_file_dstr);
@@ -14,7 +14,7 @@ void get_album(char *ret) {
 char play_next(void){
 	char alb[album_str_len];
 	alb[0] = 0;
-	get_album(alb);
+	get_file_content(album_file_path, alb);
 	return alb[0];
 }
 
