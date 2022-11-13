@@ -21,6 +21,6 @@ function tracks(album){
 	xhttp.onload = function() {
 		document.getElementById("tracks").innerHTML = this.responseText;
 	}
-	xhttp.open("POST", window.location.href.replace("player", "control") + "?album=" + album.replace(/&/g, " "));
+	xhttp.open("GET", window.location.href.replace("player", "control") + "?album=" + album.replace(/&/g, " "));
 	xhttp.send();
 }
