@@ -1,6 +1,8 @@
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jflac.FLACDecoder;
+import org.jflac.metadata.Metadata;
 
 import java.io.*;
 import java.util.Arrays;
@@ -76,7 +78,39 @@ public class Control extends HttpServlet {
                 String[] files = albumDirPath.list();
                 Arrays.sort(Objects.requireNonNull(files));
                 for (String file:files) {
-                    htmlFileWriter.write("<p onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")>" + file + "</p>\n");
+                    try (FileInputStream flacIs = new FileInputStream(albumToList + "/" + file)){
+                        FLACDecoder flacDec = new FLACDecoder(flacIs);
+                        Metadata[] metas = flacDec.readMetadata();
+                        final String[] vorbisTrack = {""};
+                        final String[] vorbisTitle = {""};
+                        final String[] vorbisAlbum = {""};
+                        final String[] vorbisArtist = {""};
+                        for (Metadata meta : metas) {
+                            if (meta.toString().contains("VorbisComment")) {
+                                meta.toString().lines().forEach((line)->{
+                                    if (line.contains("TRACKNUMBER")){
+                                        vorbisTrack[0] = line.split("=")[1] + " - ";
+                                    }
+                                    if (line.contains("TITLE")){
+                                        vorbisTitle[0] += line.split("=")[1];
+                                    }
+                                    if (line.contains("ALBUM")){
+                                        vorbisAlbum[0] = line.split("=")[1];
+                                    }
+                                    if (line.contains("ARTIST")){
+                                        vorbisArtist[0] = line.split("=")[1];
+                                    }
+                                });
+                            }
+                        }
+                        if(file.equals("01.flac")){
+                            htmlFileWriter.write("<p style=color:white;font-size:140%; onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")><b>" + vorbisArtist[0] + "</b></p>\n");
+                            htmlFileWriter.write("<p style=color:blue;font-size:130%; onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")><b>" + vorbisAlbum[0] + "</b></p>\n");
+                        }
+                        htmlFileWriter.write("<p style=color:black;font-size:120%; onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")>" + vorbisTrack[0] + vorbisTitle[0] + "</p>\n");
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
                 }
             }
             htmlFileWriter.write("</body>\n");
