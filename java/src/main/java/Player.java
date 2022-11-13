@@ -100,7 +100,7 @@ public class Player extends HttpServlet {
                 resp.getWriter().println("<button type=button onclick=volume(\"down\") style=border-radius:50%;color:white;background-color:black;font-size:20px;position:fixed;top:200px;left:20px;>dw</button>");
                 resp.getWriter().println("<img id=picture src=" + pictureName + " style=width:200px;height:200px;position:fixed;top:300px;left:20px;>");
                 
-                resp.getWriter().println("<head><meta charset=UTF-8><title>player</title><link rel=apple-touch-icon href=apple-touch-icon.png type=image/png></head>");
+                resp.getWriter().println("<button type=button onclick=tracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\") style=border-radius:50%;color:white;background-color:black;font-size:20px;position:fixed;top:100px;right:20px;>dw</button>");
                 resp.getWriter().println("<iframe style=position:fixed;top:300px;right:20px;></iframe>");
                 
             } catch (IOException e) {
@@ -108,7 +108,7 @@ public class Player extends HttpServlet {
             }
             albums.forEach((album, albumPath) -> {
                 try {
-                    resp.getWriter().println("<p style=text-align:center;color:black;font-size:150%; onclick=play(\"" + (albumPath + "/" + album).replace(" ", "&") + "\") ><b>" +
+                    resp.getWriter().println("<p style=text-align:center;color:black;font-size:150%; onclick=play(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")><b>" +
                             album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace(" anD ", " & ").replace("___", " </b><small style=color:white;>") +
                             "</b></small></p>");
                 } catch (IOException e) {
