@@ -43,7 +43,9 @@ public class Control extends HttpServlet {
         try {
             resp.getWriter().println("<head><meta charset=UTF-8></head>");
             resp.getWriter().println("<body style=background-color:gray>");
-            resp.getWriter().println("<p>" + albumToList + "</p>");
+            if (albumToList != null) {
+                resp.getWriter().println("<p>" + albumToList + "</p>");
+            }
             resp.getWriter().println("<p style=font-size:1em;text-align:center>_ _ _ _ _ _ _</p>");
             resp.getWriter().println("</body>");
         } catch (IOException e) {
