@@ -38,7 +38,7 @@ public class Control extends HttpServlet {
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        resp.setContentType("text/html");
+        resp.setContentType("text/plain");
         String albumToList = req.getParameter("album");
         try {
             resp.getWriter().println("<head><meta charset=UTF-8></head>");
