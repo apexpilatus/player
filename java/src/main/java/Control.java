@@ -40,7 +40,8 @@ public class Control extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         resp.setContentType("text/html");
         try {
-            resp.getWriter().println("fuck");
+            resp.getWriter().println("<head><meta charset=UTF-8></head>");
+            resp.getWriter().println("<body style=background-color:gray>");
         } catch (IOException e) {
             e.printStackTrace();
         }
