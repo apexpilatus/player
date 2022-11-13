@@ -101,7 +101,7 @@ public class Player extends HttpServlet {
                 resp.getWriter().println("<img id=picture src=" + pictureName + " style=width:200px;height:200px;position:fixed;top:300px;left:20px;>");
                 
                 resp.getWriter().println("<button type=button onclick=tracks(\"" + "/home/store/music/ACfuckingslashDC___The Razors Edge".replace(" ", "&") + "\") style=border-radius:50%;color:white;background-color:black;font-size:20px;position:fixed;top:100px;right:20px;>dw</button>");
-                resp.getWriter().println("<iframe style=position:fixed;top:300px;right:20px;></iframe>");
+                resp.getWriter().println("<iframe id=tracks style=position:fixed;top:300px;right:20px;></iframe>");
                 
             } catch (IOException e) {
                 e.printStackTrace();
