@@ -7,7 +7,7 @@ function play(album){
 	xhttp.send();
 }
 
-function volume(direction){
+function setvolume(direction){
 	const xhttp = new XMLHttpRequest();
 	xhttp.onload = function() {
 		document.getElementById("volume").innerHTML = this.responseText;
@@ -16,10 +16,10 @@ function volume(direction){
 	xhttp.send();
 }
 
-function tracks(album){
+function gettracks(album){
 	const xhttp = new XMLHttpRequest();
 	xhttp.onload = function() {
-		document.getElementById("tracks").innerHTML = this.responseText;
+		document.getElementById("tracks").src = "data:text/html," + this.responseText;
 	}
 	xhttp.open("GET", window.location.href.replace("player", "control") + "?album=" + album.replace(/&/g, " "));
 	xhttp.send();

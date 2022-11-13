@@ -39,7 +39,7 @@ public class Control extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         resp.setContentType("text/html");
-        try (BufferedWriter albumFileWriter = new BufferedWriter(new FileWriter(volumeFilePath))) {
+        try {
             resp.getWriter().println("fuck");
         } catch (IOException e) {
             e.printStackTrace();
