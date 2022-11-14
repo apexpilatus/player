@@ -73,7 +73,7 @@ public class Control extends HttpServlet {
             htmlFileWriter.write("<head><meta charset=UTF-8></head>\n");
             htmlFileWriter.write("<body style=background-color:gray>\n");
             htmlFileWriter.write("<script src=play.js></script>\n");
-            htmlFileWriter.write("<button type=button onclick=hideTracks() style=border-radius:50%;color:white;background-color:black;font-size:15px;position:fixed;top:150px;right:20px;>hide</button>");
+            htmlFileWriter.write("<button type=button onclick=hideTracks() style=border-radius:100%;color:white;background-color:black;font-size:20px;position:fixed;bottom:10px;right:20px;>hide</button>");
             if (albumToList != null) {
                 File albumDirPath = new File(albumToList);
                 String[] files = albumDirPath.list();
