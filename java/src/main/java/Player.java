@@ -104,7 +104,7 @@ public class Player extends HttpServlet {
             resp.getWriter().println("<button type=button onclick=setvolume(\"up\") style=border-radius:50%;color:white;background-color:black;font-size:20px;position:fixed;top:150px;left:20px;>up</button>");
             resp.getWriter().println("<button type=button onclick=setvolume(\"down\") style=border-radius:50%;color:white;background-color:black;font-size:20px;position:fixed;top:200px;left:20px;>dw</button>");
             resp.getWriter().println("<img id=picture src=" + pictureName + " style=width:200px;height:200px;position:fixed;top:300px;left:20px;>");
-            resp.getWriter().println("<iframe id=tracks height=400 style=position:fixed;top:300px;right:20px;></iframe>");
+            resp.getWriter().println("<iframe id=tracks height=400 style=position:fixed;top:150px;right:20px;></iframe>");
         } catch (IOException e) {
             e.printStackTrace();
         }

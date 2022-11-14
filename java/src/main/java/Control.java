@@ -113,6 +113,7 @@ public class Control extends HttpServlet {
                     }
                 }
             }
+	    htmlFileWriter.write("<p style=font-size:1em;>_ _ _ _ _ _ _</p>");
             htmlFileWriter.write("</body>\n");
             resp.getWriter().println(htmlName);
         } catch (IOException e) {
