@@ -73,12 +73,13 @@ public class Control extends HttpServlet {
             htmlFileWriter.write("<head><meta charset=UTF-8></head>\n");
             htmlFileWriter.write("<body style=background-color:gray>\n");
             htmlFileWriter.write("<script src=play.js></script>\n");
+            htmlFileWriter.write("<button type=button onclick=hideTracks() style=border-radius:50%;color:white;background-color:black;font-size:15px;position:fixed;top:150px;right:20px;>hide</button>");
             if (albumToList != null) {
                 File albumDirPath = new File(albumToList);
                 String[] files = albumDirPath.list();
                 Arrays.sort(Objects.requireNonNull(files));
-                for (String file:files) {
-                    try (FileInputStream flacIs = new FileInputStream(albumToList + "/" + file)){
+                for (String file : files) {
+                    try (FileInputStream flacIs = new FileInputStream(albumToList + "/" + file)) {
                         FLACDecoder flacDec = new FLACDecoder(flacIs);
                         Metadata[] metas = flacDec.readMetadata();
                         final String[] vorbisTrack = {""};
@@ -87,33 +88,33 @@ public class Control extends HttpServlet {
                         final String[] vorbisArtist = {""};
                         for (Metadata meta : metas) {
                             if (meta.toString().contains("VorbisComment")) {
-                                meta.toString().lines().forEach((line)->{
-                                    if (line.contains("TRACKNUMBER")){
+                                meta.toString().lines().forEach((line) -> {
+                                    if (line.contains("TRACKNUMBER")) {
                                         vorbisTrack[0] = line.split("=")[1] + " - ";
                                     }
-                                    if (line.contains("TITLE")){
+                                    if (line.contains("TITLE")) {
                                         vorbisTitle[0] += line.split("=")[1];
                                     }
-                                    if (line.contains("ALBUM")){
+                                    if (line.contains("ALBUM")) {
                                         vorbisAlbum[0] = line.split("=")[1];
                                     }
-                                    if (line.contains("ARTIST")){
+                                    if (line.contains("ARTIST")) {
                                         vorbisArtist[0] = line.split("=")[1];
                                     }
                                 });
                             }
                         }
-                        if(file.equals("01.flac")){
+                        if (file.equals("01.flac")) {
                             htmlFileWriter.write("<p style=color:white;font-size:140%; onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")><b>" + vorbisArtist[0] + "</b></p>\n");
                             htmlFileWriter.write("<p style=color:blue;font-size:130%; onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")><b>" + vorbisAlbum[0] + "</b></p>\n");
                         }
                         htmlFileWriter.write("<p style=color:black;font-size:120%; onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")>" + vorbisTrack[0] + vorbisTitle[0] + "</p>\n");
-                    }catch (IOException e){
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }
-	    htmlFileWriter.write("<p style=font-size:1em;>_ _ _ _ _ _ _</p>");
+            htmlFileWriter.write("<p style=font-size:1em;>_ _ _ _ _ _ _</p>");
             htmlFileWriter.write("</body>\n");
             resp.getWriter().println(htmlName);
         } catch (IOException e) {
