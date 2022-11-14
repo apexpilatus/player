@@ -95,7 +95,9 @@ public class Player extends HttpServlet {
         }
         resp.setContentType("text/html");
         try {
-            resp.getWriter().println("<head><meta charset=UTF-8><title>player</title><link rel=apple-touch-icon href=apple-touch-icon.png type=image/png></head>");
+            resp.getWriter().println("<head><meta charset=UTF-8><title>player</title>" +
+                    "<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>" +
+                    "</head>");
             resp.getWriter().println("<body style=background-color:gray>");
             resp.getWriter().println("<script src=play.js></script>");
             resp.getWriter().println("<p id=volume style=position:fixed;top:50px;left:20px;></p>");
