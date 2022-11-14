@@ -99,7 +99,7 @@ public class Player extends HttpServlet {
                     "<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>" +
                     "</head>");
             resp.getWriter().println("<body style=background-color:gray>");
-            resp.getWriter().println("<script src=play.js></script>");
+            resp.getWriter().println("<script src=main.js></script>");
             resp.getWriter().println("<p id=volume style=position:fixed;top:50px;left:20px;></p>");
             resp.getWriter().println("<button type=button onclick=setvolume(\"up\") style=border-radius:50%;color:white;background-color:black;font-size:20px;position:fixed;top:150px;left:20px;>up</button>");
             resp.getWriter().println("<button type=button onclick=setvolume(\"down\") style=border-radius:50%;color:white;background-color:black;font-size:20px;position:fixed;top:200px;left:20px;>dw</button>");
