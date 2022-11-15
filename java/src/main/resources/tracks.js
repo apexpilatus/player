@@ -2,7 +2,7 @@ function play(album, track){
 	const xhttp = new XMLHttpRequest();
 	xhttp.onload = function() {
 		parent.document.getElementById("picture").src = this.responseText;
-		if(track == "01.flac"){
+		if(track == "all"){
 			parent.document.getElementById("tracks").hidden = true;
 		}
 	}

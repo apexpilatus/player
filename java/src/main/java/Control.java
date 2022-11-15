@@ -105,8 +105,8 @@ public class Control extends HttpServlet {
                             }
                         }
                         if (file.equals("01.flac")) {
-                            htmlFileWriter.write("<p style=color:black;font-size:140%; onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")><b>" + vorbisArtist[0] + "</b></p>\n");
-                            htmlFileWriter.write("<p style=color:white;font-size:130%; onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")><b>" + vorbisAlbum[0] + "</b></p>\n");
+                            htmlFileWriter.write("<p style=color:black;font-size:140%; onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"all\")><b>" + vorbisArtist[0] + "</b></p>\n");
+                            htmlFileWriter.write("<p style=color:white;font-size:130%; onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"all\")><b>" + vorbisAlbum[0] + "</b></p>\n");
                         }
                         htmlFileWriter.write("<p style=color:black;font-size:120%; onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")>" + vorbisTrack[0] + vorbisTitle[0] + "</p>\n");
                     } catch (IOException e) {
