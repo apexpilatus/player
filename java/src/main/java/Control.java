@@ -90,7 +90,7 @@ public class Control extends HttpServlet {
                             if (meta.toString().contains("VorbisComment")) {
                                 meta.toString().lines().forEach((line) -> {
                                     if (line.contains("TRACKNUMBER")) {
-                                        vorbisTrack[0] = line.split("=")[1] + " - ";
+                                        vorbisTrack[0] = line.split("=")[1] + ". ";
                                     }
                                     if (line.contains("TITLE")) {
                                         vorbisTitle[0] += line.split("=")[1];
