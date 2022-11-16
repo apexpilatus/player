@@ -133,7 +133,7 @@ public class Player extends HttpServlet {
         }
         albums.forEach((album, albumPath) -> {
             try {
-                resp.getWriter().println("<p style=text-align:center;color:black;font-size:150%; onclick=gettracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")><b>" +
+                resp.getWriter().println("<p style=padding-left:100px;color:black;font-size:150%; onclick=gettracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")><b>" +
                         album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace(" anD ", " & ").replace("___", " </b><small style=color:white;>") +
                         "</b></small></p>");
             } catch (IOException e) {
