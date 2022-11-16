@@ -73,7 +73,7 @@ public class Player extends HttpServlet {
         String albumToShow = req.getParameter("album");
         if (albumToShow != null) {
             byte[] pictureBytes = {1, 2, 3};
-            try (FileInputStream flacIs = new FileInputStream(albumToShow + "/01.flac")){
+            try (FileInputStream flacIs = new FileInputStream(albumToShow + "/01.flac")) {
                 FLACDecoder flacDec = new FLACDecoder(flacIs);
                 Metadata[] metas = flacDec.readMetadata();
                 for (Metadata meta : metas) {
