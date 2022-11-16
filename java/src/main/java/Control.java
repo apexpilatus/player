@@ -75,6 +75,7 @@ public class Control extends HttpServlet {
             htmlFileWriter.write("<script src=tracks.js></script>\n");
             htmlFileWriter.write("<button type=button onclick=hideTracks() style=border-radius:20%;color:red;background-color:black;font-size:25px;position:fixed;bottom:10px;right:20px;>X</button>");
             if (albumToList != null) {
+                htmlFileWriter.write("<script>getpicturebytes(\"" + albumToList.replace(" ", "&") + "\")</script>\n");
                 File albumDirPath = new File(albumToList);
                 String[] files = albumDirPath.list();
                 Arrays.sort(Objects.requireNonNull(files));

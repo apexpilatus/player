@@ -70,6 +70,28 @@ public class Player extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+        String albumToShow = req.getParameter("album");
+        if (albumToShow != null) {
+            byte[] pictureBytes = {1, 2, 3};
+            try (FileInputStream flacIs = new FileInputStream(albumToShow + "/01.flac")){
+                FLACDecoder flacDec = new FLACDecoder(flacIs);
+                Metadata[] metas = flacDec.readMetadata();
+                for (Metadata meta : metas) {
+                    if (meta.toString().contains("Picture")) {
+                        Picture picMeta = (Picture) meta;
+                        Class<? extends Picture> c = picMeta.getClass();
+                        Field f = c.getDeclaredField("image");
+                        f.setAccessible(true);
+                        pictureBytes = (byte[]) f.get(picMeta);
+                    }
+                }
+                resp.getOutputStream().write(Base64.getEncoder().encode(pictureBytes));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
         Map<String, String> albums = new TreeMap<>();
         for (String musicDirPath : musicDirPaths) {
             File musicDir = new File(musicDirPath);
@@ -104,6 +126,7 @@ public class Player extends HttpServlet {
             resp.getWriter().println("<button type=button onclick=setvolume(\"up\") style=border-radius:20%;color:black;background-color:white;font-size:20px;position:fixed;top:150px;left:20px;>up</button>");
             resp.getWriter().println("<button type=button onclick=setvolume(\"down\") style=border-radius:20%;color:black;background-color:white;font-size:20px;position:fixed;top:200px;left:20px;>dw</button>");
             resp.getWriter().println("<img id=picture src=" + pictureName + " style=width:200px;height:200px;position:fixed;top:300px;left:20px;>");
+            resp.getWriter().println("<img hidden id=picturebytes style=width:100px;height:100px;position:fixed;top:100px;right:520px;>");
             resp.getWriter().println("<iframe hidden id=tracks width=400 height=400 style=position:fixed;top:100px;right:20px;></iframe>");
         } catch (IOException e) {
             e.printStackTrace();

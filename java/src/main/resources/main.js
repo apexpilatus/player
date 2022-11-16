@@ -12,6 +12,7 @@ function gettracks(album){
 	xhttp.onload = function() {
 		document.getElementById("tracks").src = this.responseText;
 		document.getElementById("tracks").hidden = false;
+		document.getElementById("picturebytes").hidden = false;
 	}
 	xhttp.open("GET", window.location.href.replace("player", "control") + "?album=" + album.replace(/&/g, " "));
 	xhttp.send();
