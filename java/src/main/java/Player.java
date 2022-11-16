@@ -122,7 +122,7 @@ public class Player extends HttpServlet {
                     "</head>");
             resp.getWriter().println("<body style=background-color:gray>");
             resp.getWriter().println("<script src=main.js></script>");
-            resp.getWriter().println("<p id=volume style=position:fixed;top:50px;left:20px;></p>");
+            resp.getWriter().println("<p id=volume style=position:fixed;top:50px;left:20px;>&#127911</p>");
             resp.getWriter().println("<button type=button onclick=setvolume(\"up\") style=border-radius:20%;color:black;background-color:white;font-size:20px;position:fixed;top:150px;left:20px;>up</button>");
             resp.getWriter().println("<button type=button onclick=setvolume(\"down\") style=border-radius:20%;color:black;background-color:white;font-size:20px;position:fixed;top:200px;left:20px;>dw</button>");
             resp.getWriter().println("<img id=picture src=" + pictureName + " style=width:200px;height:200px;position:fixed;top:300px;left:20px;>");
