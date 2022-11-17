@@ -71,7 +71,7 @@ public class Control extends HttpServlet {
         resp.setContentType("text/plain");
         try (BufferedWriter htmlFileWriter = new BufferedWriter(new FileWriter(htmlDirPath + "/" + htmlName))) {
             htmlFileWriter.write("<head><meta charset=UTF-8></head>\n");
-            htmlFileWriter.write("<body style=background-color:gray>\n");
+            htmlFileWriter.write("<body style=background-color:#808085;>\n");
             htmlFileWriter.write("<script src=tracks.js></script>\n");
             htmlFileWriter.write("<button type=button onclick=hideTracks() style=border-radius:20%;color:red;background-color:black;font-size:25px;position:fixed;bottom:10px;right:20px;>X</button>");
             if (albumToList != null) {
