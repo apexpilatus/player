@@ -17,3 +17,14 @@ function gettracks(album){
 	xhttp.open("GET", window.location.href.replace("player", "control") + "?album=" + album.replace(/&/g, " "));
 	xhttp.send();
 }
+
+function play(album){
+	const xhttp = new XMLHttpRequest();
+	xhttp.onload = function() {
+		document.getElementById("picture").src = this.responseText;
+		document.getElementById("tracks").hidden = true;
+		document.getElementById("picturebytes").hidden = true;
+	}
+	xhttp.open("POST", window.location.href + "?album=" + album.replace(/&/g, " "));
+	xhttp.send();
+}

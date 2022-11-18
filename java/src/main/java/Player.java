@@ -42,7 +42,7 @@ public class Player extends HttpServlet {
                     BufferedWriter trackFileWriter = new BufferedWriter(new FileWriter(trackFilePath));
                     FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac");
                     FileOutputStream pictureOs = new FileOutputStream(pictureDirPath + "/" + pictureName)) {
-                trackFileWriter.write(trackToPlay == null || trackToPlay.equals("all") ? "01.flac" : trackToPlay);
+                trackFileWriter.write(trackToPlay == null ? "01.flac" : trackToPlay);
                 albumFileWriter.write(albumToPlay);
                 FLACDecoder flacDec = new FLACDecoder(flacIs);
                 Metadata[] metas = flacDec.readMetadata();
@@ -142,7 +142,7 @@ public class Player extends HttpServlet {
             }
         });
         try {
-            resp.getWriter().println("<p style=font-size:1em;text-align:center>_ _ _ _ _ _ _</p>");
+            resp.getWriter().println("<p style=font-size:150%;padding-left:255px;>_ _ _ _ _ _ _</p>");
             resp.getWriter().println("</body>");
         } catch (IOException e) {
             e.printStackTrace();

@@ -71,14 +71,16 @@ public class Control extends HttpServlet {
         resp.setContentType("text/plain");
         try (BufferedWriter htmlFileWriter = new BufferedWriter(new FileWriter(htmlDirPath + "/" + htmlName))) {
             htmlFileWriter.write("<head><meta charset=UTF-8></head>\n");
-            htmlFileWriter.write("<body style=background-color:#808085;>\n");
+            htmlFileWriter.write("<body style=background-color:gray;>\n");
             htmlFileWriter.write("<script src=tracks.js></script>\n");
-            htmlFileWriter.write("<button type=button onclick=hideTracks() style=border-radius:20%;color:red;background-color:black;font-size:25px;position:fixed;bottom:10px;right:20px;>X</button>");
             if (albumToList != null) {
                 htmlFileWriter.write("<script>getpicturebytes(\"" + albumToList.replace(" ", "&") + "\")</script>\n");
                 File albumDirPath = new File(albumToList);
                 String[] files = albumDirPath.list();
                 Arrays.sort(Objects.requireNonNull(files));
+                htmlFileWriter.write("<p style=padding-top:120px;font-size:120%;line-height:180%>\n");
+                String title = "<head><meta charset=UTF-8></head>\n";
+                title += "<body style=background-color:gray;>\n";
                 for (String file : files) {
                     try (FileInputStream flacIs = new FileInputStream(albumToList + "/" + file)) {
                         FLACDecoder flacDec = new FLACDecoder(flacIs);
@@ -106,16 +108,18 @@ public class Control extends HttpServlet {
                             }
                         }
                         if (file.equals("01.flac")) {
-                            htmlFileWriter.write("<p style=color:black;font-size:140%; onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"all\")><b>" + vorbisArtist[0] + "</b></p>\n");
-                            htmlFileWriter.write("<p style=color:white;font-size:130%; onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"all\")><b>" + vorbisAlbum[0] + "</b></p>\n");
+                            title += "<p style=color:black;font-size:120%;><b>" + vorbisArtist[0] + "</b><br><strong style=color:white;>" + vorbisAlbum[0] + "</strong></p>\n";
+                            title += "</body>";
                         }
-                        htmlFileWriter.write("<p style=color:black;font-size:120%; onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")>" + vorbisTrack[0] + vorbisTitle[0] + "</p>\n");
+                        htmlFileWriter.write("<b onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")>" + vorbisTrack[0] + vorbisTitle[0] + "</b><br>\n");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
+                htmlFileWriter.write("</p>\n");
+                htmlFileWriter.write("<iframe height=115 width=400 style=position:fixed;top:0px;left:0px;border:none src=\"data:text/html," + title + "\"></iframe>\n");
             }
-            htmlFileWriter.write("<p style=font-size:1em;>_ _ _ _ _ _ _</p>");
+            htmlFileWriter.write("<button type=button onclick=hideTracks() style=border-radius:20%;color:red;background-color:black;font-size:25px;position:fixed;bottom:10px;right:20px;>X</button>");
             htmlFileWriter.write("</body>\n");
             resp.getWriter().println(htmlName);
         } catch (IOException e) {
