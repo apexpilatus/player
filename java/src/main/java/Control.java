@@ -111,7 +111,7 @@ public class Control extends HttpServlet {
                             title += "<p style=color:black;font-size:120%;><b>" + vorbisArtist[0] + "</b><br><strong style=color:white;>" + vorbisAlbum[0] + "</strong></p>\n";
                             title += "</body>";
                         }
-                        htmlFileWriter.write("<b onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")>" + vorbisTrack[0] + vorbisTitle[0] + "</b><br>\n");
+                        htmlFileWriter.write("<i onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")>" + vorbisTrack[0] + vorbisTitle[0] + "</i><br>\n");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

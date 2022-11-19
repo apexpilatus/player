@@ -129,21 +129,21 @@ public class Player extends HttpServlet {
             resp.getWriter().println("<img id=picture src=" + pictureName + " style=width:250px;height:250px;position:fixed;top:300px;left:5px;>");
             resp.getWriter().println("<img hidden id=picturebytes style=width:100px;height:100px;position:fixed;top:10px;right:10px;>");
             resp.getWriter().println("<iframe hidden id=tracks width=400 height=430 style=\"position:fixed;top:120px;right:10px;border-style:solid;\"></iframe>");
-            resp.getWriter().println("<p style=padding-left:255px;font-size:150%;line-height:180%>");
+            resp.getWriter().println("<ul style=padding-left:275px;font-size:150%;line-height:180%>");
         } catch (IOException e) {
             e.printStackTrace();
         }
         albums.forEach((album, albumPath) -> {
             try {
-                resp.getWriter().println("<b style=color:black; onclick=gettracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>" +
+                resp.getWriter().println("<li><b style=color:black; onclick=gettracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>" +
                         album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace(" anD ", " & ").replace("___", " <small style=color:white;>") +
-                        "</b></small><br>");
+                        "</li></b></small>");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
         try {
-            resp.getWriter().println("_ _ _ _ _ _ _</p>");
+            resp.getWriter().println("</ul>");
             resp.getWriter().println("</body>");
         } catch (IOException e) {
             e.printStackTrace();
