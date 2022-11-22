@@ -150,7 +150,7 @@ void main(void) {
 	snd_pcm_hw_params_any(pcm_p, pcm_hw);
 	snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
 	int dir = 0;
-	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, 96000, dir);
+	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, conversion ? 96000 : atoi(getenv(rate_env)), dir);
 	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S24_3LE);
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
 		snd_pcm_close(pcm_p);
