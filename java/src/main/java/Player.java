@@ -72,6 +72,7 @@ public class Player extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         String albumToShow = req.getParameter("album");
         if (albumToShow != null) {
+            resp.setContentType("image/jpeg");
             byte[] pictureBytes = {1, 2, 3};
             try (FileInputStream flacIs = new FileInputStream(albumToShow + "/01.flac")) {
                 FLACDecoder flacDec = new FLACDecoder(flacIs);
