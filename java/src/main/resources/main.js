@@ -28,3 +28,15 @@ function play(album){
 	xhttp.open("POST", window.location.href + "?album=" + album.replace(/&/g, " "));
 	xhttp.send();
 }
+
+function makebig(){
+    element = document.getElementById("picture");
+    element.style="width:540px;height:540px;position:fixed;top:10px;left:5px;";
+    element.setAttribute("onclick", "makenormal()");
+}
+
+function makenormal(){
+    element = document.getElementById("picture");
+    element.style="width:250px;height:250px;position:fixed;top:300px;left:5px;";
+    element.setAttribute("onclick", "makebig()");
+}
