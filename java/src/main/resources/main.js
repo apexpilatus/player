@@ -31,7 +31,7 @@ function play(album){
 
 function makebig(){
     element = document.getElementById("picture");
-    element.style="width:540px;height:540px;position:fixed;top:10px;left:5px;border-style:solid;border-color:white;";
+    element.style="width:540px;height:540px;position:fixed;top:10px;left:5px;border-style:solid;border-color:black;";
     element.setAttribute("onclick", "makenormal()");
 }
 
