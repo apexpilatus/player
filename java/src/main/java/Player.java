@@ -127,9 +127,9 @@ public class Player extends HttpServlet {
             resp.getWriter().println("<p id=volume style=position:fixed;top:80px;left:20px;font-size:20px;></p>");
             resp.getWriter().println("<button type=button onclick=setvolume(\"up\") style=border-radius:20px;color:black;background-color:white;font-size:20px;position:fixed;top:50px;left:20px;>up</button>");
             resp.getWriter().println("<button type=button onclick=setvolume(\"down\") style=border-radius:20px;color:black;background-color:white;font-size:20px;position:fixed;top:150px;left:20px;>dw</button>");
-            resp.getWriter().println("<img id=picture src=" + pictureName + " onclick=makebig() style=width:250px;height:250px;position:fixed;top:300px;left:5px;border-style:solid;border-color:white;>");
             resp.getWriter().println("<img hidden id=picturebytes style=width:100px;height:100px;position:fixed;top:10px;right:10px;>");
             resp.getWriter().println("<iframe hidden id=tracks width=400 height=430 style=\"position:fixed;top:120px;right:10px;border-style:solid;\"></iframe>");
+            resp.getWriter().println("<img id=picture src=" + pictureName + " onclick=makebig() style=width:250px;height:250px;position:fixed;top:300px;left:5px;border-style:solid;border-color:white;>");
             resp.getWriter().println("<ul style=padding-left:271px;font-size:150%;line-height:180%;list-style-type:circle;>");
         } catch (IOException e) {
             e.printStackTrace();
