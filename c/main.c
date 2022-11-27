@@ -117,7 +117,7 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
-void main(void) {
+int main(void) {
 	conversion = atoi(getenv(rate_env)) != 96000 || atoi(getenv(sample_size_env)) != 24;
 	if (conversion){
 		decode_codec = avcodec_find_decoder_by_name(atoi(getenv(sample_size_env)) == 24 ? "pcm_s24le" : "pcm_s16le");

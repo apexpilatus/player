@@ -1,5 +1,5 @@
 PL_PATH := /home/exe/player
-CC := gcc -O2
+CC := clang -O2
 
 player : waiter main.c
 	$(CC) main.c -o player -Wl,-rpath=$(PL_PATH) -L . -lplayer -lasound -lFLAC -lswresample -lavutil -lavcodec

@@ -38,7 +38,7 @@ static int get_params(char *album_val, file_lst *files, unsigned int *rate, unsi
 	return 0;
 }
 
-void main(int argsn, char *args[]){
+int main(int argsn, char *args[]){
 	while (1) {
 		if (!play_next()) {
 			sleep(time_out);
