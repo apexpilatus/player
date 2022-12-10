@@ -139,7 +139,7 @@ int main(void) {
 	strcpy(card_pcm_name + strlen(card_pcm_name),",0");
 	FLAC__StreamDecoder *decoder = NULL;
 	decoder = FLAC__stream_decoder_new();
-	FLAC__stream_decoder_set_md5_checking(decoder, true);
+	FLAC__stream_decoder_set_md5_checking(decoder, false);
 	FLAC__stream_decoder_set_metadata_ignore_all(decoder);
 	snd_pcm_t *pcm_p;
 	if (snd_pcm_open(&pcm_p, card_pcm_name, SND_PCM_STREAM_PLAYBACK, 0)) {
