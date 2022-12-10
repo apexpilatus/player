@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public class Player extends HttpServlet {
-    String[] musicDirPaths = {"/home/store/music"};
+    String[] musicDirPaths = {"/home/store/music/qbz","/home/store/music/dzr"};
     String exeDirPath = "/home/exe";
     String albumFilePath = exeDirPath + "/player/tmp/album";
     String trackFilePath = exeDirPath + "/player/tmp/track";
