@@ -20,7 +20,7 @@ public class Control extends HttpServlet {
         int vol = 5;
         if (volChangeDirection != null) {
             if (volFile.exists()) {
-                try (BufferedReader volumeFileReader = new BufferedReader(new FileReader(volumeFilePath))) {
+                try (FileInputStream volumeFileReader = new FileInputStream(volumeFilePath)) {
                     vol = volumeFileReader.read();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -32,7 +32,7 @@ public class Control extends HttpServlet {
                 default -> {
                 }
             }
-            try (BufferedWriter albumFileWriter = new BufferedWriter(new FileWriter(volumeFilePath))) {
+            try (FileOutputStream albumFileWriter = new FileOutputStream(volumeFilePath)) {
                 albumFileWriter.write(vol);
             } catch (IOException e) {
                 e.printStackTrace();
