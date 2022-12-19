@@ -17,18 +17,18 @@ public class Control extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         String volChangeDirection = req.getParameter("volume");
         File volFile = new File(volumeFilePath);
-        int vol = 5;
+        byte[] vol = {5};
         if (volChangeDirection != null) {
             if (volFile.exists()) {
                 try (FileInputStream volumeFileReader = new FileInputStream(volumeFilePath)) {
-                    vol = volumeFileReader.read();
+                    volumeFileReader.read(vol);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
             switch (volChangeDirection) {
-                case "up" -> vol++;
-                case "down" -> vol--;
+                case "up" -> vol[0]++;
+                case "down" -> vol[0]--;
                 default -> {
                 }
             }
@@ -40,7 +40,7 @@ public class Control extends HttpServlet {
         }
         resp.setContentType("text/plain");
         try {
-            resp.getWriter().println(vol);
+            resp.getWriter().println(vol[0]);
         } catch (IOException e) {
             e.printStackTrace();
         }
