@@ -96,13 +96,28 @@ public class Control extends HttpServlet {
                                         vorbisTrack[0] = line.split("=")[1] + ". ";
                                     }
                                     if (line.contains("TITLE")) {
-                                        vorbisTitle[0] += line.split("=")[1];
+                                    	for (int i = 1; i < line.split("=").length; i++){
+                                    	    if (i > 1){
+                                    	        vorbisTitle[0] += "=";
+                                    	    }
+                                            vorbisTitle[0] += line.split("=")[i];
+                                        }
                                     }
                                     if (line.contains("ALBUM")) {
-                                        vorbisAlbum[0] = line.split("=")[1];
+                                        for (int i = 1; i < line.split("=").length; i++){
+                                            if (i > 1){
+                                    	        vorbisAlbum[0] += "=";
+                                    	    }
+                                            vorbisAlbum[0] += line.split("=")[i];
+                                        }
                                     }
                                     if (line.contains("ARTIST")) {
-                                        vorbisArtist[0] = line.split("=")[1];
+                                        for (int i = 1; i < line.split("=").length; i++){
+                                            if (i > 1){
+                                    	        vorbisArtist[0] += "=";
+                                    	    }
+                                            vorbisArtist[0] += line.split("=")[i];
+                                        }
                                     }
                                 });
                             }
