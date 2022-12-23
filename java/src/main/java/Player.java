@@ -93,12 +93,12 @@ public class Player extends HttpServlet {
             return;
         }
 
-        Map<String, String> albums = new TreeMap<>();
+        Map<String, List<String>> albums = new TreeMap<>();
         for (String musicDirPath : musicDirPaths) {
             File musicDir = new File(musicDirPath);
             if (musicDir.exists()) {
                 for (String album : Objects.requireNonNull(musicDir.list())) {
-                    albums.put(album, musicDirPath);
+                    albums.computeIfAbsent(album, (k) -> new ArrayList<>()).add(musicDirPath);
                 }
             }
         }
@@ -134,7 +134,7 @@ public class Player extends HttpServlet {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        albums.forEach((album, albumPath) -> {
+        albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) ->{
             try {
                 resp.getWriter().println("<li><b style=color:black; onclick=gettracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>" +
                         album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace(" anD ", " & ").replace("___", " <small style=color:white;>") +
@@ -142,7 +142,7 @@ public class Player extends HttpServlet {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        });
+        }));
         try {
             resp.getWriter().println("</ul>");
             resp.getWriter().println("</body>");
