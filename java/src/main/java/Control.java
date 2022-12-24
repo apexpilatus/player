@@ -80,7 +80,7 @@ public class Control extends HttpServlet {
                 Arrays.sort(Objects.requireNonNull(files));
                 htmlFileWriter.write("<p style=padding-top:120px;font-size:120%;line-height:180%>\n");
                 String title = "<head><meta charset=UTF-8></head>\n";
-                title += "<body style=background-color:slateblue;>\n";
+                title += "<body style=background-color:lightgray;>\n";
                 for (String file : files) {
                     try (FileInputStream flacIs = new FileInputStream(albumToList + "/" + file)) {
                         FLACDecoder flacDec = new FLACDecoder(flacIs);
