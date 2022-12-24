@@ -123,7 +123,7 @@ public class Control extends HttpServlet {
                             }
                         }
                         if (file.equals("01.flac")) {
-                            title += "<p style=color:black;font-size:120%;><b>" + vorbisArtist[0] + "</b><br><strong style=color:white;>" + vorbisAlbum[0] + "</strong></p>\n";
+                            title += "<p style=color:black;font-size:120%;><b>" + vorbisArtist[0] + "</b><br><strong style=color:slategray;>" + vorbisAlbum[0] + "</strong></p>\n";
                             title += "</body>";
                         }
                         htmlFileWriter.write("<i onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")><small style=color:white;>" + vorbisTrack[0] + "</small>" + vorbisTitle[0] + "</i><br>\n");
