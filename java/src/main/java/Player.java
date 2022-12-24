@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public class Player extends HttpServlet {
-    String[] musicDirPaths = {"/home/store/music/qbz","/home/store/music/dzr","/home/store/music/hack/1","/home/store/music/hack/2"};
+    String[] musicDirPaths = {"/home/store/music/qbz","/home/store/music/dzr","/home/store/music/hack/1","/home/store/music/hack/2","/home/store/music/hack/3","/home/store/music/hack/4"};
     String exeDirPath = "/home/exe";
     String albumFilePath = exeDirPath + "/player/tmp/album";
     String trackFilePath = exeDirPath + "/player/tmp/track";
@@ -128,7 +128,7 @@ public class Player extends HttpServlet {
             resp.getWriter().println("<button type=button onclick=setvolume(\"up\") style=border-radius:20px;color:black;background-color:white;font-size:20px;position:fixed;top:50px;left:20px;>up</button>");
             resp.getWriter().println("<button type=button onclick=setvolume(\"down\") style=border-radius:20px;color:black;background-color:white;font-size:20px;position:fixed;top:150px;left:20px;>dw</button>");
             resp.getWriter().println("<img hidden id=picturebytes style=width:100px;height:100px;position:fixed;top:10px;right:10px;>");
-            resp.getWriter().println("<iframe hidden id=tracks width=400 height=430 style=\"position:fixed;top:120px;right:10px;border-style:solid;\"></iframe>");
+            resp.getWriter().println("<iframe hidden id=tracks width=500 height=430 style=\"position:fixed;top:120px;right:10px;border-style:solid;\"></iframe>");
             resp.getWriter().println("<img id=picture src=" + pictureName + " onclick=makebig() style=width:250px;height:250px;position:fixed;top:300px;left:5px;border-style:solid;border-color:white;>");
             resp.getWriter().println("<ul style=padding-left:271px;font-size:150%;line-height:180%;list-style-type:circle;>");
         } catch (IOException e) {
@@ -137,7 +137,7 @@ public class Player extends HttpServlet {
         albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) ->{
             try {
                 resp.getWriter().println("<li><b style=color:black; onclick=gettracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>" +
-                        album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace(" anD ", " & ").replace("___", " <small style=color:white;>") +
+                        album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ").replace("___", " <small style=color:white;>") +
                         "</li></b></small>");
             } catch (IOException e) {
                 e.printStackTrace();
