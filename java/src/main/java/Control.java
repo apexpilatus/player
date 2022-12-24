@@ -71,7 +71,7 @@ public class Control extends HttpServlet {
         resp.setContentType("text/plain");
         try (BufferedWriter htmlFileWriter = new BufferedWriter(new FileWriter(htmlDirPath + "/" + htmlName))) {
             htmlFileWriter.write("<head><meta charset=UTF-8></head>\n");
-            htmlFileWriter.write("<body style=background-color:slategray;>\n");
+            htmlFileWriter.write("<body style=background-color:gray;>\n");
             htmlFileWriter.write("<script src=tracks.js></script>\n");
             if (albumToList != null) {
                 htmlFileWriter.write("<script>getpicturebytes(\"" + albumToList.replace(" ", "&") + "\")</script>\n");
@@ -80,7 +80,7 @@ public class Control extends HttpServlet {
                 Arrays.sort(Objects.requireNonNull(files));
                 htmlFileWriter.write("<p style=padding-top:120px;font-size:120%;line-height:180%>\n");
                 String title = "<head><meta charset=UTF-8></head>\n";
-                title += "<body style=background-color:slategray;>\n";
+                title += "<body style=background-color:slateblue;>\n";
                 for (String file : files) {
                     try (FileInputStream flacIs = new FileInputStream(albumToList + "/" + file)) {
                         FLACDecoder flacDec = new FLACDecoder(flacIs);

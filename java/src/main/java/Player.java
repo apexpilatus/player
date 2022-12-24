@@ -121,7 +121,7 @@ public class Player extends HttpServlet {
             resp.getWriter().println("<head><meta charset=UTF-8><title>player</title>" +
                     "<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>" +
                     "</head>");
-            resp.getWriter().println("<body style=background-color:gray>");
+            resp.getWriter().println("<body style=background-color:slategray>");
             resp.getWriter().println("<script src=main.js></script>");
             resp.getWriter().println("<script>setvolume(\"keep\")</script>");
             resp.getWriter().println("<p id=volume style=position:fixed;top:80px;left:20px;font-size:20px;></p>");
