@@ -132,7 +132,7 @@ public class Control extends HttpServlet {
                     }
                 }
                 htmlFileWriter.write("</p>\n");
-                htmlFileWriter.write("<iframe height=115 width=500 style=position:fixed;top:0px;left:0px;border:none src=\"data:text/html," + title + "\"></iframe>\n");
+                htmlFileWriter.write("<iframe height=115 width=450 style=position:fixed;top:0px;left:0px;border:none src=\"data:text/html," + title + "\"></iframe>\n");
             }
             htmlFileWriter.write("</body>\n");
             resp.getWriter().println(htmlName);
