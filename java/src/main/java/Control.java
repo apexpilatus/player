@@ -134,7 +134,6 @@ public class Control extends HttpServlet {
                 htmlFileWriter.write("</p>\n");
                 htmlFileWriter.write("<iframe height=115 width=500 style=position:fixed;top:0px;left:0px;border:none src=\"data:text/html," + title + "\"></iframe>\n");
             }
-            htmlFileWriter.write("<button type=button onclick=hideTracks() style=border-radius:20%;color:red;background-color:black;font-size:25px;position:fixed;bottom:10px;right:20px;>X</button>");
             htmlFileWriter.write("</body>\n");
             resp.getWriter().println(htmlName);
         } catch (IOException e) {

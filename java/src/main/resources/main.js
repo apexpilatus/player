@@ -13,6 +13,7 @@ function gettracks(album){
 		document.getElementById("tracks").src = this.responseText;
 		document.getElementById("tracks").hidden = false;
 		document.getElementById("picturebytes").hidden = false;
+		document.getElementById("hidebutton").hidden = false;
 		makenormal();
 	}
 	xhttp.open("GET", window.location.href.replace("player", "control") + "?album=" + album.replace(/&/g, " "));
@@ -25,9 +26,16 @@ function play(album){
 		document.getElementById("picture").src = this.responseText;
 		document.getElementById("tracks").hidden = true;
 		document.getElementById("picturebytes").hidden = true;
+		document.getElementById("hidebutton").hidden = true;
 	}
 	xhttp.open("POST", window.location.href + "?album=" + album.replace(/&/g, " "));
 	xhttp.send();
+}
+
+function hideTracks(){
+	document.getElementById("tracks").hidden = true;
+	document.getElementById("picturebytes").hidden = true;
+	document.getElementById("hidebutton").hidden = true;
 }
 
 function makebig(){
@@ -36,6 +44,7 @@ function makebig(){
     element.setAttribute("onclick", "makenormal()");
     document.getElementById("picturebytes").hidden = true;
     document.getElementById("tracks").hidden = true;
+    document.getElementById("hidebutton").hidden = true;
 }
 
 function makenormal(){

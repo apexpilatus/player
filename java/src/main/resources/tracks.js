@@ -7,11 +7,6 @@ function play(album, track){
 	xhttp.send();
 }
 
-function hideTracks(){
-	parent.document.getElementById("tracks").hidden = true;
-	parent.document.getElementById("picturebytes").hidden = true;
-}
-
 function getpicturebytes(album){
     const xhttp = new XMLHttpRequest();
 	xhttp.onload = function() {
