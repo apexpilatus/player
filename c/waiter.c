@@ -50,11 +50,11 @@ int main(int argsn, char *args[]){
 			file_lst *files=get_file_lst(album_val);
 			if (!files->next && !files->name){
 				corrupt_file();
-				execl(exec_waiter_path, player_name, "directory is empty", (char *) NULL);
+				execl(exec_waiter_path, waiter_name, "directory is empty", (char *) NULL);
 			}
 			if (get_params(album_val, files, &rate, &sample_size)){
 				corrupt_file();
-				execl(exec_waiter_path, player_name, "files have different format or cannot read", files->name, (char *) NULL);
+				execl(exec_waiter_path, waiter_name, "files have different format or cannot read", files->name, (char *) NULL);
 			}
 			char rate_as_str[7], sample_size_as_str[3];
 			sprintf(rate_as_str, "%d", rate);
@@ -77,10 +77,10 @@ int main(int argsn, char *args[]){
 				strcpy(env[3]+strlen(env[3]), "=");
 				strcpy(env[3]+strlen(env[3]), sample_size_as_str);
 				corrupt_file();
-				execle(exec_play_path, player_name, (char *) NULL, env);
+				execle(exec_player_path, player_name, (char *) NULL, env);
 			}
 			corrupt_file();
-			execl(exec_waiter_path, player_name, "no card to play", (char *) NULL);
+			execl(exec_waiter_path, waiter_name, "no card to play", (char *) NULL);
 		}
 	}
 }

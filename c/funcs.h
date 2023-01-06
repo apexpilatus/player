@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <signal.h>
+#include <sys/wait.h>
 
 #include <alsa/global.h>
 #include <alsa/input.h>
@@ -27,19 +29,23 @@
 #define time_out 1
 #define album_str_len 1024
 
-#define curr_album_env "CURRALB"
-#define card_name_env "CARDNAME"
-#define rate_env "FLACRATE"
-#define sample_size_env "FLACSAMPLE"
+#define curr_album_env "curalb"
+#define card_name_env "cardname"
+#define rate_env "flacrate"
+#define sample_size_env "flacsample"
 
 #define album_file_path "/home/exe/player/tmp/album"
 #define track_file_path "/home/exe/player/tmp/track"
 #define volume_file_path "/home/exe/player/tmp/volume"
-#define exec_play_path "/home/exe/player/player"
+
+#define exec_player_path "/home/exe/player/player"
 #define exec_waiter_path "/home/exe/player/waiter"
+#define exec_mixer_path "/home/exe/player/mixer"
 
 #define card_name "Wilkins"
 #define player_name "player"
+#define waiter_name "waiter"
+#define mixer_name "mixer"
 
 
 typedef struct lst{

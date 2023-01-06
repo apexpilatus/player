@@ -96,7 +96,7 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 		double ratio = (double)96000/atoi(getenv(rate_env));
 		nb_out_samples = ff_frame->nb_samples * ratio + 32;
 		av_samples_alloc(&ff_output, NULL, 2, nb_out_samples, AV_SAMPLE_FMT_S32, 0);
-		nb_out_samples = swr_convert(swr, &ff_output, nb_out_samples, ff_frame->data, ff_frame->nb_samples);
+		nb_out_samples = swr_convert(swr, &ff_output, nb_out_samples, (const uint8_t **)ff_frame->data, ff_frame->nb_samples);
 		ff_frame->format = encode_context->sample_fmt;
 		ff_frame->sample_rate = 96000;
 		ff_frame->nb_samples = nb_out_samples;
@@ -143,7 +143,7 @@ int main(void) {
 	FLAC__stream_decoder_set_metadata_ignore_all(decoder);
 	snd_pcm_t *pcm_p;
 	if (snd_pcm_open(&pcm_p, card_pcm_name, SND_PCM_STREAM_PLAYBACK, 0)) {
-		execl(exec_waiter_path, player_name, "cannot open pcm", NULL);
+		execl(exec_waiter_path, waiter_name, "cannot open pcm", NULL);
 	}
 	snd_pcm_hw_params_t *pcm_hw;
 	snd_pcm_hw_params_malloc(&pcm_hw);
@@ -155,31 +155,39 @@ int main(void) {
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
 		snd_pcm_close(pcm_p);
 		FLAC__stream_decoder_delete(decoder);
-		execl(exec_waiter_path, player_name, "cannot start playing", NULL);
+		execl(exec_waiter_path, waiter_name, "cannot start playing", NULL);
 	}
+	pid_t mixer_pid = fork();
+	int status;
+	if (!mixer_pid){
+		execl(exec_mixer_path, mixer_name, NULL);
+	}
+
+
+
 	snd_mixer_t *mxr;
 	if (snd_mixer_open(&mxr, 0)){
 		snd_pcm_close(pcm_p);
 		FLAC__stream_decoder_delete(decoder);
-		execl(exec_waiter_path, player_name, "cannot open mixer", NULL);
+		execl(exec_waiter_path, waiter_name, "cannot open mixer", NULL);
 	}
 	if (snd_mixer_attach(mxr, getenv(card_name_env))){
 		snd_mixer_close(mxr);
 		snd_pcm_close(pcm_p);
 		FLAC__stream_decoder_delete(decoder);
-		execl(exec_waiter_path, player_name, "cannot attach mixer", NULL);
+		execl(exec_waiter_path, waiter_name, "cannot attach mixer", NULL);
 	}
 	if (snd_mixer_selem_register(mxr, NULL, NULL)){
 		snd_mixer_close(mxr);
 		snd_pcm_close(pcm_p);
 		FLAC__stream_decoder_delete(decoder);
-		execl(exec_waiter_path, player_name, "cannot register simple elem", NULL);
+		execl(exec_waiter_path, waiter_name, "cannot register simple elem", NULL);
 	}
 	if (snd_mixer_load(mxr)){
 		snd_mixer_close(mxr);
 		snd_pcm_close(pcm_p);
 		FLAC__stream_decoder_delete(decoder);
-		execl(exec_waiter_path, player_name, "cannot load mixer", NULL);
+		execl(exec_waiter_path, waiter_name, "cannot load mixer", NULL);
 	}
 	melem = snd_mixer_first_elem(mxr);
 	file_lst *files=get_file_lst(getenv(curr_album_env));
@@ -203,14 +211,18 @@ int main(void) {
 				FLAC__StreamDecoderState dec_state = FLAC__stream_decoder_get_state(decoder);
 				FLAC__stream_decoder_finish(decoder);
 				FLAC__stream_decoder_delete(decoder);
-				execl(exec_waiter_path, player_name, "error during playing", files->name, FLAC__StreamDecoderStateString[dec_state], NULL);
+				kill(mixer_pid, SIGTERM);
+				wait(&status);
+				execl(exec_waiter_path, waiter_name, "error during playing", files->name, FLAC__StreamDecoderStateString[dec_state], NULL);
 			}
 			FLAC__stream_decoder_finish(decoder);
 		} else {
 			snd_mixer_close(mxr);
 			snd_pcm_close(pcm_p);
 			FLAC__stream_decoder_delete(decoder);
-			execl(exec_waiter_path, player_name, "cannot init file", files->name, FLAC__StreamDecoderInitStatusString[init_status], NULL);
+			kill(mixer_pid, SIGTERM);
+			wait(&status);
+			execl(exec_waiter_path, waiter_name, "cannot init file", files->name, FLAC__StreamDecoderInitStatusString[init_status], NULL);
 		}
 		files=files->next;
 	}
@@ -218,5 +230,7 @@ int main(void) {
 	snd_mixer_close(mxr);
 	snd_pcm_close(pcm_p);
 	FLAC__stream_decoder_delete(decoder);
-	execl(exec_waiter_path, player_name, "the end", NULL);
+	kill(mixer_pid, SIGTERM);
+	wait(&status);
+	execl(exec_waiter_path, waiter_name, "the end", NULL);
 }
