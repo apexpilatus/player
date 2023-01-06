@@ -13,14 +13,6 @@ static AVPacket *pkt;
 static int nb_out_samples;
 static uint8_t *ff_output;
 
-static void write_vol_to_file(char * vol){
-        int vol_file_dstr;
-        if ((vol_file_dstr = open(volume_file_path, O_NONBLOCK|O_WRONLY)) != -1) {
-                write(vol_file_dstr, vol, 1);
-                close(vol_file_dstr);
-        }
-}
-
 static void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize){
         for (int i=0;i<samplesize;i++){
                 *buf = data >> (8*i);
@@ -119,7 +111,7 @@ int main(void) {
 	pid_t mixer_pid = fork();
 	int status;
 	if (!mixer_pid){
-		execl(exec_mixer_path, mixer_name, NULL);
+		execl(exec_mixer_path, mixer_name, getenv(card_name_env), NULL);
 	}
 	file_lst *files=get_file_lst(getenv(curr_album_env));
 	char file_to_play[10];

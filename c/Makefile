@@ -12,7 +12,7 @@ libplayer.so : funcs.c funcs.h
 	$(CC) -shared funcs.c -o libplayer.so
 
 mixer : mixer.c
-	$(CC) mixer.c -o mixer
+	$(CC) mixer.c -o mixer -lasound
 
 .PHONY : clean
 clean :

@@ -1,8 +1,28 @@
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#include <alsa/global.h>
+#include <alsa/input.h>
+#include <alsa/output.h>
+#include <alsa/conf.h>
+#include <alsa/pcm.h>
+#include <alsa/control.h>
+#include <alsa/mixer.h>
+
 static snd_mixer_elem_t *melem;
+
+static void write_vol_to_file(char * vol){
+        int vol_file_dstr;
+        if ((vol_file_dstr = open("/home/exe/player/tmp/volume", O_NONBLOCK|O_WRONLY)) != -1) {
+                write(vol_file_dstr, vol, 1);
+                close(vol_file_dstr);
+        }
+}
 
 static int get_volume(char *ret){
         int vol_file_dstr;
-        if ((vol_file_dstr = open(volume_file_path, O_NONBLOCK|O_RDONLY)) == -1){
+        if ((vol_file_dstr = open("/home/exe/player/tmp/volume", O_NONBLOCK|O_RDONLY)) == -1){
                 return 1;
         }
         read(vol_file_dstr, ret, 1);
@@ -16,7 +36,7 @@ static void set_volume(void){
         if (get_volume(&newvol)){
                 newvol = 5;
                 int vol_file_dstr;
-                if ((vol_file_dstr = open(volume_file_path, O_CREAT|O_NONBLOCK|O_WRONLY, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)) != -1) {
+                if ((vol_file_dstr = open("/home/exe/player/tmp/volume", O_CREAT|O_NONBLOCK|O_WRONLY, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)) != -1) {
                         write(vol_file_dstr, &newvol, 1);
                         close(vol_file_dstr);
                 }
@@ -36,30 +56,22 @@ static void set_volume(void){
 	}
 }
 
-int main(void){
+int main(int pnum, char * params[]){
 	snd_mixer_t *mxr;
 	if (snd_mixer_open(&mxr, 0)){
-		snd_pcm_close(pcm_p);
-		FLAC__stream_decoder_delete(decoder);
-		execl(exec_waiter_path, waiter_name, "cannot open mixer", NULL);
+		return 1;
 	}
-	if (snd_mixer_attach(mxr, getenv(card_name_env))){
+	if (snd_mixer_attach(mxr, params[1])){
 		snd_mixer_close(mxr);
-		snd_pcm_close(pcm_p);
-		FLAC__stream_decoder_delete(decoder);
-		execl(exec_waiter_path, waiter_name, "cannot attach mixer", NULL);
+		return 1;
 	}
 	if (snd_mixer_selem_register(mxr, NULL, NULL)){
 		snd_mixer_close(mxr);
-		snd_pcm_close(pcm_p);
-		FLAC__stream_decoder_delete(decoder);
-		execl(exec_waiter_path, waiter_name, "cannot register simple elem", NULL);
+		return 1;
 	}
 	if (snd_mixer_load(mxr)){
 		snd_mixer_close(mxr);
-		snd_pcm_close(pcm_p);
-		FLAC__stream_decoder_delete(decoder);
-		execl(exec_waiter_path, waiter_name, "cannot load mixer", NULL);
+		return 1;
 	}
 	melem = snd_mixer_first_elem(mxr);
 	while(1){
