@@ -12,7 +12,6 @@ static SwrContext *swr;
 static AVPacket *pkt;
 static int nb_out_samples;
 static uint8_t *ff_output;
-static snd_mixer_elem_t *melem;
 
 static void write_vol_to_file(char * vol){
         int vol_file_dstr;
@@ -21,43 +20,6 @@ static void write_vol_to_file(char * vol){
                 close(vol_file_dstr);
         }
 }
-
-static int get_volume(char *ret){
-        int vol_file_dstr;
-        if ((vol_file_dstr = open(volume_file_path, O_NONBLOCK|O_RDONLY)) == -1){
-                return 1;
-        }
-        read(vol_file_dstr, ret, 1);
-        close(vol_file_dstr);
-        return 0;
-}
-
-static void set_volume(void){
-        char newvol;
-        long vol, minvol, maxvol;
-        if (get_volume(&newvol)){
-                newvol = 5;
-                int vol_file_dstr;
-                if ((vol_file_dstr = open(volume_file_path, O_CREAT|O_NONBLOCK|O_WRONLY, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)) != -1) {
-                        write(vol_file_dstr, &newvol, 1);
-                        close(vol_file_dstr);
-                }
-        }
-	snd_mixer_selem_get_playback_volume_range(melem, &minvol, &maxvol);
-	if (newvol < minvol){
-		newvol = minvol;
-		write_vol_to_file(&newvol);
-	}
-	if (newvol > maxvol){
-		newvol = maxvol;
-		write_vol_to_file(&newvol);
-	}
-	snd_mixer_selem_get_playback_volume(melem, -1, &vol);
-	if (vol != newvol){
-		snd_mixer_selem_set_playback_volume(melem, -1, newvol);
-	}
-}
-
 
 static void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize){
         for (int i=0;i<samplesize;i++){
@@ -71,8 +33,6 @@ static void metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__St
 
 static void error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data){
 }
-
-
 
 static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data){
 	if (play_next()){
@@ -107,7 +67,6 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 	if (snd_pcm_mmap_writei(pcm_p, conversion ? pkt->data : playbuf, conversion ? (snd_pcm_uframes_t) nb_out_samples : (snd_pcm_uframes_t) frame->header.blocksize) < 0){
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
-	set_volume();
 	if (conversion){
 		av_freep(&ff_output);
 		av_packet_free(&pkt);
@@ -162,34 +121,6 @@ int main(void) {
 	if (!mixer_pid){
 		execl(exec_mixer_path, mixer_name, NULL);
 	}
-
-
-
-	snd_mixer_t *mxr;
-	if (snd_mixer_open(&mxr, 0)){
-		snd_pcm_close(pcm_p);
-		FLAC__stream_decoder_delete(decoder);
-		execl(exec_waiter_path, waiter_name, "cannot open mixer", NULL);
-	}
-	if (snd_mixer_attach(mxr, getenv(card_name_env))){
-		snd_mixer_close(mxr);
-		snd_pcm_close(pcm_p);
-		FLAC__stream_decoder_delete(decoder);
-		execl(exec_waiter_path, waiter_name, "cannot attach mixer", NULL);
-	}
-	if (snd_mixer_selem_register(mxr, NULL, NULL)){
-		snd_mixer_close(mxr);
-		snd_pcm_close(pcm_p);
-		FLAC__stream_decoder_delete(decoder);
-		execl(exec_waiter_path, waiter_name, "cannot register simple elem", NULL);
-	}
-	if (snd_mixer_load(mxr)){
-		snd_mixer_close(mxr);
-		snd_pcm_close(pcm_p);
-		FLAC__stream_decoder_delete(decoder);
-		execl(exec_waiter_path, waiter_name, "cannot load mixer", NULL);
-	}
-	melem = snd_mixer_first_elem(mxr);
 	file_lst *files=get_file_lst(getenv(curr_album_env));
 	char file_to_play[10];
 	get_file_content(track_file_path, file_to_play);
@@ -206,7 +137,6 @@ int main(void) {
 		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
 			if (!FLAC__stream_decoder_process_until_end_of_stream(decoder)){
-				snd_mixer_close(mxr);
 				snd_pcm_close(pcm_p);
 				FLAC__StreamDecoderState dec_state = FLAC__stream_decoder_get_state(decoder);
 				FLAC__stream_decoder_finish(decoder);
@@ -217,7 +147,6 @@ int main(void) {
 			}
 			FLAC__stream_decoder_finish(decoder);
 		} else {
-			snd_mixer_close(mxr);
 			snd_pcm_close(pcm_p);
 			FLAC__stream_decoder_delete(decoder);
 			kill(mixer_pid, SIGTERM);
@@ -227,7 +156,6 @@ int main(void) {
 		files=files->next;
 	}
 	snd_pcm_drain(pcm_p);
-	snd_mixer_close(mxr);
 	snd_pcm_close(pcm_p);
 	FLAC__stream_decoder_delete(decoder);
 	kill(mixer_pid, SIGTERM);
