@@ -59,19 +59,19 @@ static void set_volume(void){
 int main(int pnum, char * params[]){
 	snd_mixer_t *mxr;
 	if (snd_mixer_open(&mxr, 0)){
-		return 1;
+		pause();
 	}
 	if (snd_mixer_attach(mxr, params[1])){
 		snd_mixer_close(mxr);
-		return 1;
+		pause();
 	}
 	if (snd_mixer_selem_register(mxr, NULL, NULL)){
 		snd_mixer_close(mxr);
-		return 1;
+		pause();
 	}
 	if (snd_mixer_load(mxr)){
 		snd_mixer_close(mxr);
-		return 1;
+		pause();
 	}
 	melem = snd_mixer_first_elem(mxr);
 	while(1){
