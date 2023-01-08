@@ -21,6 +21,14 @@
 #include <FLAC/metadata.h>
 #include <FLAC/stream_decoder.h>
 
+static pid_t player_pid;
+
+void child_stop_handle(int sig) {
+	int status;
+	wait(&status);
+	player_pid = 0;
+}
+
 static void corrupt_file(void) {
 	int play_file_dstr;
 	if ((play_file_dstr = open(album_file_path, O_NONBLOCK|O_WRONLY)) != -1) {
@@ -31,21 +39,26 @@ static void corrupt_file(void) {
 }
 
 int main(int argsn, char *args[]){
+	signal(SIGCHLD, child_stop_handle);
 	while (1) {
 		if (!play_next()) {
 			sleep(time_out);
 		} else {
 			char album_val[album_str_len];
 			get_file_content(album_file_path, album_val);
+			corrupt_file();
 			int card_num = snd_card_get_index(card_name);
 			if (card_num >= 0){
 				char card_pcm_name[7];
 				sprintf(card_pcm_name, "hw:%d", card_num);
-				corrupt_file();
-				execl(exec_player_path, player_name, album_val, card_pcm_name, NULL);
+				if (player_pid > 0){
+					kill(player_pid, SIGTERM);
+				}
+				player_pid = fork();
+				if (!player_pid){
+					execl(exec_player_path, player_name, album_val, card_pcm_name, NULL);
+				}
 			}
-			corrupt_file();
-			execl(exec_waiter_path, waiter_name, "no card to play", NULL);
 		}
 	}
 }

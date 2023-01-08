@@ -42,6 +42,7 @@ static SwrContext *swr;
 static AVPacket *pkt;
 static int nb_out_samples;
 static uint8_t *ff_output;
+static pid_t mixer_pid;
 
 static void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize){
         for (int i=0;i<samplesize;i++){
@@ -168,15 +169,24 @@ static int get_params(char *album_val, file_lst *files, unsigned int *rate, unsi
 void child_stop_handle(int sig) {
 	int status;
 	wait(&status);
+	mixer_pid = 0;
+}
+
+void term_handle() {
+	if (mixer_pid > 0) {
+		kill(mixer_pid, SIGTERM);
+	}
+	signal(SIGTERM, SIG_DFL);
+	raise(SIGTERM);
 }
 
 int main(int argsn, char *args[]) {
 	file_lst *files=get_file_lst(args[1]);
 	if (!files->next && !files->name){
-		execl(exec_waiter_path, waiter_name, "directory is empty", NULL);
+		return 1;
 	}
 	if (get_params(args[1], files, &rate, &sample_size)){
-		execl(exec_waiter_path, waiter_name, "files have different format or cannot read", files->name, NULL);
+		return 1;
 	}
 	conversion = rate != 96000 || sample_size != 24;
 	if (conversion){
@@ -203,7 +213,7 @@ int main(int argsn, char *args[]) {
 	FLAC__stream_decoder_set_metadata_ignore_all(decoder);
 	snd_pcm_t *pcm_p;
 	if (snd_pcm_open(&pcm_p, card_pcm_name, SND_PCM_STREAM_PLAYBACK, 0)) {
-		execl(exec_waiter_path, waiter_name, "cannot open pcm", NULL);
+		return 1;
 	}
 	snd_pcm_hw_params_t *pcm_hw;
 	snd_pcm_hw_params_malloc(&pcm_hw);
@@ -213,11 +223,10 @@ int main(int argsn, char *args[]) {
 	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, conversion ? 96000 : rate, dir);
 	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S24_3LE);
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
-		snd_pcm_close(pcm_p);
-		FLAC__stream_decoder_delete(decoder);
-		execl(exec_waiter_path, waiter_name, "cannot start playing", NULL);
+		return 1;
 	}
-	pid_t mixer_pid = fork();
+	mixer_pid = fork();
+	signal(SIGTERM, term_handle);
 	signal(SIGCHLD, child_stop_handle);
 	if (!mixer_pid){
 		execl(exec_mixer_path, mixer_name, args[2], NULL);
@@ -237,25 +246,17 @@ int main(int argsn, char *args[]) {
 		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
 			if (!FLAC__stream_decoder_process_until_end_of_stream(decoder)){
-				snd_pcm_close(pcm_p);
-				FLAC__StreamDecoderState dec_state = FLAC__stream_decoder_get_state(decoder);
-				FLAC__stream_decoder_finish(decoder);
-				FLAC__stream_decoder_delete(decoder);
 				kill(mixer_pid, SIGTERM);
-				execl(exec_waiter_path, waiter_name, "error during playing", files->name, FLAC__StreamDecoderStateString[dec_state], NULL);
+				return 1;
 			}
 			FLAC__stream_decoder_finish(decoder);
 		} else {
-			snd_pcm_close(pcm_p);
-			FLAC__stream_decoder_delete(decoder);
 			kill(mixer_pid, SIGTERM);
-			execl(exec_waiter_path, waiter_name, "cannot init file", files->name, FLAC__StreamDecoderInitStatusString[init_status], NULL);
+			return 1;
 		}
 		files=files->next;
 	}
 	snd_pcm_drain(pcm_p);
-	snd_pcm_close(pcm_p);
-	FLAC__stream_decoder_delete(decoder);
 	kill(mixer_pid, SIGTERM);
-	execl(exec_waiter_path, waiter_name, "the end", NULL);
+	return 0;
 }

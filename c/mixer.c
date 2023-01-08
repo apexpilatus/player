@@ -58,7 +58,6 @@ static void set_volume(void){
 
 int main(int pnum, char * params[]){
 	snd_mixer_t *mxr;
-	return 1;
 	if (snd_mixer_open(&mxr, 0)){
 		return 1;
 	}
