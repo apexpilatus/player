@@ -32,6 +32,13 @@ static void corrupt_file(void) {
 	}
 }
 
+static char play_next(void){
+	char alb[album_str_len];
+	alb[0] = 0;
+	get_file_content(album_file_path, alb);
+	return alb[0];
+}
+
 int main(int argsn, char *args[]){
 	while (1) {
 		if (!play_next()) {

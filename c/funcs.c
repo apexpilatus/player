@@ -16,10 +16,3 @@ void get_file_content(char *file, char *ret) {
 		close(album_file_dstr);
 	}
 }
-
-char play_next(void){
-	char alb[album_str_len];
-	alb[0] = 0;
-	get_file_content(album_file_path, alb);
-	return alb[0];
-}
