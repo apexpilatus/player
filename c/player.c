@@ -43,6 +43,7 @@ static AVPacket *pkt;
 static int nb_out_samples;
 static uint8_t *ff_output;
 static pid_t mixer_pid;
+static int status;
 
 static void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize){
         for (int i=0;i<samplesize;i++){
@@ -58,9 +59,9 @@ static void error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecod
 }
 
 static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data){
-	if (play_next()){
+	/*if (play_next()){
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
-	}
+	}*/
 	snd_pcm_t *pcm_p = (snd_pcm_t*)client_data;
 	int samplesize = sample_size/8;
 	int bufsize = samplesize*2*frame->header.blocksize;
@@ -166,15 +167,10 @@ static int get_params(char *album_val, file_lst *files, unsigned int *rate, unsi
 	return 0;
 }
 
-void child_stop_handle(int sig) {
-	int status;
-	wait(&status);
-	mixer_pid = 0;
-}
-
 void term_handle() {
 	if (mixer_pid > 0) {
 		kill(mixer_pid, SIGTERM);
+		wait(&status);
 	}
 	signal(SIGTERM, SIG_DFL);
 	raise(SIGTERM);
@@ -183,10 +179,10 @@ void term_handle() {
 int main(int argsn, char *args[]) {
 	file_lst *files=get_file_lst(args[1]);
 	if (!files->next && !files->name){
-		return 1;
+		pause();
 	}
 	if (get_params(args[1], files, &rate, &sample_size)){
-		return 1;
+		pause();
 	}
 	conversion = rate != 96000 || sample_size != 24;
 	if (conversion){
@@ -213,7 +209,7 @@ int main(int argsn, char *args[]) {
 	FLAC__stream_decoder_set_metadata_ignore_all(decoder);
 	snd_pcm_t *pcm_p;
 	if (snd_pcm_open(&pcm_p, card_pcm_name, SND_PCM_STREAM_PLAYBACK, 0)) {
-		return 1;
+		pause();
 	}
 	snd_pcm_hw_params_t *pcm_hw;
 	snd_pcm_hw_params_malloc(&pcm_hw);
@@ -223,11 +219,10 @@ int main(int argsn, char *args[]) {
 	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, conversion ? 96000 : rate, dir);
 	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S24_3LE);
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
-		return 1;
+		pause();
 	}
-	mixer_pid = fork();
 	signal(SIGTERM, term_handle);
-	signal(SIGCHLD, child_stop_handle);
+	mixer_pid = fork();
 	if (!mixer_pid){
 		execl(exec_mixer_path, mixer_name, args[2], NULL);
 	}
@@ -247,16 +242,19 @@ int main(int argsn, char *args[]) {
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
 			if (!FLAC__stream_decoder_process_until_end_of_stream(decoder)){
 				kill(mixer_pid, SIGTERM);
-				return 1;
+				wait(&status);
+				pause();
 			}
 			FLAC__stream_decoder_finish(decoder);
 		} else {
 			kill(mixer_pid, SIGTERM);
-			return 1;
+			wait(&status);
+			pause();
 		}
 		files=files->next;
 	}
 	snd_pcm_drain(pcm_p);
 	kill(mixer_pid, SIGTERM);
-	return 0;
+	wait(&status);
+	pause();
 }

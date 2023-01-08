@@ -23,12 +23,6 @@
 
 static pid_t player_pid;
 
-void child_stop_handle(int sig) {
-	int status;
-	wait(&status);
-	player_pid = 0;
-}
-
 static void corrupt_file(void) {
 	int play_file_dstr;
 	if ((play_file_dstr = open(album_file_path, O_NONBLOCK|O_WRONLY)) != -1) {
@@ -39,7 +33,6 @@ static void corrupt_file(void) {
 }
 
 int main(int argsn, char *args[]){
-	signal(SIGCHLD, child_stop_handle);
 	while (1) {
 		if (!play_next()) {
 			sleep(time_out);
@@ -53,6 +46,8 @@ int main(int argsn, char *args[]){
 				sprintf(card_pcm_name, "hw:%d", card_num);
 				if (player_pid > 0){
 					kill(player_pid, SIGTERM);
+					int status;
+					wait(&status);
 				}
 				player_pid = fork();
 				if (!player_pid){
