@@ -1,6 +1,25 @@
-#ifndef waiter_h
-	#include "funcs.h"
-#endif
+#include "funcs.h"
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <signal.h>
+#include <sys/wait.h>
+
+#include <alsa/global.h>
+#include <alsa/input.h>
+#include <alsa/output.h>
+#include <alsa/conf.h>
+#include <alsa/pcm.h>
+#include <alsa/control.h>
+#include <alsa/mixer.h>
+
+#include <FLAC/metadata.h>
+#include <FLAC/stream_decoder.h>
 
 static void corrupt_file(void) {
 	int play_file_dstr;
@@ -11,33 +30,6 @@ static void corrupt_file(void) {
 	}
 }
 
-static int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned short *sample_size){
-	char file_name[2048];
-	file_lst *first_file=files;
-	unsigned int rate_1st;
-	unsigned short sample_size_1st;
-	while (files->next) {
-		sprintf(file_name, "%s/%s", album_val, files->name);
-		FLAC__StreamMetadata streaminfo;
-		if (FLAC__metadata_get_streaminfo(file_name, &streaminfo)) {
-			*rate = streaminfo.data.stream_info.sample_rate;
-			*sample_size = streaminfo.data.stream_info.bits_per_sample;
-			if (first_file == files) {
-				rate_1st = *rate;
-				sample_size_1st = *sample_size;
-			} else {
-				if (rate_1st != *rate || sample_size_1st != *sample_size) {
-					return 1;
-				}
-			}
-		} else {
-			return 1;
-		}
-		files=files->next;
-	}
-	return 0;
-}
-
 int main(int argsn, char *args[]){
 	while (1) {
 		if (!play_next()) {
@@ -45,42 +37,15 @@ int main(int argsn, char *args[]){
 		} else {
 			char album_val[album_str_len];
 			get_file_content(album_file_path, album_val);
-			unsigned int rate;
-			unsigned short sample_size;
-			file_lst *files=get_file_lst(album_val);
-			if (!files->next && !files->name){
-				corrupt_file();
-				execl(exec_waiter_path, waiter_name, "directory is empty", (char *) NULL);
-			}
-			if (get_params(album_val, files, &rate, &sample_size)){
-				corrupt_file();
-				execl(exec_waiter_path, waiter_name, "files have different format or cannot read", files->name, (char *) NULL);
-			}
-			char rate_as_str[7], sample_size_as_str[3];
-			sprintf(rate_as_str, "%d", rate);
-			sprintf(sample_size_as_str, "%d", sample_size);
 			int card_num = snd_card_get_index(card_name);
 			if (card_num >= 0){
 				char card_pcm_name[7];
 				sprintf(card_pcm_name, "hw:%d", card_num);
-				char *env[] = {malloc(album_str_len + 50), malloc(50), malloc(50), malloc(50), (char *) NULL};
-				strcpy(env[0], curr_album_env);
-				strcpy(env[0]+strlen(env[0]), "=");
-				strcpy(env[0]+strlen(env[0]), album_val);
-				strcpy(env[1], card_name_env);
-				strcpy(env[1]+strlen(env[1]), "=");
-				strcpy(env[1]+strlen(env[1]), card_pcm_name);
-				strcpy(env[2], rate_env);
-				strcpy(env[2]+strlen(env[2]), "=");
-				strcpy(env[2]+strlen(env[2]), rate_as_str);
-				strcpy(env[3], sample_size_env);
-				strcpy(env[3]+strlen(env[3]), "=");
-				strcpy(env[3]+strlen(env[3]), sample_size_as_str);
 				corrupt_file();
-				execle(exec_player_path, player_name, (char *) NULL, env);
+				execl(exec_player_path, player_name, album_val, card_pcm_name, NULL);
 			}
 			corrupt_file();
-			execl(exec_waiter_path, waiter_name, "no card to play", (char *) NULL);
+			execl(exec_waiter_path, waiter_name, "no card to play", NULL);
 		}
 	}
 }

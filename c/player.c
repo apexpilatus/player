@@ -1,8 +1,38 @@
-#ifndef waiter_h
-	#include "funcs.h"
-#endif
+#include "funcs.h"
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <signal.h>
+#include <sys/wait.h>
+
+#include <alsa/global.h>
+#include <alsa/input.h>
+#include <alsa/output.h>
+#include <alsa/conf.h>
+#include <alsa/pcm.h>
+#include <alsa/control.h>
+#include <alsa/mixer.h>
+
+#include <FLAC/metadata.h>
+#include <FLAC/stream_decoder.h>
+
+#include <libavcodec/avcodec.h>
+#include <libswresample/swresample.h>
+#include <libavutil/opt.h>
+
+typedef struct lst{
+  char *name;
+  struct lst *next;
+} file_lst;
 
 static int conversion;
+static unsigned int rate;
+static unsigned short sample_size;
 static AVCodec *decode_codec;
 static AVCodecContext *decode_context;
 static AVCodec *encode_codec;
@@ -31,7 +61,7 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
 	snd_pcm_t *pcm_p = (snd_pcm_t*)client_data;
-	int samplesize = atoi(getenv(sample_size_env))/8;
+	int samplesize = sample_size/8;
 	int bufsize = samplesize*2*frame->header.blocksize;
 	unsigned char * playbuf = malloc(bufsize);
 	for(size_t i = 0; i < frame->header.blocksize; i++) {
@@ -45,7 +75,7 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 		ff_frame = av_frame_alloc();
 		avcodec_send_packet(decode_context, pkt);
 		avcodec_receive_frame(decode_context, ff_frame);
-		double ratio = (double)96000/atoi(getenv(rate_env));
+		double ratio = (double)96000/rate;
 		nb_out_samples = ff_frame->nb_samples * ratio + 32;
 		av_samples_alloc(&ff_output, NULL, 2, nb_out_samples, AV_SAMPLE_FMT_S32, 0);
 		nb_out_samples = swr_convert(swr, &ff_output, nb_out_samples, (const uint8_t **)ff_frame->data, ff_frame->nb_samples);
@@ -68,13 +98,92 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
-int main(void) {
-	conversion = atoi(getenv(rate_env)) != 96000 || atoi(getenv(sample_size_env)) != 24;
+static file_lst* get_file_lst(char *dirname){
+	file_lst *main_ptr = malloc(sizeof(file_lst));
+	file_lst *cur_ptr = main_ptr;
+	cur_ptr->name=NULL;
+	cur_ptr->next=NULL;
+	DIR *dp;
+	struct dirent *ep;
+	dp = opendir(dirname);
+	if (dp != NULL) {
+		while ((ep = readdir(dp))) {
+			if (ep->d_type == DT_REG) {
+				cur_ptr->name=malloc(strlen(ep->d_name)+1);
+				memcpy(cur_ptr->name, ep->d_name, strlen(ep->d_name)+1);
+				cur_ptr->next=malloc(sizeof(file_lst));
+				cur_ptr=cur_ptr->next;
+				cur_ptr->next=NULL;
+			}
+		}
+		(void) closedir(dp);
+	}
+	cur_ptr=main_ptr;
+	if (!cur_ptr->next){
+		return cur_ptr;
+	}
+	file_lst *sort_ptr = cur_ptr;
+	while (cur_ptr->next->next) {
+		while(sort_ptr->next->next) {
+			sort_ptr=sort_ptr->next;
+			if (strcmp(cur_ptr->name, sort_ptr->name)>0){
+				char *tmp=cur_ptr->name;
+				cur_ptr->name=sort_ptr->name;
+				sort_ptr->name=tmp;
+			}
+		}
+		cur_ptr=cur_ptr->next;
+		sort_ptr = cur_ptr;
+	}
+	return main_ptr;
+}
+
+static int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned short *sample_size){
+	char file_name[2048];
+	file_lst *first_file=files;
+	unsigned int rate_1st;
+	unsigned short sample_size_1st;
+	while (files->next) {
+		sprintf(file_name, "%s/%s", album_val, files->name);
+		FLAC__StreamMetadata streaminfo;
+		if (FLAC__metadata_get_streaminfo(file_name, &streaminfo)) {
+			*rate = streaminfo.data.stream_info.sample_rate;
+			*sample_size = streaminfo.data.stream_info.bits_per_sample;
+			if (first_file == files) {
+				rate_1st = *rate;
+				sample_size_1st = *sample_size;
+			} else {
+				if (rate_1st != *rate || sample_size_1st != *sample_size) {
+					return 1;
+				}
+			}
+		} else {
+			return 1;
+		}
+		files=files->next;
+	}
+	return 0;
+}
+
+void child_stop_handle(int sig) {
+	int status;
+	wait(&status);
+}
+
+int main(int argsn, char *args[]) {
+	file_lst *files=get_file_lst(args[1]);
+	if (!files->next && !files->name){
+		execl(exec_waiter_path, waiter_name, "directory is empty", NULL);
+	}
+	if (get_params(args[1], files, &rate, &sample_size)){
+		execl(exec_waiter_path, waiter_name, "files have different format or cannot read", files->name, NULL);
+	}
+	conversion = rate != 96000 || sample_size != 24;
 	if (conversion){
-		decode_codec = avcodec_find_decoder_by_name(atoi(getenv(sample_size_env)) == 24 ? "pcm_s24le" : "pcm_s16le");
+		decode_codec = avcodec_find_decoder_by_name(sample_size == 24 ? "pcm_s24le" : "pcm_s16le");
 		decode_context = avcodec_alloc_context3(decode_codec);
 		decode_context->channels = 2;
-		decode_context->sample_rate = atoi(getenv(rate_env));
+		decode_context->sample_rate = rate;
 		avcodec_open2(decode_context, decode_codec, NULL);
 		encode_codec = avcodec_find_encoder_by_name("pcm_s24le");
 		encode_context = avcodec_alloc_context3(encode_codec);
@@ -82,11 +191,11 @@ int main(void) {
 		encode_context->channels = 2;
 		encode_context->sample_rate = 96000;
 		avcodec_open2(encode_context, encode_codec, NULL);
-		swr = swr_alloc_set_opts(swr, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, 96000, AV_CH_LAYOUT_STEREO, atoi(getenv(sample_size_env)) == 24 ? AV_SAMPLE_FMT_S32 : AV_SAMPLE_FMT_S16, atoi(getenv(rate_env)), 0, NULL);
+		swr = swr_alloc_set_opts(swr, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, 96000, AV_CH_LAYOUT_STEREO, sample_size == 24 ? AV_SAMPLE_FMT_S32 : AV_SAMPLE_FMT_S16, rate, 0, NULL);
 		swr_init(swr);
 	}
 	char *card_pcm_name = malloc(10);
-	strcpy(card_pcm_name, getenv(card_name_env));
+	strcpy(card_pcm_name, args[2]);
 	strcpy(card_pcm_name + strlen(card_pcm_name),",0");
 	FLAC__StreamDecoder *decoder = NULL;
 	decoder = FLAC__stream_decoder_new();
@@ -101,7 +210,7 @@ int main(void) {
 	snd_pcm_hw_params_any(pcm_p, pcm_hw);
 	snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
 	int dir = 0;
-	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, conversion ? 96000 : atoi(getenv(rate_env)), dir);
+	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, conversion ? 96000 : rate, dir);
 	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S24_3LE);
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
 		snd_pcm_close(pcm_p);
@@ -109,11 +218,10 @@ int main(void) {
 		execl(exec_waiter_path, waiter_name, "cannot start playing", NULL);
 	}
 	pid_t mixer_pid = fork();
-	int status;
+	signal(SIGCHLD, child_stop_handle);
 	if (!mixer_pid){
-		execl(exec_mixer_path, mixer_name, getenv(card_name_env), NULL);
+		execl(exec_mixer_path, mixer_name, args[2], NULL);
 	}
-	file_lst *files=get_file_lst(getenv(curr_album_env));
 	char file_to_play[10];
 	get_file_content(track_file_path, file_to_play);
 	while (files->next) {
@@ -124,7 +232,7 @@ int main(void) {
 	}
 	while (files->next) {
 		char file_name[album_str_len + 50];
-		sprintf(file_name, "%s/%s", getenv(curr_album_env), files->name);
+		sprintf(file_name, "%s/%s", args[1], files->name);
 		FLAC__StreamDecoderInitStatus init_status;
 		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
@@ -134,7 +242,6 @@ int main(void) {
 				FLAC__stream_decoder_finish(decoder);
 				FLAC__stream_decoder_delete(decoder);
 				kill(mixer_pid, SIGTERM);
-				wait(&status);
 				execl(exec_waiter_path, waiter_name, "error during playing", files->name, FLAC__StreamDecoderStateString[dec_state], NULL);
 			}
 			FLAC__stream_decoder_finish(decoder);
@@ -142,7 +249,6 @@ int main(void) {
 			snd_pcm_close(pcm_p);
 			FLAC__stream_decoder_delete(decoder);
 			kill(mixer_pid, SIGTERM);
-			wait(&status);
 			execl(exec_waiter_path, waiter_name, "cannot init file", files->name, FLAC__StreamDecoderInitStatusString[init_status], NULL);
 		}
 		files=files->next;
@@ -151,6 +257,5 @@ int main(void) {
 	snd_pcm_close(pcm_p);
 	FLAC__stream_decoder_delete(decoder);
 	kill(mixer_pid, SIGTERM);
-	wait(&status);
 	execl(exec_waiter_path, waiter_name, "the end", NULL);
 }
