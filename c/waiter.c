@@ -59,6 +59,12 @@ int main(void){
 		if (!play_next()) {
 			sleep(1);
 		} else {
+			if (player_pid > 0){
+				kill(player_pid, SIGTERM);
+				int status;
+				wait(&status);
+				player_pid = 0;
+			}
 			char album_val[album_str_len];
 			get_file_content(album_file_path, album_val);
 			corrupt_file();
@@ -68,11 +74,6 @@ int main(void){
 			if (card_num >= 0){
 				char card_pcm_name[7];
 				sprintf(card_pcm_name, "hw:%d", card_num);
-				if (player_pid > 0){
-					kill(player_pid, SIGTERM);
-					int status;
-					wait(&status);
-				}
 				player_pid = fork();
 				if (!player_pid){
 					execl(exec_player_path, player_name, album_val, card_pcm_name, file_to_play, NULL);
