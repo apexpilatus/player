@@ -1,28 +1,20 @@
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
 #include <dirent.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 #include <alsa/global.h>
 #include <alsa/input.h>
 #include <alsa/output.h>
 #include <alsa/conf.h>
 #include <alsa/pcm.h>
-#include <alsa/control.h>
-#include <alsa/mixer.h>
 
 #include <FLAC/metadata.h>
 #include <FLAC/stream_decoder.h>
 
 #include <libavcodec/avcodec.h>
 #include <libswresample/swresample.h>
-#include <libavutil/opt.h>
 
 #define exec_mixer_path "/home/exe/player/mixer"
 #define mixer_name "mixer"
@@ -139,15 +131,13 @@ static file_lst* get_file_lst(char *dirname){
 	return main_ptr;
 }
 
-static int get_params(char *album_val, file_lst *files, unsigned int *rate, unsigned short *sample_size){
-	char file_name[2048];
+static int get_params(file_lst *files, unsigned int *rate, unsigned short *sample_size){
 	file_lst *first_file=files;
 	unsigned int rate_1st;
 	unsigned short sample_size_1st;
 	while (files->next) {
-		sprintf(file_name, "%s/%s", album_val, files->name);
 		FLAC__StreamMetadata streaminfo;
-		if (FLAC__metadata_get_streaminfo(file_name, &streaminfo)) {
+		if (FLAC__metadata_get_streaminfo(files->name, &streaminfo)) {
 			*rate = streaminfo.data.stream_info.sample_rate;
 			*sample_size = streaminfo.data.stream_info.bits_per_sample;
 			if (first_file == files) {
@@ -176,11 +166,14 @@ void term_handle() {
 }
 
 int main(int argsn, char *args[]) {
+	if (chdir(args[1])) {
+		pause();
+	}
 	file_lst *files=get_file_lst(args[1]);
 	if (!files->next && !files->name){
 		pause();
 	}
-	if (get_params(args[1], files, &rate, &sample_size)){
+	if (get_params(files, &rate, &sample_size)){
 		pause();
 	}
 	conversion = rate != 96000 || sample_size != 24;
@@ -199,7 +192,7 @@ int main(int argsn, char *args[]) {
 		swr = swr_alloc_set_opts(swr, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, 96000, AV_CH_LAYOUT_STEREO, sample_size == 24 ? AV_SAMPLE_FMT_S32 : AV_SAMPLE_FMT_S16, rate, 0, NULL);
 		swr_init(swr);
 	}
-	char *card_pcm_name = malloc(10);
+	char *card_pcm_name = malloc(strlen(args[2])+3);
 	strcpy(card_pcm_name, args[2]);
 	strcpy(card_pcm_name + strlen(card_pcm_name),",0");
 	FLAC__StreamDecoder *decoder = NULL;
@@ -232,10 +225,8 @@ int main(int argsn, char *args[]) {
 		files=files->next;
 	}
 	while (files->next) {
-		char file_name[1024 + 50];
-		sprintf(file_name, "%s/%s", args[1], files->name);
 		FLAC__StreamDecoderInitStatus init_status;
-		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);
+		init_status = FLAC__stream_decoder_init_file(decoder, files->name, write_callback, metadata_callback, error_callback, pcm_p);
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
 			if (!FLAC__stream_decoder_process_until_end_of_stream(decoder)){
 				kill(mixer_pid, SIGTERM);
