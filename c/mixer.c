@@ -10,11 +10,13 @@
 #include <alsa/control.h>
 #include <alsa/mixer.h>
 
+#define volume_file_path "/home/exe/player/tmp/volume"
+
 static snd_mixer_elem_t *melem;
 
 static void write_vol_to_file(char * vol){
         int vol_file_dstr;
-        if ((vol_file_dstr = open("/home/exe/player/tmp/volume", O_NONBLOCK|O_WRONLY)) != -1) {
+        if ((vol_file_dstr = open(volume_file_path, O_NONBLOCK|O_WRONLY)) != -1) {
                 write(vol_file_dstr, vol, 1);
                 close(vol_file_dstr);
         }
@@ -22,7 +24,7 @@ static void write_vol_to_file(char * vol){
 
 static int get_volume(char *ret){
         int vol_file_dstr;
-        if ((vol_file_dstr = open("/home/exe/player/tmp/volume", O_NONBLOCK|O_RDONLY)) == -1){
+        if ((vol_file_dstr = open(volume_file_path, O_NONBLOCK|O_RDONLY)) == -1){
                 return 1;
         }
         read(vol_file_dstr, ret, 1);
@@ -36,7 +38,7 @@ static void set_volume(void){
         if (get_volume(&newvol)){
                 newvol = 5;
                 int vol_file_dstr;
-                if ((vol_file_dstr = open("/home/exe/player/tmp/volume", O_CREAT|O_NONBLOCK|O_WRONLY, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)) != -1) {
+                if ((vol_file_dstr = open(volume_file_path, O_CREAT|O_NONBLOCK|O_WRONLY, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)) != -1) {
                         write(vol_file_dstr, &newvol, 1);
                         close(vol_file_dstr);
                 }

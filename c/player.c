@@ -1,4 +1,3 @@
-#include "funcs.h"
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -24,6 +23,9 @@
 #include <libavcodec/avcodec.h>
 #include <libswresample/swresample.h>
 #include <libavutil/opt.h>
+
+#define exec_mixer_path "/home/exe/player/mixer"
+#define mixer_name "mixer"
 
 typedef struct lst{
   char *name;
@@ -223,16 +225,14 @@ int main(int argsn, char *args[]) {
 	if (!mixer_pid){
 		execl(exec_mixer_path, mixer_name, args[2], NULL);
 	}
-	char file_to_play[10];
-	get_file_content(track_file_path, file_to_play);
 	while (files->next) {
-		if(!strcmp(files->name, file_to_play)){
+		if(!strcmp(files->name, args[3])){
 			break;
 		}
 		files=files->next;
 	}
 	while (files->next) {
-		char file_name[album_str_len + 50];
+		char file_name[1024 + 50];
 		sprintf(file_name, "%s/%s", args[1], files->name);
 		FLAC__StreamDecoderInitStatus init_status;
 		init_status = FLAC__stream_decoder_init_file(decoder, file_name, write_callback, metadata_callback, error_callback, pcm_p);

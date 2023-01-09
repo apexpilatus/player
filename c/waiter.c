@@ -1,4 +1,3 @@
-#include "funcs.h"
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -21,6 +20,13 @@
 #include <FLAC/metadata.h>
 #include <FLAC/stream_decoder.h>
 
+#define card_name "Wilkins"
+#define exec_player_path "/home/exe/player/player"
+#define player_name "player"
+#define album_file_path "/home/exe/player/tmp/album"
+#define track_file_path "/home/exe/player/tmp/track"
+#define album_str_len 1024
+
 static pid_t player_pid;
 
 static void corrupt_file(void) {
@@ -32,6 +38,15 @@ static void corrupt_file(void) {
 	}
 }
 
+void get_file_content(char *file, char *ret) {
+	int album_file_dstr;
+	if ((album_file_dstr = open(file, O_NONBLOCK|O_RDONLY)) != -1) {
+		ssize_t size = read(album_file_dstr, ret, album_str_len);
+		ret[size] = 0;
+		close(album_file_dstr);
+	}
+}
+
 static char play_next(void){
 	char alb[album_str_len];
 	alb[0] = 0;
@@ -39,14 +54,16 @@ static char play_next(void){
 	return alb[0];
 }
 
-int main(int argsn, char *args[]){
+int main(void){
 	while (1) {
 		if (!play_next()) {
-			sleep(time_out);
+			sleep(1);
 		} else {
 			char album_val[album_str_len];
 			get_file_content(album_file_path, album_val);
 			corrupt_file();
+			char file_to_play[10];
+			get_file_content(track_file_path, file_to_play);
 			int card_num = snd_card_get_index(card_name);
 			if (card_num >= 0){
 				char card_pcm_name[7];
@@ -58,7 +75,7 @@ int main(int argsn, char *args[]){
 				}
 				player_pid = fork();
 				if (!player_pid){
-					execl(exec_player_path, player_name, album_val, card_pcm_name, NULL);
+					execl(exec_player_path, player_name, album_val, card_pcm_name, file_to_play, NULL);
 				}
 			}
 		}
