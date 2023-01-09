@@ -37,7 +37,6 @@ static AVPacket *pkt;
 static int nb_out_samples;
 static uint8_t *ff_output;
 static pid_t mixer_pid;
-static int status;
 
 static void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize){
         for (int i=0;i<samplesize;i++){
@@ -159,6 +158,7 @@ static int get_params(file_lst *files, unsigned int *rate, unsigned short *sampl
 void term_handle() {
 	if (mixer_pid > 0) {
 		kill(mixer_pid, SIGTERM);
+		int status;
 		wait(&status);
 	}
 	signal(SIGTERM, SIG_DFL);
@@ -229,20 +229,14 @@ int main(int argsn, char *args[]) {
 		init_status = FLAC__stream_decoder_init_file(decoder, files->name, write_callback, metadata_callback, error_callback, pcm_p);
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
 			if (!FLAC__stream_decoder_process_until_end_of_stream(decoder)){
-				kill(mixer_pid, SIGTERM);
-				wait(&status);
 				pause();
 			}
 			FLAC__stream_decoder_finish(decoder);
 		} else {
-			kill(mixer_pid, SIGTERM);
-			wait(&status);
 			pause();
 		}
 		files=files->next;
 	}
 	snd_pcm_drain(pcm_p);
-	kill(mixer_pid, SIGTERM);
-	wait(&status);
 	pause();
 }
