@@ -66,6 +66,7 @@ int main(int pnum, char * params[]){
 		pause();
 	}
 	melem = snd_mixer_first_elem(mxr);
+	set_volume();
 	ready++;
 	while(1){
 		pause();
