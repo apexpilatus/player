@@ -63,7 +63,7 @@ public class Control extends HttpServlet {
         }
         resp.setContentType("text/plain");
         try {
-            resp.getWriter().println(vol);
+            resp.getWriter().println(action2GetVol());
         } catch (IOException e) {
             e.printStackTrace();
         }

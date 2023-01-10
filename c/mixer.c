@@ -13,8 +13,6 @@
 #include <alsa/control.h>
 #include <alsa/mixer.h>
 
-#define volume_file_path "/home/exe/player/tmp/volume"
-
 static snd_mixer_elem_t *melem;
 static int ready;
 void * shd_addr;
