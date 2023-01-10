@@ -72,9 +72,14 @@ void action1_set_vol(int sock) {
 	write(sock, "ok\n", 3);
 }
 
+void action2_get_vol(int sock) {
+	write(sock, shd_addr, 1);
+}
+
 void (*action[])(int sock) = {
 	action0_play,
-	action1_set_vol
+	action1_set_vol,
+	action2_get_vol
 };
 
 int main(void){
