@@ -8,6 +8,8 @@
 #include <dirent.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 #include <alsa/global.h>
 #include <alsa/input.h>
@@ -23,62 +25,67 @@
 #define card_name "Wilkins"
 #define exec_player_path "/home/exe/player/player"
 #define player_name "player"
-#define album_file_path "/home/exe/player/tmp/album"
-#define track_file_path "/home/exe/player/tmp/track"
-#define album_str_len 1024
+
 
 static pid_t player_pid;
 
-static void corrupt_file(void) {
-	int play_file_dstr;
-	if ((play_file_dstr = open(album_file_path, O_NONBLOCK|O_WRONLY)) != -1) {
-		char play_val = 0;
-		write(play_file_dstr, &play_val, 1);
-		close(play_file_dstr);
-	}
-}
-
-void get_file_content(char *file, char *ret) {
-	int album_file_dstr;
-	if ((album_file_dstr = open(file, O_NONBLOCK|O_RDONLY)) != -1) {
-		ssize_t size = read(album_file_dstr, ret, album_str_len);
-		ret[size] = 0;
-		close(album_file_dstr);
-	}
-}
-
-static char play_next(void){
-	char alb[album_str_len];
-	alb[0] = 0;
-	get_file_content(album_file_path, alb);
-	return alb[0];
-}
-
-int main(void){
-	while (1) {
-		if (!play_next()) {
-			sleep(1);
-		} else {
-			if (player_pid > 0){
-				kill(player_pid, SIGTERM);
-				int status;
-				wait(&status);
-				player_pid = 0;
-			}
-			char album_val[album_str_len];
-			get_file_content(album_file_path, album_val);
-			corrupt_file();
-			char file_to_play[10];
-			get_file_content(track_file_path, file_to_play);
-			int card_num = snd_card_get_index(card_name);
-			if (card_num >= 0){
-				char card_pcm_name[7];
-				sprintf(card_pcm_name, "hw:%d", card_num);
-				player_pid = fork();
-				if (!player_pid){
-					execl(exec_player_path, player_name, album_val, card_pcm_name, file_to_play, NULL);
-				}
+void action0_play(int sock) {
+	write(sock, "ok\n", 3);
+	char album[1024], track[10];
+	int album_size, track_size;
+	album_size = read(sock, album, 1024);
+	write(sock, "ok\n", 3);
+	track_size = read(sock, track, 10);
+	write(sock, "ok\n", 3);
+	if (album_size > 0 && track_size > 0) {
+		album[album_size] = 0;
+		track[track_size] = 0;
+		if (player_pid > 0){
+			kill(player_pid, SIGTERM);
+			int status;
+			wait(&status);
+			player_pid = 0;
+		}
+		int card_num = snd_card_get_index(card_name);
+		if (card_num >= 0){
+			char card_pcm_name[7];
+			sprintf(card_pcm_name, "hw:%d", card_num);
+			player_pid = fork();
+			if (!player_pid){
+				execl(exec_player_path, player_name, album, card_pcm_name, track, NULL);
 			}
 		}
+	}
+}
+
+void (*action[])(int sock) = {action0_play};
+
+int main(void){
+	int sock_listen, sock;
+	sock_listen = socket(PF_INET, SOCK_STREAM, 0);
+	struct sockaddr_in addr;
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(8888);
+	addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	socklen_t addr_size = sizeof(addr);
+	if (bind(sock_listen, (struct sockaddr *) &addr, addr_size) < 0)
+	{
+		return 1;
+	}
+	if (listen(sock_listen, 1) < 0)
+	{
+		return 1;
+	}
+	while(1)
+	{
+		if ((sock = accept(sock_listen, (struct sockaddr *) &addr, &addr_size)) < 0)
+		{
+			continue;
+		}
+		char action_num;
+		if (read(sock, &action_num, 1) > 0) {
+			action[action_num](sock);
+		}
+		close(sock);
 	}
 }
