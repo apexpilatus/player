@@ -16,18 +16,24 @@ public class Player extends HttpServlet {
     String playerHost = "player";
     int playerPort = 8888;
 
-    private void action0Play(Socket sock, BufferedWriter sockWriter, BufferedReader sockReader, String albumToPlay, String trackToPlay) throws Exception {
-        sock.setSoTimeout(15000);
-        byte op = 0;
-        sockWriter.write(op);
-        sockWriter.flush();
-        sockReader.readLine();
-        sockWriter.write(albumToPlay);
-        sockWriter.flush();
-        sockReader.readLine();
-        sockWriter.write(trackToPlay == null ? "01.flac" : trackToPlay);
-        sockWriter.flush();
-        sockReader.readLine();
+    private void action0Play(String albumToPlay, String trackToPlay) {
+        try (Socket sock = new Socket(playerHost, playerPort);
+             BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+             BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
+            sock.setSoTimeout(15000);
+            byte op = 0;
+            sockWriter.write(op);
+            sockWriter.flush();
+            sockReader.readLine();
+            sockWriter.write(albumToPlay);
+            sockWriter.flush();
+            sockReader.readLine();
+            sockWriter.write(trackToPlay == null ? "01.flac" : trackToPlay);
+            sockWriter.flush();
+            sockReader.readLine();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -52,12 +58,9 @@ public class Player extends HttpServlet {
                     }
                 }
             }
-            try (Socket sock = new Socket(playerHost, playerPort);
-                 BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-                 BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-                 FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac");
+            try (FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac");
                  FileOutputStream pictureOs = new FileOutputStream(pictureDirPath + "/" + pictureName)) {
-                action0Play(sock, sockWriter, sockReader, albumToPlay, trackToPlay);
+                action0Play(albumToPlay, trackToPlay);
                 FLACDecoder flacDec = new FLACDecoder(flacIs);
                 Metadata[] metas = flacDec.readMetadata();
                 for (Metadata meta : metas) {
