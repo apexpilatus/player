@@ -5,6 +5,7 @@ import org.jflac.FLACDecoder;
 import org.jflac.metadata.Metadata;
 
 import java.io.*;
+import java.net.Socket;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
@@ -12,6 +13,25 @@ import java.util.Objects;
 public class Control extends HttpServlet {
     String volumeFilePath = "/home/exe/player/tmp/volume";
     String exeDirPath = "/home/exe";
+    String playerHost = "player";
+    int playerPort = 8888;
+
+    private void action1SetVol(byte vol) {
+        try (Socket sock = new Socket(playerHost, playerPort);
+             BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+             BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
+            sock.setSoTimeout(15000);
+            byte op = 1;
+            sockWriter.write(op);
+            sockWriter.flush();
+            sockReader.readLine();
+            sockWriter.write(vol);
+            sockWriter.flush();
+            sockReader.readLine();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
@@ -32,11 +52,7 @@ public class Control extends HttpServlet {
                 default -> {
                 }
             }
-            try (FileOutputStream albumFileWriter = new FileOutputStream(volumeFilePath)) {
-                albumFileWriter.write(vol);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            action1SetVol(vol[0]);
         }
         resp.setContentType("text/plain");
         try {
@@ -79,8 +95,8 @@ public class Control extends HttpServlet {
                 String[] files = albumDirPath.list();
                 Arrays.sort(Objects.requireNonNull(files));
                 htmlFileWriter.write("<p style=padding-top:120px;font-size:120%;line-height:180%>\n");
-                String title = "<head><meta charset=UTF-8></head>\n";
-                title += "<body style=background-color:lightgray;>\n";
+                StringBuilder title = new StringBuilder("<head><meta charset=UTF-8></head>\n");
+                title.append("<body style=background-color:lightgray;>\n");
                 for (String file : files) {
                     try (FileInputStream flacIs = new FileInputStream(albumToList + "/" + file)) {
                         FLACDecoder flacDec = new FLACDecoder(flacIs);
@@ -96,26 +112,26 @@ public class Control extends HttpServlet {
                                         vorbisTrack[0] = line.split("=")[1] + ". ";
                                     }
                                     if (line.contains("TITLE")) {
-                                    	for (int i = 1; i < line.split("=").length; i++){
-                                    	    if (i > 1){
-                                    	        vorbisTitle[0] += "=";
-                                    	    }
+                                        for (int i = 1; i < line.split("=").length; i++) {
+                                            if (i > 1) {
+                                                vorbisTitle[0] += "=";
+                                            }
                                             vorbisTitle[0] += line.split("=")[i];
                                         }
                                     }
                                     if (line.contains("ALBUM")) {
-                                        for (int i = 1; i < line.split("=").length; i++){
-                                            if (i > 1){
-                                    	        vorbisAlbum[0] += "=";
-                                    	    }
+                                        for (int i = 1; i < line.split("=").length; i++) {
+                                            if (i > 1) {
+                                                vorbisAlbum[0] += "=";
+                                            }
                                             vorbisAlbum[0] += line.split("=")[i];
                                         }
                                     }
                                     if (line.contains("ARTIST")) {
-                                        for (int i = 1; i < line.split("=").length; i++){
-                                            if (i > 1){
-                                    	        vorbisArtist[0] += "=";
-                                    	    }
+                                        for (int i = 1; i < line.split("=").length; i++) {
+                                            if (i > 1) {
+                                                vorbisArtist[0] += "=";
+                                            }
                                             vorbisArtist[0] += line.split("=")[i];
                                         }
                                     }
@@ -123,8 +139,8 @@ public class Control extends HttpServlet {
                             }
                         }
                         if (file.equals("01.flac")) {
-                            title += "<p style=color:black;font-size:120%;><b>" + vorbisArtist[0] + "</b><br><strong style=color:slategray;>" + vorbisAlbum[0] + "</strong></p>\n";
-                            title += "</body>";
+                            title.append("<p style=color:black;font-size:120%;><b>").append(vorbisArtist[0]).append("</b><br><strong style=color:slategray;>").append(vorbisAlbum[0]).append("</strong></p>\n");
+                            title.append("</body>");
                         }
                         htmlFileWriter.write("<i onclick=play(\"" + albumToList.replace(" ", "&") + "\",\"" + file + "\")><small style=color:white;>" + vorbisTrack[0] + "</small>" + vorbisTitle[0] + "</i><br>\n");
                     } catch (IOException e) {
