@@ -1,3 +1,4 @@
+#include "shares.h"
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -10,6 +11,7 @@
 #include <sys/wait.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <sys/mman.h>
 
 #include <alsa/global.h>
 #include <alsa/input.h>
@@ -25,17 +27,21 @@
 #define card_name "Wilkins"
 #define exec_player_path "/home/exe/player/player"
 #define player_name "player"
+#define listen_port 8888
+#define album_str_size 1024
+#define file_str_size 10
 
 
 static pid_t player_pid;
+void * shd_addr;
 
 void action0_play(int sock) {
 	write(sock, "ok\n", 3);
-	char album[1024], track[10];
+	char album[album_str_size], track[file_str_size];
 	int album_size, track_size;
-	album_size = read(sock, album, 1024);
+	album_size = read(sock, album, album_str_size);
 	write(sock, "ok\n", 3);
-	track_size = read(sock, track, 10);
+	track_size = read(sock, track, file_str_size);
 	write(sock, "ok\n", 3);
 	if (album_size > 0 && track_size > 0) {
 		album[album_size] = 0;
@@ -58,14 +64,36 @@ void action0_play(int sock) {
 	}
 }
 
-void (*action[])(int sock) = {action0_play};
+void action1_set_vol(int sock) {
+	write(sock, "ok\n", 3);
+	if (read(sock, shd_addr, 1) > 0 && player_pid > 0) {
+		kill(player_pid, SIGUSR1);
+	}
+	write(sock, "ok\n", 3);
+}
+
+void (*action[])(int sock) = {
+	action0_play,
+	action1_set_vol
+};
 
 int main(void){
+	int shd = shm_open(shm_file, O_CREAT|O_RDWR|O_APPEND, S_IRUSR|S_IWUSR);
+	if (shd < 0) {
+		return 1;
+	}
+	int page_size = getpagesize();
+	ftruncate(shd, page_size);
+	shd_addr = mmap(NULL, page_size, PROT_READ|PROT_WRITE, MAP_SHARED, shd, 0);
+	if (shd_addr == MAP_FAILED){
+		return 1;
+	}
+	*(char*)shd_addr = 5;
 	int sock_listen, sock;
 	sock_listen = socket(PF_INET, SOCK_STREAM, 0);
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
-	addr.sin_port = htons(8888);
+	addr.sin_port = htons(listen_port);
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	socklen_t addr_size = sizeof(addr);
 	if (bind(sock_listen, (struct sockaddr *) &addr, addr_size) < 0)

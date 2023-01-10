@@ -155,6 +155,12 @@ static int get_params(file_lst *files, unsigned int *rate, unsigned short *sampl
 	return 0;
 }
 
+void usr_handle() {
+	if (mixer_pid > 0) {
+		kill(mixer_pid, SIGUSR1);
+	}
+}
+
 void term_handle() {
 	if (mixer_pid > 0) {
 		kill(mixer_pid, SIGTERM);
@@ -166,6 +172,7 @@ void term_handle() {
 }
 
 int main(int argsn, char *args[]) {
+	signal(SIGUSR1, usr_handle);
 	if (chdir(args[1])) {
 		pause();
 	}
