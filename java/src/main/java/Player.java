@@ -14,6 +14,20 @@ public class Player extends HttpServlet {
     String[] musicDirPaths = {"/home/store/music/qbz", "/home/store/music/dzr", "/home/store/music/hack/1", "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
     String exeDirPath = "/home/exe";
 
+    private void action0Play(Socket sock, BufferedWriter sockWriter, BufferedReader sockReader, String albumToPlay, String trackToPlay) throws Exception {
+        sock.setSoTimeout(15000);
+        byte op = 0;
+        sockWriter.write(op);
+        sockWriter.flush();
+        sockReader.readLine();
+        sockWriter.write(albumToPlay);
+        sockWriter.flush();
+        sockReader.readLine();
+        sockWriter.write(trackToPlay == null ? "01.flac" : trackToPlay);
+        sockWriter.flush();
+        sockReader.readLine();
+    }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         String albumToPlay = req.getParameter("album");
@@ -41,17 +55,7 @@ public class Player extends HttpServlet {
                  BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
                  FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac");
                  FileOutputStream pictureOs = new FileOutputStream(pictureDirPath + "/" + pictureName)) {
-                sock.setSoTimeout(15000);
-                byte op = 0;
-                sockWriter.write(op);
-                sockWriter.flush();
-                sockReader.readLine();
-                sockWriter.write(albumToPlay);
-                sockWriter.flush();
-                sockReader.readLine();
-                sockWriter.write(trackToPlay == null ? "01.flac" : trackToPlay);
-                sockWriter.flush();
-                sockReader.readLine();
+                action0Play(sock, sockWriter, sockReader, albumToPlay, trackToPlay);
                 FLACDecoder flacDec = new FLACDecoder(flacIs);
                 Metadata[] metas = flacDec.readMetadata();
                 for (Metadata meta : metas) {
