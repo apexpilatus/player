@@ -11,12 +11,11 @@ import java.util.Date;
 import java.util.Objects;
 
 public class Control extends HttpServlet {
-    String volumeFilePath = "/home/exe/player/tmp/volume";
     String exeDirPath = "/home/exe";
     String playerHost = "player";
     int playerPort = 8888;
 
-    private void action1SetVol(byte vol) {
+    private void action1SetVol(int vol) {
         try (Socket sock = new Socket(playerHost, playerPort);
              BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
              BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
@@ -33,30 +32,38 @@ public class Control extends HttpServlet {
         }
     }
 
+    private int action2GetVol() {
+        int ret = -1;
+        try (Socket sock = new Socket("player", 8888);
+             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+             BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
+            sock.setSoTimeout(15000);
+            byte op = 2;
+            writer.write(op);
+            writer.flush();
+            ret = reader.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         String volChangeDirection = req.getParameter("volume");
-        File volFile = new File(volumeFilePath);
-        byte[] vol = {5};
-        if (volChangeDirection != null) {
-            if (volFile.exists()) {
-                try (FileInputStream volumeFileReader = new FileInputStream(volumeFilePath)) {
-                    volumeFileReader.read(vol);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        int vol = action2GetVol();
+        if (volChangeDirection != null && vol != -1) {
             switch (volChangeDirection) {
-                case "up" -> vol[0]++;
-                case "down" -> vol[0]--;
+                case "up" -> vol++;
+                case "down" -> vol--;
                 default -> {
                 }
             }
-            action1SetVol(vol[0]);
+            action1SetVol(vol);
         }
         resp.setContentType("text/plain");
         try {
-            resp.getWriter().println(vol[0]);
+            resp.getWriter().println(vol);
         } catch (IOException e) {
             e.printStackTrace();
         }
