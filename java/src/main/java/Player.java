@@ -13,6 +13,8 @@ import java.util.*;
 public class Player extends HttpServlet {
     String[] musicDirPaths = {"/home/store/music/qbz", "/home/store/music/dzr", "/home/store/music/hack/1", "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
     String exeDirPath = "/home/exe";
+    String playerHost = "player";
+    int playerPort = 8888;
 
     private void action0Play(Socket sock, BufferedWriter sockWriter, BufferedReader sockReader, String albumToPlay, String trackToPlay) throws Exception {
         sock.setSoTimeout(15000);
@@ -50,7 +52,7 @@ public class Player extends HttpServlet {
                     }
                 }
             }
-            try (Socket sock = new Socket("player", 8888);
+            try (Socket sock = new Socket(playerHost, playerPort);
                  BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
                  BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
                  FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac");
