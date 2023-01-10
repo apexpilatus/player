@@ -7,13 +7,12 @@ import org.jflac.metadata.Picture;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.net.Socket;
 import java.util.*;
 
 public class Player extends HttpServlet {
-    String[] musicDirPaths = {"/home/store/music/qbz","/home/store/music/dzr","/home/store/music/hack/1","/home/store/music/hack/2","/home/store/music/hack/3","/home/store/music/hack/4"};
+    String[] musicDirPaths = {"/home/store/music/qbz", "/home/store/music/dzr", "/home/store/music/hack/1", "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
     String exeDirPath = "/home/exe";
-    String albumFilePath = exeDirPath + "/player/tmp/album";
-    String trackFilePath = exeDirPath + "/player/tmp/track";
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
@@ -37,13 +36,22 @@ public class Player extends HttpServlet {
                     }
                 }
             }
-            try (
-                    BufferedWriter albumFileWriter = new BufferedWriter(new FileWriter(albumFilePath));
-                    BufferedWriter trackFileWriter = new BufferedWriter(new FileWriter(trackFilePath));
-                    FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac");
-                    FileOutputStream pictureOs = new FileOutputStream(pictureDirPath + "/" + pictureName)) {
-                trackFileWriter.write(trackToPlay == null ? "01.flac" : trackToPlay);
-                albumFileWriter.write(albumToPlay);
+            try (Socket sock = new Socket("player", 8888);
+                 BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+                 BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+                 FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac");
+                 FileOutputStream pictureOs = new FileOutputStream(pictureDirPath + "/" + pictureName)) {
+                sock.setSoTimeout(15000);
+                byte op = 0;
+                sockWriter.write(op);
+                sockWriter.flush();
+                sockReader.readLine();
+                sockWriter.write(albumToPlay);
+                sockWriter.flush();
+                sockReader.readLine();
+                sockWriter.write(trackToPlay == null ? "01.flac" : trackToPlay);
+                sockWriter.flush();
+                sockReader.readLine();
                 FLACDecoder flacDec = new FLACDecoder(flacIs);
                 Metadata[] metas = flacDec.readMetadata();
                 for (Metadata meta : metas) {
@@ -135,7 +143,7 @@ public class Player extends HttpServlet {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) ->{
+        albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> {
             try {
                 resp.getWriter().println("<li><b style=color:black; onclick=gettracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>" +
                         album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ").replace("___", " <small style=color:white;>") +
