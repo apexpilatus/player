@@ -36,7 +36,8 @@ static SwrContext *swr;
 static AVPacket *pkt;
 static int nb_out_samples;
 static uint8_t *ff_output;
-static pid_t mixer_pid;
+static char card_mixer_name[7];
+static int ready;
 
 static void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize){
         for (int i=0;i<samplesize;i++){
@@ -156,32 +157,27 @@ static int get_params(file_lst *files, unsigned int *rate, unsigned short *sampl
 }
 
 void usr_handle() {
-	if (mixer_pid > 0) {
-		kill(mixer_pid, SIGUSR1);
+	if (ready) {
+		int mixer_pid = fork();
+		if (!mixer_pid){
+			execl(exec_mixer_path, mixer_name, card_mixer_name, NULL);
+		}
+		int mixer_status;
+		wait(&mixer_status);
 	}
-}
-
-void term_handle() {
-	if (mixer_pid > 0) {
-		kill(mixer_pid, SIGTERM);
-		int status;
-		wait(&status);
-	}
-	signal(SIGTERM, SIG_DFL);
-	raise(SIGTERM);
 }
 
 int main(int argsn, char *args[]) {
 	signal(SIGUSR1, usr_handle);
 	if (chdir(args[1])) {
-		pause();
+		return 1;
 	}
 	file_lst *files=get_file_lst(args[1]);
 	if (!files->next && !files->name){
-		pause();
+		return 1;
 	}
 	if (get_params(files, &rate, &sample_size)){
-		pause();
+		return 1;
 	}
 	conversion = rate != 96000 || sample_size != 24;
 	if (conversion){
@@ -199,7 +195,7 @@ int main(int argsn, char *args[]) {
 		swr = swr_alloc_set_opts(swr, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, 96000, AV_CH_LAYOUT_STEREO, sample_size == 24 ? AV_SAMPLE_FMT_S32 : AV_SAMPLE_FMT_S16, rate, 0, NULL);
 		swr_init(swr);
 	}
-	char *card_pcm_name = malloc(strlen(args[2])+3);
+	char card_pcm_name[10];
 	strcpy(card_pcm_name, args[2]);
 	strcpy(card_pcm_name + strlen(card_pcm_name),",0");
 	FLAC__StreamDecoder *decoder = NULL;
@@ -208,7 +204,7 @@ int main(int argsn, char *args[]) {
 	FLAC__stream_decoder_set_metadata_ignore_all(decoder);
 	snd_pcm_t *pcm_p;
 	if (snd_pcm_open(&pcm_p, card_pcm_name, SND_PCM_STREAM_PLAYBACK, 0)) {
-		pause();
+		return 1;
 	}
 	snd_pcm_hw_params_t *pcm_hw;
 	snd_pcm_hw_params_malloc(&pcm_hw);
@@ -218,13 +214,10 @@ int main(int argsn, char *args[]) {
 	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, conversion ? 96000 : rate, dir);
 	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S24_3LE);
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
-		pause();
+		return 1;
 	}
-	signal(SIGTERM, term_handle);
-	mixer_pid = fork();
-	if (!mixer_pid){
-		execl(exec_mixer_path, mixer_name, args[2], NULL);
-	}
+	strcpy(card_mixer_name, args[2]);
+	ready = 1;
 	while (files->next) {
 		if(!strcmp(files->name, args[3])){
 			break;
@@ -236,14 +229,14 @@ int main(int argsn, char *args[]) {
 		init_status = FLAC__stream_decoder_init_file(decoder, files->name, write_callback, metadata_callback, error_callback, pcm_p);
 		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
 			if (!FLAC__stream_decoder_process_until_end_of_stream(decoder)){
-				pause();
+				return 1;
 			}
 			FLAC__stream_decoder_finish(decoder);
 		} else {
-			pause();
+			return 1;
 		}
 		files=files->next;
 	}
 	snd_pcm_drain(pcm_p);
-	pause();
+	return 0;
 }
