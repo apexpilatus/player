@@ -59,8 +59,8 @@ public class Control extends HttpServlet {
                 default -> {
                 }
             }
-            action1SetVol(vol);
         }
+        action1SetVol(vol);
         resp.setContentType("text/plain");
         try {
             resp.getWriter().println(action2GetVol());
