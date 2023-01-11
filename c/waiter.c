@@ -33,14 +33,14 @@
 
 
 static pid_t player_pid;
-void * shd_addr;
+static void * shd_addr;
 
-void action0_play(int sock) {
+static void action0_play(int sock) {
 	write(sock, "ok\n", 3);
 	int album_size, track_size;
-	album_size = read(sock, shd_addr + 1, getpagesize() - 1);
+	album_size = read(sock, (char*)shd_addr + 1, getpagesize() - 1);
 	write(sock, "ok\n", 3);
-	track_size = read(sock, shd_addr + album_size + 2, getpagesize() - album_size - 2);
+	track_size = read(sock, (char*)shd_addr + album_size + 2, getpagesize() - album_size - 2);
 	write(sock, "ok\n", 3);
 	if (album_size > 0 && track_size > 0) {
 		((char*)shd_addr)[album_size + 1] = 0;
@@ -52,38 +52,42 @@ void action0_play(int sock) {
 		}
 		int card_num = snd_card_get_index(card_name);
 		if (card_num >= 0){
-			sprintf(shd_addr + album_size + track_size + 3, "hw:%d,0", card_num);
+			sprintf((char*)shd_addr + album_size + track_size + 3, "hw:%d,0", card_num);
 			player_pid = fork();
 			if (!player_pid){
-				execl(exec_player_path, player_name, shd_addr + 1, shd_addr + album_size + track_size + 3, shd_addr + album_size + 2, NULL);
+				execl(exec_player_path, player_name, (char*)shd_addr + 1, (char*)shd_addr + album_size + track_size + 3, (char*)shd_addr + album_size + 2, NULL);
 			}
 		}
 	}
 }
 
-void action1_set_vol(int sock) {
-	write(sock, "ok\n", 3);
-	if (read(sock, shd_addr, 1) > 0 && player_pid > 0) {
-		int card_num = snd_card_get_index(card_name);
-		if (card_num >= 0){
-			sprintf(shd_addr + 1, "hw:%d", card_num);
-			pid_t mixer_pid = fork();
-			if (!mixer_pid){
-				execl(exec_mixer_path, mixer_name, shd_addr + 1, NULL);
-			}
-			if (mixer_pid > 0){
-				waitpid(mixer_pid, NULL, 0);
-			}
+static inline void update_mixer() {
+	int card_num = snd_card_get_index(card_name);
+	if (card_num >= 0){
+		sprintf((char*)shd_addr + 1, "hw:%d", card_num);
+		pid_t mixer_pid = fork();
+		if (!mixer_pid){
+			execl(exec_mixer_path, mixer_name, (char*)shd_addr + 1, NULL);
 		}
+		if (mixer_pid > 0){
+			waitpid(mixer_pid, NULL, 0);
+		}
+	}
+}
+
+static void action1_set_vol(int sock) {
+	write(sock, "ok\n", 3);
+	if (read(sock, shd_addr, 1) > 0) {
+		update_mixer();
 	}
 	write(sock, "ok\n", 3);
 }
 
-void action2_get_vol(int sock) {
+static void action2_get_vol(int sock) {
 	write(sock, shd_addr, 1);
 }
 
-void (*action[])(int sock) = {
+static void (*action[])(int sock) = {
 	action0_play,
 	action1_set_vol,
 	action2_get_vol
