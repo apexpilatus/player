@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <dirent.h>
-#include <signal.h>
-#include <sys/wait.h>
 #include <unistd.h>
 
 #include <alsa/global.h>
@@ -15,9 +13,6 @@
 
 #include <libavcodec/avcodec.h>
 #include <libswresample/swresample.h>
-
-#define exec_mixer_path "/home/exe/player/mixer"
-#define mixer_name "mixer"
 
 typedef struct lst{
   char *name;
@@ -36,8 +31,6 @@ static SwrContext *swr;
 static AVPacket *pkt;
 static int nb_out_samples;
 static uint8_t *ff_output;
-static char card_mixer_name[7];
-static int ready;
 
 static void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize){
         for (int i=0;i<samplesize;i++){
@@ -156,19 +149,7 @@ static int get_params(file_lst *files, unsigned int *rate, unsigned short *sampl
 	return 0;
 }
 
-void usr_handle() {
-	if (ready) {
-		int mixer_pid = fork();
-		if (!mixer_pid){
-			execl(exec_mixer_path, mixer_name, card_mixer_name, NULL);
-		}
-		int mixer_status;
-		wait(&mixer_status);
-	}
-}
-
 int main(int argsn, char *args[]) {
-	signal(SIGUSR1, usr_handle);
 	if (chdir(args[1])) {
 		return 1;
 	}
@@ -216,8 +197,6 @@ int main(int argsn, char *args[]) {
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
 		return 1;
 	}
-	strcpy(card_mixer_name, args[2]);
-	ready = 1;
 	while (files->next) {
 		if(!strcmp(files->name, args[3])){
 			break;

@@ -39,15 +39,19 @@ int main(int pnum, char * params[]){
 	}
 	snd_mixer_t *mxr;
 	if (snd_mixer_open(&mxr, 0)){
+		*(char*)shd_addr = -1;
 		return 1;
 	}
 	if (snd_mixer_attach(mxr, params[1])){
+		*(char*)shd_addr = -1;
 		return 1;
 	}
 	if (snd_mixer_selem_register(mxr, NULL, NULL)){
+		*(char*)shd_addr = -1;
 		return 1;
 	}
 	if (snd_mixer_load(mxr)){
+		*(char*)shd_addr = -1;
 		return 1;
 	}
 	snd_mixer_elem_t *melem = snd_mixer_first_elem(mxr);

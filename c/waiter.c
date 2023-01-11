@@ -27,6 +27,8 @@
 #define card_name "Wilkins"
 #define exec_player_path "/home/exe/player/player"
 #define player_name "player"
+#define exec_mixer_path "/home/exe/player/mixer"
+#define mixer_name "mixer"
 #define listen_port 8888
 #define album_str_size 1024
 #define file_str_size 10
@@ -66,7 +68,18 @@ void action0_play(int sock) {
 void action1_set_vol(int sock) {
 	write(sock, "ok\n", 3);
 	if (read(sock, shd_addr, 1) > 0 && player_pid > 0) {
-		kill(player_pid, SIGUSR1);
+		int card_num = snd_card_get_index(card_name);
+		if (card_num >= 0){
+			char card_pcm_name[7];
+			sprintf(card_pcm_name, "hw:%d", card_num);
+			pid_t mixer_pid = fork();
+			if (!mixer_pid){
+				execl(exec_mixer_path, mixer_name, card_pcm_name, NULL);
+			}
+			if (mixer_pid > 0){
+				waitpid(mixer_pid, NULL, 0);
+			}
+		}
 	}
 	write(sock, "ok\n", 3);
 }
