@@ -176,14 +176,12 @@ int main(int argsn, char *args[]) {
 		swr = swr_alloc_set_opts(swr, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, 96000, AV_CH_LAYOUT_STEREO, sample_size == 24 ? AV_SAMPLE_FMT_S32 : AV_SAMPLE_FMT_S16, rate, 0, NULL);
 		swr_init(swr);
 	}
-	char card_pcm_name[10];
-	sprintf(card_pcm_name, "%s,0", args[2]);
 	FLAC__StreamDecoder *decoder = NULL;
 	decoder = FLAC__stream_decoder_new();
 	FLAC__stream_decoder_set_md5_checking(decoder, false);
 	FLAC__stream_decoder_set_metadata_ignore_all(decoder);
 	snd_pcm_t *pcm_p;
-	if (snd_pcm_open(&pcm_p, card_pcm_name, SND_PCM_STREAM_PLAYBACK, 0)) {
+	if (snd_pcm_open(&pcm_p, args[2], SND_PCM_STREAM_PLAYBACK, 0)) {
 		return 1;
 	}
 	snd_pcm_hw_params_t *pcm_hw;

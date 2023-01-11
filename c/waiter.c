@@ -52,7 +52,7 @@ void action0_play(int sock) {
 		}
 		int card_num = snd_card_get_index(card_name);
 		if (card_num >= 0){
-			sprintf(shd_addr + album_size + track_size + 3, "hw:%d", card_num);
+			sprintf(shd_addr + album_size + track_size + 3, "hw:%d,0", card_num);
 			player_pid = fork();
 			if (!player_pid){
 				execl(exec_player_path, player_name, shd_addr + 1, shd_addr + album_size + track_size + 3, shd_addr + album_size + 2, NULL);
