@@ -30,7 +30,6 @@
 #define exec_mixer_path "/home/exe/player/mixer"
 #define mixer_name "mixer"
 #define listen_port 8888
-#define album_str_size 1024
 #define file_str_size 10
 
 
@@ -39,14 +38,14 @@ void * shd_addr;
 
 void action0_play(int sock) {
 	write(sock, "ok\n", 3);
-	char album[album_str_size], track[file_str_size];
+	char track[file_str_size];
 	int album_size, track_size;
-	album_size = read(sock, album, album_str_size);
+	album_size = read(sock, shd_addr + 1, getpagesize() - 1);
 	write(sock, "ok\n", 3);
 	track_size = read(sock, track, file_str_size);
 	write(sock, "ok\n", 3);
 	if (album_size > 0 && track_size > 0) {
-		album[album_size] = 0;
+		((char*)shd_addr)[album_size + 1] = 0;
 		track[track_size] = 0;
 		if (player_pid > 0){
 			kill(player_pid, SIGTERM);
@@ -59,7 +58,7 @@ void action0_play(int sock) {
 			sprintf(card_pcm_name, "hw:%d", card_num);
 			player_pid = fork();
 			if (!player_pid){
-				execl(exec_player_path, player_name, album, card_pcm_name, track, NULL);
+				execl(exec_player_path, player_name, shd_addr + 1, card_pcm_name, track, NULL);
 			}
 		}
 	}
