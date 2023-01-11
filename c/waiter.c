@@ -48,8 +48,7 @@ void action0_play(int sock) {
 		track[track_size] = 0;
 		if (player_pid > 0){
 			kill(player_pid, SIGTERM);
-			int status;
-			wait(&status);
+			waitpid(player_pid, NULL, 0);
 			player_pid = 0;
 		}
 		int card_num = snd_card_get_index(card_name);
