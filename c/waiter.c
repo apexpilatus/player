@@ -30,7 +30,6 @@
 #define exec_mixer_path "/home/exe/player/mixer"
 #define mixer_name "mixer"
 #define listen_port 8888
-#define file_str_size 10
 
 
 static pid_t player_pid;
@@ -38,15 +37,14 @@ void * shd_addr;
 
 void action0_play(int sock) {
 	write(sock, "ok\n", 3);
-	char track[file_str_size];
 	int album_size, track_size;
 	album_size = read(sock, shd_addr + 1, getpagesize() - 1);
 	write(sock, "ok\n", 3);
-	track_size = read(sock, track, file_str_size);
+	track_size = read(sock, shd_addr + album_size + 2, getpagesize() - album_size - 2);
 	write(sock, "ok\n", 3);
 	if (album_size > 0 && track_size > 0) {
 		((char*)shd_addr)[album_size + 1] = 0;
-		track[track_size] = 0;
+		((char*)shd_addr)[album_size + track_size + 2] = 0;
 		if (player_pid > 0){
 			kill(player_pid, SIGTERM);
 			waitpid(player_pid, NULL, 0);
@@ -54,11 +52,10 @@ void action0_play(int sock) {
 		}
 		int card_num = snd_card_get_index(card_name);
 		if (card_num >= 0){
-			char card_pcm_name[7];
-			sprintf(card_pcm_name, "hw:%d", card_num);
+			sprintf(shd_addr + album_size + track_size + 3, "hw:%d", card_num);
 			player_pid = fork();
 			if (!player_pid){
-				execl(exec_player_path, player_name, shd_addr + 1, card_pcm_name, track, NULL);
+				execl(exec_player_path, player_name, shd_addr + 1, shd_addr + album_size + track_size + 3, shd_addr + album_size + 2, NULL);
 			}
 		}
 	}
@@ -69,11 +66,10 @@ void action1_set_vol(int sock) {
 	if (read(sock, shd_addr, 1) > 0 && player_pid > 0) {
 		int card_num = snd_card_get_index(card_name);
 		if (card_num >= 0){
-			char card_pcm_name[7];
-			sprintf(card_pcm_name, "hw:%d", card_num);
+			sprintf(shd_addr + 1, "hw:%d", card_num);
 			pid_t mixer_pid = fork();
 			if (!mixer_pid){
-				execl(exec_mixer_path, mixer_name, card_pcm_name, NULL);
+				execl(exec_mixer_path, mixer_name, shd_addr + 1, NULL);
 			}
 			if (mixer_pid > 0){
 				waitpid(mixer_pid, NULL, 0);
@@ -94,7 +90,7 @@ void (*action[])(int sock) = {
 };
 
 int main(void){
-	int shd = shm_open(shm_file, O_CREAT|O_RDWR|O_APPEND, S_IRUSR|S_IWUSR);
+	int shd = shm_open(shm_file, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
 	if (shd < 0) {
 		return 1;
 	}

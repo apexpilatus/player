@@ -177,8 +177,7 @@ int main(int argsn, char *args[]) {
 		swr_init(swr);
 	}
 	char card_pcm_name[10];
-	strcpy(card_pcm_name, args[2]);
-	strcpy(card_pcm_name + strlen(card_pcm_name),",0");
+	sprintf(card_pcm_name, "%s,0", args[2]);
 	FLAC__StreamDecoder *decoder = NULL;
 	decoder = FLAC__stream_decoder_new();
 	FLAC__stream_decoder_set_md5_checking(decoder, false);
