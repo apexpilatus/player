@@ -1,15 +1,8 @@
 #include "shares.h"
 #include <unistd.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <dirent.h>
-#include <signal.h>
 #include <sys/wait.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/mman.h>
 
@@ -17,12 +10,7 @@
 #include <alsa/input.h>
 #include <alsa/output.h>
 #include <alsa/conf.h>
-#include <alsa/pcm.h>
 #include <alsa/control.h>
-#include <alsa/mixer.h>
-
-#include <FLAC/metadata.h>
-#include <FLAC/stream_decoder.h>
 
 #define card_name "Wilkins"
 #define exec_player_path "/home/exe/player/player"
