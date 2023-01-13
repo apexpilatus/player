@@ -37,6 +37,7 @@ public class Control extends HttpServlet {
 
     private int action2GetVol() {
         int ret = -1;
+        System.out.println("fuck");
         currentPlayer = "none";
         for (String playerHost : playerHosts) {
             try (Socket sock = new Socket(playerHost, 8888);
