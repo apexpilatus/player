@@ -37,12 +37,12 @@ public class Control extends HttpServlet {
 
     private int action2GetVol() {
         int ret = -1;
-        System.out.println("fuck");
         currentPlayer = "none";
         for (String playerHost : playerHosts) {
             try (Socket sock = new Socket(playerHost, 8888);
                  BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
                  BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
+                System.out.println("fook");
                 sock.setSoTimeout(15000);
                 byte op = 2;
                 writer.write(op);
