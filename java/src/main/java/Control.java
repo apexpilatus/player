@@ -49,7 +49,8 @@ public class Control extends HttpServlet {
                 ret = reader.read();
                 currentPlayer = playerHost;
                 break;
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         return ret;
