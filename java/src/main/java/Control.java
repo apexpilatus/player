@@ -12,38 +12,45 @@ import java.util.Objects;
 
 public class Control extends HttpServlet {
     String exeDirPath = "/home/exe";
-    String playerHost = "player";
+    String[] playerHosts = {"wilkins"};
+    String currentPlayer;
     int playerPort = 8888;
 
     private void action1SetVol(int vol) {
-        try (Socket sock = new Socket(playerHost, playerPort);
-             BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-             BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
-            sock.setSoTimeout(15000);
-            byte op = 1;
-            sockWriter.write(op);
-            sockWriter.flush();
-            sockReader.readLine();
-            sockWriter.write(vol);
-            sockWriter.flush();
-            sockReader.readLine();
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (String playerHost : playerHosts) {
+            try (Socket sock = new Socket(playerHost, playerPort);
+                 BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+                 BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
+                sock.setSoTimeout(15000);
+                byte op = 1;
+                sockWriter.write(op);
+                sockWriter.flush();
+                sockReader.readLine();
+                sockWriter.write(vol);
+                sockWriter.flush();
+                sockReader.readLine();
+                break;
+            } catch (Exception ignored) {
+            }
         }
     }
 
     private int action2GetVol() {
         int ret = -1;
-        try (Socket sock = new Socket("player", 8888);
-             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-             BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
-            sock.setSoTimeout(15000);
-            byte op = 2;
-            writer.write(op);
-            writer.flush();
-            ret = reader.read();
-        } catch (IOException e) {
-            e.printStackTrace();
+        currentPlayer = "none";
+        for (String playerHost : playerHosts) {
+            try (Socket sock = new Socket(playerHost, 8888);
+                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
+                sock.setSoTimeout(15000);
+                byte op = 2;
+                writer.write(op);
+                writer.flush();
+                ret = reader.read();
+                currentPlayer = playerHost;
+                break;
+            } catch (IOException ignored) {
+            }
         }
         return ret;
     }
@@ -63,7 +70,7 @@ public class Control extends HttpServlet {
         action1SetVol(vol);
         resp.setContentType("text/plain");
         try {
-            resp.getWriter().println(action2GetVol());
+            resp.getWriter().println(currentPlayer + " " + action2GetVol());
         } catch (IOException e) {
             e.printStackTrace();
         }
