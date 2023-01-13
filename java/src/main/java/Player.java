@@ -16,7 +16,7 @@ public class Player extends HttpServlet {
     String exeDirPath = "/home/exe";
     String[] playerHosts = {"wilkins"};
     int playerPort = 8888;
-    int timeOut = 4000;
+    int timeOut = 5000;
 
     private void action0Play(String albumToPlay, String trackToPlay) {
         for (String playerHost : playerHosts) {
