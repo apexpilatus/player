@@ -39,10 +39,10 @@ public class Control extends HttpServlet {
         int ret = -1;
         currentPlayer = "none";
         for (String playerHost : playerHosts) {
-            try (Socket sock = new Socket(playerHost, 8888);
-                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-                 BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
+            try (Socket sock = new Socket(playerHost, 8888)) {
                 sock.setSoTimeout(15000);
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
                 byte op = 2;
                 writer.write(op);
                 writer.flush();
