@@ -5,6 +5,7 @@ import org.jflac.FLACDecoder;
 import org.jflac.metadata.Metadata;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Date;
@@ -13,15 +14,17 @@ import java.util.Objects;
 public class Control extends HttpServlet {
     String exeDirPath = "/home/exe";
     String[] playerHosts = {"wilkins"};
-    String currentPlayer;
     int playerPort = 8888;
+    int timeOut = 4000;
+    String currentPlayer;
 
     private void action1SetVol(int vol) {
         for (String playerHost : playerHosts) {
-            try (Socket sock = new Socket(playerHost, playerPort);
+            try (Socket sock = new Socket();
                  BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
                  BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
-                sock.setSoTimeout(15000);
+                sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
+                sock.setSoTimeout(timeOut);
                 byte op = 1;
                 sockWriter.write(op);
                 sockWriter.flush();
@@ -39,22 +42,20 @@ public class Control extends HttpServlet {
         int ret = -1;
         currentPlayer = "none";
         for (String playerHost : playerHosts) {
-            try (Socket sock = new Socket(playerHost, 8888)) {
-                sock.setSoTimeout(15000);
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-                BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            try (Socket sock = new Socket();
+                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
+                sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
+                sock.setSoTimeout(timeOut);
                 byte op = 2;
                 writer.write(op);
                 writer.flush();
                 ret = reader.read();
                 currentPlayer = playerHost;
                 break;
-            } catch (Exception e) {
-                System.out.println("fook");
-                e.printStackTrace();
+            } catch (IOException ignored) {
             }
         }
-        System.out.println("fiik");
         return ret;
     }
 

@@ -7,6 +7,7 @@ import org.jflac.metadata.Picture;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;
 
@@ -15,13 +16,15 @@ public class Player extends HttpServlet {
     String exeDirPath = "/home/exe";
     String[] playerHosts = {"wilkins"};
     int playerPort = 8888;
+    int timeOut = 4000;
 
     private void action0Play(String albumToPlay, String trackToPlay) {
         for (String playerHost : playerHosts) {
-            try (Socket sock = new Socket(playerHost, playerPort);
+            try (Socket sock = new Socket();
                  BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
                  BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
-                sock.setSoTimeout(15000);
+                sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
+                sock.setSoTimeout(timeOut);
                 byte op = 0;
                 sockWriter.write(op);
                 sockWriter.flush();
