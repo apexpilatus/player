@@ -42,7 +42,6 @@ public class Control extends HttpServlet {
             try (Socket sock = new Socket(playerHost, 8888);
                  BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
                  BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
-                System.out.println("fook");
                 sock.setSoTimeout(15000);
                 byte op = 2;
                 writer.write(op);
@@ -51,9 +50,11 @@ public class Control extends HttpServlet {
                 currentPlayer = playerHost;
                 break;
             } catch (IOException e) {
+                System.out.println("fook");
                 e.printStackTrace();
             }
         }
+        System.out.println("fiik");
         return ret;
     }
 
