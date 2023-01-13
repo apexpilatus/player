@@ -20,11 +20,11 @@ public class Control extends HttpServlet {
 
     private void action1SetVol(int vol) {
         for (String playerHost : playerHosts) {
-            try (Socket sock = new Socket();
-                 BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-                 BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
+            try (Socket sock = new Socket()) {
                 sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
                 sock.setSoTimeout(timeOut);
+                BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+                BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
                 byte op = 1;
                 sockWriter.write(op);
                 sockWriter.flush();
@@ -33,7 +33,7 @@ public class Control extends HttpServlet {
                 sockWriter.flush();
                 sockReader.readLine();
                 break;
-            } catch (Exception ignored) {
+            } catch (IOException ignored) {
             }
         }
     }
@@ -42,11 +42,11 @@ public class Control extends HttpServlet {
         int ret = -1;
         currentPlayer = "none";
         for (String playerHost : playerHosts) {
-            try (Socket sock = new Socket();
-                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-                 BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
+            try (Socket sock = new Socket()) {
                 sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
                 sock.setSoTimeout(timeOut);
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
                 byte op = 2;
                 writer.write(op);
                 writer.flush();

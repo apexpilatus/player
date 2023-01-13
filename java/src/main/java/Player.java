@@ -20,11 +20,11 @@ public class Player extends HttpServlet {
 
     private void action0Play(String albumToPlay, String trackToPlay) {
         for (String playerHost : playerHosts) {
-            try (Socket sock = new Socket();
-                 BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-                 BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()))) {
+            try (Socket sock = new Socket()) {
                 sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
                 sock.setSoTimeout(timeOut);
+                BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+                BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
                 byte op = 0;
                 sockWriter.write(op);
                 sockWriter.flush();
