@@ -49,7 +49,7 @@ public class Control extends HttpServlet {
                 ret = reader.read();
                 currentPlayer = playerHost;
                 break;
-            } catch (IOException e) {
+            } catch (Exception e) {
                 System.out.println("fook");
                 e.printStackTrace();
             }
