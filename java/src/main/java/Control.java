@@ -15,7 +15,7 @@ public class Control extends HttpServlet {
     String exeDirPath = "/home/exe";
     String[] playerHosts = {"wilkins"};
     int playerPort = 8888;
-    int timeOut = 4000;
+    int timeOut = 5000;
     String currentPlayer;
 
     private void action1SetVol(int vol) {
