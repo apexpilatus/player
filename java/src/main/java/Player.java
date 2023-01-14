@@ -141,7 +141,7 @@ public class Player extends HttpServlet implements Common {
                     "</head>");
             resp.getWriter().println("<body style=background-color:slategray>");
             resp.getWriter().println("<script src=main.js></script>");
-            resp.getWriter().println("<script>setInterval(switchdevice(),12000)</script>");
+            resp.getWriter().println("<script>switchdevice()</script>");
             resp.getWriter().println("<p id=volume style=position:fixed;top:80px;left:20px;font-size:20px;></p>");
             resp.getWriter().println("<button type=button onclick=setvolume(\"up\") style=border-radius:20px;color:black;background-color:white;font-size:20px;position:fixed;top:50px;left:20px;>up</button>");
             resp.getWriter().println("<button type=button onclick=setvolume(\"down\") style=border-radius:20px;color:black;background-color:white;font-size:20px;position:fixed;top:150px;left:20px;>dw</button>");
