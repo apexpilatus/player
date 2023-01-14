@@ -12,9 +12,9 @@ function switchdevice(){
 	xhttp.onload = function() {
 		document.getElementById("volume").innerHTML = "&#127911 " + this.responseText;
 	}
-	setInterval(function(){
-        xhttp.open("POST", window.location.href.replace("player", "periodic"));
-        xhttp.send();
+	xhttp.open("POST", window.location.href.replace("player", "periodic"));
+	setInterval(function() {
+	    xhttp.send();
 	}, 10000);
 }
 
