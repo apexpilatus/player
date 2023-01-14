@@ -19,6 +19,10 @@
         <servlet-name>control</servlet-name>
         <servlet-class>Control</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>periodic</servlet-name>
+        <servlet-class>Periodic</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>player</servlet-name>
         <url-pattern>/player</url-pattern>
@@ -26,5 +30,9 @@
     <servlet-mapping>
         <servlet-name>control</servlet-name>
         <url-pattern>/control</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>periodic</servlet-name>
+        <url-pattern>/periodic</url-pattern>
     </servlet-mapping>
 </web-app>

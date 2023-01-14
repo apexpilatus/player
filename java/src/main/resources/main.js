@@ -7,6 +7,15 @@ function setvolume(direction){
 	xhttp.send();
 }
 
+function switchdevice(){
+	const xhttp = new XMLHttpRequest();
+	xhttp.onload = function() {
+		document.getElementById("volume").innerHTML = "&#127911 " + this.responseText;
+	}
+	xhttp.open("POST", window.location.href.replace("player", "periodic"));
+	xhttp.send();
+}
+
 function gettracks(album){
 	const xhttp = new XMLHttpRequest();
 	xhttp.onload = function() {
