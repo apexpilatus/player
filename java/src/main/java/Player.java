@@ -12,8 +12,6 @@ import java.net.Socket;
 import java.util.*;
 
 public class Player extends HttpServlet implements Common {
-    String[] musicDirPaths = {"/home/store/music/qbz", "/home/store/music/dzr", "/home/store/music/hack/1", "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
-
     private synchronized void action0Play(String albumToPlay, String trackToPlay) {
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(currentPlayer[0], playerPort), timeOut);
@@ -88,29 +86,6 @@ public class Player extends HttpServlet implements Common {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        String albumToShow = req.getParameter("album");
-        if (albumToShow != null) {
-            resp.setContentType("image/jpeg");
-            byte[] pictureBytes = {1, 2, 3};
-            try (FileInputStream flacIs = new FileInputStream(albumToShow + "/01.flac")) {
-                FLACDecoder flacDec = new FLACDecoder(flacIs);
-                Metadata[] metas = flacDec.readMetadata();
-                for (Metadata meta : metas) {
-                    if (meta.toString().contains("Picture")) {
-                        Picture picMeta = (Picture) meta;
-                        Class<? extends Picture> c = picMeta.getClass();
-                        Field f = c.getDeclaredField("image");
-                        f.setAccessible(true);
-                        pictureBytes = (byte[]) f.get(picMeta);
-                    }
-                }
-                resp.getOutputStream().write(Base64.getEncoder().encode(pictureBytes));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-
         Map<String, List<String>> albums = new TreeMap<>();
         for (String musicDirPath : musicDirPaths) {
             File musicDir = new File(musicDirPath);

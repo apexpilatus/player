@@ -47,33 +47,12 @@ public class Control extends HttpServlet implements Common {
         return ret;
     }
 
-    private synchronized int action2InitVol() {
-        int ret = -1;
-        currentPlayer[0] = "none";
-        for (String playerHost : playerHosts) {
-            try (Socket sock = new Socket()) {
-                sock.connect(new InetSocketAddress(playerHost, playerPort), 3000);
-                sock.setSoTimeout(timeOut);
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-                BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-                byte op = 2;
-                writer.write(op);
-                writer.flush();
-                ret = reader.read();
-                currentPlayer[0] = playerHost;
-                break;
-            } catch (IOException ignored) {
-            }
-        }
-        return ret;
-    }
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         String volChangeDirection = req.getParameter("volume");
-        int vol = Objects.requireNonNull(volChangeDirection).equals("init") ? action2InitVol() : currentPlayer[0].equals("none") ? -1 : action2GetVol();
-        if (!currentPlayer[0].equals("none")) {
-            switch (Objects.requireNonNull(volChangeDirection)) {
+        int vol = currentPlayer[0].equals("none") ? -1 : action2GetVol();
+        if (!currentPlayer[0].equals("none") && volChangeDirection != null) {
+            switch (volChangeDirection) {
                 case "up" -> vol++;
                 case "down" -> vol--;
                 default -> {

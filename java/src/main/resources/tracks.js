@@ -14,6 +14,6 @@ function getpicturebytes(album){
 		element.src = "data:image/jpeg;base64," + this.responseText;
 		element.setAttribute("onclick", "play(\"" + album + "\")");
 	}
-	xhttp.open("GET", parent.window.location.href + "?album=" + album.replace(/&/g, " "));
+	xhttp.open("GET", parent.window.location.href.replace("player", "periodic") + "?album=" + album.replace(/&/g, " "));
 	xhttp.send();
 }
