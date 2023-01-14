@@ -14,7 +14,7 @@ import java.util.*;
 public class Player extends HttpServlet implements Common {
     String[] musicDirPaths = {"/home/store/music/qbz", "/home/store/music/dzr", "/home/store/music/hack/1", "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
 
-    private void action0Play(String albumToPlay, String trackToPlay) {
+    private synchronized void action0Play(String albumToPlay, String trackToPlay) {
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(currentPlayer[0], playerPort), timeOut);
             sock.setSoTimeout(timeOut);

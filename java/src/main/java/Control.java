@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.Objects;
 
 public class Control extends HttpServlet implements Common {
-    private void action1SetVol(int vol) {
+    private synchronized void action1SetVol(int vol) {
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(currentPlayer[0], playerPort), timeOut);
             sock.setSoTimeout(timeOut);
@@ -30,7 +30,7 @@ public class Control extends HttpServlet implements Common {
         }
     }
 
-    private int action2GetVol() {
+    private synchronized int action2GetVol() {
         int ret = -1;
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(currentPlayer[0], playerPort), timeOut);
@@ -47,7 +47,7 @@ public class Control extends HttpServlet implements Common {
         return ret;
     }
 
-    private int action2InitVol() {
+    private synchronized int action2InitVol() {
         int ret = -1;
         currentPlayer[0] = "none";
         for (String playerHost : playerHosts) {
