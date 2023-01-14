@@ -12,13 +12,9 @@
 #include <alsa/conf.h>
 #include <alsa/control.h>
 
-#define card_name "Wilkins"
-#define exec_player_path "/home/exe/player/player"
 #define player_name "player"
-#define exec_mixer_path "/home/exe/player/mixer"
 #define mixer_name "mixer"
 #define listen_port 8888
-
 
 static pid_t player_pid;
 static void * shd_addr;
