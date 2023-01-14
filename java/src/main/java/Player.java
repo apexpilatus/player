@@ -11,33 +11,26 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;
 
-public class Player extends HttpServlet {
+public class Player extends HttpServlet implements Common {
     String[] musicDirPaths = {"/home/store/music/qbz", "/home/store/music/dzr", "/home/store/music/hack/1", "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
-    String exeDirPath = "/home/exe";
-    String[] playerHosts = {"wilkins"};
-    int playerPort = 8888;
-    int timeOut = 10000;
 
     private void action0Play(String albumToPlay, String trackToPlay) {
-        for (String playerHost : playerHosts) {
-            try (Socket sock = new Socket()) {
-                sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
-                sock.setSoTimeout(timeOut);
-                BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-                BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-                byte op = 0;
-                sockWriter.write(op);
-                sockWriter.flush();
-                sockReader.readLine();
-                sockWriter.write(albumToPlay);
-                sockWriter.flush();
-                sockReader.readLine();
-                sockWriter.write(trackToPlay == null ? "01.flac" : trackToPlay);
-                sockWriter.flush();
-                sockReader.readLine();
-                break;
-            } catch (Exception ignored) {
-            }
+        try (Socket sock = new Socket()) {
+            sock.connect(new InetSocketAddress(currentPlayer[0], playerPort), timeOut);
+            sock.setSoTimeout(timeOut);
+            BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+            BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            byte op = 0;
+            sockWriter.write(op);
+            sockWriter.flush();
+            sockReader.readLine();
+            sockWriter.write(albumToPlay);
+            sockWriter.flush();
+            sockReader.readLine();
+            sockWriter.write(trackToPlay == null ? "01.flac" : trackToPlay);
+            sockWriter.flush();
+            sockReader.readLine();
+        } catch (Exception ignored) {
         }
     }
 

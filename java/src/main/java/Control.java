@@ -12,11 +12,6 @@ import java.util.Date;
 import java.util.Objects;
 
 public class Control extends HttpServlet implements Common {
-    String exeDirPath = "/home/exe";
-    String[] playerHosts = {"wilkins"};
-    int playerPort = 8888;
-    int timeOut = 8000;
-
     private void action1SetVol(int vol) {
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(currentPlayer[0], playerPort), timeOut);
@@ -75,13 +70,13 @@ public class Control extends HttpServlet implements Common {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         String volChangeDirection = req.getParameter("volume");
         int vol = Objects.requireNonNull(volChangeDirection).equals("init") ? action2InitVol() : currentPlayer[0].equals("none") ? -1 : action2GetVol();
-        switch (Objects.requireNonNull(volChangeDirection)) {
-            case "up" -> vol++;
-            case "down" -> vol--;
-            default -> {
+        if (!currentPlayer[0].equals("none")) {
+            switch (Objects.requireNonNull(volChangeDirection)) {
+                case "up" -> vol++;
+                case "down" -> vol--;
+                default -> {
+                }
             }
-        }
-        if (!currentPlayer[0].equals("none")){
             action1SetVol(vol);
             vol = action2GetVol();
         }
