@@ -58,7 +58,9 @@ public class Player extends HttpServlet implements Common {
             }
             try (FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac");
                  FileOutputStream pictureOs = new FileOutputStream(pictureDirPath + "/" + pictureName)) {
-                action0Play(albumToPlay, trackToPlay);
+                if (!currentPlayer[0].equals("none")) {
+                    action0Play(albumToPlay, trackToPlay);
+                }
                 FLACDecoder flacDec = new FLACDecoder(flacIs);
                 Metadata[] metas = flacDec.readMetadata();
                 for (Metadata meta : metas) {
