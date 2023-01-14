@@ -26,6 +26,7 @@ public class Control extends HttpServlet implements Common {
             sockWriter.flush();
             sockReader.readLine();
         } catch (IOException ignored) {
+            currentPlayer[0] = "none";
         }
     }
 
@@ -41,6 +42,7 @@ public class Control extends HttpServlet implements Common {
             writer.flush();
             ret = reader.read();
         } catch (IOException ignored) {
+            currentPlayer[0] = "none";
         }
         return ret;
     }

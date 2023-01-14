@@ -31,6 +31,7 @@ public class Player extends HttpServlet implements Common {
             sockWriter.flush();
             sockReader.readLine();
         } catch (Exception ignored) {
+            currentPlayer[0] = "none";
         }
     }
 
