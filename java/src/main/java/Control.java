@@ -11,12 +11,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 
-public class Control extends HttpServlet {
+public class Control extends HttpServlet implements Common{
     String exeDirPath = "/home/exe";
     String[] playerHosts = {"wilkins"};
     int playerPort = 8888;
     int timeOut = 8000;
-    String currentPlayer;
 
     private void action1SetVol(int vol) {
         for (String playerHost : playerHosts) {
@@ -40,7 +39,7 @@ public class Control extends HttpServlet {
 
     private int action2GetVol() {
         int ret = -1;
-        currentPlayer = "none";
+        currentPlayer[0] = "none";
         for (String playerHost : playerHosts) {
             try (Socket sock = new Socket()) {
                 sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
@@ -51,7 +50,7 @@ public class Control extends HttpServlet {
                 writer.write(op);
                 writer.flush();
                 ret = reader.read();
-                currentPlayer = playerHost;
+                currentPlayer[0] = playerHost;
                 break;
             } catch (IOException ignored) {
             }
@@ -74,7 +73,7 @@ public class Control extends HttpServlet {
         action1SetVol(vol);
         resp.setContentType("text/plain");
         try {
-            resp.getWriter().println(currentPlayer + " " + action2GetVol());
+            resp.getWriter().println(currentPlayer[0] + " " + action2GetVol());
         } catch (IOException e) {
             e.printStackTrace();
         }
