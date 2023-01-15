@@ -68,6 +68,9 @@ static void action1_set_vol(int sock) {
 }
 
 static void action2_get_vol(int sock) {
+	if (player_pid == 0){
+		update_mixer();
+	}
 	write(sock, shd_addr, 1);
 }
 
