@@ -14,7 +14,6 @@ import java.util.Base64;
 public class Periodic extends HttpServlet implements Common {
     private synchronized int action2SwitchDevice() {
         int ret = -1;
-        currentPlayer[0] = "none";
         for (String playerHost : playerHosts) {
             try (Socket sock = new Socket()) {
                 sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
@@ -28,6 +27,7 @@ public class Periodic extends HttpServlet implements Common {
                 currentPlayer[0] = playerHost;
                 break;
             } catch (IOException ignored) {
+                currentPlayer[0] = "none";
             }
         }
         return ret;
