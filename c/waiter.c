@@ -20,9 +20,9 @@ static pid_t player_pid;
 static void * shd_addr;
 
 static inline void update_mixer() {
-	int card_num = snd_card_get_index(card_name);
-	if (card_num >= 0){
-		sprintf((char*)shd_addr + 1, "hw:%d", card_num);
+	int mixer_card_num = snd_card_get_index(card_name);
+	if (mixer_card_num >= 0){
+		sprintf((char*)shd_addr + 1, "hw:%d", mixer_card_num);
 		pid_t mixer_pid = fork();
 		if (!mixer_pid){
 			execl(exec_mixer_path, mixer_name, (char*)shd_addr + 1, NULL);
@@ -35,6 +35,7 @@ static inline void update_mixer() {
 
 static void action0_play(int sock) {
 	write(sock, "ok\n", 3);
+	update_mixer();
 	int album_size, track_size;
 	album_size = read(sock, (char*)shd_addr + 1, getpagesize() - 1);
 	write(sock, "ok\n", 3);
@@ -48,7 +49,6 @@ static void action0_play(int sock) {
 			waitpid(player_pid, NULL, 0);
 			player_pid = 0;
 		}
-		update_mixer();
 		int card_num = snd_card_get_index(card_name);
 		if (card_num >= 0){
 			sprintf((char*)shd_addr + album_size + track_size + 3, "hw:%d,0", card_num);
