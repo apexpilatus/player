@@ -126,7 +126,7 @@ public class Control extends HttpServlet implements Common {
                                             vorbisTitle[0] += line.split("=")[i];
                                         }
                                     }
-                                    if (line.contains("ALBUM")) {
+                                    if (file.equals("01.flac") && line.contains("ALBUM")) {
                                         for (int i = 1; i < line.split("=").length; i++) {
                                             if (i > 1) {
                                                 vorbisAlbum[0] += "=";
@@ -134,7 +134,7 @@ public class Control extends HttpServlet implements Common {
                                             vorbisAlbum[0] += line.split("=")[i];
                                         }
                                     }
-                                    if (line.contains("ARTIST")) {
+                                    if (file.equals("01.flac") && line.contains("ARTIST")) {
                                         for (int i = 1; i < line.split("=").length; i++) {
                                             if (i > 1) {
                                                 vorbisArtist[0] += "=";
