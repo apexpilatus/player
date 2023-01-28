@@ -127,20 +127,10 @@ public class Control extends HttpServlet implements Common {
                                         }
                                     }
                                     if (file.equals("01.flac") && line.contains("ALBUM")) {
-                                        for (int i = 1; i < line.split("=").length; i++) {
-                                            if (i > 1) {
-                                                vorbisAlbum[0] += "=";
-                                            }
-                                            vorbisAlbum[0] += line.split("=")[i];
-                                        }
+                                        vorbisAlbum[0] = line.substring(6);
                                     }
                                     if (file.equals("01.flac") && line.contains("ARTIST")) {
-                                        for (int i = 1; i < line.split("=").length; i++) {
-                                            if (i > 1) {
-                                                vorbisArtist[0] += "=";
-                                            }
-                                            vorbisArtist[0] += line.split("=")[i];
-                                        }
+                                        vorbisArtist[0] = line.substring(7);
                                     }
                                 });
                             }
