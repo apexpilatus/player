@@ -119,13 +119,13 @@ public class Control extends HttpServlet implements Common {
                                         vorbisTrack[0] = line.split("=")[1] + ". ";
                                     }
                                     if (line.contains("TITLE")) {
-                                        vorbisTitle[0] = line.substring(5);
+                                        vorbisTitle[0] = line.substring(7);
                                     }
                                     if (file.equals("01.flac") && line.contains("ALBUM")) {
-                                        vorbisAlbum[0] = line.substring(5);
+                                        vorbisAlbum[0] = line.substring(7);
                                     }
                                     if (file.equals("01.flac") && line.contains("ARTIST")) {
-                                        vorbisArtist[0] = line.substring(6);
+                                        vorbisArtist[0] = line.substring(8);
                                     }
                                 });
                             }
