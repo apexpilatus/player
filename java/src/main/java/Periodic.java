@@ -5,40 +5,19 @@ import org.jflac.FLACDecoder;
 import org.jflac.metadata.Metadata;
 import org.jflac.metadata.Picture;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.Base64;
 
-public class Periodic extends HttpServlet implements Common {
-    private synchronized int action2SwitchDevice() {
-        int ret = -1;
-        for (String playerHost : playerHosts) {
-            try (Socket sock = new Socket()) {
-                sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
-                sock.setSoTimeout(timeOut);
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-                BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-                byte op = 2;
-                writer.write(op);
-                writer.flush();
-                ret = reader.read();
-                currentPlayer[0] = playerHost;
-                break;
-            } catch (IOException ignored) {
-                currentPlayer[0] = "none";
-            }
-        }
-        return ret;
-    }
+public class Periodic extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        int vol = action2SwitchDevice();
+        int vol = Common.action2SwitchDevice();
         resp.setContentType("text/plain");
         try {
-            resp.getWriter().println(currentPlayer[0] + " " + vol);
+            resp.getWriter().println(Common.getCurrentPlayer() + " " + vol);
         } catch (IOException e) {
             e.printStackTrace();
         }

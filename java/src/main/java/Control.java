@@ -5,65 +5,31 @@ import org.jflac.FLACDecoder;
 import org.jflac.metadata.Metadata;
 
 import java.io.*;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 
-public class Control extends HttpServlet implements Common {
-    private synchronized void action1SetVol(int vol) {
-        try (Socket sock = new Socket()) {
-            sock.connect(new InetSocketAddress(currentPlayer[0], playerPort), timeOut);
-            sock.setSoTimeout(timeOut);
-            BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-            BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-            byte op = 1;
-            sockWriter.write(op);
-            sockWriter.flush();
-            sockReader.readLine();
-            sockWriter.write(vol);
-            sockWriter.flush();
-            sockReader.readLine();
-        } catch (IOException ignored) {
-            currentPlayer[0] = "none";
-        }
-    }
 
-    private synchronized int action2GetVol() {
-        int ret = -1;
-        try (Socket sock = new Socket()) {
-            sock.connect(new InetSocketAddress(currentPlayer[0], playerPort), timeOut);
-            sock.setSoTimeout(timeOut);
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-            BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-            byte op = 2;
-            writer.write(op);
-            writer.flush();
-            ret = reader.read();
-        } catch (IOException ignored) {
-            currentPlayer[0] = "none";
-        }
-        return ret;
-    }
+public class Control extends HttpServlet {
+
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         String volChangeDirection = req.getParameter("volume");
-        int vol = currentPlayer[0].equals("none") ? -1 : action2GetVol();
-        if (!currentPlayer[0].equals("none") && volChangeDirection != null) {
+        int vol = Common.getCurrentPlayer().equals("none") ? -1 : Common.action2GetVol();
+        if (!Common.getCurrentPlayer().equals("none") && volChangeDirection != null) {
             switch (volChangeDirection) {
                 case "up" -> vol++;
                 case "down" -> vol--;
                 default -> {
                 }
             }
-            action1SetVol(vol);
-            vol = action2GetVol();
+            Common.action1SetVol(vol);
+            vol = Common.action2GetVol();
         }
         resp.setContentType("text/plain");
         try {
-            resp.getWriter().println(currentPlayer[0] + " " + vol);
+            resp.getWriter().println(Common.getCurrentPlayer() + " " + vol);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -73,12 +39,12 @@ public class Control extends HttpServlet implements Common {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         String albumToList = req.getParameter("album");
         String htmlName = "frame.html";
-        String htmlDirPath = exeDirPath + "/player/tmp";
+        String htmlDirPath = Common.exeDirPath + "/player/tmp";
         if (albumToList != null) {
-            File dirFile = new File(exeDirPath);
+            File dirFile = new File(Common.exeDirPath);
             for (String file : Objects.requireNonNull(dirFile.list())) {
                 if (file.contains("apache-tom")) {
-                    htmlDirPath = exeDirPath + "/" + file + "/" + "webapps/ROOT";
+                    htmlDirPath = Common.exeDirPath + "/" + file + "/" + "webapps/ROOT";
                 }
             }
             dirFile = new File(htmlDirPath);

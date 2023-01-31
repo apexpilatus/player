@@ -5,33 +5,14 @@ import org.jflac.FLACDecoder;
 import org.jflac.metadata.Metadata;
 import org.jflac.metadata.Picture;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.*;
 
-public class Player extends HttpServlet implements Common {
-    private synchronized void action0Play(String albumToPlay, String trackToPlay) {
-        try (Socket sock = new Socket()) {
-            sock.connect(new InetSocketAddress(currentPlayer[0], playerPort), timeOut);
-            sock.setSoTimeout(timeOut);
-            BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-            BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-            byte op = 0;
-            sockWriter.write(op);
-            sockWriter.flush();
-            sockReader.readLine();
-            sockWriter.write(albumToPlay);
-            sockWriter.flush();
-            sockReader.readLine();
-            sockWriter.write(trackToPlay == null ? "01.flac" : trackToPlay);
-            sockWriter.flush();
-            sockReader.readLine();
-        } catch (Exception ignored) {
-            currentPlayer[0] = "none";
-        }
-    }
+public class Player extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
@@ -39,11 +20,11 @@ public class Player extends HttpServlet implements Common {
         String trackToPlay = req.getParameter("track");
         String pictureName = "picture.jpeg";
         if (albumToPlay != null) {
-            String pictureDirPath = exeDirPath + "/player/tmp";
-            File dirFile = new File(exeDirPath);
+            String pictureDirPath = Common.exeDirPath + "/player/tmp";
+            File dirFile = new File(Common.exeDirPath);
             for (String file : Objects.requireNonNull(dirFile.list())) {
                 if (file.contains("apache-tom")) {
-                    pictureDirPath = exeDirPath + "/" + file + "/" + "webapps/ROOT";
+                    pictureDirPath = Common.exeDirPath + "/" + file + "/" + "webapps/ROOT";
                 }
             }
             dirFile = new File(pictureDirPath);
@@ -57,8 +38,8 @@ public class Player extends HttpServlet implements Common {
             }
             try (FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac");
                  FileOutputStream pictureOs = new FileOutputStream(pictureDirPath + "/" + pictureName)) {
-                if (!currentPlayer[0].equals("none")) {
-                    action0Play(albumToPlay, trackToPlay);
+                if (!Common.getCurrentPlayer().equals("none")) {
+                    Common.action0Play(albumToPlay, trackToPlay);
                 }
                 FLACDecoder flacDec = new FLACDecoder(flacIs);
                 Metadata[] metas = flacDec.readMetadata();
@@ -87,7 +68,7 @@ public class Player extends HttpServlet implements Common {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         Map<String, List<String>> albums = new TreeMap<>();
-        for (String musicDirPath : musicDirPaths) {
+        for (String musicDirPath : Common.musicDirPaths) {
             File musicDir = new File(musicDirPath);
             if (musicDir.exists()) {
                 for (String album : Objects.requireNonNull(musicDir.list())) {
@@ -95,12 +76,12 @@ public class Player extends HttpServlet implements Common {
                 }
             }
         }
-        String pictureDirPath = exeDirPath + "/player/tmp";
+        String pictureDirPath = Common.exeDirPath + "/player/tmp";
         String pictureName = "picture.jpeg";
-        File dirFile = new File(exeDirPath);
+        File dirFile = new File(Common.exeDirPath);
         for (String file : Objects.requireNonNull(dirFile.list())) {
             if (file.contains("apache-tom")) {
-                pictureDirPath = exeDirPath + "/" + file + "/" + "webapps/ROOT";
+                pictureDirPath = Common.exeDirPath + "/" + file + "/" + "webapps/ROOT";
             }
         }
         dirFile = new File(pictureDirPath);
