@@ -72,10 +72,20 @@ static void action2_get_vol(int sock) {
 	write(sock, shd_addr, 1);
 }
 
+static void action3_stop(int sock) {
+	if (player_pid > 0){
+		kill(player_pid, SIGTERM);
+		waitpid(player_pid, NULL, 0);
+		player_pid = 0;
+	}
+	write(sock, "ok\n", 3);
+}
+
 static void (*action[])(int sock) = {
 	action0_play,
 	action1_set_vol,
-	action2_get_vol
+	action2_get_vol,
+	action3_stop
 };
 
 int main(void){
