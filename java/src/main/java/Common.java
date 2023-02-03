@@ -7,7 +7,7 @@ public class Common {
     static final int playerPort = 8888;
     static final int timeOut = 5000;
     static String[] musicDirPaths = {"/home/store/music/qbz", "/home/store/music/dzr", "/home/store/music/hack/1", "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
-    static String[] playerHosts = {"wilkins"};
+    static String[] playerHosts = {"default", "backup"};
     static private String currentPlayer = "none";
 
     static synchronized void action0Play(String albumToPlay, String trackToPlay) {
