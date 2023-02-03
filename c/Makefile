@@ -1,6 +1,6 @@
 PL_PATH := /home/exe/player
 
-CC := gcc -O2 -Wno-unused-result
+CC := gcc -O2
 
 PLAYDEFS := -D exec_player_path=\"$(PL_PATH)/player\" -D exec_mixer_path=\"$(PL_PATH)/mixer\"
 PLAYLIBS := -lFLAC

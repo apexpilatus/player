@@ -94,7 +94,9 @@ int main(void){
 		return 1;
 	}
 	int page_size = getpagesize();
-	ftruncate(shd, page_size);
+	if (ftruncate(shd, page_size)){
+		return 1;
+	}
 	shd_addr = mmap(NULL, page_size, PROT_READ|PROT_WRITE, MAP_SHARED, shd, 0);
 	if (shd_addr == MAP_FAILED){
 		return 1;
