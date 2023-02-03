@@ -81,7 +81,9 @@ public class Common {
                 currentPlayer = playerHost;
                 break;
             } catch (IOException ignored) {
-                currentPlayer = "none";
+	    	if (playerHost.equals(playerHosts[1])) {
+                	currentPlayer = "none";
+		}
             }
         }
         return ret;
