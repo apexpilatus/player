@@ -78,12 +78,15 @@ public class Common {
                 writer.write(op);
                 writer.flush();
                 ret = reader.read();
+                if (playerHost.equals(playerHosts[0]) && currentPlayer.equals(playerHosts[1])) {
+                    action3Stop();
+                }
                 currentPlayer = playerHost;
                 break;
             } catch (IOException ignored) {
-	    	if (playerHost.equals(playerHosts[1])) {
-                	currentPlayer = "none";
-		}
+                if (playerHost.equals(playerHosts[1])) {
+                    currentPlayer = "none";
+                }
             }
         }
         return ret;
