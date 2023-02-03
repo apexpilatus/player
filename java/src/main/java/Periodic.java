@@ -14,10 +14,11 @@ public class Periodic extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        int vol = Common.action2SwitchDevice();
+        Common.IpcActions ipcActions = new Common.IpcActions();
+        int vol = ipcActions.action2SwitchDevice();
         resp.setContentType("text/plain");
         try {
-            resp.getWriter().println(Common.getCurrentPlayer() + " " + vol);
+            resp.getWriter().println(ipcActions.getCurrentPlayer() + " " + vol);
         } catch (IOException e) {
             e.printStackTrace();
         }

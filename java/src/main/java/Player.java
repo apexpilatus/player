@@ -36,10 +36,10 @@ public class Player extends HttpServlet {
                     }
                 }
             }
-            try (FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac");
-                 FileOutputStream pictureOs = new FileOutputStream(pictureDirPath + "/" + pictureName)) {
-                if (!Common.getCurrentPlayer().equals("none")) {
-                    Common.action0Play(albumToPlay, trackToPlay);
+            try (FileInputStream flacIs = new FileInputStream(albumToPlay + "/01.flac"); FileOutputStream pictureOs = new FileOutputStream(pictureDirPath + "/" + pictureName)) {
+                Common.IpcActions ipcActions = new Common.IpcActions();
+                if (!ipcActions.getCurrentPlayer().equals("none")) {
+                    ipcActions.action0Play(albumToPlay, trackToPlay);
                 }
                 FLACDecoder flacDec = new FLACDecoder(flacIs);
                 Metadata[] metas = flacDec.readMetadata();
@@ -92,9 +92,7 @@ public class Player extends HttpServlet {
         }
         resp.setContentType("text/html");
         try {
-            resp.getWriter().println("<head><meta charset=UTF-8><title>player</title>" +
-                    "<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>" +
-                    "</head>");
+            resp.getWriter().println("<head><meta charset=UTF-8><title>player</title>" + "<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>" + "</head>");
             resp.getWriter().println("<body style=background-color:slategray>");
             resp.getWriter().println("<script src=main.js></script>");
             resp.getWriter().println("<script>setvolume(\"init\")</script>");
@@ -112,9 +110,7 @@ public class Player extends HttpServlet {
         }
         albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> {
             try {
-                resp.getWriter().println("<li><b style=color:black; onclick=gettracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>" +
-                        album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ").replace("___", " <small style=color:white;>") +
-                        "</li></b></small>");
+                resp.getWriter().println("<li><b style=color:black; onclick=gettracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>" + album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ").replace("___", " <small style=color:white;>") + "</li></b></small>");
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -16,20 +16,21 @@ public class Control extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         String volChangeDirection = req.getParameter("volume");
-        int vol = Common.getCurrentPlayer().equals("none") ? -1 : Common.action2GetVol();
-        if (!Common.getCurrentPlayer().equals("none") && volChangeDirection != null) {
+        Common.IpcActions ipcActions = new Common.IpcActions();
+        int vol = ipcActions.getCurrentPlayer().equals("none") ? -1 : ipcActions.action2GetVol();
+        if (!ipcActions.getCurrentPlayer().equals("none") && volChangeDirection != null) {
             switch (volChangeDirection) {
                 case "up" -> vol++;
                 case "down" -> vol--;
                 default -> {
                 }
             }
-            Common.action1SetVol(vol);
-            vol = Common.action2GetVol();
+            ipcActions.action1SetVol(vol);
+            vol = ipcActions.action2GetVol();
         }
         resp.setContentType("text/plain");
         try {
-            resp.getWriter().println(Common.getCurrentPlayer() + " " + vol);
+            resp.getWriter().println(ipcActions.getCurrentPlayer() + " " + vol);
         } catch (IOException e) {
             e.printStackTrace();
         }
