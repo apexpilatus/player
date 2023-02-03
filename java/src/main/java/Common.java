@@ -87,6 +87,21 @@ public class Common {
         return ret;
     }
 
+    static synchronized void action3Stop() {
+        try (Socket sock = new Socket()) {
+            sock.connect(new InetSocketAddress(currentPlayer, playerPort), timeOut);
+            sock.setSoTimeout(timeOut);
+            BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+            BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            byte op = 3;
+            sockWriter.write(op);
+            sockWriter.flush();
+            sockReader.readLine();
+        } catch (Exception ignored) {
+            currentPlayer = "none";
+        }
+    }
+
     static synchronized String getCurrentPlayer() {
         return currentPlayer;
     }
