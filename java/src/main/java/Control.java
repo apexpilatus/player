@@ -58,7 +58,6 @@ public class Control extends HttpServlet {
             }
         }
         resp.setContentType("text/plain");
-        Common.action3Stop();
         try (BufferedWriter htmlFileWriter = new BufferedWriter(new FileWriter(htmlDirPath + "/" + htmlName))) {
             htmlFileWriter.write("<head><meta charset=UTF-8></head>\n");
             htmlFileWriter.write("<body style=background-color:gray;>\n");
