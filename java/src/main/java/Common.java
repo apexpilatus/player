@@ -7,7 +7,7 @@ public class Common {
     static private final int playerPort = 8888;
     static private final int timeOut = 5000;
     static private final String[] playerHosts = {"default", "backup"};
-    static String[] musicDirPaths = {"/home/store/music/qbz", "/home/store/music/dzr", "/home/store/music/hack/1", "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
+    static String[] musicDirPaths = {"/home/store/music/qbzcd", "/home/store/music/dzr", "/home/store/music/hack/1", "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
     static private String currentPlayer = "none";
 
 
