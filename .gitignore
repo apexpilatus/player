@@ -1,3 +1,6 @@
 java/target
 java/.idea
+spring/target
+spring/out
+spring/.idea
 c/.idea
