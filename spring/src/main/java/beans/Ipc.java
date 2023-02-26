@@ -9,6 +9,23 @@ public class Ipc {
     final int playerPort = 8888;
     final int timeOut = 5000;
 
+    public void action1SetVol(int vol) {
+        try (Socket sock = new Socket()) {
+            sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
+            sock.setSoTimeout(timeOut);
+            BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+            BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            byte op = 1;
+            sockWriter.write(op);
+            sockWriter.flush();
+            sockReader.readLine();
+            sockWriter.write(vol);
+            sockWriter.flush();
+            sockReader.readLine();
+        } catch (IOException ignored) {
+        }
+    }
+
     public int action2GetVol() {
         int ret = -1;
         try (Socket sock = new Socket()) {
