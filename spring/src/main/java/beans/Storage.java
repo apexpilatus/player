@@ -48,7 +48,7 @@ public class Storage {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IOException(e);
         }
         return metasMap;
     }
