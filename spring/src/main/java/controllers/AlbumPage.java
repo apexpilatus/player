@@ -11,6 +11,6 @@ public class AlbumPage {
     @GetMapping("/album")
     void albumPage(HttpServletResponse resp) throws IOException {
         resp.setContentType("text/html");
-        resp.getWriter().println("fuck");
+        resp.getWriter().println(System.getProperty("user.dir"));
     }
 }
