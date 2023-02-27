@@ -63,7 +63,7 @@ public class MainPage {
         respWriter.println("<iframe hidden id=tracks width=450 height=430 style=\"position:fixed;top:10px;right:10px;border-style:solid;\"></iframe>");
         respWriter.println("<img hidden id=trackspicture style=width:115px;height:115px;position:fixed;top:10px;right:480px;border-style:solid;>");
         respWriter.println("<button hidden type=button id=hidetracks onclick=hideTracks() style=border-radius:20%;color:red;background-color:black;font-size:25px;position:fixed;top:460px;right:10px;>X</button>");
-        respWriter.println("<ul style=padding-left:271px;font-size:150%;line-height:180%;list-style-type:circle;>");
+        respWriter.println("<ul style=padding-left:150px;font-size:150%;line-height:180%;list-style-type:circle;>");
         albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println("<li><b style=color:black; onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>" + album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ").replace("___", " <small style=color:white;>") + "</li></b></small>")));
         respWriter.println("</ul>");
         respWriter.println("</body>");
