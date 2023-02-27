@@ -38,10 +38,10 @@ public class Storage {
                         if (line.contains("TITLE")) {
                             metasMap.put("TITLE", line.substring(7));
                         }
-                        if (file.equals("01.flac") && line.contains("ALBUM")) {
+                        if (file.contains("01.flac") && line.contains("ALBUM")) {
                             metasMap.put("ALBUM", line.substring(7));
                         }
-                        if (file.equals("01.flac") && line.contains("ARTIST")) {
+                        if (file.contains("01.flac") && line.contains("ARTIST")) {
                             metasMap.put("ARTIST", line.substring(8));
                         }
                     });
