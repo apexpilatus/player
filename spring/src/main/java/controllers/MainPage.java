@@ -4,12 +4,24 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.*;
 
 @RestController
 public class MainPage {
     @GetMapping("/")
     void mainPage(HttpServletResponse resp) throws IOException {
+        String[] musicDirPaths = {"/home/store/music/qbzcd", "/home/store/music/dzr", "/home/store/music/hack/1", "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
+        Map<String, List<String>> albums = new TreeMap<>();
+        for (String musicDirPath : musicDirPaths) {
+            File musicDir = new File(musicDirPath);
+            if (musicDir.exists()) {
+                for (String album : Objects.requireNonNull(musicDir.list())) {
+                    albums.computeIfAbsent(album, (k) -> new ArrayList<>()).add(musicDirPath);
+                }
+            }
+        }
         resp.setContentType("text/html");
         resp.getWriter().println("<head><meta charset=UTF-8><title>player</title>");
         resp.getWriter().println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
@@ -29,6 +41,15 @@ public class MainPage {
         resp.getWriter().println("<button type=button onclick=setvolume(\"up\") style=border-radius:20px;color:black;background-color:white;font-size:20px;position:fixed;top:50px;left:20px;>up</button>");
         resp.getWriter().println("<button type=button onclick=setvolume(\"down\") style=border-radius:20px;color:black;background-color:white;font-size:20px;position:fixed;top:150px;left:20px;>dw</button>");
         resp.getWriter().println("<script>setvolume(\"init\")</script>");
+        resp.getWriter().println("<ul style=padding-left:271px;font-size:150%;line-height:180%;list-style-type:circle;>");
+        albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> {
+            try {
+                resp.getWriter().println("<li><b style=color:black; onclick=gettracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>" + album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ").replace("___", " <small style=color:white;>") + "</li></b></small>");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }));
+        resp.getWriter().println("</ul>");
         resp.getWriter().println("</body>");
     }
 }
