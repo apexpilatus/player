@@ -26,6 +26,10 @@ public class Storage {
 
     public Map<String, String> getMetas(String file) throws IOException {
         Map<String, String> metasMap = new HashMap<>();
+        metasMap.put("TRACKNUMBER", "");
+        metasMap.put("TITLE", "");
+        metasMap.put("ALBUM", "");
+        metasMap.put("ARTIST", "");
         try (FileInputStream flacIs = new FileInputStream(file)) {
             FLACDecoder flacDec = new FLACDecoder(flacIs);
             Metadata[] metas = flacDec.readMetadata();
