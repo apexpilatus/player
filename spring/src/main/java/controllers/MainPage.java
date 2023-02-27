@@ -37,6 +37,11 @@ public class MainPage {
         resp.getWriter().println("\txhttp.open(\"GET\", window.location.href + \"album\" + \"?album=\" + album.replace(/&/g, \" \"));");
         resp.getWriter().println("\txhttp.send();");
         resp.getWriter().println("}");
+        resp.getWriter().println("function hideTracks(){");
+        resp.getWriter().println("\tdocument.getElementById(\"tracks\").hidden = true;");
+        resp.getWriter().println("\tdocument.getElementById(\"trackspicture\").hidden = true;");
+        resp.getWriter().println("\tdocument.getElementById(\"hidetracks\").hidden = true;");
+        resp.getWriter().println("}");
         resp.getWriter().println("</script>");
         resp.getWriter().println("</head>");
         resp.getWriter().println("<body style=background-color:slategray>");
