@@ -15,6 +15,7 @@ public class MainStarter {
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(MainStarter.class);
         application.setBannerMode(Banner.Mode.OFF);
+        application.setLogStartupInfo(false);
         application.run(args);
     }
 }
