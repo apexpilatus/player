@@ -28,7 +28,7 @@ public class MainPage {
         resp.getWriter().println("\txhttp.send();");
         resp.getWriter().println("}");
         resp.getWriter().println("function getTracks(album){");
-        resp.getWriter().println("\tdocument.getElementById(\"tracks\").src = \"http://" + host + "/album?album=\" + album");
+        resp.getWriter().println("\tdocument.getElementById(\"tracks\").src = \"http://" + host + "/album?album=\" + album.replace(/&/g, \" \")");
         resp.getWriter().println("\tdocument.getElementById(\"tracks\").hidden = false;");
         resp.getWriter().println("\tdocument.getElementById(\"trackspicture\").hidden = false;");
         resp.getWriter().println("\tdocument.getElementById(\"hidetracks\").hidden = false;");
