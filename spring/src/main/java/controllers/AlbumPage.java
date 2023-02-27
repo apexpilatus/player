@@ -24,6 +24,7 @@ public class AlbumPage {
         respWriter.println("<html>");
         respWriter.println("<head><meta charset=UTF-8></head>");
         respWriter.println("<body style=background-color:gray;>");
+        respWriter.println("<p style=padding-top:120px;font-size:120%;line-height:180%>");
         File albumDirPath = new File(album);
         String[] files = albumDirPath.list();
         Arrays.sort(Objects.requireNonNull(files));
@@ -37,6 +38,7 @@ public class AlbumPage {
             }
             respWriter.println("<i onclick=play(\"" + album.replace(" ", "&") + "\",\"" + file + "\")><small style=color:white;>" + metasMap.get("TRACKNUMBER") + "</small>" + metasMap.get("TITLE") + "</i><br>");
         }
+        respWriter.println("</p>");
         respWriter.println("<iframe height=115 width=450 style=position:fixed;top:0px;left:0px;border:none src=\"data:text/html," + title + "\"></iframe>\n");
         respWriter.println("</body>");
         respWriter.println("</html>");
