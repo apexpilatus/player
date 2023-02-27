@@ -4,6 +4,7 @@ import controllers.AlbumPage;
 import controllers.MainPage;
 import controllers.Play;
 import controllers.Volume;
+import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
@@ -12,6 +13,8 @@ import org.springframework.context.annotation.Import;
 @Import({MainPage.class, Volume.class, AlbumPage.class, Play.class})
 public class MainStarter {
     public static void main(String[] args) {
-        SpringApplication.run(MainStarter.class, args);
+        SpringApplication application = new SpringApplication(MainStarter.class);
+        application.setBannerMode(Banner.Mode.OFF);
+        application.run(args);
     }
 }
