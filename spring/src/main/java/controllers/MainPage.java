@@ -24,6 +24,16 @@ public class MainPage {
         respWriter.println("<head><meta charset=UTF-8><title>player</title>");
         respWriter.println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
         respWriter.println("<script>");
+        respWriter.println("function play(album){");
+        respWriter.println("\tconst xhttp = new XMLHttpRequest();");
+        respWriter.println("\txhttp.onload = function() {");
+        respWriter.println("\tdocument.getElementById(\"tracks\").hidden = true;");
+        respWriter.println("\tdocument.getElementById(\"trackspicture\").hidden = true;");
+        respWriter.println("\tdocument.getElementById(\"hidetracks\").hidden = true;");
+        respWriter.println("\t}");
+        respWriter.println("\txhttp.open(\"GET\", window.location.href + \"play\" + \"?album=\" + album.replace(/&/g, \" \"));");
+        respWriter.println("\txhttp.send();");
+        respWriter.println("}");
         respWriter.println("function setVolume(direction){");
         respWriter.println("\tconst xhttp = new XMLHttpRequest();");
         respWriter.println("\txhttp.onload = function() {");
