@@ -31,7 +31,7 @@ public class Storage {
                         }
                     });
             });
-            htmlFileWriter.write("");
+            htmlFileWriter.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
