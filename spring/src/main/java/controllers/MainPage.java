@@ -57,11 +57,11 @@ public class MainPage {
         respWriter.println("</head>");
         respWriter.println("<body style=background-color:slategray;>");
         respWriter.println("<p id=volume style=position:fixed;top:80px;left:20px;font-size:20px;></p>");
-        respWriter.println("<button type=button onclick=setVolume(\"up\") style=border-radius:20px;color:black;background-color:white;font-size:20px;position:fixed;top:50px;left:20px;>up</button>");
-        respWriter.println("<button type=button onclick=setVolume(\"down\") style=border-radius:20px;color:black;background-color:white;font-size:20px;position:fixed;top:150px;left:20px;>dw</button>");
+        respWriter.println("<button type=button onclick=setVolume(\"up\") style=border-radius:20px;color:black;background-color:white;font-size:20px;position:fixed;top:50px;left:10px;>up</button>");
+        respWriter.println("<button type=button onclick=setVolume(\"down\") style=border-radius:20px;color:black;background-color:white;font-size:20px;position:fixed;top:150px;left:10px;>dw</button>");
         respWriter.println("<script>setVolume(\"init\")</script>");
         respWriter.println("<iframe hidden id=tracks width=450 height=430 style=\"position:fixed;top:10px;right:10px;border-style:solid;\"></iframe>");
-        respWriter.println("<img hidden id=trackspicture style=width:250px;height:250px;position:fixed;top:10px;right:480px;border-style:solid;>");
+        respWriter.println("<img hidden id=trackspicture style=width:250px;height:250px;position:fixed;top:10px;right:470px;border-style:solid;>");
         respWriter.println("<button hidden type=button id=hidetracks onclick=hideTracks() style=border-radius:20%;color:red;background-color:black;font-size:25px;position:fixed;top:460px;right:10px;>X</button>");
         respWriter.println("<ul style=padding-left:150px;font-size:150%;line-height:180%;list-style-type:circle;>");
         albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println("<li><b style=color:black; onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>" + album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ").replace("___", " <small style=color:white;>") + "</li></b></small>")));
