@@ -8,7 +8,25 @@ public class Ipc {
     final String playerHost = "player";
     final int playerPort = 8888;
     final int timeOut = 5000;
-
+    public void action0Play(String albumToPlay, String trackToPlay) {
+        try (Socket sock = new Socket()) {
+            sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
+            sock.setSoTimeout(timeOut);
+            BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+            BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            byte op = 0;
+            sockWriter.write(op);
+            sockWriter.flush();
+            sockReader.readLine();
+            sockWriter.write(albumToPlay);
+            sockWriter.flush();
+            sockReader.readLine();
+            sockWriter.write(trackToPlay);
+            sockWriter.flush();
+            sockReader.readLine();
+        } catch (Exception ignored) {
+        }
+    }
     public void action1SetVol(int vol) {
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
