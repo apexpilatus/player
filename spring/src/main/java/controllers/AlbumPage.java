@@ -33,10 +33,10 @@ public class AlbumPage {
         for (String file : files) {
             Map<String, String> metasMap = store.getMetas(album + "/" + file);
             if (file.equals("01.flac")) {
-                title.append("<p style=color:black;font-size:120%;><b>").append(metasMap.get("ARTIST")).append("</b><br><strong style=color:slategray;>").append(metasMap.get("ALBUM")).append("</strong></p>\n");
+                title.append("<p style=color:black;font-size:120%;><b>").append(metasMap.get("ARTIST") == null ? "" : metasMap.get("ARTIST")).append("</b><br><strong style=color:slategray;>").append(metasMap.get("ALBUM") == null ? "" : metasMap.get("ALBUM")).append("</strong></p>\n");
                 title.append("</body></html>");
             }
-            respWriter.println("<i onclick=play(\"" + album.replace(" ", "&") + "\",\"" + file + "\")><small style=color:white;>" + metasMap.get("TRACKNUMBER") + "</small>" + metasMap.get("TITLE") + "</i><br>");
+            respWriter.println("<i onclick=play(\"" + album.replace(" ", "&") + "\",\"" + file + "\")><small style=color:white;>" + metasMap.get("TRACKNUMBER") + "</small>" + metasMap.get("TITLE") == null ? "" : metasMap.get("TITLE") + "</i><br>");
         }
         respWriter.println("</p>");
         respWriter.println("<iframe height=115 width=450 style=position:fixed;top:0px;left:0px;border:none src=\"data:text/html," + title + "\"></iframe>\n");
