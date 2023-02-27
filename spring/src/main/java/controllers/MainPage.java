@@ -29,7 +29,7 @@ public class MainPage {
         resp.getWriter().println("function getTracks(album){");
         resp.getWriter().println("\tconst xhttp = new XMLHttpRequest();");
         resp.getWriter().println("\txhttp.onload = function() {");
-        resp.getWriter().println("\t\tdocument.getElementById(\"tracks\").src = this.responseText;");
+        resp.getWriter().println("\t\tdocument.getElementById(\"tracks\").src = \"data:text/html,\" + this.responseText;");
         resp.getWriter().println("\t\tdocument.getElementById(\"tracks\").hidden = false;");
         resp.getWriter().println("\t\tdocument.getElementById(\"trackspicture\").hidden = false;");
         resp.getWriter().println("\t\tdocument.getElementById(\"hidetracks\").hidden = false;");
