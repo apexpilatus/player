@@ -61,7 +61,7 @@ public class AlbumPage {
         respWriter.println("</html>");
     }
 
-    @PostMapping
+    @PostMapping("/album")
     void albumPicture(@RequestParam("album") String album, HttpServletResponse resp, Storage store) throws IOException, NoSuchFieldException, IllegalAccessException {
         resp.setContentType("image/jpeg");
         resp.getOutputStream().write(Base64.getEncoder().encode(store.getPictureBytes(album)));
