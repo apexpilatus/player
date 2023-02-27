@@ -42,7 +42,7 @@ public class AlbumPage {
         respWriter.println("\txhttp.onload = function() {");
         respWriter.println("\tparent.document.getElementById(\"trackspicture\").hidden = true;");
         respWriter.println("\t}");
-        respWriter.println("\txhttp.open(\"GET\", window.location.href + \"play\" + \"?album=\" + album.replace(/&/g, \" \")+ \"&track=\" + track);");
+        respWriter.println("\txhttp.open(\"GET\", parent.window.location.href + \"play\" + \"?album=\" + album.replace(/&/g, \" \")+ \"&track=\" + track);");
         respWriter.println("\txhttp.send();");
         respWriter.println("}");
         respWriter.println("</script>");
