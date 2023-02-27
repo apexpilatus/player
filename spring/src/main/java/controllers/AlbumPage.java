@@ -33,6 +33,11 @@ public class AlbumPage {
         StringBuilder title = new StringBuilder("<!DOCTYPE html><html><head><meta charset=UTF-8></head>\n");
         title.append("<body style=background-color:lightgray;>\n");
         for (String file : files) {
+            Map<String, String> metasMap = store.getMetas(album + "/" + file);
+            if (file.equals("01.flac")) {
+                title.append("<p style=color:black;font-size:120%;><b>").append(metasMap.get("ARTIST")).append("</b><br><strong style=color:slategray;>").append(metasMap.get("ALBUM")).append("</strong></p>\n");
+                title.append("</body></html>");
+            }
             try (FileInputStream flacIs = new FileInputStream(album + "/" + file)) {
                 FLACDecoder flacDec = new FLACDecoder(flacIs);
                 Metadata[] metas = flacDec.readMetadata();
@@ -40,7 +45,6 @@ public class AlbumPage {
                 final String[] vorbisTitle = {""};
                 final String[] vorbisAlbum = {""};
                 final String[] vorbisArtist = {""};
-                Map<String, String> metasMap = store.getMetas(album + "/" + file);
                 for (Metadata meta : metas) {
                     if (meta.toString().contains("VorbisComment")) {
                         meta.toString().lines().forEach((line) -> {
@@ -59,11 +63,7 @@ public class AlbumPage {
                         });
                     }
                 }
-                if (file.equals("01.flac")) {
-                    title.append("<p style=color:black;font-size:120%;><b>").append(metasMap.get("ARTIST")).append("</b><br><strong style=color:slategray;>").append(vorbisAlbum[0]).append("</strong></p>\n");
-                    title.append("</body></html>");
-                }
-            } catch (IOException e) {
+                } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
