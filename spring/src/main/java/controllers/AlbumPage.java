@@ -40,7 +40,7 @@ public class AlbumPage {
         respWriter.println("</script>");
         respWriter.println("</head>");
         respWriter.println("<body style=background-color:gray;>");
-        respWriter.println("<script>getpicturebytes(\"" + album.replace(" ", "&") + "\")</script>");
+        respWriter.println("<script>gettrackspicture(\"" + album.replace(" ", "&") + "\")</script>");
         respWriter.println("<p style=padding-top:120px;font-size:120%;line-height:180%>");
         File albumDirPath = new File(album);
         String[] files = albumDirPath.list();
