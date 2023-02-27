@@ -1,9 +1,6 @@
 package beans;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
 public class Storage {
@@ -19,21 +16,6 @@ public class Storage {
                 }
             }
         }
-
-        try {
-            BufferedWriter htmlFileWriter = new BufferedWriter(new FileWriter("fuck"));
-            albums.forEach((k, v) -> v.forEach((s) -> {
-                try {
-                    htmlFileWriter.write(s + k + "\n");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }));
-            htmlFileWriter.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
         return albums;
     }
 }
