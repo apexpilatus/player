@@ -12,6 +12,7 @@ public class AlbumPage {
     @GetMapping("/album")
     void albumPage(@RequestParam("album") String album, HttpServletResponse resp) throws IOException {
         resp.setContentType("text/html");
+        resp.setCharacterEncoding("UTF-8");
         resp.getWriter().println(album);
     }
 }
