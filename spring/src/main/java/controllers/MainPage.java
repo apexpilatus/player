@@ -17,7 +17,7 @@ public class MainPage {
         Map<String, List<String>> albums = store.getAlbums();
         resp.setContentType("text/html");
         resp.getWriter().println("<!DOCTYPE html>");
-        resp.getWriter().println("<html lang=ru>");
+        resp.getWriter().println("<html>");
         resp.getWriter().println("<head><meta charset=UTF-8><title>player</title>");
         resp.getWriter().println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
         resp.getWriter().println("<script>");
