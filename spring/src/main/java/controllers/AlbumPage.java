@@ -40,6 +40,7 @@ public class AlbumPage {
         respWriter.println("</script>");
         respWriter.println("</head>");
         respWriter.println("<body style=background-color:gray;>");
+        respWriter.println("<script>getpicturebytes(\"" + album.replace(" ", "&") + "\")</script>");
         respWriter.println("<p style=padding-top:120px;font-size:120%;line-height:180%>");
         File albumDirPath = new File(album);
         String[] files = albumDirPath.list();
@@ -61,7 +62,7 @@ public class AlbumPage {
     }
 
     @PostMapping
-    void picture(@RequestParam("album") String album, HttpServletResponse resp, Storage store) throws IOException, NoSuchFieldException, IllegalAccessException {
+    void albumPicture(@RequestParam("album") String album, HttpServletResponse resp, Storage store) throws IOException, NoSuchFieldException, IllegalAccessException {
         resp.setContentType("image/jpeg");
         resp.getOutputStream().write(Base64.getEncoder().encode(store.getPictureBytes(album)));
     }
