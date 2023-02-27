@@ -3,6 +3,7 @@ package controllers;
 import beans.Storage;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
 
@@ -32,7 +34,7 @@ public class AlbumPage {
         respWriter.println("\t\telement.src = \"data:image/jpeg;base64,\" + this.responseText;");
         respWriter.println("\t\telement.setAttribute(\"onclick\", \"play(\\\"\" + album + \"\\\")\");");
         respWriter.println("\t}");
-        respWriter.println("\txhttp.open(\"GET\", parent.window.location.href + \"player\" + \"?album=\" + album.replace(/&/g, \" \"));");
+        respWriter.println("\txhttp.open(\"POST\", parent.window.location.href + \"album\" + \"?album=\" + album.replace(/&/g, \" \"));");
         respWriter.println("\txhttp.send();");
         respWriter.println("}");
         respWriter.println("</script>");
@@ -56,5 +58,11 @@ public class AlbumPage {
         respWriter.println("<iframe height=115 width=450 style=position:fixed;top:0px;left:0px;border:none src=\"data:text/html," + title + "\"></iframe>\n");
         respWriter.println("</body>");
         respWriter.println("</html>");
+    }
+
+    @PostMapping
+    void picture(@RequestParam("album") String album, HttpServletResponse resp, Storage store) throws IOException, NoSuchFieldException, IllegalAccessException {
+        resp.setContentType("image/jpeg");
+        resp.getOutputStream().write(Base64.getEncoder().encode(store.getPictureBytes(album)));
     }
 }
