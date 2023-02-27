@@ -16,6 +16,8 @@ public class MainPage {
     void mainPage(@RequestHeader("Host") String host, HttpServletResponse resp, Storage store) throws IOException {
         Map<String, List<String>> albums = store.getAlbums();
         resp.setContentType("text/html");
+        resp.getWriter().println("<!DOCTYPE html>");
+        resp.getWriter().println("<html lang=ru>");
         resp.getWriter().println("<head><meta charset=UTF-8><title>player</title>");
         resp.getWriter().println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
         resp.getWriter().println("<script>");
@@ -58,5 +60,6 @@ public class MainPage {
         }));
         resp.getWriter().println("</ul>");
         resp.getWriter().println("</body>");
+        resp.getWriter().println("</html>");
     }
 }
