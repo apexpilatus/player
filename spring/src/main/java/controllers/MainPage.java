@@ -1,27 +1,19 @@
 package controllers;
 
+import beans.Storage;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class MainPage {
     @GetMapping("/")
-    void mainPage(HttpServletResponse resp) throws IOException {
-        String[] musicDirPaths = {"/home/store/music/qbzcd", "/home/store/music/dzr", "/home/store/music/hack/1", "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
-        Map<String, List<String>> albums = new TreeMap<>();
-        for (String musicDirPath : musicDirPaths) {
-            File musicDir = new File(musicDirPath);
-            if (musicDir.exists()) {
-                for (String album : Objects.requireNonNull(musicDir.list())) {
-                    albums.computeIfAbsent(album, (k) -> new ArrayList<>()).add(musicDirPath);
-                }
-            }
-        }
+    void mainPage(HttpServletResponse resp, Storage store) throws IOException {
+        Map<String, List<String>> albums = store.getAlbums();
         resp.setContentType("text/html");
         resp.getWriter().println("<head><meta charset=UTF-8><title>player</title>");
         resp.getWriter().println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
