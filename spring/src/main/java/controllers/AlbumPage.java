@@ -15,6 +15,7 @@ public class AlbumPage {
         String htmlName = "album.html";
         BufferedWriter htmlFileWriter = new BufferedWriter(new FileWriter(htmlName));
         htmlFileWriter.write("fuck");
+        htmlFileWriter.flush();
         resp.setContentType("text/plain");
         resp.getWriter().println(htmlName);
     }
