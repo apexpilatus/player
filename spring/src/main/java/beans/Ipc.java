@@ -8,6 +8,7 @@ public class Ipc {
     final String playerHost = "player";
     final int playerPort = 8888;
     final int timeOut = 5000;
+
     public void action0Play(String albumToPlay, String trackToPlay) {
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
@@ -27,6 +28,7 @@ public class Ipc {
         } catch (Exception ignored) {
         }
     }
+
     public void action1SetVol(int vol) {
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);

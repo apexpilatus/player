@@ -59,7 +59,7 @@ public class Storage {
         return metasMap;
     }
 
-    public byte[] getPictureBytes(String album) throws IOException, NoSuchFieldException, IllegalAccessException{
+    public byte[] getPictureBytes(String album) throws IOException, NoSuchFieldException, IllegalAccessException {
         byte[] pictureBytes = {1, 2, 3};
         try (FileInputStream flacIs = new FileInputStream(album + "/01.flac")) {
             FLACDecoder flacDec = new FLACDecoder(flacIs);
@@ -73,7 +73,7 @@ public class Storage {
                     pictureBytes = (byte[]) f.get(picMeta);
                 }
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             throw new IOException(e);
         } catch (NoSuchFieldException e) {
             throw new NoSuchFieldException();
