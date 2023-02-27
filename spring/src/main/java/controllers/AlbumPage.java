@@ -1,5 +1,6 @@
 package controllers;
 
+import beans.Storage;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jflac.FLACDecoder;
 import org.jflac.metadata.Metadata;
@@ -12,12 +13,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
 public class AlbumPage {
     @GetMapping("/album")
-    void albumPage(@RequestParam("album") String album, HttpServletResponse resp) throws IOException {
+    void albumPage(@RequestParam("album") String album, HttpServletResponse resp, Storage store) throws IOException {
         resp.setContentType("text/html");
         resp.setCharacterEncoding("UTF-8");
         PrintWriter respWriter = resp.getWriter();
@@ -38,6 +40,7 @@ public class AlbumPage {
                 final String[] vorbisTitle = {""};
                 final String[] vorbisAlbum = {""};
                 final String[] vorbisArtist = {""};
+                Map<String, String> metasMap = store.getMetas(album + "/" + file);
                 for (Metadata meta : metas) {
                     if (meta.toString().contains("VorbisComment")) {
                         meta.toString().lines().forEach((line) -> {
@@ -57,10 +60,10 @@ public class AlbumPage {
                     }
                 }
                 if (file.equals("01.flac")) {
-                    title.append("<p style=color:black;font-size:120%;><b>").append(vorbisArtist[0]).append("</b><br><strong style=color:slategray;>").append(vorbisAlbum[0]).append("</strong></p>\n");
+                    title.append("<p style=color:black;font-size:120%;><b>").append(metasMap.get("ARTIST")).append("</b><br><strong style=color:slategray;>").append(vorbisAlbum[0]).append("</strong></p>\n");
                     title.append("</body></html>");
                 }
-            } catch (IOException e){
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
