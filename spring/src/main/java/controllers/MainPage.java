@@ -3,6 +3,7 @@ package controllers;
 import beans.Storage;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.util.Map;
 @RestController
 public class MainPage {
     @GetMapping("/")
-    void mainPage(HttpServletResponse resp, Storage store) throws IOException {
+    void mainPage(@RequestHeader("Host") String host, HttpServletResponse resp, Storage store) throws IOException {
         Map<String, List<String>> albums = store.getAlbums();
         resp.setContentType("text/html");
         resp.getWriter().println("<head><meta charset=UTF-8><title>player</title>");
@@ -29,7 +30,7 @@ public class MainPage {
         resp.getWriter().println("function getTracks(album){");
         resp.getWriter().println("\tconst xhttp = new XMLHttpRequest();");
         resp.getWriter().println("\txhttp.onload = function() {");
-        resp.getWriter().println("\t\tdocument.getElementById(\"tracks\").src = \"data:text/html,\" + this.responseText;");
+        resp.getWriter().println("\t\tdocument.getElementById(\"tracks\").src = \"" + host + "\"");
         resp.getWriter().println("\t\tdocument.getElementById(\"tracks\").hidden = false;");
         resp.getWriter().println("\t\tdocument.getElementById(\"trackspicture\").hidden = false;");
         resp.getWriter().println("\t\tdocument.getElementById(\"hidetracks\").hidden = false;");
