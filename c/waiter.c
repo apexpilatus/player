@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 #include <netinet/in.h>
 #include <sys/mman.h>
@@ -125,7 +126,7 @@ int main(void){
 		}
 		char action_num;
 		if (read(sock, &action_num, 1) > 0) {
-			action[action_num](sock);
+			action[strtol(&action_num, NULL, 10)](sock);
 		}
 		close(sock);
 	}
