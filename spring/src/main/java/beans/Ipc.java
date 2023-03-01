@@ -15,7 +15,7 @@ public class Ipc {
             sock.setSoTimeout(timeOut);
             BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
             BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-            byte op = 0;
+            char op = '0';
             sockWriter.write(op);
             sockWriter.flush();
             sockReader.readLine();
@@ -35,7 +35,7 @@ public class Ipc {
             sock.setSoTimeout(timeOut);
             BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
             BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-            byte op = 1;
+            char op = '1';
             sockWriter.write(op);
             sockWriter.flush();
             sockReader.readLine();
@@ -53,7 +53,7 @@ public class Ipc {
             sock.setSoTimeout(timeOut);
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
             BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-            byte op = 2;
+            char op = '2';
             writer.write(op);
             writer.flush();
             ret = reader.read();
