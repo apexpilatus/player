@@ -21,6 +21,7 @@ typedef struct lst{
 
 static int conversion;
 static unsigned int rate;
+static unsigned int fixed_rate = 96000;
 static unsigned short sample_size;
 static AVCodec *decode_codec;
 static AVCodecContext *decode_context;
@@ -61,12 +62,12 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 		ff_frame = av_frame_alloc();
 		avcodec_send_packet(decode_context, pkt);
 		avcodec_receive_frame(decode_context, ff_frame);
-		double ratio = (double)96000/rate;
+		double ratio = (double)fixed_rate/rate;
 		nb_out_samples = ff_frame->nb_samples * ratio + 32;
 		av_samples_alloc(&ff_output, NULL, 2, nb_out_samples, AV_SAMPLE_FMT_S32, 0);
 		nb_out_samples = swr_convert(swr, &ff_output, nb_out_samples, (const uint8_t **)ff_frame->data, ff_frame->nb_samples);
 		ff_frame->format = encode_context->sample_fmt;
-		ff_frame->sample_rate = 96000;
+		ff_frame->sample_rate = fixed_rate;
 		ff_frame->nb_samples = nb_out_samples;
 		ff_frame->data[0] = ff_output;
 		avcodec_send_frame(encode_context, ff_frame);
@@ -160,7 +161,7 @@ int main(int argsn, char *args[]) {
 	if (get_params(files, &rate, &sample_size)){
 		return 1;
 	}
-	conversion = rate != 96000 || sample_size != 24;
+	conversion = rate != fixed_rate || sample_size != 24;
 	if (conversion){
 		decode_codec = avcodec_find_decoder_by_name(sample_size == 24 ? "pcm_s24le" : "pcm_s16le");
 		decode_context = avcodec_alloc_context3(decode_codec);
@@ -171,9 +172,9 @@ int main(int argsn, char *args[]) {
 		encode_context = avcodec_alloc_context3(encode_codec);
 		encode_context->sample_fmt = AV_SAMPLE_FMT_S32;
 		encode_context->channels = 2;
-		encode_context->sample_rate = 96000;
+		encode_context->sample_rate = fixed_rate;
 		avcodec_open2(encode_context, encode_codec, NULL);
-		swr = swr_alloc_set_opts(swr, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, 96000, AV_CH_LAYOUT_STEREO, sample_size == 24 ? AV_SAMPLE_FMT_S32 : AV_SAMPLE_FMT_S16, rate, 0, NULL);
+		swr = swr_alloc_set_opts(swr, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, fixed_rate, AV_CH_LAYOUT_STEREO, sample_size == 24 ? AV_SAMPLE_FMT_S32 : AV_SAMPLE_FMT_S16, rate, 0, NULL);
 		swr_init(swr);
 	}
 	FLAC__StreamDecoder *decoder = NULL;
@@ -189,7 +190,7 @@ int main(int argsn, char *args[]) {
 	snd_pcm_hw_params_any(pcm_p, pcm_hw);
 	snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
 	int dir = 0;
-	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, conversion ? 96000 : rate, dir);
+	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, fixed_rate, dir);
 	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S24_3LE);
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p)) {
 		return 1;
