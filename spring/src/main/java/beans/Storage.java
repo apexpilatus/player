@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class Storage {
-    String musicDir = "/home/store/music";
+    String musicDir = "/home/store";
 
     public Map<String, List<String>> getAlbums() throws IOException {
         Map<String, List<String>> albums = new TreeMap<>();
