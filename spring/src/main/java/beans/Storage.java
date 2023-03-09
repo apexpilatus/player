@@ -22,7 +22,7 @@ public class Storage {
             walk.filter(Files::isDirectory).filter((path) -> {
                 boolean ret;
                 try (Stream<Path> files = Files.list(path)) {
-                    ret = files.toString().contains("01.flac");
+                    ret = files.findAny().toString().contains(".flac");
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
