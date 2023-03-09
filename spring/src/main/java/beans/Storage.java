@@ -4,24 +4,30 @@ import org.jflac.FLACDecoder;
 import org.jflac.metadata.Metadata;
 import org.jflac.metadata.Picture;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class Storage {
-    String[] musicDirPaths = {"/home/store/music/qbzcd", "/home/store/music/dzr", "/home/store/music/hack/1", "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
+    String musicDir = "/home/store/music";
 
-    public Map<String, List<String>> getAlbums() {
+    public Map<String, List<String>> getAlbums() throws IOException {
         Map<String, List<String>> albums = new TreeMap<>();
-        for (String musicDirPath : musicDirPaths) {
-            File musicDir = new File(musicDirPath);
-            if (musicDir.exists()) {
-                for (String album : Objects.requireNonNull(musicDir.list())) {
-                    albums.computeIfAbsent(album, (k) -> new ArrayList<>()).add(musicDirPath);
+        try (Stream<Path> walk = Files.walk(Paths.get(musicDir))) {
+            walk.filter(Files::isDirectory).filter((path) -> {
+                long count;
+                try (Stream<Path> files = Files.list(path)) {
+                    count = files.filter(Files::isRegularFile).count();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-            }
+                return count > 0;
+            }).forEach((path) -> albums.computeIfAbsent(path.getFileName().toString(), (k) -> new ArrayList<>()).add(path.getParent().toString()));
         }
         return albums;
     }
