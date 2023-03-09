@@ -20,13 +20,13 @@ public class Storage {
         Map<String, List<String>> albums = new TreeMap<>();
         try (Stream<Path> walk = Files.walk(Paths.get(musicDir))) {
             walk.filter(Files::isDirectory).filter((path) -> {
-                long count;
+                boolean ret;
                 try (Stream<Path> files = Files.list(path)) {
-                    count = files.filter(Files::isRegularFile).count();
+                    ret = files.toString().contains("01.flac");
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                return count > 0;
+                return ret;
             }).forEach((path) -> albums.computeIfAbsent(path.getFileName().toString(), (k) -> new ArrayList<>()).add(path.getParent().toString()));
         }
         return albums;
