@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <dirent.h>
 #include <unistd.h>
 
 #include <alsa/global.h>
