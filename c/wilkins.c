@@ -7,7 +7,6 @@
 #include <alsa/conf.h>
 #include <alsa/pcm.h>
 
-#include <FLAC/metadata.h>
 #include <FLAC/stream_decoder.h>
 
 #include <libavcodec/avcodec.h>
