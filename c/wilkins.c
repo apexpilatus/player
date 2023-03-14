@@ -14,10 +14,7 @@
 #include <libavcodec/avcodec.h>
 #include <libswresample/swresample.h>
 
-typedef struct lst{
-  char *name;
-  struct lst *next;
-} file_lst;
+#include "playlib.h"
 
 static int conversion;
 static unsigned int rate;
@@ -38,12 +35,6 @@ static void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesi
                 *buf = data >> (8*i);
                 buf++;
         }
-}
-
-static void metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data){
-}
-
-static void error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data){
 }
 
 static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data){
@@ -177,10 +168,6 @@ int main(int argsn, char *args[]) {
 		swr = swr_alloc_set_opts(swr, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, fixed_rate, AV_CH_LAYOUT_STEREO, sample_size == 24 ? AV_SAMPLE_FMT_S32 : AV_SAMPLE_FMT_S16, rate, 0, NULL);
 		swr_init(swr);
 	}
-	FLAC__StreamDecoder *decoder = NULL;
-	decoder = FLAC__stream_decoder_new();
-	FLAC__stream_decoder_set_md5_checking(decoder, false);
-	FLAC__stream_decoder_set_metadata_ignore_all(decoder);
 	snd_pcm_t *pcm_p;
 	if (snd_pcm_open(&pcm_p, args[2], SND_PCM_STREAM_PLAYBACK, 0)) {
 		return 1;
@@ -201,19 +188,5 @@ int main(int argsn, char *args[]) {
 		}
 		files=files->next;
 	}
-	while (files->next) {
-		FLAC__StreamDecoderInitStatus init_status;
-		init_status = FLAC__stream_decoder_init_file(decoder, files->name, write_callback, metadata_callback, error_callback, pcm_p);
-		if(init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
-			if (!FLAC__stream_decoder_process_until_end_of_stream(decoder)){
-				return 1;
-			}
-			FLAC__stream_decoder_finish(decoder);
-		} else {
-			return 1;
-		}
-		files=files->next;
-	}
-	snd_pcm_drain(pcm_p);
-	return 0;
+	return play_album(files, write_callback, pcm_p);
 }
