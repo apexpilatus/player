@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <string.h>
 
 #include <alsa/global.h>
 #include <alsa/input.h>
@@ -6,9 +9,82 @@
 #include <alsa/conf.h>
 #include <alsa/pcm.h>
 
+#include <FLAC/metadata.h>
 #include <FLAC/stream_decoder.h>
 
 #include "playlib.h"
+
+void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize){
+        for (int i=0;i<samplesize;i++){
+                *buf = data >> (8*i);
+                buf++;
+        }
+}
+
+file_lst* get_file_lst(char *dirname){
+	file_lst *main_ptr = malloc(sizeof(file_lst));
+	file_lst *cur_ptr = main_ptr;
+	cur_ptr->name=NULL;
+	cur_ptr->next=NULL;
+	DIR *dp;
+	struct dirent *ep;
+	dp = opendir(dirname);
+	if (dp != NULL) {
+		while ((ep = readdir(dp))) {
+			if (ep->d_type == DT_REG) {
+				cur_ptr->name=malloc(strlen(ep->d_name)+1);
+				memcpy(cur_ptr->name, ep->d_name, strlen(ep->d_name)+1);
+				cur_ptr->next=malloc(sizeof(file_lst));
+				cur_ptr=cur_ptr->next;
+				cur_ptr->next=NULL;
+			}
+		}
+		(void) closedir(dp);
+	}
+	cur_ptr=main_ptr;
+	if (!cur_ptr->next){
+		return cur_ptr;
+	}
+	file_lst *sort_ptr = cur_ptr;
+	while (cur_ptr->next->next) {
+		while(sort_ptr->next->next) {
+			sort_ptr=sort_ptr->next;
+			if (strcmp(cur_ptr->name, sort_ptr->name)>0){
+				char *tmp=cur_ptr->name;
+				cur_ptr->name=sort_ptr->name;
+				sort_ptr->name=tmp;
+			}
+		}
+		cur_ptr=cur_ptr->next;
+		sort_ptr = cur_ptr;
+	}
+	return main_ptr;
+}
+
+int get_params(file_lst *files, unsigned int *rate, unsigned short *sample_size){
+	file_lst *first_file=files;
+	unsigned int rate_1st;
+	unsigned short sample_size_1st;
+	while (files->next) {
+		FLAC__StreamMetadata streaminfo;
+		if (FLAC__metadata_get_streaminfo(files->name, &streaminfo)) {
+			*rate = streaminfo.data.stream_info.sample_rate;
+			*sample_size = streaminfo.data.stream_info.bits_per_sample;
+			if (first_file == files) {
+				rate_1st = *rate;
+				sample_size_1st = *sample_size;
+			} else {
+				if (rate_1st != *rate || sample_size_1st != *sample_size) {
+					return 1;
+				}
+			}
+		} else {
+			return 1;
+		}
+		files=files->next;
+	}
+	return 0;
+}
 
 static void metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data){
 }
