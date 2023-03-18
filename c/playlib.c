@@ -92,7 +92,7 @@ static void metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__St
 static void error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data){
 }
 
-int play_album(file_lst *files, wr_cb_func write_callback, snd_pcm_t *pcm_p) {
+int play_album(file_lst *files, FLAC__StreamDecoderWriteCallback write_callback, snd_pcm_t *pcm_p) {
 	FLAC__StreamDecoder *decoder = NULL;
 	decoder = FLAC__stream_decoder_new();
 	FLAC__stream_decoder_set_md5_checking(decoder, false);
