@@ -80,6 +80,7 @@ static void action3_stop(int sock) {
 		player_pid = 0;
 	}
 	write(sock, "ok\n", 3);
+	exit(0);
 }
 
 static void (*action[])(int sock) = {
