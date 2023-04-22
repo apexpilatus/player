@@ -3,15 +3,19 @@ package beans;
 import org.jflac.FLACDecoder;
 import org.jflac.metadata.Metadata;
 import org.jflac.metadata.Picture;
+import org.jflac.metadata.StreamInfo;
+import org.jflac.metadata.VorbisComment;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class Storage {
-    String[] musicDirPaths = {"/home/store/music/qbzcd", "/home/store/music/dzr", "/home/store/music/hack/1", "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
+    String[] musicDirPaths = { "/home/store/music/qbzcd", "/home/store/music/dzr", "/home/store/music/hack/1",
+            "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4" };
 
     public Map<String, List<String>> getAlbums() {
         Map<String, List<String>> albums = new TreeMap<>();
@@ -28,29 +32,24 @@ public class Storage {
 
     public Map<String, String> getMetas(String file) throws IOException {
         Map<String, String> metasMap = new HashMap<>();
-        metasMap.put("TRACKNUMBER", "");
-        metasMap.put("TITLE", "");
-        metasMap.put("ALBUM", "");
-        metasMap.put("ARTIST", "");
         try (FileInputStream flacIs = new FileInputStream(file)) {
             FLACDecoder flacDec = new FLACDecoder(flacIs);
             Metadata[] metas = flacDec.readMetadata();
             for (Metadata meta : metas) {
                 if (meta.toString().contains("VorbisComment")) {
-                    meta.toString().lines().forEach((line) -> {
-                        if (line.contains("TRACKNUMBER")) {
-                            metasMap.put("TRACKNUMBER", line.split("=")[1] + ". ");
-                        }
-                        if (line.contains("TITLE")) {
-                            metasMap.put("TITLE", line.substring(7));
-                        }
-                        if (file.contains("01.flac") && line.contains("ALBUM")) {
-                            metasMap.put("ALBUM", line.substring(7));
-                        }
-                        if (file.contains("01.flac") && line.contains("ARTIST")) {
-                            metasMap.put("ARTIST", line.substring(8));
-                        }
-                    });
+                    VorbisComment vorbis = (VorbisComment) meta;
+                    metasMap.put("ARTIST", vorbis.getCommentByName("ARTIST")[0]);
+                    metasMap.put("ALBUM",
+                            vorbis.getCommentByName("ALBUM").length == 0 ? "" : vorbis.getCommentByName("ALBUM")[0]);
+                    metasMap.put("TRACKNUMBER", vorbis.getCommentByName("TRACKNUMBER")[0] + ") ");
+                    metasMap.put("TITLE",
+                            vorbis.getCommentByName("TITLE").length == 0 ? "" : vorbis.getCommentByName("TITLE")[0]);
+                }
+                if (meta.toString().contains("StreamInfo")) {
+                    StreamInfo info = (StreamInfo) meta;
+                    metasMap.put("RATE",
+                            String.valueOf(info.getBitsPerSample()) + "/"
+                                    + String.valueOf(new DecimalFormat("#.#").format(info.getSampleRate() / 1000f)));
                 }
             }
         } catch (Exception e) {
@@ -60,7 +59,7 @@ public class Storage {
     }
 
     public byte[] getPictureBytes(String album) throws IOException, NoSuchFieldException, IllegalAccessException {
-        byte[] pictureBytes = {1, 2, 3};
+        byte[] pictureBytes = { 1, 2, 3 };
         try (FileInputStream flacIs = new FileInputStream(album + "/01.flac")) {
             FLACDecoder flacDec = new FLACDecoder(flacIs);
             Metadata[] metas = flacDec.readMetadata();

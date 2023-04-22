@@ -39,7 +39,7 @@ public class Ipc {
             sockWriter.write(op);
             sockWriter.flush();
             sockReader.readLine();
-            sockWriter.write(vol);
+            sockWriter.write(String.valueOf(vol));
             sockWriter.flush();
             sockReader.readLine();
         } catch (IOException ignored) {
@@ -56,7 +56,7 @@ public class Ipc {
             char op = '2';
             writer.write(op);
             writer.flush();
-            ret = reader.read();
+            ret = Integer.parseInt(reader.readLine());
         } catch (IOException ignored) {
         }
         return ret;

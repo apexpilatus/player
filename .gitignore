@@ -1,4 +1,3 @@
 spring/target
 spring/out
-spring/.idea
-c/.vscode
+*.vscode

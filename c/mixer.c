@@ -12,7 +12,7 @@
 #include <alsa/control.h>
 #include <alsa/mixer.h>
 
-static void set_volume(snd_mixer_elem_t *melem, char *shd_addr)
+static void set_volume(snd_mixer_elem_t *melem, long *shd_addr)
 {
 	long curr_vol, minvol, maxvol;
 	snd_mixer_selem_get_playback_volume_range(melem, &minvol, &maxvol);
@@ -47,25 +47,25 @@ int main(int pnum, char *params[])
 	snd_mixer_t *mxr;
 	if (snd_mixer_open(&mxr, 0))
 	{
-		*(char *)shd_addr = -1;
+		*(long *)shd_addr = -1;
 		return 1;
 	}
 	if (snd_mixer_attach(mxr, params[1]))
 	{
-		*(char *)shd_addr = -1;
+		*(long *)shd_addr = -1;
 		return 1;
 	}
 	if (snd_mixer_selem_register(mxr, NULL, NULL))
 	{
-		*(char *)shd_addr = -1;
+		*(long *)shd_addr = -1;
 		return 1;
 	}
 	if (snd_mixer_load(mxr))
 	{
-		*(char *)shd_addr = -1;
+		*(long *)shd_addr = -1;
 		return 1;
 	}
-	snd_mixer_elem_t *melem = snd_mixer_first_elem(mxr);
+	snd_mixer_elem_t *melem = snd_mixer_last_elem(mxr);
 	set_volume(melem, shd_addr);
 	return 0;
 }

@@ -11,7 +11,8 @@ import java.io.IOException;
 @RestController
 public class Volume {
     @GetMapping("/volume")
-    void setVolume(@RequestParam("direction") String volChangeDirection, HttpServletResponse resp, Ipc ipc) throws IOException {
+    void setVolume(@RequestParam("direction") String volChangeDirection, HttpServletResponse resp, Ipc ipc)
+            throws IOException {
         int vol = ipc.action2GetVol();
         if (vol != -1) {
             switch (volChangeDirection) {

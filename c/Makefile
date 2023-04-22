@@ -5,9 +5,16 @@ CC := gcc -O2
 PLAYDEFS := -D exec_player_path=\"$(PL_PATH)/player\" -D exec_mixer_path=\"$(PL_PATH)/mixer\"
 PLAYLIBS := -lFLAC -lasound
 
+ifeq ($(target), wilkins)
 PLAYSRC := wilkins.c
 PLAYDEFS += -D card_name=\"Wilkins\"
 PLAYLIBS += -lswresample -lavutil -lavcodec
+else ifeq ($(target), shure)
+PLAYSRC := shure.c
+PLAYDEFS += -D card_name=\"S50\"
+else
+$(error "target" should be wilkins or shure)
+endif
 
 all : waiter mixer player
 	mv waiter player mixer $(PL_PATH)
@@ -23,4 +30,4 @@ player : $(PLAYSRC) playlib.c playlib.h
 
 .PHONY : clean
 clean :
-	rm -rf player waiter mixer
+	rm -f player waiter mixer
