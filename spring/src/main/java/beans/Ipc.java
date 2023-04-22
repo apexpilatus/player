@@ -46,8 +46,8 @@ public class Ipc {
         }
     }
 
-    public int action2GetVol() {
-        int ret = -1;
+    public String action2GetVol() {
+        String volData = "0;0";
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
             sock.setSoTimeout(timeOut);
@@ -56,9 +56,9 @@ public class Ipc {
             char op = '2';
             writer.write(op);
             writer.flush();
-            ret = Integer.parseInt(reader.readLine());
+            volData = reader.readLine();
         } catch (IOException ignored) {
         }
-        return ret;
+        return volData;
     }
 }

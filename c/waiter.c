@@ -19,11 +19,13 @@
 #define listen_port 8888
 
 static pid_t player_pid;
-static void *shd_addr;
 static char *data_addr;
-static char vol_size = sizeof(long);
+static long *curvol_addr;
+static long *maxvol_addr;
+static int curvol_size = sizeof(long);
+static int maxvol_size = sizeof(long);
 
-static inline void update_mixer()
+static inline int update_mixer()
 {
 	int mixer_card_num = snd_card_get_index(card_name);
 	if (mixer_card_num >= 0)
@@ -38,7 +40,9 @@ static inline void update_mixer()
 		{
 			waitpid(mixer_pid, NULL, 0);
 		}
+		return 0;
 	}
+	return 1;
 }
 
 static void action0_play(int sock)
@@ -46,9 +50,9 @@ static void action0_play(int sock)
 	write(sock, "ok\n", 3);
 	update_mixer();
 	int album_size, track_size;
-	album_size = read(sock, data_addr, getpagesize() - vol_size);
+	album_size = read(sock, data_addr, getpagesize() - curvol_size - maxvol_size);
 	write(sock, "ok\n", 3);
-	track_size = read(sock, data_addr + album_size + 1, getpagesize() - album_size - vol_size - 1);
+	track_size = read(sock, data_addr + album_size + 1, getpagesize() - album_size - curvol_size - maxvol_size - 1);
 	write(sock, "ok\n", 3);
 	if (album_size > 0 && track_size > 0)
 	{
@@ -76,11 +80,11 @@ static void action0_play(int sock)
 static void action1_set_vol(int sock)
 {
 	write(sock, "ok\n", 3);
-	ssize_t nbytes = read(sock, data_addr, vol_size);
+	ssize_t nbytes = read(sock, data_addr, getpagesize() - curvol_size - maxvol_size);
 	if (nbytes > 0)
 	{
 		data_addr[nbytes] = 0;
-		*(long *)shd_addr = strtol(data_addr, NULL, 10);
+		*curvol_addr = strtol(data_addr, NULL, 10);
 		update_mixer();
 	}
 	write(sock, "ok\n", 3);
@@ -88,7 +92,12 @@ static void action1_set_vol(int sock)
 
 static void action2_get_vol(int sock)
 {
-	sprintf(data_addr, "%ld\n\0", *(long *)shd_addr);
+	if (update_mixer())
+	{
+		*curvol_addr = 0;
+		*maxvol_addr = 0;
+	}
+	sprintf(data_addr, "%ld;%ld\n\0", *curvol_addr, *maxvol_addr);
 	write(sock, data_addr, strlen(data_addr));
 }
 
@@ -122,13 +131,15 @@ int main(void)
 	{
 		return 1;
 	}
-	shd_addr = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
+	void *shd_addr = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
 	if (shd_addr == MAP_FAILED)
 	{
 		return 1;
 	}
-	data_addr = (char *)shd_addr + vol_size;
-	*(long *)shd_addr = strcmp(card_name, "S50") ? 5 : 80;
+	curvol_addr = shd_addr;
+	maxvol_addr = curvol_addr + 1;
+	data_addr = (char *)shd_addr + curvol_size + maxvol_size;
+	*curvol_addr = 0;
 	int sock_listen, sock;
 	sock_listen = socket(PF_INET, SOCK_STREAM, 0);
 	struct sockaddr_in addr;

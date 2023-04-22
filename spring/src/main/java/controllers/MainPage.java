@@ -23,49 +23,13 @@ public class MainPage {
                 respWriter.println("<html>");
                 respWriter.println("<head><meta charset=UTF-8><title>player</title>");
                 respWriter.println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
-                respWriter.println("<script>");
-                respWriter.println("function play(album){");
-                respWriter.println("\tconst xhttp = new XMLHttpRequest();");
-                respWriter.println("\txhttp.onload = function() {");
-                respWriter.println("\tdocument.getElementById(\"tracks\").hidden = true;");
-                respWriter.println("\tdocument.getElementById(\"trackspicture\").hidden = true;");
-                respWriter.println("\tdocument.getElementById(\"hidetracks\").hidden = true;");
-                respWriter.println("\t}");
-                respWriter.println(
-                                "\txhttp.open(\"GET\", window.location.href + \"play\" + \"?album=\" + album.replace(/&/g, \" \"));");
-                respWriter.println("\txhttp.send();");
-                respWriter.println("}");
-                respWriter.println("function setVolume(direction){");
-                respWriter.println("\tconst xhttp = new XMLHttpRequest();");
-                respWriter.println("\txhttp.onload = function() {");
-                respWriter.println(
-                                "\t\tdocument.getElementById(\"volume\").innerHTML = \"&#127911 \" + this.responseText;");
-                respWriter.println("\t}");
-                respWriter.println(
-                                "\txhttp.open(\"GET\", window.location.href + \"volume\" + \"?direction=\" + direction);");
-                respWriter.println("\txhttp.send();");
-                respWriter.println("}");
-                respWriter.println("function getTracks(album){");
-                respWriter.println("\tdocument.getElementById(\"tracks\").src = \"http://" + host
-                                + "/album?album=\" + album.replace(/&/g, \" \")");
-                respWriter.println("\tdocument.getElementById(\"tracks\").hidden = false;");
-                respWriter.println("\tdocument.getElementById(\"trackspicture\").hidden = false;");
-                respWriter.println("\tdocument.getElementById(\"hidetracks\").hidden = false;");
-                respWriter.println("}");
-                respWriter.println("function hideTracks(){");
-                respWriter.println("\tdocument.getElementById(\"tracks\").hidden = true;");
-                respWriter.println("\tdocument.getElementById(\"trackspicture\").hidden = true;");
-                respWriter.println("\tdocument.getElementById(\"hidetracks\").hidden = true;");
-                respWriter.println("}");
-                respWriter.println("</script>");
+                respWriter.println("<script src=\"main.js\"></script>");
                 respWriter.println("</head>");
                 respWriter.println("<body style=background-color:slategray;>");
-                respWriter.println("<p id=volume style=position:fixed;top:400px;left:20px;font-size:20px;></p>");
                 respWriter.println(
-                                "<button type=button onclick=setVolume(\"up\") style=border-radius:20px;color:black;background-color:white;font-size:20px;position:fixed;top:380px;left:10px;>up</button>");
+                                "<p id=showvolume onclick=getVolume() style=position:fixed;top:430px;right:130px;font-size:30px;><b>&#9835</b></p>");
                 respWriter.println(
-                                "<button type=button onclick=setVolume(\"down\") style=border-radius:20px;color:black;background-color:white;font-size:20px;position:fixed;top:460px;left:10px;>dw</button>");
-                respWriter.println("<script>setVolume(\"init\")</script>");
+                                "<input hidden id=volume type=range onchange=setVolume() style=position:fixed;top:400px;right:70px;>");
                 respWriter.println(
                                 "<iframe hidden id=tracks width=450 height=430 style=\"position:fixed;top:10px;right:10px;border-style:solid;\"></iframe>");
                 respWriter.println(

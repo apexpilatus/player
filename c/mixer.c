@@ -12,22 +12,25 @@
 #include <alsa/control.h>
 #include <alsa/mixer.h>
 
-static void set_volume(snd_mixer_elem_t *melem, long *shd_addr)
+static long *target_vol_addr;
+static long *max_vol_addr;
+
+static void set_volume(snd_mixer_elem_t *melem)
 {
-	long curr_vol, minvol, maxvol;
-	snd_mixer_selem_get_playback_volume_range(melem, &minvol, &maxvol);
-	if (*shd_addr < minvol)
+	long curr_vol, minvol;
+	snd_mixer_selem_get_playback_volume_range(melem, &minvol, max_vol_addr);
+	if (*target_vol_addr < minvol)
 	{
-		*shd_addr = minvol;
+		*target_vol_addr = minvol;
 	}
-	if (*shd_addr > maxvol)
+	if (*target_vol_addr > *max_vol_addr)
 	{
-		*shd_addr = maxvol;
+		*target_vol_addr = *max_vol_addr;
 	}
 	snd_mixer_selem_get_playback_volume(melem, -1, &curr_vol);
-	if (curr_vol != *shd_addr)
+	if (curr_vol != *target_vol_addr)
 	{
-		snd_mixer_selem_set_playback_volume(melem, -1, *shd_addr);
+		snd_mixer_selem_set_playback_volume(melem, -1, *target_vol_addr);
 	}
 }
 
@@ -44,28 +47,34 @@ int main(int pnum, char *params[])
 	{
 		return 1;
 	}
+	target_vol_addr = shd_addr;
+	max_vol_addr = target_vol_addr + 1;
 	snd_mixer_t *mxr;
 	if (snd_mixer_open(&mxr, 0))
 	{
-		*(long *)shd_addr = -1;
+		*target_vol_addr = 0;
+		*max_vol_addr = 0;
 		return 1;
 	}
 	if (snd_mixer_attach(mxr, params[1]))
 	{
-		*(long *)shd_addr = -1;
+		*target_vol_addr = 0;
+		*max_vol_addr = 0;
 		return 1;
 	}
 	if (snd_mixer_selem_register(mxr, NULL, NULL))
 	{
-		*(long *)shd_addr = -1;
+		*target_vol_addr = 0;
+		*max_vol_addr = 0;
 		return 1;
 	}
 	if (snd_mixer_load(mxr))
 	{
-		*(long *)shd_addr = -1;
+		*target_vol_addr = 0;
+		*max_vol_addr = 0;
 		return 1;
 	}
 	snd_mixer_elem_t *melem = snd_mixer_last_elem(mxr);
-	set_volume(melem, shd_addr);
+	set_volume(melem);
 	return 0;
 }
