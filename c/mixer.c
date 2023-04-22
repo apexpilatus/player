@@ -14,6 +14,9 @@
 
 static long *target_vol_addr;
 static long *max_vol_addr;
+static char *data_addr;
+static int target_vol_size = sizeof(long);
+static int max_vol_size = sizeof(long);
 
 static void set_volume(snd_mixer_elem_t *melem)
 {
@@ -34,7 +37,7 @@ static void set_volume(snd_mixer_elem_t *melem)
 	}
 }
 
-int main(int pnum, char *params[])
+int main(void)
 {
 	int shd = shm_open(shm_file, O_RDWR, S_IRUSR | S_IWUSR);
 	if (shd < 0)
@@ -49,6 +52,7 @@ int main(int pnum, char *params[])
 	}
 	target_vol_addr = shd_addr;
 	max_vol_addr = target_vol_addr + 1;
+	data_addr = (char *)shd_addr + target_vol_size + max_vol_size;
 	snd_mixer_t *mxr;
 	if (snd_mixer_open(&mxr, 0))
 	{
@@ -56,7 +60,7 @@ int main(int pnum, char *params[])
 		*max_vol_addr = 0;
 		return 1;
 	}
-	if (snd_mixer_attach(mxr, params[1]))
+	if (snd_mixer_attach(mxr, data_addr))
 	{
 		*target_vol_addr = 0;
 		*max_vol_addr = 0;

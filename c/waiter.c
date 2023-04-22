@@ -34,7 +34,7 @@ static inline int update_mixer()
 		pid_t mixer_pid = fork();
 		if (!mixer_pid)
 		{
-			execl(exec_mixer_path, mixer_name, data_addr, NULL);
+			execl(exec_mixer_path, mixer_name, NULL);
 		}
 		if (mixer_pid > 0)
 		{
