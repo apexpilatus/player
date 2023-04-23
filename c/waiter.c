@@ -42,7 +42,6 @@ static inline int update_mixer()
 		{
 			waitpid(mixer_pid, &mix_status, 0);
 		}
-		printf("%d\n", mix_status);
 		return mix_status;
 	}
 	return 1;
