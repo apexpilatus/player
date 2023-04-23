@@ -104,6 +104,7 @@ static void action2_get_vol(int sock)
 {
 	if (update_mixer())
 	{
+	printf("fuck\n");
 		*curvol_addr = 0;
 		*maxvol_addr = 0;
 	}
