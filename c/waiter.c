@@ -24,6 +24,7 @@ static volatile long *curvol_addr;
 static volatile long *maxvol_addr;
 static int curvol_size = sizeof(long);
 static int maxvol_size = sizeof(long);
+static int data_size;
 
 static inline int update_mixer()
 {
@@ -50,9 +51,9 @@ static void action0_play(int sock)
 	write(sock, "ok\n", 3);
 	update_mixer();
 	int album_size, track_size;
-	album_size = read(sock, data_addr, getpagesize() - curvol_size - maxvol_size);
+	album_size = read(sock, data_addr, data_size);
 	write(sock, "ok\n", 3);
-	track_size = read(sock, data_addr + album_size + 1, getpagesize() - album_size - curvol_size - maxvol_size - 1);
+	track_size = read(sock, data_addr + album_size + 1, data_size - album_size - 1);
 	write(sock, "ok\n", 3);
 	if (album_size > 0 && track_size > 0)
 	{
@@ -71,7 +72,7 @@ static void action0_play(int sock)
 			player_pid = fork();
 			if (!player_pid)
 			{
-				execl(exec_player_path, player_name, data_addr, data_addr + album_size + track_size, data_addr + album_size, NULL);
+				execl(exec_player_path, player_name, NULL);
 			}
 		}
 	}
@@ -80,7 +81,7 @@ static void action0_play(int sock)
 static void action1_set_vol(int sock)
 {
 	write(sock, "ok\n", 3);
-	ssize_t nbytes = read(sock, data_addr, getpagesize() - curvol_size - maxvol_size);
+	ssize_t nbytes = read(sock, data_addr, data_size);
 	if (nbytes > 0)
 	{
 		data_addr[nbytes] = 0;
@@ -139,6 +140,7 @@ int main(void)
 	curvol_addr = shd_addr;
 	maxvol_addr = curvol_addr + 1;
 	data_addr = (char *)shd_addr + curvol_size + maxvol_size;
+	data_size = getpagesize() - curvol_size - maxvol_size;
 	*curvol_addr = 0;
 	int sock_listen, sock;
 	sock_listen = socket(PF_INET, SOCK_STREAM, 0);

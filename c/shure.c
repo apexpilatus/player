@@ -35,14 +35,21 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
-int main(int argsn, char *args[])
+int main(void)
 {
-	if (chdir(args[1]))
+	if (get_shared_vars())
 	{
 		return 1;
 	}
-	file_lst *files = get_file_lst(args[1]);
+	extern char *album;
+	extern char *track;
+	extern char *card_name;
+	file_lst *files = get_file_lst(album);
 	if (!files->next && !files->name)
+	{
+		return 1;
+	}
+	if (chdir(album))
 	{
 		return 1;
 	}
@@ -51,7 +58,7 @@ int main(int argsn, char *args[])
 		return 1;
 	}
 	snd_pcm_t *pcm_p;
-	if (snd_pcm_open(&pcm_p, args[2], SND_PCM_STREAM_PLAYBACK, 0))
+	if (snd_pcm_open(&pcm_p, card_name, SND_PCM_STREAM_PLAYBACK, 0))
 	{
 		return 1;
 	}
@@ -68,7 +75,7 @@ int main(int argsn, char *args[])
 	}
 	while (files->next)
 	{
-		if (!strcmp(files->name, args[3]))
+		if (!strcmp(files->name, track))
 		{
 			break;
 		}

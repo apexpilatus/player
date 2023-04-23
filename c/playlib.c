@@ -1,4 +1,9 @@
+#include "shares.h"
+
 #include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
@@ -14,6 +19,12 @@
 
 #include "playlib.h"
 
+char *album;
+char *track;
+char *card_name;
+
+static int vol_size = sizeof(long) * 2;
+
 void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize)
 {
 	for (int i = 0; i < samplesize; i++)
@@ -21,6 +32,25 @@ void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize)
 		*buf = data >> (8 * i);
 		buf++;
 	}
+}
+
+int get_shared_vars(void)
+{
+	int shd = shm_open(shm_file, O_RDWR, S_IRUSR | S_IWUSR);
+	if (shd < 0)
+	{
+		return 1;
+	}
+	int page_size = getpagesize();
+	void *shd_addr = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
+	if (shd_addr == MAP_FAILED)
+	{
+		return 1;
+	}
+	album = shd_addr + vol_size;
+	track = album + strlen(album) + 1;
+	card_name = track + strlen(track) + 1;
+	return 0;
 }
 
 file_lst *get_file_lst(char *dirname)
