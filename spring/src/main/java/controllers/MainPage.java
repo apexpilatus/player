@@ -27,7 +27,7 @@ public class MainPage {
                 respWriter.println("</head>");
                 respWriter.println("<body style=background-color:slategray;>");
                 respWriter.println(
-                                "<p id=showvolume onclick=getVolume() style=position:fixed;top:430px;right:130px;font-size:30px;><b>&#9835</b></p>");
+                                "<button id=showvolume onclick=getVolume() style=border-radius:20%;color:red;background-color:black;font-size:25px;position:fixed;top:460px;right:120px;><b>&#9738</b></button>");
                 respWriter.println(
                                 "<input hidden id=volume type=range onchange=setVolume() style=position:fixed;top:400px;right:70px;>");
                 respWriter.println(
@@ -35,7 +35,7 @@ public class MainPage {
                 respWriter.println(
                                 "<img hidden id=trackspicture style=width:320px;height:320px;position:fixed;top:10px;left:10px;border-style:solid;>");
                 respWriter.println(
-                                "<button hidden type=button id=hidetracks onclick=hideTracks() style=border-radius:20%;color:red;background-color:black;font-size:25px;position:fixed;top:460px;right:10px;>X</button>");
+                                "<button hidden id=hidetracks onclick=hideTracks() style=border-radius:20%;color:red;background-color:black;font-size:25px;position:fixed;top:460px;right:10px;>X</button>");
                 respWriter.println(
                                 "<ul style=padding-left:50px;font-size:150%;line-height:180%;list-style-type:circle;>");
                 albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println(

@@ -26,10 +26,10 @@ function getVolume() {
     xhttp.onload = function () {
         resp = this.responseText;
         if (resp.split(";")[1] == 0) {
-            document.getElementById("showvolume").innerHTML = "&#9787";
+            document.getElementById("showvolume").innerHTML = "&#9739";
         } else {
             hideTracks();
-            document.getElementById("showvolume").innerHTML = "&#9835";
+            document.getElementById("showvolume").innerHTML = "&#9738";
             document.getElementById("volume").hidden = false;
             document.getElementById("volume").value = resp.split(";")[0];
             document.getElementById("volume").max = resp.split(";")[1];
