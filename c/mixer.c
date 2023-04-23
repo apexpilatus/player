@@ -39,7 +39,7 @@ static void set_volume(snd_mixer_elem_t *melem)
 
 int main(void)
 {
-	int shd = shm_open(shm_file, O_RDWR, S_IRUSR | S_IWUSR);
+	int shd = shm_open(shm_file, O_RDWR, 0);
 	if (shd < 0)
 	{
 		return 1;

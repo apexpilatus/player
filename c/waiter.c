@@ -92,10 +92,10 @@ static void action1_set_vol(int sock)
 		data_addr[nbytes] = 0;
 		*curvol_addr = strtol(data_addr, NULL, 10);
 		if (update_mixer())
-	        {
-		        *curvol_addr = 0;
-		        *maxvol_addr = 0;
-	        }
+		{
+			*curvol_addr = 0;
+			*maxvol_addr = 0;
+		}
 	}
 	write(sock, "ok\n", 3);
 }
@@ -131,7 +131,7 @@ static void (*action[])(int sock) = {
 
 int main(void)
 {
-	int shd = shm_open(shm_file, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+	int shd = shm_open(shm_file, O_CREAT, S_IRUSR | S_IWUSR);
 	if (shd < 0)
 	{
 		return 1;

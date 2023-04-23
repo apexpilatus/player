@@ -1,1 +1,1 @@
-#define shm_file "player_shm_file"
+#define shm_file "/maxotra_shm_file"

@@ -36,13 +36,13 @@ void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize)
 
 int get_shared_vars(void)
 {
-	int shd = shm_open(shm_file, O_RDWR, S_IRUSR | S_IWUSR);
+	int shd = shm_open(shm_file, O_RDONLY, 0);
 	if (shd < 0)
 	{
 		return 1;
 	}
 	int page_size = getpagesize();
-	void *shd_addr = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
+	void *shd_addr = mmap(NULL, page_size, PROT_READ, MAP_SHARED, shd, 0);
 	if (shd_addr == MAP_FAILED)
 	{
 		return 1;
