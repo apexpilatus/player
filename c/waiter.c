@@ -37,11 +37,13 @@ static inline int update_mixer()
 		{
 			execl(exec_mixer_path, mixer_name, NULL);
 		}
+		int mix_status;
 		if (mixer_pid > 0)
 		{
-			waitpid(mixer_pid, NULL, 0);
+			waitpid(mixer_pid, &mix_status, 0);
 		}
-		return 0;
+		printf("%d\n", mix_status);
+		return mix_status;
 	}
 	return 1;
 }
