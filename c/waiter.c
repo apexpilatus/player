@@ -50,7 +50,11 @@ static inline int update_mixer()
 static void action0_play(int sock)
 {
 	write(sock, "ok\n", 3);
-	update_mixer();
+	if (update_mixer())
+	{
+		*curvol_addr = 0;
+		*maxvol_addr = 0;
+	}
 	int album_size, track_size;
 	album_size = read(sock, data_addr, data_size);
 	write(sock, "ok\n", 3);
@@ -87,7 +91,11 @@ static void action1_set_vol(int sock)
 	{
 		data_addr[nbytes] = 0;
 		*curvol_addr = strtol(data_addr, NULL, 10);
-		update_mixer();
+		if (update_mixer())
+	        {
+		        *curvol_addr = 0;
+		        *maxvol_addr = 0;
+	        }
 	}
 	write(sock, "ok\n", 3);
 }
