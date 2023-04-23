@@ -131,7 +131,7 @@ static void (*action[])(int sock) = {
 
 int main(void)
 {
-	int shd = shm_open(shm_file, O_CREAT, S_IRUSR | S_IWUSR);
+	int shd = shm_open(shm_file, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 	if (shd < 0)
 	{
 		return 1;
