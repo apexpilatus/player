@@ -140,7 +140,7 @@ int main(void)
 	curvol_addr = shd_addr;
 	maxvol_addr = curvol_addr + 1;
 	data_addr = (char *)shd_addr + curvol_size + maxvol_size;
-	data_size = getpagesize() - curvol_size - maxvol_size;
+	data_size = page_size - curvol_size - maxvol_size;
 	*curvol_addr = 0;
 	int sock_listen, sock;
 	sock_listen = socket(PF_INET, SOCK_STREAM, 0);
