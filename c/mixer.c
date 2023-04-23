@@ -72,7 +72,5 @@ int main(void)
 	}
 	snd_mixer_elem_t *melem = snd_mixer_last_elem(mxr);
 	set_volume(melem);
-	printf("munm - %d\n", munmap(shd_addr, page_size));
-	printf("shman - %d\n", shm_unlink(shm_file));
 	return 0;
 }
