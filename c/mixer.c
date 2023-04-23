@@ -56,26 +56,18 @@ int main(void)
 	snd_mixer_t *mxr;
 	if (snd_mixer_open(&mxr, 0))
 	{
-		*target_vol_addr = 0;
-		*max_vol_addr = 0;
 		return 1;
 	}
 	if (snd_mixer_attach(mxr, data_addr))
 	{
-		*target_vol_addr = 0;
-		*max_vol_addr = 0;
 		return 1;
 	}
 	if (snd_mixer_selem_register(mxr, NULL, NULL))
 	{
-		*target_vol_addr = 0;
-		*max_vol_addr = 0;
 		return 1;
 	}
 	if (snd_mixer_load(mxr))
 	{
-		*target_vol_addr = 0;
-		*max_vol_addr = 0;
 		return 1;
 	}
 	snd_mixer_elem_t *melem = snd_mixer_last_elem(mxr);
