@@ -20,8 +20,8 @@
 
 static pid_t player_pid;
 static char *data_addr;
-static long *curvol_addr;
-static long *maxvol_addr;
+static volatile long *curvol_addr;
+static volatile long *maxvol_addr;
 static int curvol_size = sizeof(long);
 static int maxvol_size = sizeof(long);
 
