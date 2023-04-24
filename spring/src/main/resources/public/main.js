@@ -31,9 +31,10 @@ function getVolume() {
             hideTracks();
             document.getElementById("showvolume").innerHTML = "&#9738";
             document.getElementById("volume").hidden = false;
-            document.getElementById("volume").value = resp.split(";")[0];
-            document.getElementById("volume").max = resp.split(";")[1];
             document.getElementById("showvolume").hidden = true;
+            document.getElementById("volume").min = 0;
+            document.getElementById("volume").max = resp.split(";")[1];
+            document.getElementById("volume").value = resp.split(";")[0];
             delayVar = setTimeout(function () {
                 document.getElementById("volume").hidden = true;
                 document.getElementById("showvolume").hidden = false;
