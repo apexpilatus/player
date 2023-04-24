@@ -29,7 +29,7 @@ public class MainPage {
                 respWriter.println(
                                 "<button id=showvolume onclick=getVolume() style=border-radius:20%;color:red;background-color:black;font-size:25px;position:fixed;top:460px;right:120px;><b>&#9738</b></button>");
                 respWriter.println(
-                                "<input hidden id=volume type=range onchange=setVolume() style=position:fixed;top:400px;right:50px;width:500px>");
+                                "<input hidden id=volume type=range onchange=setVolume() min=0 max=5 style=position:fixed;top:400px;right:50px;width:500px>");
                 respWriter.println(
                                 "<iframe hidden id=tracks width=450 height=430 style=\"position:fixed;top:10px;right:10px;border-style:solid;\"></iframe>");
                 respWriter.println(
