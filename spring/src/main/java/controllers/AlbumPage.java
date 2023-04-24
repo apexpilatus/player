@@ -62,7 +62,7 @@ public class AlbumPage {
                         Map<String, String> metasMap = store.getMetas(album + "/" + file);
                         if (file.equals("01.flac")) {
                                 title.append("<p style=color:black;font-size:120%;><b>")
-                                                .append(metasMap.get("ARTIST") == null ? "" : metasMap.get("ARTIST"))
+                                                .append(metasMap.get("ARTIST"))
                                                 .append("</b><br><strong style=color:slategray;>")
                                                 .append(metasMap.get("ALBUM"))
                                                 .append("</strong><b style=color:red;font-size:80%;> "
