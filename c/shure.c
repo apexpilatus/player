@@ -44,12 +44,12 @@ int main(void)
 	extern char *album;
 	extern char *track;
 	extern char *card_name;
-	file_lst *files = get_file_lst(album);
-	if (!files->next && !files->name)
+	if (chdir(album))
 	{
 		return 1;
 	}
-	if (chdir(album))
+	file_lst *files = get_file_lst(".");
+	if (!files->next && !files->name)
 	{
 		return 1;
 	}
