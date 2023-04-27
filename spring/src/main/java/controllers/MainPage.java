@@ -23,7 +23,7 @@ public class MainPage {
                 respWriter.println("<html>");
                 respWriter.println("<head><meta charset=UTF-8><title>player</title>");
                 respWriter.println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
-                respWriter.println("<script src=\"main.js\"></script>");
+                respWriter.println("<script src=main.js></script>");
                 respWriter.println("</head>");
                 respWriter.println("<body style=background-color:slategray;>");
                 respWriter.println(
