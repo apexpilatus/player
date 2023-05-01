@@ -17,13 +17,18 @@ button {
 }
 
 ul {
-    height: 90%;
     padding-left: 4%;
     font-size: 150%;
     line-height: 180%;
     list-style-type: circle;
 }
 
-.ffkk {
+.scroll {
+    height: auto;
+    overflow: auto;
+}
+
+.unscroll {
+    height: 600px;
     overflow: hidden;
 }

@@ -35,7 +35,7 @@ public class MainPage {
                 respWriter.println(
                                 "<img hidden id=trackspicture style=width:320px;height:320px;position:fixed;top:10px;left:10px;border-style:solid;>");
                 respWriter.println("<button hidden id=hidetracks onclick=hideTracks()>X</button>");
-                respWriter.println("<ul id=albums>");
+                respWriter.println("<ul id=albums class=scroll>");
                 albums.forEach((album, albumPathList) -> albumPathList.forEach(
                                 (albumPath) -> respWriter.println("<li><b style=color:black; onclick=getTracks(\""
                                                 + (albumPath + "/" + album).replace(" ", "&") + "\")>"
