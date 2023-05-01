@@ -4,11 +4,11 @@ button {
     background-color: black;
     font-size: 100%;
     position: fixed;
-    top: 100%;
+    top: 50%;
 }
 
 .list {
-    padding-left: 150px;
+    padding-left: 10%;
     font-size: 150%;
     line-height: 180%;
     list-style-type: circle;
