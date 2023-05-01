@@ -1,23 +1,42 @@
+body {
+    background-color: slategray;
+}
+
 button {
     border-radius: 20%;
     color: red;
     background-color: black;
     font-size: 120%;
     position: fixed;
-    top: 50%;
     font-weight: bold;
     z-index: 2;
 }
 
 #showvolume {
-    right: 10%;
+    bottom: 10%;
+    left: 10%;
+}
+
+#volume {
+    position: fixed;
+    bottom: 10%;
+    left: 10%;
+    width: 80%
 }
 
 #hidetracks {
-    right: 15%;
+    top: 50%;
+    right: 2%;
 }
 
-ul {
+#tracks {
+    position: fixed;
+    top: 2%;
+    right: 2%;
+    border-style: solid;
+}
+
+#albums {
     position: fixed;
     top: 2%;
     height: 80%;

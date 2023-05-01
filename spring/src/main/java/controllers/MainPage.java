@@ -26,12 +26,10 @@ public class MainPage {
                 respWriter.println("<link rel=stylesheet href=mainstyle.css>");
                 respWriter.println("<script src=main.js></script>");
                 respWriter.println("</head>");
-                respWriter.println("<body style=background-color:slategray;>");
+                respWriter.println("<body>");
                 respWriter.println("<button id=showvolume onclick=getVolume()>&#9738</button>");
-                respWriter.println(
-                                "<input hidden id=volume type=range onchange=setVolume() min=0 max=5 style=position:fixed;top:400px;right:50px;width:500px>");
-                respWriter.println(
-                                "<iframe hidden id=tracks width=450 height=400 style=\"position:fixed;top:10px;right:10px;border-style:solid;\"></iframe>");
+                respWriter.println("<input hidden id=volume type=range onchange=setVolume() min=0 max=5>");
+                respWriter.println("<iframe hidden id=tracks width=450 height=400></iframe>");
                 respWriter.println(
                                 "<img hidden id=trackspicture style=width:320px;height:320px;position:fixed;top:10px;left:10px;border-style:solid;>");
                 respWriter.println("<button hidden id=hidetracks onclick=hideTracks()>X</button>");
