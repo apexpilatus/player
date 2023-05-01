@@ -1,10 +1,17 @@
 .list {
-    padding-left: 50px;
-    font-size: 50%;
+    visibility: visible;
+    display: inline;
+    padding-left: 150px;
+    font-size: 150%;
     line-height: 180%;
     list-style-type: circle;
 }
 
 .hidden {
     visibility: hidden;
+    display: inline;
+    padding-left: 150px;
+    font-size: 150%;
+    line-height: 180%;
+    list-style-type: circle;
 }
