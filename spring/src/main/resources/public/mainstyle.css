@@ -4,26 +4,28 @@ button {
     background-color: black;
     font-size: 120%;
     position: fixed;
-    top: 40%;
+    top: 50%;
     font-weight: bold;
+    z-index: 2;
 }
 
 #showvolume {
-    right: 4%;
+    right: 10%;
 }
 
 #hidetracks {
-    right: 10%;
+    right: 15%;
 }
 
 ul {
     position: fixed;
-    top: 5%;
+    top: 2%;
     height: 80%;
     padding-left: 4%;
     font-size: 150%;
     line-height: 180%;
     list-style-type: circle;
+    z-index: 1;
 }
 
 .scroll {
