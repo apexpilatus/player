@@ -38,6 +38,7 @@ public class MainPage {
                 respWriter.println(
                                 "<button hidden id=hidetracks onclick=hideTracks() style=border-radius:20%;color:red;background-color:black;font-size:25px;position:fixed;top:430px;right:10px;>X</button>");
                 respWriter.println("<ul id=albums class=list>");
+                respWriter.println("<script>document.getElementById(\"albums\").class=\"hidden\"</script>");
                 albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println(
                                 "<li><b style=color:black; onclick=getTracks(\""
                                                 + (albumPath + "/" + album).replace(" ", "&") + "\")>"
