@@ -31,7 +31,7 @@ public class MainPage {
                 respWriter.println(
                                 "<input hidden id=volume type=range onchange=setVolume() min=0 max=5 style=position:fixed;top:400px;right:50px;width:500px>");
                 respWriter.println(
-                                "<iframe hidden id=tracks width=450 height=410 style=\"position:fixed;top:10px;right:10px;border-style:solid;\"></iframe>");
+                                "<iframe hidden id=tracks width=450 height=350 style=\"position:fixed;top:10px;right:10px;border-style:solid;\"></iframe>");
                 respWriter.println(
                                 "<img hidden id=trackspicture style=width:320px;height:320px;position:fixed;top:10px;left:10px;border-style:solid;>");
                 respWriter.println(
