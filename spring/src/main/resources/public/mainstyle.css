@@ -14,7 +14,7 @@ button {
 
 #showvolume {
     bottom: 2%;
-    left: 2%;
+    left: 3%;
 }
 
 #volume {
@@ -25,14 +25,14 @@ button {
 }
 
 #hidetracks {
-    top: 50%;
-    right: 2%;
+    bottom: 2%;
+    right: 3%;
 }
 
 #tracks {
     position: fixed;
     top: 2%;
-    right: 2%;
+    right: 3%;
     border-style: solid;
     z-index: 3;
 }
@@ -41,7 +41,7 @@ button {
     position: fixed;
     width: 40%;
     top: 2%;
-    left: 2%;
+    left: 3%;
     border-style: solid;
     z-index: 2;
 }
@@ -50,7 +50,7 @@ button {
     position: fixed;
     top: 2%;
     height: 80%;
-    padding-left: 2%;
+    padding-left: 3%;
     font-size: 150%;
     line-height: 180%;
     list-style-type: circle;
