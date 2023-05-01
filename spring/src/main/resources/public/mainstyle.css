@@ -17,7 +17,9 @@ button {
 }
 
 ul {
-    height: 700px;
+    position: fixed;
+    top: 5%;
+    height: 80%;
     padding-left: 4%;
     font-size: 150%;
     line-height: 180%;
