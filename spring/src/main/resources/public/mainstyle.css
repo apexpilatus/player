@@ -17,6 +17,7 @@ button {
 }
 
 ul {
+    height: 700px;
     padding-left: 4%;
     font-size: 150%;
     line-height: 180%;
@@ -24,11 +25,9 @@ ul {
 }
 
 .scroll {
-    height: auto;
     overflow: auto;
 }
 
 .unscroll {
-    height: 600px;
     overflow: hidden;
 }
