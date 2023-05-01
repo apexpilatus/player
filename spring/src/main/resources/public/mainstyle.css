@@ -14,12 +14,12 @@ button {
 
 #showvolume {
     bottom: 2%;
-    left: 10%;
+    left: 2%;
 }
 
 #volume {
     position: fixed;
-    bottom: 10%;
+    bottom: 5%;
     left: 10%;
     width: 80%
 }
@@ -50,7 +50,7 @@ button {
     position: fixed;
     top: 2%;
     height: 80%;
-    padding-left: 4%;
+    padding-left: 2%;
     font-size: 150%;
     line-height: 180%;
     list-style-type: circle;
