@@ -1,0 +1,10 @@
+.list {
+    padding-left: 50px;
+    font-size: 150%;
+    line-height: 180%;
+    list-style-type: circle;
+}
+
+.hidden {
+    display: none;
+}

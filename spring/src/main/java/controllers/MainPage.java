@@ -23,6 +23,7 @@ public class MainPage {
                 respWriter.println("<html>");
                 respWriter.println("<head><meta charset=UTF-8><title>player</title>");
                 respWriter.println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
+                respWriter.println("<link rel=stylesheet href=styles.css>");
                 respWriter.println("<script src=main.js></script>");
                 respWriter.println("</head>");
                 respWriter.println("<body style=background-color:slategray;>");
@@ -36,8 +37,7 @@ public class MainPage {
                                 "<img hidden id=trackspicture style=width:320px;height:320px;position:fixed;top:10px;left:10px;border-style:solid;>");
                 respWriter.println(
                                 "<button hidden id=hidetracks onclick=hideTracks() style=border-radius:20%;color:red;background-color:black;font-size:25px;position:fixed;top:430px;right:10px;>X</button>");
-                respWriter.println(
-                                "<ul id=albums style=padding-left:50px;font-size:150%;line-height:180%;list-style-type:circle;>");
+                respWriter.println("<ul id=albums class=list>");
                 albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println(
                                 "<li><b style=color:black; onclick=getTracks(\""
                                                 + (albumPath + "/" + album).replace(" ", "&") + "\")>"
