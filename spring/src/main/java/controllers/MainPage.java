@@ -35,9 +35,9 @@ public class MainPage {
                 respWriter.println(
                                 "<img hidden id=trackspicture style=width:320px;height:320px;position:fixed;top:10px;left:10px;border-style:solid;>");
                 respWriter.println("<button hidden id=hidetracks onclick=hideTracks()>X</button>");
-                respWriter.println("<ul>");
-                albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println(
-                                "<li><b style=color:black; onclick=getTracks(\""
+                respWriter.println("<ul id=albums>");
+                albums.forEach((album, albumPathList) -> albumPathList.forEach(
+                                (albumPath) -> respWriter.println("<li><b style=color:black; onclick=getTracks(\""
                                                 + (albumPath + "/" + album).replace(" ", "&") + "\")>"
                                                 + album.replace("fuckingslash", "/")
                                                                 .replace("fuckingblackstar", "&#9733")

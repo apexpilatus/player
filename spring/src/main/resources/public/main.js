@@ -10,6 +10,7 @@ function play(album) {
 function getTracks(album) {
     document.getElementById("tracks").src = window.location.href + "album?album=" + album.replace(/&/g, " ");
     document.getElementById("volume").hidden = true;
+    document.getElementById("albums").setAttribute("class", "ffkk");
     document.getElementById("tracks").hidden = false;
     document.getElementById("trackspicture").hidden = false;
     document.getElementById("hidetracks").hidden = false;
