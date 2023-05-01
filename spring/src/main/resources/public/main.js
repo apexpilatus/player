@@ -2,7 +2,7 @@ function play(album) {
     const xhttp = new XMLHttpRequest();
     xhttp.onload = function () {
         hideTracks();
-        document.getElementById("albums").hidden = false;
+        document.getElementById("albums").class = list;
     }
     xhttp.open("GET", window.location.href + "play?album=" + album.replace(/&/g, " "));
     xhttp.send();
@@ -11,7 +11,7 @@ function play(album) {
 function getTracks(album) {
     document.getElementById("tracks").src = window.location.href + "album?album=" + album.replace(/&/g, " ");
     document.getElementById("volume").hidden = true;
-    document.getElementById("albums").hidden = true;
+    document.getElementById("albums").class = hidden;
     document.getElementById("tracks").hidden = false;
     document.getElementById("trackspicture").hidden = false;
     document.getElementById("hidetracks").hidden = false;
