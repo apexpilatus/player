@@ -23,12 +23,12 @@ public class MainPage {
                 respWriter.println("<html>");
                 respWriter.println("<head><meta charset=UTF-8><title>player</title>");
                 respWriter.println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
-                respWriter.println("<link rel=stylesheet href=styles.css>");
+                respWriter.println("<link rel=stylesheet href=mainstyle.css>");
                 respWriter.println("<script src=main.js></script>");
                 respWriter.println("</head>");
                 respWriter.println("<body style=background-color:slategray;>");
                 respWriter.println(
-                                "<button id=showvolume onclick=getVolume() style=border-radius:20%;color:red;background-color:black;font-size:25px;position:fixed;top:430px;right:120px;><b>&#9738</b></button>");
+                                "<button id=showvolume onclick=getVolume() style=right:120px;><b>&#9738</b></button>");
                 respWriter.println(
                                 "<input hidden id=volume type=range onchange=setVolume() min=0 max=5 style=position:fixed;top:400px;right:50px;width:500px>");
                 respWriter.println(
@@ -36,7 +36,7 @@ public class MainPage {
                 respWriter.println(
                                 "<img hidden id=trackspicture style=width:320px;height:320px;position:fixed;top:10px;left:10px;border-style:solid;>");
                 respWriter.println(
-                                "<button hidden id=hidetracks onclick=hideTracks() style=border-radius:20%;color:red;background-color:black;font-size:25px;position:fixed;top:430px;right:10px;>X</button>");
+                                "<button hidden id=hidetracks onclick=hideTracks() style=right:10px;>X</button>");
                 respWriter.println("<ul id=albums class=list>");
                 albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println(
                                 "<li><b style=color:black; onclick=getTracks(\""
