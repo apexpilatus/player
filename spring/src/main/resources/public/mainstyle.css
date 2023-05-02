@@ -7,8 +7,8 @@ button {
     color: red;
     font-size: 180%;
     font-weight: bold;
-    background-color: orange;
-    width: 20px;
+    background-color: black;
+    width: 30px;
     text-align: center;
     z-index: 3;
 }
