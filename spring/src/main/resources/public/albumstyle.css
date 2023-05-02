@@ -3,16 +3,11 @@ body {
 }
 
 .title {
-    width: 100%;
+    width: 50%;
     background-color: lightgray;
 }
 
-p {
-    position: fixed;
-    top: 20%;
-    height: 70%;
-    width: 100%;
+.tracks {
     font-size: 120%;
     line-height: 180%;
-    overflow: auto;
 }
