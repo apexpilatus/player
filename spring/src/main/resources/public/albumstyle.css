@@ -11,5 +11,5 @@ body {
 
 .tracks {
     font-size: 120%;
-    line-height: 180%;
+    font-style: italic;
 }

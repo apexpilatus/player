@@ -40,8 +40,8 @@ public class AlbumPage {
                 for (String file : files) {
                         Map<String, String> metasMap = store.getMetas(album + "/" + file);
                         if (file.equals("01.flac")) {
-                                title.append("<p style=font-size:120%;>").append(metasMap.get("ARTIST"))
-                                                .append("</p>\n<p style=color:slategray;font-size:110%>")
+                                title.append("<p style=font-size:140%;>").append(metasMap.get("ARTIST"))
+                                                .append("</p>\n<p style=color:slategray;font-size:130%>")
                                                 .append(metasMap.get("ALBUM"))
                                                 .append("<b style=color:red;font-size:80%;> "
                                                                 + metasMap.get("RATE") + "</b></p>");
