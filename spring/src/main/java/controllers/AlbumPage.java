@@ -43,8 +43,8 @@ public class AlbumPage {
                                 title.append("<p style=font-size:120%;>").append(metasMap.get("ARTIST"))
                                                 .append("</p>\n<p style=color:slategray;font-size:110%>")
                                                 .append(metasMap.get("ALBUM"))
-                                                .append("</p>\n<p style=color:red;font-size:80%;> "
-                                                                + metasMap.get("RATE") + "</p>");
+                                                .append("<b style=color:red;font-size:80%;> "
+                                                                + metasMap.get("RATE") + "</b></p>");
                         }
                         tracks.append("<p onclick=play(\"" + album.replace(" ", "&") + "\",\"" + file
                                         + "\")><small style=color:white;>" + metasMap.get("TRACKNUMBER") + "</small>"
