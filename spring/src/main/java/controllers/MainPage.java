@@ -31,7 +31,7 @@ public class MainPage {
                 respWriter.println("<input hidden id=volume type=range onchange=setVolume() min=0 max=5>");
                 respWriter.println("<iframe hidden id=tracks></iframe>");
                 respWriter.println("<img hidden id=trackspicture>");
-                respWriter.println("<button hidden id=hidetracks onclick=hideTracks()>x</button>");
+                respWriter.println("<button hidden id=hidetracks onclick=hideTracks()>&#9737</button>");
                 respWriter.println("<ul id=albums class=scroll>");
                 albums.forEach((album, albumPathList) -> albumPathList.forEach(
                                 (albumPath) -> respWriter.println("<li><b style=color:black; onclick=getTracks(\""
