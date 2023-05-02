@@ -47,8 +47,9 @@ public class AlbumPage {
                                                 .append(metasMap.get("RATE")).append("</div>");
                         }
                         tracks.append("<div onclick=play(\"").append(album.replace(" ", "&")).append("\",\"")
-                                        .append(file).append("\")>").append(metasMap.get("TRACKNUMBER")).append("<q>")
-                                        .append(metasMap.get("TITLE")).append("</q></div>");
+                                        .append(file).append("\")>").append(metasMap.get("TRACKNUMBER"))
+                                        .append("<q style=color:black;>").append(metasMap.get("TITLE"))
+                                        .append("</q></div>");
                 }
                 respWriter.println("<div class=title>");
                 respWriter.println(title);
