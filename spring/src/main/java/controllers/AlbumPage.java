@@ -44,11 +44,11 @@ public class AlbumPage {
                                                 .append("</p>\n<p style=color:slategray;font-size:110%>")
                                                 .append(metasMap.get("ALBUM"))
                                                 .append("</p>\n<p style=color:red;font-size:80%;> "
-                                                                + metasMap.get("RATE") + "</p>\n");
+                                                                + metasMap.get("RATE") + "</p>");
                         }
                         tracks.append("<p onclick=play(\"" + album.replace(" ", "&") + "\",\"" + file
                                         + "\")><small style=color:white;>" + metasMap.get("TRACKNUMBER") + "</small>"
-                                        + metasMap.get("TITLE") + "</p>\n");
+                                        + metasMap.get("TITLE") + "</p>");
                 }
                 respWriter.println("<div class=title>");
                 respWriter.println(title);

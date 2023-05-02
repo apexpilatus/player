@@ -3,16 +3,13 @@ body {
 }
 
 .title {
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 0;
     width: 100%;
     background-color: lightgray;
 }
 
 .tracks {
-    position: absolute;
-    top: 0;
     font-size: 120%;
     line-height: 180%;
 }
