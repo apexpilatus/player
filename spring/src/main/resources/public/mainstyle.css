@@ -4,13 +4,10 @@ body {
 
 button {
     position: fixed;
-    border-radius: 20%;
     color: red;
-    background-color: black;
     font-size: 180%;
     font-weight: bold;
-    width: 5%;
-    text-align: center;
+    padding: 0;
     z-index: 3;
 }
 
