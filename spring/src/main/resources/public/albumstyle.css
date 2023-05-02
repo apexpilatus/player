@@ -8,13 +8,13 @@ body {
     width: 100%;
     background-color: lightgray;
     font-weight: bold;
-    line-height: 150%;
+    line-height: 170%;
 }
 
 .tracks {
     font-size: 120%;
     font-style: italic;
     color: white;
-    line-height: 150%;
+    line-height: 170%;
     padding: 5% 0;
 }
