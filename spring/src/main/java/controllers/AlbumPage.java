@@ -29,9 +29,9 @@ public class AlbumPage {
                 respWriter.println("<meta charset=UTF-8>");
                 respWriter.println("<script src=album.js></script>");
                 respWriter.println("</head>");
-                respWriter.println("<body style=background-color:gray;>");
+                respWriter.println("<body>");
                 respWriter.println("<script>gettrackspicture(\"" + album.replace(" ", "&") + "\")</script>");
-                respWriter.println("<p style=padding-top:120px;font-size:120%;line-height:180%>");
+                respWriter.println("<p>");
                 File albumDirPath = new File(album);
                 String[] files = albumDirPath.list();
                 Arrays.sort(Objects.requireNonNull(files));
@@ -40,12 +40,12 @@ public class AlbumPage {
                 for (String file : files) {
                         Map<String, String> metasMap = store.getMetas(album + "/" + file);
                         if (file.equals("01.flac")) {
-                                title.append("<p style=color:black;font-size:120%;><b>")
+                                title.append("<b style=color:black;font-size:120%;>")
                                                 .append(metasMap.get("ARTIST"))
                                                 .append("</b><br><strong style=color:slategray;>")
                                                 .append(metasMap.get("ALBUM"))
                                                 .append("</strong><b style=color:red;font-size:80%;> "
-                                                                + metasMap.get("RATE") + "</b></p>\n");
+                                                                + metasMap.get("RATE") + "</b>\n");
                                 title.append("</body></html>");
                         }
                         respWriter.println(
@@ -55,9 +55,7 @@ public class AlbumPage {
                                                         + metasMap.get("TITLE") + "</i><br>");
                 }
                 respWriter.println("</p>");
-                respWriter.println(
-                                "<iframe height=115 width=450 style=position:fixed;top:0px;left:0px;border:none src=\"data:text/html,"
-                                                + title + "\"></iframe>\n");
+                respWriter.println("<iframe src=\"data:text/html," + title + "\"></iframe>\n");
                 respWriter.println("</body>");
                 respWriter.println("</html>");
         }

@@ -1,0 +1,15 @@
+body {
+    background-color: gray;
+}
+
+p {
+    padding-top: 30%;
+    font-size: 120%;
+    line-height: 180%
+}
+
+iframe {
+    position: fixed;
+    height: 30%;
+    border: none;
+}
