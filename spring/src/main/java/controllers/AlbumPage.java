@@ -43,7 +43,7 @@ public class AlbumPage {
                         if (file.equals("01.flac")) {
                                 title.append("<b style=color:black;font-size:120%;>")
                                                 .append(metasMap.get("ARTIST"))
-                                                .append("</b><br><strong style=color:slategray;>")
+                                                .append("</b><br><strong style=color:slategray;font-size:100%>")
                                                 .append(metasMap.get("ALBUM"))
                                                 .append("</strong><b style=color:red;font-size:80%;> "
                                                                 + metasMap.get("RATE") + "</b>\n");

@@ -5,9 +5,10 @@ body {
 p {
     position: fixed;
     top: 20%;
-    height: 20%;
+    height: 70%;
     width: 100%;
     font-size: 120%;
+    line-height: 180%;
     overflow: auto;
 }
 
