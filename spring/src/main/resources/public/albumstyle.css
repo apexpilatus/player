@@ -11,6 +11,8 @@ body {
 }
 
 .tracks {
+    position: absolute;
+    top: 0;
     font-size: 120%;
     line-height: 180%;
 }
