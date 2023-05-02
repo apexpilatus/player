@@ -35,8 +35,8 @@ public class AlbumPage {
                 File albumDirPath = new File(album);
                 String[] files = albumDirPath.list();
                 Arrays.sort(Objects.requireNonNull(files));
-                StringBuilder title = new StringBuilder("<div class=title>\n");
-                StringBuilder tracks = new StringBuilder("<div class=tracks>\n");
+                StringBuilder title = new StringBuilder();
+                StringBuilder tracks = new StringBuilder();
                 for (String file : files) {
                         Map<String, String> metasMap = store.getMetas(album + "/" + file);
                         if (file.equals("01.flac")) {
@@ -45,15 +45,17 @@ public class AlbumPage {
                                                 .append(metasMap.get("ALBUM"))
                                                 .append("</p>\n<p style=color:red;font-size:80%;> "
                                                                 + metasMap.get("RATE") + "</p>\n");
-                                title.append("</div>");
                         }
                         tracks.append("<p onclick=play(\"" + album.replace(" ", "&") + "\",\"" + file
                                         + "\")><small style=color:white;>" + metasMap.get("TRACKNUMBER") + "</small>"
                                         + metasMap.get("TITLE") + "</p>\n");
-                        tracks.append("</div>");
                 }
+                respWriter.println("<div class=title>");
                 respWriter.println(title);
+                respWriter.println("</div>");
+                respWriter.println("<div class=tracks>");
                 respWriter.println(tracks);
+                respWriter.println("</div>");
                 respWriter.println("</body>");
                 respWriter.println("</html>");
         }
