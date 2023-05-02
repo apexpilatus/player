@@ -36,20 +36,20 @@ public class AlbumPage {
                 String[] files = albumDirPath.list();
                 Arrays.sort(Objects.requireNonNull(files));
                 StringBuilder title = new StringBuilder("<div class=title>\n");
-                StringBuilder tracks = new StringBuilder("<div>\n");
+                StringBuilder tracks = new StringBuilder("<div class=tracks>\n");
                 for (String file : files) {
                         Map<String, String> metasMap = store.getMetas(album + "/" + file);
                         if (file.equals("01.flac")) {
-                                title.append("<b style=color:black;font-size:120%;>").append(metasMap.get("ARTIST"))
-                                                .append("</b><br><strong style=color:slategray;font-size:110%>")
+                                title.append("<p style=font-size:120%;>").append(metasMap.get("ARTIST"))
+                                                .append("</p>\n<p style=color:slategray;font-size:110%>")
                                                 .append(metasMap.get("ALBUM"))
-                                                .append("</strong><b style=color:red;font-size:80%;> "
-                                                                + metasMap.get("RATE") + "</b>\n");
+                                                .append("</p>\n<p style=color:red;font-size:80%;> "
+                                                                + metasMap.get("RATE") + "</p>\n");
                                 title.append("</div>");
                         }
-                        tracks.append("<i onclick=play(\"" + album.replace(" ", "&") + "\",\"" + file
+                        tracks.append("<p onclick=play(\"" + album.replace(" ", "&") + "\",\"" + file
                                         + "\")><small style=color:white;>" + metasMap.get("TRACKNUMBER") + "</small>"
-                                        + metasMap.get("TITLE") + "</i><br>\n");
+                                        + metasMap.get("TITLE") + "</p>\n");
                         tracks.append("</div>");
                 }
                 respWriter.println(title);
