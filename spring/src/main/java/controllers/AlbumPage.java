@@ -40,15 +40,16 @@ public class AlbumPage {
                 for (String file : files) {
                         Map<String, String> metasMap = store.getMetas(album + "/" + file);
                         if (file.equals("01.flac")) {
-                                title.append("<p style=font-size:140%;>").append(metasMap.get("ARTIST"))
-                                                .append("</p>\n<p style=color:slategray;font-size:130%>")
-                                                .append(metasMap.get("ALBUM"))
-                                                .append("<b style=color:red;font-size:80%;> "
-                                                                + metasMap.get("RATE") + "</b></p>");
+                                title.append("<div style=font-size:140%;>").append(metasMap.get("ARTIST"))
+                                                .append("</div>\n").append("<div style=color:slategray;font-size:130%>")
+                                                .append(metasMap.get("ALBUM")).append("</div>\n")
+                                                .append("<div style=color:red;font-size:80%;> ")
+                                                .append(metasMap.get("RATE")).append("</div>");
                         }
-                        tracks.append("<p onclick=play(\"" + album.replace(" ", "&") + "\",\"" + file
-                                        + "\")><small style=color:white;>" + metasMap.get("TRACKNUMBER") + "</small>"
-                                        + metasMap.get("TITLE") + "</p>");
+                        tracks.append("<div onclick=play(\"").append(album.replace(" ", "&")).append("\",\"")
+                                        .append(file).append("\")><div style=color:white;>")
+                                        .append(metasMap.get("TRACKNUMBER")).append("</div>")
+                                        .append(metasMap.get("TITLE")).append("</div>");
                 }
                 respWriter.println("<div class=title>");
                 respWriter.println(title);
