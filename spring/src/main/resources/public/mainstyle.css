@@ -8,8 +8,10 @@ button {
     font-size: 180%;
     font-weight: bold;
     background-color: black;
-    width: 30px;
+    width: 10%;
     text-align: center;
+    padding 0 0;
+    border-radius: 5%;
     z-index: 3;
 }
 
