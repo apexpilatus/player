@@ -7,7 +7,7 @@ button {
     color: red;
     font-size: 180%;
     font-weight: bold;
-    padding: 0;
+    padding: 0 0;
     z-index: 3;
 }
 
