@@ -18,8 +18,7 @@ import java.util.Objects;
 @RestController
 public class AlbumPage {
         @GetMapping("/album")
-        void albumPage(@RequestParam("album") String album, HttpServletResponse resp, Storage store)
-                        throws IOException {
+        void albumPage(@RequestParam("album") String album, HttpServletResponse resp, Storage store) throws IOException {
                 resp.setContentType("text/html");
                 resp.setCharacterEncoding("UTF-8");
                 PrintWriter respWriter = resp.getWriter();
@@ -32,38 +31,28 @@ public class AlbumPage {
                 respWriter.println("</head>");
                 respWriter.println("<body>");
                 respWriter.println("<script>gettrackspicture(\"" + album.replace(" ", "&") + "\")</script>");
-                respWriter.println("<p>");
                 File albumDirPath = new File(album);
                 String[] files = albumDirPath.list();
                 Arrays.sort(Objects.requireNonNull(files));
-                StringBuilder title = new StringBuilder("<!DOCTYPE html><html><head><meta charset=UTF-8></head>\n");
-                title.append("<body style=background-color:lightgray;>\n");
+                StringBuilder title = new StringBuilder("<div>\n");
+                StringBuilder tracks = new StringBuilder("<div>\n");
                 for (String file : files) {
                         Map<String, String> metasMap = store.getMetas(album + "/" + file);
                         if (file.equals("01.flac")) {
-                                title.append("<b style=color:black;font-size:120%;>")
-                                                .append(metasMap.get("ARTIST"))
-                                                .append("</b><br><strong style=color:slategray;font-size:110%>")
-                                                .append(metasMap.get("ALBUM"))
-                                                .append("</strong><b style=color:red;font-size:80%;> "
-                                                                + metasMap.get("RATE") + "</b>\n");
-                                title.append("</body></html>");
+                                title.append("<b style=color:black;font-size:120%;>").append(metasMap.get("ARTIST")).append("</b><br><strong style=color:slategray;font-size:110%>").append(metasMap.get("ALBUM")).append("</strong><b style=color:red;font-size:80%;> " + metasMap.get("RATE") + "</b>\n");
+                                title.append("</div>");
                         }
-                        respWriter.println(
-                                        "<i onclick=play(\"" + album.replace(" ", "&") + "\",\"" + file
-                                                        + "\")><small style=color:white;>"
-                                                        + metasMap.get("TRACKNUMBER") + "</small>"
-                                                        + metasMap.get("TITLE") + "</i><br>");
+                        tracks.append("<i onclick=play(\"" + album.replace(" ", "&") + "\",\"" + file + "\")><small style=color:white;>" + metasMap.get("TRACKNUMBER") + "</small>" + metasMap.get("TITLE") + "</i><br>");
+                        tracks.append("</div>");
                 }
-                respWriter.println("</p>");
-                respWriter.println("<iframe src=\"data:text/html," + title + "\"></iframe>\n");
+                respWriter.println(title);
+                respWriter.println(tracks);
                 respWriter.println("</body>");
                 respWriter.println("</html>");
         }
 
         @PostMapping("/album")
-        void albumPicture(@RequestParam("album") String album, HttpServletResponse resp, Storage store)
-                        throws IOException, NoSuchFieldException, IllegalAccessException {
+        void albumPicture(@RequestParam("album") String album, HttpServletResponse resp, Storage store) throws IOException, NoSuchFieldException, IllegalAccessException {
                 resp.setContentType("image/jpeg");
                 resp.getOutputStream().write(Base64.getEncoder().encode(store.getPictureBytes(album)));
         }
