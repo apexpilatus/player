@@ -31,7 +31,7 @@ button {
 
 #tracks {
     position: fixed;
-    top: 20%;
+    top: 10%;
     right: 3%;
     width: 50%;
     height: 60%;
@@ -42,7 +42,7 @@ button {
 #trackspicture {
     position: fixed;
     width: 40%;
-    top: 20%;
+    top: 10%;
     left: 3%;
     border-style: solid;
     z-index: 2;
