@@ -27,6 +27,7 @@ public class AlbumPage {
                 respWriter.println("<html>");
                 respWriter.println("<head>");
                 respWriter.println("<meta charset=UTF-8>");
+                respWriter.println("<link rel=stylesheet href=albumstyle.css>");
                 respWriter.println("<script src=album.js></script>");
                 respWriter.println("</head>");
                 respWriter.println("<body>");
