@@ -48,8 +48,8 @@ public class AlbumPage {
                         }
                         tracks.append("<div onclick=play(\"").append(album.replace(" ", "&")).append("\",\"")
                                         .append(file).append("\")>").append(metasMap.get("TRACKNUMBER"))
-                                        .append("<q style=color:black;>").append(metasMap.get("TITLE"))
-                                        .append("</q></div>");
+                                        .append("<b style=color:black;>").append(metasMap.get("TITLE"))
+                                        .append("</b></div>");
                 }
                 respWriter.println("<div class=title>");
                 respWriter.println(title);
