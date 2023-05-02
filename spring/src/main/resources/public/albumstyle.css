@@ -2,7 +2,7 @@ body {
     background-color: gray;
 }
 
-div {
+ol {
     position: fixed;
     top: 20%;
     height: 20%;

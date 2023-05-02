@@ -32,7 +32,7 @@ public class AlbumPage {
                 respWriter.println("</head>");
                 respWriter.println("<body>");
                 respWriter.println("<script>gettrackspicture(\"" + album.replace(" ", "&") + "\")</script>");
-                respWriter.println("<div>");
+                respWriter.println("<ol>");
                 File albumDirPath = new File(album);
                 String[] files = albumDirPath.list();
                 Arrays.sort(Objects.requireNonNull(files));
@@ -50,12 +50,12 @@ public class AlbumPage {
                                 title.append("</body></html>");
                         }
                         respWriter.println(
-                                        "<i onclick=play(\"" + album.replace(" ", "&") + "\",\"" + file
+                                        "<li onclick=play(\"" + album.replace(" ", "&") + "\",\"" + file
                                                         + "\")><small style=color:white;>"
                                                         + metasMap.get("TRACKNUMBER") + "</small>"
                                                         + metasMap.get("TITLE") + "</i><br>");
                 }
-                respWriter.println("</div>");
+                respWriter.println("</ol>");
                 respWriter.println("<iframe src=\"data:text/html," + title + "\"></iframe>\n");
                 respWriter.println("</body>");
                 respWriter.println("</html>");
