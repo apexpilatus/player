@@ -18,7 +18,8 @@ import java.util.Objects;
 @RestController
 public class AlbumPage {
         @GetMapping("/album")
-        void albumPage(@RequestParam("album") String album, HttpServletResponse resp, Storage store) throws IOException {
+        void albumPage(@RequestParam("album") String album, HttpServletResponse resp, Storage store)
+                        throws IOException {
                 resp.setContentType("text/html");
                 resp.setCharacterEncoding("UTF-8");
                 PrintWriter respWriter = resp.getWriter();
@@ -34,15 +35,21 @@ public class AlbumPage {
                 File albumDirPath = new File(album);
                 String[] files = albumDirPath.list();
                 Arrays.sort(Objects.requireNonNull(files));
-                StringBuilder title = new StringBuilder("<div>\n");
+                StringBuilder title = new StringBuilder("<div class=title>\n");
                 StringBuilder tracks = new StringBuilder("<div>\n");
                 for (String file : files) {
                         Map<String, String> metasMap = store.getMetas(album + "/" + file);
                         if (file.equals("01.flac")) {
-                                title.append("<b style=color:black;font-size:120%;>").append(metasMap.get("ARTIST")).append("</b><br><strong style=color:slategray;font-size:110%>").append(metasMap.get("ALBUM")).append("</strong><b style=color:red;font-size:80%;> " + metasMap.get("RATE") + "</b>\n");
+                                title.append("<b style=color:black;font-size:120%;>").append(metasMap.get("ARTIST"))
+                                                .append("</b><br><strong style=color:slategray;font-size:110%>")
+                                                .append(metasMap.get("ALBUM"))
+                                                .append("</strong><b style=color:red;font-size:80%;> "
+                                                                + metasMap.get("RATE") + "</b>\n");
                                 title.append("</div>");
                         }
-                        tracks.append("<i onclick=play(\"" + album.replace(" ", "&") + "\",\"" + file + "\")><small style=color:white;>" + metasMap.get("TRACKNUMBER") + "</small>" + metasMap.get("TITLE") + "</i><br>");
+                        tracks.append("<i onclick=play(\"" + album.replace(" ", "&") + "\",\"" + file
+                                        + "\")><small style=color:white;>" + metasMap.get("TRACKNUMBER") + "</small>"
+                                        + metasMap.get("TITLE") + "</i><br>\n");
                         tracks.append("</div>");
                 }
                 respWriter.println(title);
@@ -52,7 +59,8 @@ public class AlbumPage {
         }
 
         @PostMapping("/album")
-        void albumPicture(@RequestParam("album") String album, HttpServletResponse resp, Storage store) throws IOException, NoSuchFieldException, IllegalAccessException {
+        void albumPicture(@RequestParam("album") String album, HttpServletResponse resp, Storage store)
+                        throws IOException, NoSuchFieldException, IllegalAccessException {
                 resp.setContentType("image/jpeg");
                 resp.getOutputStream().write(Base64.getEncoder().encode(store.getPictureBytes(album)));
         }

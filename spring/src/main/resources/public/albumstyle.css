@@ -2,6 +2,11 @@ body {
     background-color: gray;
 }
 
+.title {
+    width: 100%;
+    background-color: lightgray;
+}
+
 p {
     position: fixed;
     top: 20%;
@@ -10,13 +15,4 @@ p {
     font-size: 120%;
     line-height: 180%;
     overflow: auto;
-}
-
-iframe {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 20%;
-    width: 100%;
-    border: none;
 }
