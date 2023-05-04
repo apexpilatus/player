@@ -20,7 +20,7 @@ public class MainPage {
                 resp.setCharacterEncoding("UTF-8");
                 PrintWriter respWriter = resp.getWriter();
                 respWriter.println("<!DOCTYPE html>");
-                respWriter.println("<html>");
+                respWriter.println("<html lang=en>");
                 respWriter.println("<head><meta charset=UTF-8><title>player</title>");
                 respWriter.println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
                 respWriter.println("<link rel=stylesheet href=mainstyle.css>");
