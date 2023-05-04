@@ -12,14 +12,14 @@ function getTracks(album) {
     document.getElementById("volume").hidden = true;
     document.getElementById("albums").setAttribute("class", "unscroll");
     document.getElementById("tracks").hidden = false;
-    document.getElementById("trackspicture").hidden = false;
+    document.getElementById("trackspicture").setAttribute("class", "visible");
     document.getElementById("hidetracks").hidden = false;
 }
 
 function hideTracks() {
     document.getElementById("albums").setAttribute("class", "scroll");
     document.getElementById("tracks").hidden = true;
-    document.getElementById("trackspicture").hidden = true;
+    document.getElementById("trackspicture").setAttribute("class", "destroyed");
     document.getElementById("hidetracks").hidden = true;
 }
 

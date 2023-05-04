@@ -30,7 +30,7 @@ public class MainPage {
                 respWriter.println("<button id=showvolume onclick=getVolume()>&#9738</button>");
                 respWriter.println("<input hidden id=volume type=range onchange=setVolume() min=0 max=5>");
                 respWriter.println("<iframe hidden id=tracks></iframe>");
-                respWriter.println("<img hidden id=trackspicture>");
+                respWriter.println("<img id=trackspicture class=destroyed>");
                 respWriter.println("<button hidden id=hidetracks onclick=hideTracks()>&#9737</button>");
                 respWriter.println("<ul id=albums class=scroll>");
                 albums.forEach((album, albumPathList) -> albumPathList.forEach(
@@ -40,7 +40,7 @@ public class MainPage {
                                                                 .replace("fuckingblackstar", "&#9733")
                                                                 .replace("fuckingplus", "&#43").replace(" anD ", " & ")
                                                                 .replace("___", " <small style=color:white;>")
-                                                + "</li></b></small>")));
+                                                + (album.contains("___") ? "</small>" : "") + "</b></li>")));
                 respWriter.println("</ul>");
                 respWriter.println("</body>");
                 respWriter.println("</html>");
