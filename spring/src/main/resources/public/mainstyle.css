@@ -57,8 +57,8 @@ button {
     left: 0;
     height: 70%;
     width: 90%;
-    font-size: 150%;
-    line-height: 180%;
+    font-size: 140%;
+    line-height: 160%;
     list-style-type: circle;
     z-index: 1;
 }
