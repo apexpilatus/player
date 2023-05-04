@@ -37,13 +37,13 @@ public class MainPage {
                 respWriter.println("<img hidden id=trackspicture title=picture>");
                 respWriter.println("<button hidden id=hidetracks onclick=hideTracks()>&#9737</button>");
                 respWriter.println("<ul id=albums class=scroll>");
-                albums.forEach((album, albumPathList) -> albumPathList.forEach(
-                                (albumPath) -> respWriter.println("<li><b style=color:black; onclick=getTracks(\""
+                albums.forEach((album, albumPathList) -> albumPathList
+                                .forEach((albumPath) -> respWriter.println("<li><b class=artist onclick=getTracks(\""
                                                 + (albumPath + "/" + album).replace(" ", "&") + "\")>"
                                                 + album.replace("fuckingslash", "/")
                                                                 .replace("fuckingblackstar", "&#9733")
                                                                 .replace("fuckingplus", "&#43").replace(" anD ", " & ")
-                                                                .replace("___", " <small style=color:white;>")
+                                                                .replace("___", " <small class=album>")
                                                 + (album.contains("___") ? "</small>" : "") + "</b></li>")));
                 respWriter.println("</ul>");
                 respWriter.println("</body>");
