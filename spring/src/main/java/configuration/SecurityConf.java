@@ -25,7 +25,7 @@ public class SecurityConf {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin())
-				.referrerPolicy(referrer -> referrer.policy(ReferrerPolicy.SAME_ORIGIN)));
+				.referrerPolicy(referrer -> referrer.policy(ReferrerPolicy.NO_REFERRER)));
 		return http.build();
 	}
 }
