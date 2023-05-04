@@ -11,6 +11,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class Config implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/*").addResourceLocations("classpath:resources/", "classpath:static/", "classpath:public/", "ServletContext:/").setCacheControl(CacheControl.noCache());
+        registry.addResourceHandler("/*").addResourceLocations("classpath:static/", "classpath:public/", "ServletContext:/").setCacheControl(CacheControl.noCache());
     }
 }
