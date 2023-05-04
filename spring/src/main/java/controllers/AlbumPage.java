@@ -66,6 +66,8 @@ public class AlbumPage {
         void albumPicture(@RequestParam("album") String album, HttpServletResponse resp, Storage store)
                         throws IOException, NoSuchFieldException, IllegalAccessException {
                 resp.setContentType("image/jpeg");
+                resp.setHeader("Cache-Control", "no-cache");
+                resp.setHeader("X-Content-Type-Options", "nosniff");
                 resp.getOutputStream().write(Base64.getEncoder().encode(store.getPictureBytes(album)));
         }
 }
