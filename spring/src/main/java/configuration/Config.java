@@ -16,6 +16,7 @@ public class Config implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         File ffkk = new File(".");
         System.out.println(ffkk.list()[0]);
+        System.out.println(System.getProperties());
         registry.addResourceHandler("/*")
                 .addResourceLocations(".", "classpath:/static/")
                 .setCacheControl(CacheControl.maxAge(Duration.ofDays(365)));
