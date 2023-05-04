@@ -5,7 +5,7 @@ body {
 button {
     position: fixed;
     color: red;
-    font-size: 180%;
+    font-size: 150%;
     font-weight: bold;
     background-color: black;
     width: 10%;
@@ -54,7 +54,7 @@ button {
 #albums {
     position: fixed;
     top: 20%;
-    left: 3%;
+    left: 0;
     height: 70%;
     width: 90%;
     font-size: 150%;
