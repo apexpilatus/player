@@ -21,12 +21,12 @@ public class MainPage {
                 PrintWriter respWriter = resp.getWriter();
                 respWriter.println("<!DOCTYPE html>");
                 respWriter.println("<html lang=en>");
-                respWriter.println("<head><meta charset=utf-8>");
-                respWriter.println("<head><meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
+                respWriter.println(
+                                "<head><meta name=viewport content=\"width=device-width, initial-scale=1.0\" charset=utf-8>");
                 respWriter.println("<title>player</title>");
                 respWriter.println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
                 respWriter.println("<link rel=stylesheet href=mainstyle.css type=text/css>");
-                respWriter.println("<script src=main.js type=text/javascript></script>");
+                respWriter.println("<script src=main.js type=text/javascript> charset=utf-8</script>");
                 respWriter.println("</head>");
                 respWriter.println("<body>");
                 respWriter.println("<button id=showvolume onclick=getVolume()>&#9738</button>");
