@@ -13,8 +13,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class Config implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/resources/**")
-                .addResourceLocations("/public", "classpath:/static/")
+        registry.addResourceHandler("/**")
+                .addResourceLocations("/resources/public", "classpath:/static/")
                 .setCacheControl(CacheControl.maxAge(Duration.ofDays(365)));
     }
 }
