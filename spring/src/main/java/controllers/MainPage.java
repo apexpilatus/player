@@ -17,6 +17,7 @@ public class MainPage {
         void mainPage(@RequestHeader("Host") String host, HttpServletResponse resp, Storage store) throws IOException {
                 Map<String, List<String>> albums = store.getAlbums();
                 resp.setContentType("text/html");
+                resp.setHeader("Cache-Control", "no-cache");
                 resp.setCharacterEncoding("utf-8");
                 PrintWriter respWriter = resp.getWriter();
                 respWriter.println("<!DOCTYPE html>");
