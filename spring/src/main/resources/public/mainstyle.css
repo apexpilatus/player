@@ -54,9 +54,9 @@ button {
 #albums {
     position: fixed;
     top: 20%;
+    left: 3%;
     height: 70%;
     width: 90%;
-    padding-left: 5%;
     font-size: 150%;
     line-height: 180%;
     list-style-type: circle;
