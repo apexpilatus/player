@@ -23,7 +23,7 @@ public class SecurityConf {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
+		http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
 		return http.build();
 	}
 }
