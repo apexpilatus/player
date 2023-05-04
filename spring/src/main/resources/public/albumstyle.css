@@ -8,8 +8,8 @@ body {
     width: 100%;
     background-color: lightgray;
     font-weight: bold;
-    line-height: 170%;
-    font-size: 140%;
+    line-height: 130%;
+    font-size: 130%;
 }
 
 .tracks {
@@ -22,12 +22,12 @@ body {
 
 .album {
     color: slategray;
-    font-size: 100%;
+    font-size: 90%;
 }
 
 .rate {
     color: red;
-    font-size: 80%;
+    font-size: 70%;
 }
 
 .tarck {
