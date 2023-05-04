@@ -26,7 +26,8 @@ public class AlbumPage {
                 respWriter.println("<!DOCTYPE html>");
                 respWriter.println("<html>");
                 respWriter.println("<head>");
-                respWriter.println("<meta charset=UTF-8>");
+                respWriter.println(
+                                "<meta name=viewport content=\"width=device-width, initial-scale=1.0\" charset=utf-8>");
                 respWriter.println("<link rel=stylesheet href=albumstyle.css>");
                 respWriter.println("<script src=album.js></script>");
                 respWriter.println("</head>");
