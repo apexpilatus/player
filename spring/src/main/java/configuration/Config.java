@@ -18,7 +18,7 @@ public class Config implements WebMvcConfigurer {
         System.out.println(ffkk.list()[0]);
         System.out.println(System.getProperties());
         registry.addResourceHandler("/*")
-                .addResourceLocations(".", "classpath:/static/")
+                .addResourceLocations("classpath:META-INF/resources/", "classpath:resources/", "classpath:static/", "classpath:public/", "ServletContext:/")
                 .setCacheControl(CacheControl.maxAge(Duration.ofDays(365)));
     }
 }
