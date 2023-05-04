@@ -31,15 +31,14 @@ public class MainPage {
                 respWriter.println("<script src=main.js></script>");
                 respWriter.println("</head>");
                 respWriter.println("<body>");
-                respWriter.println("<button id=showvolume onclick=getVolume()>&#9738</button>");
+                respWriter.println("<button type=button id=showvolume onclick=getVolume()>&#9738</button>");
                 respWriter.println("<input hidden id=volume type=range onchange=setVolume() min=0 max=5 title=volume>");
                 respWriter.println("<iframe hidden id=tracks title=meta></iframe>");
                 respWriter.println("<img hidden id=trackspicture title=picture>");
-                respWriter.println("<button hidden id=hidetracks onclick=hideTracks()>&#9737</button>");
+                respWriter.println("<button type=button hidden id=hidetracks onclick=hideTracks()>&#9737</button>");
                 respWriter.println("<ul id=albums class=scroll>");
-                albums.forEach((album, albumPathList) -> albumPathList
-                                .forEach((albumPath) -> respWriter.println("<li><b class=artist onclick=getTracks(\""
-                                                + (albumPath + "/" + album).replace(" ", "&") + "\")>"
+                albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println(
+                                "<li><b onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>"
                                                 + album.replace("fuckingslash", "/")
                                                                 .replace("fuckingblackstar", "&#9733")
                                                                 .replace("fuckingplus", "&#43").replace(" anD ", " & ")

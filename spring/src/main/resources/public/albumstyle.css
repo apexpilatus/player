@@ -9,6 +9,7 @@ body {
     background-color: lightgray;
     font-weight: bold;
     line-height: 170%;
+    font-size: 140%;
 }
 
 .tracks {
@@ -17,4 +18,18 @@ body {
     color: white;
     line-height: 170%;
     padding: 5% 0;
+}
+
+.album {
+    color: slategray;
+    font-size: 130%;
+}
+
+.rate {
+    color: red;
+    font-size: 80%;
+}
+
+.tarck {
+    color: black;
 }
