@@ -12,7 +12,7 @@ function gettrackspicture(album) {
 function play(album, track) {
     const xhttp = new XMLHttpRequest();
     xhttp.onload = function () {
-        parent.document.getElementById("trackspicture").setAttribute("class", "destroyed");
+        parent.document.getElementById("trackspicture").hidden = true;
     }
     xhttp.open("GET", parent.window.location.href + "play?album=" + album.replace(/&/g, " ") + "&track=" + track);
     xhttp.send();

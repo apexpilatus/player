@@ -70,11 +70,3 @@ button {
 .unscroll {
     overflow: hidden;
 }
-
-.destroyed {
-    display: none;
-}
-
-.visible {
-    display: inline;
-}
