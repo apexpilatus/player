@@ -17,13 +17,13 @@ public class MainPage {
         void mainPage(@RequestHeader("Host") String host, HttpServletResponse resp, Storage store) throws IOException {
                 Map<String, List<String>> albums = store.getAlbums();
                 resp.setContentType("text/html");
-                resp.setCharacterEncoding("UTF-8");
+                resp.setCharacterEncoding("utf-8");
                 PrintWriter respWriter = resp.getWriter();
                 respWriter.println("<!DOCTYPE html>");
                 respWriter.println("<html lang=en>");
-                respWriter.println("<head><meta charset=UTF-8><title>player</title>");
+                respWriter.println("<head><meta charset=utf-8><title>player</title>");
                 respWriter.println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
-                respWriter.println("<link rel=stylesheet href=mainstyle.css type=text/css>");
+                respWriter.println("<link rel=stylesheet href=mainstyle.css charset=utf-8>");
                 respWriter.println("<script src=main.js></script>");
                 respWriter.println("</head>");
                 respWriter.println("<body>");
