@@ -25,7 +25,7 @@ public class MainPage {
                 respWriter.println("<title>player</title>");
                 respWriter.println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
                 respWriter.println("<link rel=stylesheet href=mainstyle.css>");
-                respWriter.println("<script src=main.js</script>");
+                respWriter.println("<script src=main.js></script>");
                 respWriter.println("</head>");
                 respWriter.println("<body>");
                 respWriter.println("<button id=showvolume onclick=getVolume()>&#9738</button>");
