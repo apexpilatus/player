@@ -18,10 +18,12 @@ public class MainPage {
                 Map<String, List<String>> albums = store.getAlbums();
                 resp.setContentType("text/html");
                 resp.setCharacterEncoding("utf-8");
+                resp.setHeader("Cache-Control", "no-cache");
                 PrintWriter respWriter = resp.getWriter();
                 respWriter.println("<!DOCTYPE html>");
                 respWriter.println("<html lang=en>");
-                respWriter.println("<head><meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
+                respWriter.println(
+                                "<head><meta name=viewport content=\"width=device-width, initial-scale=1.0\" charset=utf-8>");
                 respWriter.println("<title>player</title>");
                 respWriter.println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
                 respWriter.println("<link rel=stylesheet href=mainstyle.css>");
