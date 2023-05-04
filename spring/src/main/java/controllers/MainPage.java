@@ -19,6 +19,7 @@ public class MainPage {
                 resp.setContentType("text/html");
                 resp.setCharacterEncoding("utf-8");
                 resp.setHeader("Cache-Control", "no-cache");
+                resp.setHeader("X-Content-Type-Options", "nosniff");
                 PrintWriter respWriter = resp.getWriter();
                 respWriter.println("<!DOCTYPE html>");
                 respWriter.println("<html lang=en>");
