@@ -12,8 +12,7 @@ body {
 }
 
 .tracks {
-    font-size: 120%;
-    font-style: italic;
+    font-size: 110%;
     color: white;
     line-height: 170%;
     padding: 5% 0;
@@ -25,12 +24,12 @@ body {
 
 .album {
     color: slategray;
-    font-size: 90%;
+    font-size: 110%;
 }
 
 .rate {
     color: red;
-    font-size: 70%;
+    font-size: 90%;
 }
 
 .track {
