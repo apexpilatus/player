@@ -43,14 +43,14 @@ public class AlbumPage {
                 for (String file : files) {
                         Map<String, String> metasMap = store.getMetas(album + "/" + file);
                         if (file.equals("01.flac")) {
-                                title.append("<div>").append(metasMap.get("ARTIST")).append("</div>\n")
+                                title.append("<div class=artist>").append(metasMap.get("ARTIST")).append("</div>\n")
                                                 .append("<div class=album>").append(metasMap.get("ALBUM"))
                                                 .append("</div>\n").append("<div class=rate> ")
                                                 .append(metasMap.get("RATE")).append("</div>");
                         }
                         tracks.append("<div onclick=play(\"").append(album.replace(" ", "&")).append("\",\"")
                                         .append(file).append("\")>").append(metasMap.get("TRACKNUMBER"))
-                                        .append("<b class=tarck>").append(metasMap.get("TITLE")).append("</b></div>");
+                                        .append("<b class=track>").append(metasMap.get("TITLE")).append("</b></div>");
                 }
                 respWriter.println("<div class=title>");
                 respWriter.println(title);

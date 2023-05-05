@@ -38,10 +38,12 @@ public class Storage {
             for (Metadata meta : metas) {
                 if (meta.toString().contains("VorbisComment")) {
                     VorbisComment vorbis = (VorbisComment) meta;
-                    metasMap.put("ARTIST", vorbis.getCommentByName("ARTIST")[0]);
+                    metasMap.put("ARTIST",
+                            vorbis.getCommentByName("ARTIST").length == 0 ? "" : vorbis.getCommentByName("ARTIST")[0]);
                     metasMap.put("ALBUM",
                             vorbis.getCommentByName("ALBUM").length == 0 ? "" : vorbis.getCommentByName("ALBUM")[0]);
-                    metasMap.put("TRACKNUMBER", vorbis.getCommentByName("TRACKNUMBER")[0] + ") ");
+                    metasMap.put("TRACKNUMBER", vorbis.getCommentByName("TRACKNUMBER").length == 0 ? "-"
+                            : vorbis.getCommentByName("TRACKNUMBER")[0] + ") ");
                     metasMap.put("TITLE",
                             vorbis.getCommentByName("TITLE").length == 0 ? "" : vorbis.getCommentByName("TITLE")[0]);
                 }
