@@ -22,6 +22,9 @@ public class Volume {
     @PostMapping("/volume")
     void getVolume(HttpServletResponse resp, Ipc ipc) throws IOException {
         resp.setContentType("text/plain");
+        resp.setCharacterEncoding("utf-8");
+        resp.setHeader("Cache-Control", "no-cache");
+        resp.setHeader("X-Content-Type-Options", "nosniff");
         resp.getWriter().write(ipc.action2GetVol());
     }
 }
