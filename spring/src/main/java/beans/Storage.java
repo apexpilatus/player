@@ -14,8 +14,8 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class Storage {
-    String[] musicDirPaths = { "/home/store/music/qbzcd", "/home/store/music/dzr", "/home/store/music/hack/1",
-            "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4" };
+    String[] musicDirPaths = {"/home/store/music/qbzcd", "/home/store/music/dzr", "/home/store/music/hack/1",
+            "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
 
     public Map<String, List<String>> getAlbums() {
         Map<String, List<String>> albums = new TreeMap<>();
@@ -61,7 +61,7 @@ public class Storage {
     }
 
     public byte[] getPictureBytes(String album) throws IOException, NoSuchFieldException, IllegalAccessException {
-        byte[] pictureBytes = { 1, 2, 3 };
+        byte[] pictureBytes = {1, 2, 3};
         try (FileInputStream flacIs = new FileInputStream(album + "/01.flac")) {
             FLACDecoder flacDec = new FLACDecoder(flacIs);
             Metadata[] metas = flacDec.readMetadata();

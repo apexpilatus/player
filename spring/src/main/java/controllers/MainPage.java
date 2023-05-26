@@ -13,39 +13,39 @@ import java.util.Map;
 
 @RestController
 public class MainPage {
-        @GetMapping("/")
-        void mainPage(@RequestHeader("Host") String host, HttpServletResponse resp, Storage store) throws IOException {
-                Map<String, List<String>> albums = store.getAlbums();
-                resp.setContentType("text/html");
-                resp.setCharacterEncoding("utf-8");
-                resp.setHeader("Cache-Control", "no-cache");
-                resp.setHeader("X-Content-Type-Options", "nosniff");
-                PrintWriter respWriter = resp.getWriter();
-                respWriter.println("<!DOCTYPE html>");
-                respWriter.println("<html lang=en>");
-                respWriter.println(
-                                "<head><meta name=viewport content=\"width=device-width, initial-scale=1.0\" charset=utf-8>");
-                respWriter.println("<title>player</title>");
-                respWriter.println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
-                respWriter.println("<link rel=stylesheet href=mainstyle.css>");
-                respWriter.println("<script src=main.js></script>");
-                respWriter.println("</head>");
-                respWriter.println("<body>");
-                respWriter.println("<button type=button id=showvolume onclick=getVolume()>&#9738</button>");
-                respWriter.println("<input hidden id=volume type=range onchange=setVolume() min=0 max=5 title=volume>");
-                respWriter.println("<iframe hidden id=tracks title=meta></iframe>");
-                respWriter.println("<img hidden id=trackspicture title=picture>");
-                respWriter.println("<button type=button hidden id=hidetracks onclick=hideTracks()>&#9737</button>");
-                respWriter.println("<ul id=albums class=scroll>");
-                albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println(
-                                "<li><b onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>"
-                                                + album.replace("fuckingslash", "/")
-                                                                .replace("fuckingblackstar", "&#9733")
-                                                                .replace("fuckingplus", "&#43").replace(" anD ", " & ")
-                                                                .replace("___", " <small class=album>")
-                                                + (album.contains("___") ? "</small>" : "") + "</b></li>")));
-                respWriter.println("</ul>");
-                respWriter.println("</body>");
-                respWriter.println("</html>");
-        }
+    @GetMapping("/")
+    void mainPage(@RequestHeader("Host") String host, HttpServletResponse resp, Storage store) throws IOException {
+        Map<String, List<String>> albums = store.getAlbums();
+        resp.setContentType("text/html");
+        resp.setCharacterEncoding("utf-8");
+        resp.setHeader("Cache-Control", "no-cache");
+        resp.setHeader("X-Content-Type-Options", "nosniff");
+        PrintWriter respWriter = resp.getWriter();
+        respWriter.println("<!DOCTYPE html>");
+        respWriter.println("<html lang=en>");
+        respWriter.println(
+                "<head><meta name=viewport content=\"width=device-width, initial-scale=1.0\" charset=utf-8>");
+        respWriter.println("<title>player</title>");
+        respWriter.println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
+        respWriter.println("<link rel=stylesheet href=mainstyle.css>");
+        respWriter.println("<script src=main.js></script>");
+        respWriter.println("</head>");
+        respWriter.println("<body>");
+        respWriter.println("<button type=button id=showvolume onclick=getVolume()>&#9738</button>");
+        respWriter.println("<input hidden id=volume type=range onchange=setVolume() min=0 max=5 title=volume>");
+        respWriter.println("<iframe hidden id=tracks title=meta></iframe>");
+        respWriter.println("<img hidden id=trackspicture title=picture>");
+        respWriter.println("<button type=button hidden id=hidetracks onclick=hideTracks()>&#9737</button>");
+        respWriter.println("<ul id=albums class=scroll>");
+        albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println(
+                "<li><b onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>"
+                        + album.replace("fuckingslash", "/")
+                        .replace("fuckingblackstar", "&#9733")
+                        .replace("fuckingplus", "&#43").replace(" anD ", " & ")
+                        .replace("___", " <small class=album>")
+                        + (album.contains("___") ? "</small>" : "") + "</b></li>")));
+        respWriter.println("</ul>");
+        respWriter.println("</body>");
+        respWriter.println("</html>");
+    }
 }
