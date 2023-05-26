@@ -48,10 +48,11 @@ public class Storage {
                             vorbis.getCommentByName("TITLE").length == 0 ? "" : vorbis.getCommentByName("TITLE")[0]);
                 }
                 if (meta.toString().contains("StreamInfo")) {
+                    assert meta instanceof StreamInfo;
                     StreamInfo info = (StreamInfo) meta;
                     metasMap.put("RATE",
-                            String.valueOf(info.getBitsPerSample()) + "/"
-                                    + String.valueOf(new DecimalFormat("#.#").format(info.getSampleRate() / 1000f)));
+                            info.getBitsPerSample() + "/"
+                                    + new DecimalFormat("#.#").format(info.getSampleRate() / 1000f));
                 }
             }
         } catch (Exception e) {
