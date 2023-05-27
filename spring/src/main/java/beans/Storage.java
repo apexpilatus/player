@@ -37,8 +37,8 @@ public class Storage {
             for (Metadata meta : metas) {
                 if (meta.toString().contains("VorbisComment")) {
                     VorbisComment vorbis = (VorbisComment) meta;
-                    metasMap.put("ARTIST", vorbis.getCommentByName("ARTIST").length == 0 ? "" : vorbis.getCommentByName("ARTIST")[0]);
-                    metasMap.put("ALBUM", vorbis.getCommentByName("ALBUM").length == 0 ? "" : vorbis.getCommentByName("ALBUM")[0]);
+                    metasMap.put("ARTIST", vorbis.getCommentByName("ARTIST").length == 0 ? "" : "&nbsp;" + vorbis.getCommentByName("ARTIST")[0]);
+                    metasMap.put("ALBUM", vorbis.getCommentByName("ALBUM").length == 0 ? "" : "&nbsp;&nbsp;" + vorbis.getCommentByName("ALBUM")[0]);
                     String trackNumber = vorbis.getCommentByName("TRACKNUMBER").length == 0 ? "-" : vorbis.getCommentByName("TRACKNUMBER")[0];
                     if (trackNumber.length() == 1) {
                         trackNumber = "&nbsp;&nbsp;" + trackNumber;
@@ -49,7 +49,7 @@ public class Storage {
                 if (meta.toString().contains("StreamInfo")) {
                     assert meta instanceof StreamInfo;
                     StreamInfo info = (StreamInfo) meta;
-                    metasMap.put("RATE", info.getBitsPerSample() + "/" + new DecimalFormat("#.#").format(info.getSampleRate() / 1000f));
+                    metasMap.put("RATE", "&nbsp;&nbsp;&nbsp;&nbsp;" + info.getBitsPerSample() + "/" + new DecimalFormat("#.#").format(info.getSampleRate() / 1000f));
                 }
             }
         } catch (Exception e) {
