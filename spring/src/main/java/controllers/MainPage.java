@@ -22,8 +22,7 @@ public class MainPage {
         PrintWriter respWriter = resp.getWriter();
         respWriter.println("<!DOCTYPE html>");
         respWriter.println("<html lang=en>");
-        respWriter.println(
-                "<head><meta name=viewport content=\"width=device-width, initial-scale=1.0\" charset=utf-8>");
+        respWriter.println("<head><meta name=viewport content=\"width=device-width, initial-scale=1.0\" charset=utf-8>");
         respWriter.println("<title>player</title>");
         respWriter.println("<link rel=apple-touch-icon href=apple-180x180.png sizes=180x180 type=image/png>");
         respWriter.println("<link rel=stylesheet href=mainstyle.css>");
@@ -36,13 +35,7 @@ public class MainPage {
         respWriter.println("<img hidden id=trackspicture title=picture>");
         respWriter.println("<button type=button hidden id=hidetracks onclick=hideTracks()>&#9737</button>");
         respWriter.println("<ul id=albums class=scroll>");
-        albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println(
-                "<li><b onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>"
-                        + album.replace("fuckingslash", "/")
-                        .replace("fuckingblackstar", "&#9733")
-                        .replace("fuckingplus", "&#43").replace(" anD ", " & ")
-                        .replace("___", " <small class=album>")
-                        + (album.contains("___") ? "</small>" : "") + "</b></li>")));
+        albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println("<li><b onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>" + album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ").replace("___", " <small class=album>") + (album.contains("___") ? "</small>" : "") + "</b></li>")));
         respWriter.println("</ul>");
         respWriter.println("</body>");
         respWriter.println("</html>");

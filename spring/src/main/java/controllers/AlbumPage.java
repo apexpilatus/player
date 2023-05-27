@@ -18,8 +18,7 @@ import java.util.Objects;
 @RestController
 public class AlbumPage {
     @GetMapping("/album")
-    void albumPage(@RequestParam("album") String album, HttpServletResponse resp, Storage store)
-            throws IOException {
+    void albumPage(@RequestParam("album") String album, HttpServletResponse resp, Storage store) throws IOException {
         resp.setContentType("text/html");
         resp.setCharacterEncoding("utf-8");
         resp.setHeader("Cache-Control", "no-cache");
@@ -28,8 +27,7 @@ public class AlbumPage {
         respWriter.println("<!DOCTYPE html>");
         respWriter.println("<html>");
         respWriter.println("<head>");
-        respWriter.println(
-                "<meta name=viewport content=\"width=device-width, initial-scale=1.0\" charset=utf-8>");
+        respWriter.println("<meta name=viewport content=\"width=device-width, initial-scale=1.0\" charset=utf-8>");
         respWriter.println("<link rel=stylesheet href=albumstyle.css>");
         respWriter.println("<script src=album.js></script>");
         respWriter.println("</head>");
@@ -43,14 +41,9 @@ public class AlbumPage {
         for (String file : files) {
             Map<String, String> metasMap = store.getMetas(album + "/" + file);
             if (file.equals("01.flac")) {
-                title.append("<div class=artist>").append(metasMap.get("ARTIST")).append("</div>\n")
-                        .append("<div class=album>").append(metasMap.get("ALBUM"))
-                        .append("</div>\n").append("<div class=rate> ")
-                        .append(metasMap.get("RATE")).append("</div>");
+                title.append("<div class=artist>").append(metasMap.get("ARTIST")).append("</div>\n").append("<div class=album>").append(metasMap.get("ALBUM")).append("</div>\n").append("<div class=rate> ").append(metasMap.get("RATE")).append("</div>");
             }
-            tracks.append("<div onclick=play(\"").append(album.replace(" ", "&")).append("\",\"")
-                    .append(file).append("\")>").append(metasMap.get("TRACKNUMBER"))
-                    .append("<b class=track>").append(metasMap.get("TITLE")).append("</b></div>");
+            tracks.append("<div onclick=play(\"").append(album.replace(" ", "&")).append("\",\"").append(file).append("\")>").append("<b>").append(metasMap.get("TRACKNUMBER")).append("</b>").append("<b class=track>").append(metasMap.get("TITLE")).append("</b></div>");
         }
         respWriter.println("<div class=title>");
         respWriter.println(title);
@@ -63,8 +56,7 @@ public class AlbumPage {
     }
 
     @PostMapping("/album")
-    void albumPicture(@RequestParam("album") String album, HttpServletResponse resp, Storage store)
-            throws IOException, NoSuchFieldException, IllegalAccessException {
+    void albumPicture(@RequestParam("album") String album, HttpServletResponse resp, Storage store) throws IOException, NoSuchFieldException, IllegalAccessException {
         resp.setContentType("image/jpeg");
         resp.setHeader("Cache-Control", "no-cache");
         resp.setHeader("X-Content-Type-Options", "nosniff");

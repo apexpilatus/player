@@ -11,9 +11,7 @@ import java.io.IOException;
 @RestController
 public class Play {
     @GetMapping("/play")
-    void play(@RequestParam("album") String album,
-              @RequestParam(name = "track", required = false, defaultValue = "01.flac") String track,
-              HttpServletResponse resp, Ipc ipc) throws IOException {
+    void play(@RequestParam("album") String album, @RequestParam(name = "track", required = false, defaultValue = "01.flac") String track, HttpServletResponse resp, Ipc ipc) throws IOException {
         ipc.action0Play(album, track);
         resp.setContentType("text/plain");
         resp.getWriter().write("ok");

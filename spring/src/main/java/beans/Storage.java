@@ -14,8 +14,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class Storage {
-    String[] musicDirPaths = {"/home/store/music/qbzcd", "/home/store/music/dzr", "/home/store/music/hack/1",
-            "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
+    String[] musicDirPaths = {"/home/store/music/qbzcd", "/home/store/music/dzr", "/home/store/music/hack/1", "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
 
     public Map<String, List<String>> getAlbums() {
         Map<String, List<String>> albums = new TreeMap<>();
@@ -38,21 +37,19 @@ public class Storage {
             for (Metadata meta : metas) {
                 if (meta.toString().contains("VorbisComment")) {
                     VorbisComment vorbis = (VorbisComment) meta;
-                    metasMap.put("ARTIST",
-                            vorbis.getCommentByName("ARTIST").length == 0 ? "" : vorbis.getCommentByName("ARTIST")[0]);
-                    metasMap.put("ALBUM",
-                            vorbis.getCommentByName("ALBUM").length == 0 ? "" : vorbis.getCommentByName("ALBUM")[0]);
-                    metasMap.put("TRACKNUMBER", vorbis.getCommentByName("TRACKNUMBER").length == 0 ? "-"
-                            : vorbis.getCommentByName("TRACKNUMBER")[0] + ") ");
-                    metasMap.put("TITLE",
-                            vorbis.getCommentByName("TITLE").length == 0 ? "" : vorbis.getCommentByName("TITLE")[0]);
+                    metasMap.put("ARTIST", vorbis.getCommentByName("ARTIST").length == 0 ? "" : vorbis.getCommentByName("ARTIST")[0]);
+                    metasMap.put("ALBUM", vorbis.getCommentByName("ALBUM").length == 0 ? "" : vorbis.getCommentByName("ALBUM")[0]);
+                    String trackNumber = vorbis.getCommentByName("TRACKNUMBER").length == 0 ? "-" : vorbis.getCommentByName("TRACKNUMBER")[0];
+                    if (trackNumber.length() == 1) {
+                        trackNumber = "&nbsp;&nbsp;" + trackNumber;
+                    }
+                    metasMap.put("TRACKNUMBER", trackNumber + ")&nbsp;&nbsp;");
+                    metasMap.put("TITLE", vorbis.getCommentByName("TITLE").length == 0 ? "" : vorbis.getCommentByName("TITLE")[0]);
                 }
                 if (meta.toString().contains("StreamInfo")) {
                     assert meta instanceof StreamInfo;
                     StreamInfo info = (StreamInfo) meta;
-                    metasMap.put("RATE",
-                            info.getBitsPerSample() + "/"
-                                    + new DecimalFormat("#.#").format(info.getSampleRate() / 1000f));
+                    metasMap.put("RATE", info.getBitsPerSample() + "/" + new DecimalFormat("#.#").format(info.getSampleRate() / 1000f));
                 }
             }
         } catch (Exception e) {
