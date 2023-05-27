@@ -43,7 +43,7 @@ public class AlbumPage {
             if (file.equals("01.flac")) {
                 title.append("<div class=artist>").append(metasMap.get("ARTIST")).append("</div>\n").append("<div class=album>").append(metasMap.get("ALBUM")).append("</div>\n").append("<div class=rate> ").append(metasMap.get("RATE")).append("</div>");
             }
-            tracks.append("<div onclick=play(\"").append(album.replace(" ", "&")).append("\",\"").append(file).append("\")>").append("<b>").append(metasMap.get("TRACKNUMBER")).append("</b>").append("<b class=track>").append(metasMap.get("TITLE")).append("</b></div>");
+            tracks.append("<div onclick=play(\"").append(album.replace(" ", "&")).append("\",\"").append(file).append("\")>").append("<small>").append(metasMap.get("TRACKNUMBER")).append("</small>").append("<b class=track>").append(metasMap.get("TITLE")).append("</b></div>");
         }
         respWriter.println("<div class=title>");
         respWriter.println(title);

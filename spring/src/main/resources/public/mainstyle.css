@@ -5,9 +5,9 @@ body {
 button {
     position: fixed;
     color: red;
-    font-size: 150%;
+    font-size: 130%;
     font-weight: bold;
-    background-color: black;
+    background-color: Orange;
     width: 6%;
     text-align: center;
     padding: 0 0;

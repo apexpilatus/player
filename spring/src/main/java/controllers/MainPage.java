@@ -33,7 +33,7 @@ public class MainPage {
         respWriter.println("<input hidden id=volume type=range onchange=setVolume() min=0 max=5 title=volume>");
         respWriter.println("<iframe hidden id=tracks title=meta></iframe>");
         respWriter.println("<img hidden id=trackspicture title=picture>");
-        respWriter.println("<button type=button hidden id=hidetracks onclick=hideTracks()>&#9737</button>");
+        respWriter.println("<button type=button hidden id=hidetracks onclick=hideTracks()>&#9746</button>");
         respWriter.println("<ul id=albums class=scroll>");
         albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println("<li><b onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>" + album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ").replace("___", " <small class=album>") + (album.contains("___") ? "</small>" : "") + "</b></li>")));
         respWriter.println("</ul>");
