@@ -22,7 +22,7 @@ button {
 
 #volume {
     position: fixed;
-    top: 10%;
+    top: 5%;
     left: 10%;
     width: 80%
 }
@@ -53,7 +53,7 @@ button {
 
 #albums {
     position: fixed;
-    top: 20%;
+    top: 10%;
     left: 0;
     height: 70%;
     width: 90%;
