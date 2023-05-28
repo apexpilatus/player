@@ -11,27 +11,35 @@ body {
     line-height: 130%;
 }
 
-.tracks {
-    font-size: 110%;
-    color: white;
-    line-height: 170%;
-    padding: 3% 0;
-}
-
 .artist {
     font-size: 130%;
+    padding: 0 1%;
 }
 
 .album {
     color: slategray;
     font-size: 110%;
+    padding: 0 2%;
 }
 
 .rate {
     color: red;
     font-size: 90%;
+    padding: 0 4%;
 }
 
-.track {
+.tracks {
+    font-size: 110%;
+    line-height: 170%;
+    padding: 3% 0;
+}
+
+.tracknumber {
+    color: white;
+    padding: 0 1%;
+}
+
+.tracktitle {
     color: black;
+    padding: 0 3%;
 }
