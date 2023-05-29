@@ -70,6 +70,7 @@ button {
 .unscroll {
     overflow: hidden;
     filter: blur(10px);
+    pointer-events: none;
 }
 
 .album {
