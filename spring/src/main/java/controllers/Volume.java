@@ -11,14 +11,14 @@ import java.io.IOException;
 
 @RestController
 public class Volume {
-    @GetMapping("/volume")
+    @PostMapping("/volume")
     void setVolume(@RequestParam("level") int targLevel, HttpServletResponse resp, Ipc ipc) throws IOException {
         ipc.action1SetVol(targLevel);
         resp.setContentType("text/plain");
         resp.getWriter().write("ok");
     }
 
-    @PostMapping("/volume")
+    @GetMapping("/volume")
     void getVolume(HttpServletResponse resp, Ipc ipc) throws IOException {
         resp.setContentType("text/plain");
         resp.setCharacterEncoding("utf-8");

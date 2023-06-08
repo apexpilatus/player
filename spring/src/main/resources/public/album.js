@@ -7,7 +7,6 @@ function gettrackspicture(album) {
         element.hidden = false;
         parent.document.getElementById("hidetracks").hidden = false;
         parent.document.getElementById("tracks").hidden = false;
-        parent.document.getElementById("albums").setAttribute("class", "unscroll");
     }
     xhttp.open("POST", parent.window.location.href + "album?album=" + album.replace(/&/g, " "));
     xhttp.send();

@@ -16,6 +16,7 @@ function getTracks(album) {
 function hideTracks() {
     document.getElementById("albums").setAttribute("class", "scroll");
     document.getElementById("tracks").hidden = true;
+    document.getElementById("tracks").src = window.location.href + "volume";
     document.getElementById("trackspicture").hidden = true;
     document.getElementById("hidetracks").hidden = true;
 }
@@ -40,7 +41,7 @@ function getVolume() {
             }, 4000);
         }
     }
-    xhttp.open("POST", window.location.href + "volume");
+    xhttp.open("GET", window.location.href + "volume");
     xhttp.send();
 }
 
@@ -53,6 +54,6 @@ function setVolume() {
             document.getElementById("showvolume").hidden = false;
         }, 4000);
     }
-    xhttp.open("GET", window.location.href + "volume?level=" + document.getElementById("volume").value);
+    xhttp.open("POST", window.location.href + "volume?level=" + document.getElementById("volume").value);
     xhttp.send();
 }
