@@ -16,7 +16,6 @@ function getTracks(album) {
 function hideTracks() {
     document.getElementById("albums").setAttribute("class", "scroll");
     document.getElementById("tracks").hidden = true;
-    document.getElementById("tracks").src = window.location.href + "volume";
     document.getElementById("trackspicture").hidden = true;
     document.getElementById("hidetracks").hidden = true;
 }

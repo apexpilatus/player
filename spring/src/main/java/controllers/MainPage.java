@@ -32,6 +32,7 @@ public class MainPage {
         respWriter.println("<button type=button id=showvolume onclick=getVolume()>&#9738</button>");
         respWriter.println("<input hidden id=volume type=range onchange=setVolume() min=0 max=5 title=volume>");
         respWriter.println("<iframe hidden id=tracks title=meta></iframe>");
+        respWriter.println("<script>document.getElementById(\"tracks\").src=window.location.href+\"volume\"</script>");
         respWriter.println("<img hidden id=trackspicture title=picture>");
         respWriter.println("<button type=button hidden id=hidetracks onclick=hideTracks()>&#9746</button>");
         respWriter.println("<ul id=albums class=scroll>");
