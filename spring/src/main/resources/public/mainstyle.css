@@ -38,6 +38,7 @@ button {
     right: 3%;
     width: 60%;
     height: 60%;
+    border-style: none;
     z-index: 3;
 }
 
