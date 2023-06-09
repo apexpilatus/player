@@ -1,5 +1,5 @@
 body {
-    background-color: slategray;
+    background-color: #cec5b7;
 }
 
 button {
@@ -7,7 +7,7 @@ button {
     color: red;
     font-size: 130%;
     font-weight: bold;
-    background-color: Orange;
+    background-color: #cec5b7;
     width: 6%;
     text-align: center;
     padding: 0 0;
