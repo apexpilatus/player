@@ -49,15 +49,15 @@ public class AlbumPage {
                 }
                 title.append("</div>");
             }
-            tracks.append("<div onclick=play(\"").append(album.replace(" ", "&")).append("\",\"").append(file).append("\")>").append("<small class=tracknumber>").append(metasMap.get("TRACKNUMBER")).append("</small>").append("<b class=tracktitle>").append(metasMap.get("TITLE")).append("</b></div>");
+            tracks.append("<tr class=trackrow onclick=play(\"").append(album.replace(" ", "&")).append("\",\"").append(file).append("\")>").append("<td class=tracknumber>").append(metasMap.get("TRACKNUMBER")).append("</td>").append("<td>").append(metasMap.get("TITLE")).append("</td>").append("</tr>");
         }
 
         respWriter.println("<div class=title>");
         respWriter.println(title);
         respWriter.println("</div>");
-        respWriter.println("<div class=tracks>");
+        respWriter.println("<table class=tracks>");
         respWriter.println(tracks);
-        respWriter.println("</div>");
+        respWriter.println("</table>");
         respWriter.println("</body>");
         respWriter.println("</html>");
     }

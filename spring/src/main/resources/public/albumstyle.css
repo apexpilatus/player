@@ -28,22 +28,18 @@ body {
     padding: 0 4%;
 }
 
-.battery {
-    font-size: 90%;
-    padding: 0 4%;
-}
-
 .tracks {
     font-size: 110%;
-    line-height: 170%;
-    padding: 3% 0;
+    font-weight: bold;
+    width: 100%;
+}
+
+.trackrow {
+    vertical-align: text-top;
 }
 
 .tracknumber {
     color: white;
-}
-
-.tracktitle {
-    color: black;
-    padding: 0 3%;
+    width: 10%;
+    padding: 1% 0;
 }
