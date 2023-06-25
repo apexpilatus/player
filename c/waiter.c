@@ -31,7 +31,7 @@ static inline int update_mixer()
 	int mixer_card_num = snd_card_get_index(card_name);
 	if (mixer_card_num >= 0)
 	{
-		sprintf(data_addr, "hw:%d\0", mixer_card_num);
+		sprintf(data_addr, "hw:%d%c", mixer_card_num, '\0');
 		pid_t mixer_pid = fork();
 		if (!mixer_pid)
 		{
@@ -73,7 +73,7 @@ static void action0_play(int sock)
 		int card_num = snd_card_get_index(card_name);
 		if (card_num >= 0)
 		{
-			sprintf(data_addr + album_size + track_size, "hw:%d,0\0", card_num);
+			sprintf(data_addr + album_size + track_size, "hw:%d,0%c", card_num, '\0');
 			player_pid = fork();
 			if (!player_pid)
 			{
@@ -107,7 +107,7 @@ static void action2_get_vol(int sock)
 		*curvol_addr = 0;
 		*maxvol_addr = 0;
 	}
-	sprintf(data_addr, "%ld;%ld\n\0", *curvol_addr, *maxvol_addr);
+	sprintf(data_addr, "%ld;%ld\n%c", *curvol_addr, *maxvol_addr, '\0');
 	write(sock, data_addr, strlen(data_addr));
 }
 
@@ -123,11 +123,26 @@ static void action3_stop(int sock)
 	exit(0);
 }
 
+static void action4_get_bat(int sock)
+{
+	*data_addr = 0;
+	strcpy(data_addr + 1, "0\n\0");
+	FILE *fl = fopen("/sys/class/power_supply/BAT0/capacity", "r");
+	if (fl)
+	{
+		*data_addr = fread(data_addr + 1, 1, 4, fl);
+		*(data_addr + 1 + *data_addr) = '\0';
+		fclose(fl);
+	}
+	write(sock, data_addr + 1, strlen(data_addr + 1));
+}
+
 static void (*action[])(int sock) = {
 	action0_play,
 	action1_set_vol,
 	action2_get_vol,
-	action3_stop};
+	action3_stop,
+	action4_get_bat};
 
 int main(void)
 {
