@@ -45,7 +45,7 @@ public class AlbumPage {
             if (file.equals("01.flac")) {
                 title.append("<div class=artist>").append(metasMap.get("ARTIST")).append("</div>\n").append("<div class=album>").append(metasMap.get("ALBUM")).append("</div>\n").append("<div class=rate>").append(metasMap.get("RATE"));
                 if (!battery.strip().equals("0")) {
-                    title.append("&nbsp;&nbsp;&#9889&nbsp;&nbsp;").append(battery);
+                    title.append("&nbsp;&nbsp;&#9889;").append(battery);
                 }
                 title.append("</div>");
             }
