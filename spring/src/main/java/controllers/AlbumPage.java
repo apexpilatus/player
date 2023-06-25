@@ -49,7 +49,7 @@ public class AlbumPage {
                 }
                 title.append("</div>");
             }
-            tracks.append("<tr class=trackrow onclick=play(\"").append(album.replace(" ", "&")).append("\",\"").append(file).append("\")>").append("<td class=tracknumber>").append(metasMap.get("TRACKNUMBER")).append("</td>").append("<td>").append(metasMap.get("TITLE")).append("</td>").append("</tr>");
+            tracks.append("<tr class=trackrow onclick=play(\"").append(album.replace(" ", "&")).append("\",\"").append(file).append("\")>").append("<td class=tracknumber>").append(metasMap.get("TRACKNUMBER")).append("</td>").append("<td class=tracktitle>").append(metasMap.get("TITLE")).append("</td>").append("</tr>");
         }
 
         respWriter.println("<div class=title>");
