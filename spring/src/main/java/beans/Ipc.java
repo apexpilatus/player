@@ -61,4 +61,19 @@ public class Ipc {
         }
         return volData;
     }
+    public String action4GetBattery() {
+        String battery = "0";
+        try (Socket sock = new Socket()) {
+            sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
+            sock.setSoTimeout(timeOut);
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            char op = '4';
+            writer.write(op);
+            writer.flush();
+            battery = reader.readLine();
+        } catch (IOException ignored) {
+        }
+        return battery;
+    }
 }

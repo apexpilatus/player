@@ -123,7 +123,7 @@ static void action3_stop(int sock)
 	exit(0);
 }
 
-static void action4_get_bat(int sock)
+static void action4_get_battery(int sock)
 {
 	*data_addr = 0;
 	strcpy(data_addr + 1, "0\n\0");
@@ -142,7 +142,7 @@ static void (*action[])(int sock) = {
 	action1_set_vol,
 	action2_get_vol,
 	action3_stop,
-	action4_get_bat};
+	action4_get_battery};
 
 int main(void)
 {

@@ -28,6 +28,11 @@ body {
     padding: 0 4%;
 }
 
+.battery {
+    font-size: 90%;
+    padding: 0 4%;
+}
+
 .tracks {
     font-size: 110%;
     line-height: 170%;

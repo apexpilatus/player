@@ -1,5 +1,6 @@
 package controllers;
 
+import beans.Ipc;
 import beans.Storage;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,7 @@ import java.util.Objects;
 @RestController
 public class AlbumPage {
     @GetMapping("/album")
-    void albumPage(@RequestParam("album") String album, HttpServletResponse resp, Storage store) throws IOException {
+    void albumPage(@RequestParam("album") String album, HttpServletResponse resp, Storage store, Ipc ipc) throws IOException {
         resp.setContentType("text/html");
         resp.setCharacterEncoding("utf-8");
         resp.setHeader("Cache-Control", "no-cache");
@@ -41,9 +42,13 @@ public class AlbumPage {
         for (String file : files) {
             Map<String, String> metasMap = store.getMetas(album + "/" + file);
             if (file.equals("01.flac")) {
-                title.append("<div class=artist>").append(metasMap.get("ARTIST")).append("</div>\n").append("<div class=album>").append(metasMap.get("ALBUM")).append("</div>\n").append("<div class=rate> ").append(metasMap.get("RATE")).append("</div>");
+                title.append("<div class=artist>").append(metasMap.get("ARTIST")).append("</div>\n").append("<div class=album>").append(metasMap.get("ALBUM")).append("</div>\n").append("<div class=rate>").append(metasMap.get("RATE")).append("</div>");
             }
             tracks.append("<div onclick=play(\"").append(album.replace(" ", "&")).append("\",\"").append(file).append("\")>").append("<small class=tracknumber>").append(metasMap.get("TRACKNUMBER")).append("</small>").append("<b class=tracktitle>").append(metasMap.get("TITLE")).append("</b></div>");
+        }
+        String battery = ipc.action4GetBattery();
+        if (!battery.strip().equals("0")){
+            title.append("<div class=battery>").append("&#9889&nbsp;").append(battery).append("</div>");
         }
         respWriter.println("<div class=title>");
         respWriter.println(title);
