@@ -61,6 +61,7 @@ public class Ipc {
         }
         return volData;
     }
+
     public String action4GetBattery() {
         String battery = "0";
         try (Socket sock = new Socket()) {
