@@ -20,3 +20,14 @@ function play(album, track) {
     xhttp.open("GET", parent.window.location.href + "play?album=" + album.replace(/&/g, " ") + "&track=" + track);
     xhttp.send();
 }
+
+function getbattery() {
+    const xhttp = new XMLHttpRequest();
+    xhttp.onload = function () {
+        document.getElementById("battery").innerHTML = "&#9889;" + this.responseText;
+    }
+    window.setInterval(function () {
+        xhttp.open("GET", parent.window.location.href + "battery");
+        xhttp.send();
+    }, 10000)
+}

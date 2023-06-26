@@ -47,3 +47,9 @@ body {
 .tracktitle {
     padding: 1% 1%;
 }
+
+#battery {
+    text-align: right;
+    font-size: 90%;
+    padding: 0 4%;
+}

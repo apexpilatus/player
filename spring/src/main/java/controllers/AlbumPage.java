@@ -20,7 +20,6 @@ import java.util.Objects;
 public class AlbumPage {
     @GetMapping("/album")
     void albumPage(@RequestParam("album") String album, HttpServletResponse resp, Storage store, Ipc ipc) throws IOException {
-        String battery = ipc.action4GetBattery();
         resp.setContentType("text/html");
         resp.setCharacterEncoding("utf-8");
         resp.setHeader("Cache-Control", "no-cache");
@@ -43,15 +42,15 @@ public class AlbumPage {
         for (String file : files) {
             Map<String, String> metasMap = store.getMetas(album + "/" + file);
             if (file.equals("01.flac")) {
-                title.append("<div class=artist>").append(metasMap.get("ARTIST")).append("</div>\n").append("<div class=album>").append(metasMap.get("ALBUM")).append("</div>\n").append("<div class=rate>").append(metasMap.get("RATE"));
-                if (!battery.strip().equals("0")) {
-                    title.append("&nbsp;&nbsp;&#9889;").append(battery);
-                }
-                title.append("</div>");
+                title.append("<div class=artist>").append(metasMap.get("ARTIST")).append("</div>\n").append("<div class=album>").append(metasMap.get("ALBUM")).append("</div>\n").append("<div class=rate>").append(metasMap.get("RATE")).append("</div>");
             }
             tracks.append("<tr class=trackrow onclick=play(\"").append(album.replace(" ", "&")).append("\",\"").append(file).append("\")>").append("<td class=tracknumber>").append(metasMap.get("TRACKNUMBER")).append("</td>").append("<td class=tracktitle>").append(metasMap.get("TITLE")).append("</td>").append("</tr>");
         }
-
+        String battery = ipc.action4GetBattery();
+        if (!battery.strip().equals("0")) {
+            title.append("<div id=battery>&#9889;").append(battery).append("</div>");
+            respWriter.println("<script>getbattery()</script>");
+        }
         respWriter.println("<div class=title>");
         respWriter.println(title);
         respWriter.println("</div>");
