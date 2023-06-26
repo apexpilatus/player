@@ -4,6 +4,8 @@ body {
 
 button {
     position: fixed;
+    top: 5%;
+    left: 3%;
     color: red;
     font-size: 130%;
     font-weight: bold;
@@ -15,21 +17,11 @@ button {
     z-index: 3;
 }
 
-#showvolume {
-    top: 5%;
-    left: 3%;
-}
-
 #volume {
     position: fixed;
     top: 5%;
     left: 10%;
     width: 80%
-}
-
-#hidetracks {
-    top: 5%;
-    right: 3%;
 }
 
 #tracks {
