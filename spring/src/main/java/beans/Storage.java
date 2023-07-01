@@ -43,7 +43,7 @@ public class Storage {
                     if (trackNumber.length() == 1) {
                         trackNumber = "&nbsp;&nbsp;" + trackNumber;
                     }
-                    metasMap.put("TRACKNUMBER", trackNumber + ".");
+                    metasMap.put("TRACKNUMBER", trackNumber + ")");
                     metasMap.put("TITLE", vorbis.getCommentByName("TITLE").length == 0 ? "" : vorbis.getCommentByName("TITLE")[0]);
                 }
                 if (meta.toString().contains("StreamInfo")) {
