@@ -36,7 +36,7 @@ public class MainPage {
         respWriter.println("<img hidden id=trackspicture title=picture>");
         respWriter.println("<button type=button hidden id=hidetracks onclick=hideTracks()>&#9746</button>");
         respWriter.println("<dl id=albums class=scroll>");
-        albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println("<dt onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>" + album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ").replace("___", "</dt><dd class=album><small>") + (album.contains("___") ? "</dd></small>" : "</dt>"))));
+        albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println("<dt onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")><small>&#9737;&nbsp;&nbsp;</small>" + album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ").replace("___", "</dt><dd class=album><small>") + (album.contains("___") ? "</dd></small>" : "</dt>"))));
         respWriter.println("</dl>");
         respWriter.println("</body>");
         respWriter.println("</html>");
