@@ -49,8 +49,8 @@ button {
     height: 80%;
     width: 90%;
     font-size: 140%;
+    font-weight: bold;
     line-height: 160%;
-    list-style-type: circle;
     z-index: 1;
 }
 

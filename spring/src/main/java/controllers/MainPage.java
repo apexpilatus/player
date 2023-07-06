@@ -35,9 +35,9 @@ public class MainPage {
         respWriter.println("<script>document.getElementById(\"tracks\").src=\"data:text/plain,ok\"</script>");
         respWriter.println("<img hidden id=trackspicture title=picture>");
         respWriter.println("<button type=button hidden id=hidetracks onclick=hideTracks()>&#9746</button>");
-        respWriter.println("<ul id=albums class=scroll>");
-        albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println("<li><b onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>" + album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ").replace("___", " <small class=album>") + (album.contains("___") ? "</small>" : "") + "</b></li>")));
-        respWriter.println("</ul>");
+        respWriter.println("<dl id=albums class=scroll>");
+        albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println("<dt onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>" + album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ").replace("___", "</dt><dd class=album><small>") + (album.contains("___") ? "</dd></small>" : "</dt>"))));
+        respWriter.println("</dl>");
         respWriter.println("</body>");
         respWriter.println("</html>");
     }
