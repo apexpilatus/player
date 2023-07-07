@@ -63,6 +63,10 @@ button {
     pointer-events: none;
 }
 
-.album {
+small {
     color: white;
+}
+
+b {
+    color: gray;
 }
