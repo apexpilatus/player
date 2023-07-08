@@ -30,7 +30,7 @@ public class MainPage {
         respWriter.println("</head>");
         respWriter.println("<body>");
         respWriter.println("<button type=button id=showvolume onclick=getVolume()>&#9738</button>");
-        respWriter.println("<input hidden id=volume type=range onchange=setVolume() min=0 max=5 title=volume>");
+        respWriter.println("<input hidden id=volume type=range oninput=setVolume() min=0 max=5 title=volume>");
         respWriter.println("<iframe hidden id=tracks title=meta></iframe>");
         respWriter.println("<script>document.getElementById(\"tracks\").src=\"data:text/plain,ok\"</script>");
         respWriter.println("<img hidden id=trackspicture title=picture>");
