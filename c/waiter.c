@@ -120,21 +120,12 @@ static void action3_stop(int sock)
 		player_pid = 0;
 	}
 	write(sock, "ok\n", 3);
-	exit(0);
 }
 
-static void action4_get_battery(int sock)
+static void action4_exit(int sock)
 {
-	*data_addr = 0;
-	strcpy(data_addr + 1, "0\n\0");
-	FILE *fl = fopen("/sys/class/power_supply/BAT0/capacity", "r");
-	if (fl)
-	{
-		*data_addr = fread(data_addr + 1, 1, 4, fl);
-		*(data_addr + 1 + *data_addr) = '\0';
-		fclose(fl);
-	}
-	write(sock, data_addr + 1, strlen(data_addr + 1));
+	action3_stop(sock);
+	exit(0);
 }
 
 static void (*action[])(int sock) = {
@@ -142,7 +133,7 @@ static void (*action[])(int sock) = {
 	action1_set_vol,
 	action2_get_vol,
 	action3_stop,
-	action4_get_battery};
+	action4_exit};
 
 int main(void)
 {
