@@ -27,8 +27,8 @@ button {
 #tracks {
     position: fixed;
     top: 35%;
-    right: 3%;
-    width: 95%;
+    left: 3%;
+    width: 90%;
     height: 60%;
     border-style: none;
     z-index: 3;
