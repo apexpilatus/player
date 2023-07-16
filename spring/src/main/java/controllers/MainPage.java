@@ -34,7 +34,7 @@ public class MainPage {
         respWriter.println("<iframe hidden id=tracks title=meta></iframe>");
         respWriter.println("<script>document.getElementById(\"tracks\").src=\"data:text/plain,ok\"</script>");
         respWriter.println("<img hidden id=trackspicture title=picture>");
-        respWriter.println("<button type=button hidden id=hidetracks onclick=hideTracks()>&#9746</button>");
+        respWriter.println("<button type=button hidden id=hidetracks onclick=hideTracks()>&#9769</button>");
         respWriter.println("<dl id=albums class=scroll>");
         albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println("<dt>" + album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ").replace("___", "</dt><dd><small>") + (album.contains("___") ? "</small><b onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>&nbsp;&#9738;</dd></b>" : "<b onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>&nbsp;&#9738;</b></dt>"))));
         respWriter.println("</dl>");
