@@ -1,8 +1,12 @@
+body::-webkit-scrollbar {
+    display: none;
+}
+
 .title {
     position: sticky;
     top: 0;
     width: 100%;
-    background-color: lightgray;
+    background-color: #cec5b7;
     font-weight: bold;
     line-height: 130%;
 }
