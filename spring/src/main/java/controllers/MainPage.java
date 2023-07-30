@@ -49,9 +49,9 @@ public class MainPage {
             if (albumUI.split("___").length == 1) {
                 record[1] = "";
             } else {
-                record[1] = albumUI.split("___")[1] + "&nbsp;";
+                record[1] = "&nbsp;&nbsp;" + albumUI.split("___")[1];
             }
-            respWriter.println("<dd><small>" + record[1] + "</small>" + onClick + "</dd>");
+            respWriter.println("<dd>" + onClick + "<small>" + record[1] + "</small></dd>");
         }));
         respWriter.println("</dl>");
         respWriter.println("</body>");
