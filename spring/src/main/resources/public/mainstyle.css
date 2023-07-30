@@ -59,7 +59,7 @@ button {
 
 .unscroll {
     overflow: hidden;
-    filter: blur(10px);
+    filter: blur(20px);
     pointer-events: none;
 }
 
