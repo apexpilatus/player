@@ -30,7 +30,7 @@ button {
     left: 3%;
     width: 90%;
     height: 60%;
-    border-style: none;
+    border-style: none none none solid;
     z-index: 3;
 }
 
@@ -46,7 +46,7 @@ button {
     position: fixed;
     top: 0;
     left: 0;
-    height: 95%;
+    height: 90%;
     width: 100%;
     font-size: 140%;
     line-height: 130%;
