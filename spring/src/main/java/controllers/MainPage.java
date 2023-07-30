@@ -36,7 +36,23 @@ public class MainPage {
         respWriter.println("<img hidden id=trackspicture title=picture>");
         respWriter.println("<button type=button hidden id=hidetracks onclick=hideTracks()>&#9769</button>");
         respWriter.println("<dl id=albums class=scroll>");
-        albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> respWriter.println("<dt>" + album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ").replace("___", "</dt><dd><small>") + (album.contains("___") ? "</small><b onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>&nbsp;&#9738;</dd></b>" : "<b onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>&nbsp;&#9738;</b></dt>"))));
+        final String[] record = new String[2];
+        record[0] = "";
+        record[1] = "";
+        albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> {
+            String albumUI = album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ");
+            String onClick = "<b onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>&#9738;</b>";
+            if (!record[0].equals(albumUI.split("___")[0])) {
+                record[0] = albumUI.split("___")[0];
+                respWriter.println("<dt>" + record[0] + "</dt>");
+            }
+            if (albumUI.split("___").length == 1) {
+                record[1] = "";
+            } else {
+                record[1] = albumUI.split("___")[1] + "&nbsp;";
+            }
+            respWriter.println("<dd><small>" + record[1] + "</small>" + onClick + "</dd>");
+        }));
         respWriter.println("</dl>");
         respWriter.println("</body>");
         respWriter.println("</html>");
