@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,22 +37,22 @@ public class MainPage {
         respWriter.println("<img hidden id=trackspicture title=picture>");
         respWriter.println("<button type=button hidden id=hidetracks onclick=hideTracks()>&#9769</button>");
         respWriter.println("<dl id=albums class=scroll>");
-        final String[] record = new String[2];
-        record[0] = "";
-        record[1] = "";
+        Map<String, String> record = new HashMap<>();
+        record.put("artist", "");
+        record.put("album", "");
         albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> {
             String albumUI = album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ");
             String onClick = "<b onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>&#9738;</b>";
-            if (!record[0].equals(albumUI.split("___")[0])) {
-                record[0] = albumUI.split("___")[0];
-                respWriter.println("<dt>" + record[0] + "</dt>");
+            if (!record.get("artist").equals(albumUI.split("___")[0])) {
+                record.put("artist", albumUI.split("___")[0]);
+                respWriter.println("<dt>" + record.get("artist") + "</dt>");
             }
             if (albumUI.split("___").length == 1) {
-                record[1] = "";
+                record.put("album", "");
             } else {
-                record[1] = "&nbsp;&nbsp;" + albumUI.split("___")[1];
+                record.put("album", "&nbsp;&nbsp;" + albumUI.split("___")[1]);
             }
-            respWriter.println("<dd>" + onClick + "<small>" + record[1] + "</small></dd>");
+            respWriter.println("<dd>" + onClick + "<small>" + record.get("album") + "</small></dd>");
         }));
         respWriter.println("</dl>");
         respWriter.println("</body>");
