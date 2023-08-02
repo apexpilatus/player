@@ -47,7 +47,7 @@ static inline int update_mixer()
 	return 1;
 }
 
-static void action0_play(int sock)
+static void player0_play(int sock)
 {
 	write(sock, "ok\n", 3);
 	if (update_mixer())
@@ -83,7 +83,7 @@ static void action0_play(int sock)
 	}
 }
 
-static void action1_set_vol(int sock)
+static void player1_set_vol(int sock)
 {
 	write(sock, "ok\n", 3);
 	ssize_t nbytes = read(sock, data_addr, data_size);
@@ -100,7 +100,7 @@ static void action1_set_vol(int sock)
 	write(sock, "ok\n", 3);
 }
 
-static void action2_get_vol(int sock)
+static void player2_get_vol(int sock)
 {
 	if (update_mixer())
 	{
@@ -111,7 +111,7 @@ static void action2_get_vol(int sock)
 	write(sock, data_addr, strlen(data_addr));
 }
 
-static void action3_stop(int sock)
+static void player3_stop(int sock)
 {
 	if (player_pid > 0)
 	{
@@ -122,18 +122,18 @@ static void action3_stop(int sock)
 	write(sock, "ok\n", 3);
 }
 
-static void action4_exit(int sock)
+static void player4_exit(int sock)
 {
-	action3_stop(sock);
+	player3_stop(sock);
 	exit(0);
 }
 
 static void (*action[])(int sock) = {
-	action0_play,
-	action1_set_vol,
-	action2_get_vol,
-	action3_stop,
-	action4_exit};
+	player0_play,
+	player1_set_vol,
+	player2_get_vol,
+	player3_stop,
+	player4_exit};
 
 int main(void)
 {
