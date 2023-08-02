@@ -47,7 +47,7 @@ int get_shared_vars(void)
 	{
 		return 1;
 	}
-	album = shd_addr + vol_size;
+	album = (char *)shd_addr + vol_size;
 	track = album + strlen(album) + 1;
 	card_name = track + strlen(track) + 1;
 	return 0;

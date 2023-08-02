@@ -62,8 +62,8 @@ static void player0_play(int sock)
 	write(sock, "ok\n", 3);
 	if (album_size > 0 && track_size > 0)
 	{
-		data_addr[album_size++] = 0;
-		data_addr[album_size + track_size++] = 0;
+		data_addr[album_size++] = '\0';
+		data_addr[album_size + track_size++] = '\0';
 		if (player_pid > 0)
 		{
 			kill(player_pid, SIGTERM);
