@@ -9,6 +9,10 @@
 
 char *dirs[] = {
     "/home/store/music/dzr",
+    "/home/store/music/qbzcd",
+    "/home/store/music/hack1",
+    "/home/store/music/hack2",
+    "/home/store/music/hack3",
     NULL};
 
 static void meta0_get_albums(int sock)
@@ -20,13 +24,19 @@ static void meta0_get_albums(int sock)
         dp = opendir(dirs[i]);
         if (dp != NULL)
         {
+            char path[strlen(dirs[i]) + 1];
+            sprintf(path, "%s\n", dirs[i]);
+            write(sock, path, strlen(path));
             while ((ep = readdir(dp)))
             {
                 if (ep->d_type == DT_DIR && strcmp(ep->d_name, ".") && strcmp(ep->d_name, ".."))
                 {
-                    printf("%s\n", ep->d_name);
+                    char album[strlen(ep->d_name) + 1];
+                    sprintf(album, "%s\n", ep->d_name);
+                    write(sock, album, strlen(album));
                 }
             }
+            write(sock, "&end_folder\n", 12);
             (void)closedir(dp);
         }
     }

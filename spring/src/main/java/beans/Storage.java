@@ -6,28 +6,14 @@ import org.jflac.metadata.Picture;
 import org.jflac.metadata.StreamInfo;
 import org.jflac.metadata.VorbisComment;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Storage {
-    String[] musicDirPaths = {"/home/store/music/qbzcd", "/home/store/music/dzr", "/home/store/music/hack/1", "/home/store/music/hack/2", "/home/store/music/hack/3", "/home/store/music/hack/4"};
-
-    public Map<String, List<String>> getAlbums() {
-        Map<String, List<String>> albums = new TreeMap<>();
-        for (String musicDirPath : musicDirPaths) {
-            File musicDir = new File(musicDirPath);
-            if (musicDir.exists()) {
-                for (String album : Objects.requireNonNull(musicDir.list())) {
-                    albums.computeIfAbsent(album, (k) -> new ArrayList<>()).add(musicDirPath);
-                }
-            }
-        }
-        return albums;
-    }
 
     public Map<String, String> getMetas(String file) throws IOException {
         Map<String, String> metasMap = new HashMap<>();
