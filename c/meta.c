@@ -9,7 +9,7 @@
 
 char *dirs[] = {
     "/home/store/music/dzr",
-    "/home/store/music/qbzcd",
+    "/home/store/music/qbz",
     "/home/store/music/hack1",
     "/home/store/music/hack2",
     "/home/store/music/hack3",
