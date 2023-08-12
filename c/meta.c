@@ -59,9 +59,31 @@ static void meta1_get_picture(int sock)
     FLAC__metadata_object_delete(picture);
 }
 
+static void meta2_get_tags(int sock)
+{
+    ssize_t read_size;
+    read_size = read(sock, str, sizeof(str));
+    str[read_size] = '\0';
+    FLAC__StreamMetadata *tags = FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT);
+    FLAC__metadata_get_tags(str, &tags);
+    for (int i = 0; i < tags->data.vorbis_comment.num_comments; i++)
+    {
+        write(sock, tags->data.vorbis_comment.comments[i].entry, tags->data.vorbis_comment.comments[i].length);
+        write(sock, "\n", 1);
+    }
+    write(sock, "&end_tags\n", 10);
+    FLAC__metadata_object_delete(tags);
+    FLAC__StreamMetadata *rate = FLAC__metadata_object_new(FLAC__METADATA_TYPE_STREAMINFO);
+    FLAC__metadata_get_streaminfo(str, rate);
+    sprintf(str, "%u/%g%c", rate->data.stream_info.bits_per_sample, rate->data.stream_info.sample_rate / 1000.0, '\n');
+    write(sock, str, strlen(str));
+    FLAC__metadata_object_delete(rate);
+}
+
 static void (*action[])(int sock) = {
     meta0_get_albums,
-    meta1_get_picture};
+    meta1_get_picture,
+    meta2_get_tags};
 
 int main(void)
 {

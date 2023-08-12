@@ -1,7 +1,6 @@
 package controllers;
 
 import beans.MetaIpc;
-import beans.Storage;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +18,7 @@ import java.util.Objects;
 @RestController
 public class AlbumPage {
     @GetMapping("/album")
-    void albumPage(@RequestParam("album") String album, HttpServletResponse resp, Storage store) throws IOException {
+    void albumPage(@RequestParam("album") String album, HttpServletResponse resp, MetaIpc metaIpc) throws IOException {
         resp.setContentType("text/html");
         resp.setCharacterEncoding("utf-8");
         resp.setHeader("Cache-Control", "no-cache");
@@ -40,7 +39,7 @@ public class AlbumPage {
         StringBuilder title = new StringBuilder();
         StringBuilder tracks = new StringBuilder();
         for (String file : files) {
-            Map<String, String> metasMap = store.getMetas(album + "/" + file);
+            Map<String, String> metasMap = metaIpc.meta2GetTags(album + "/" + file);
             if (file.equals("01.flac")) {
                 title.append("<div class=artist>").append(metasMap.get("ARTIST")).append("</div>\n").append("<div class=album>").append(metasMap.get("ALBUM")).append("</div>\n").append("<div class=rate>").append(metasMap.get("RATE")).append("</div>");
             }
@@ -57,10 +56,10 @@ public class AlbumPage {
     }
 
     @PostMapping("/album")
-    void albumPicture(@RequestParam("album") String album, HttpServletResponse resp, MetaIpc metaIpc) throws IOException, NoSuchFieldException, IllegalAccessException {
+    void albumPicture(@RequestParam("album") String album, HttpServletResponse resp, MetaIpc metaIpc) throws IOException {
         resp.setContentType("image/jpeg");
         resp.setHeader("Cache-Control", "no-cache");
         resp.setHeader("X-Content-Type-Options", "nosniff");
-        resp.getOutputStream().write(Base64.getEncoder().encode(metaIpc.meta1GetPicture(album)));
+        resp.getOutputStream().write(Base64.getEncoder().encode(metaIpc.meta1GetPicture(album + "/01.flac")));
     }
 }
