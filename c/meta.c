@@ -24,16 +24,14 @@ static void meta0_get_albums(int sock)
         dp = opendir(dirs[i]);
         if (dp != NULL)
         {
-            char path[strlen(dirs[i]) + 2];
-            sprintf(path, "%s\n%c", dirs[i], '\0');
-            write(sock, path, strlen(path));
+            write(sock, dirs[i], strlen(dirs[i]));
+            write(sock, "\n", 1);
             while ((ep = readdir(dp)))
             {
                 if (ep->d_type == DT_DIR && strcmp(ep->d_name, ".") && strcmp(ep->d_name, ".."))
                 {
-                    char album[strlen(ep->d_name) + 2];
-                    sprintf(album, "%s\n%c", ep->d_name, '\0');
-                    write(sock, album, strlen(album));
+                    write(sock, ep->d_name, strlen(ep->d_name));
+                    write(sock, "\n", 1);
                 }
             }
             write(sock, "&end_folder\n", 12);

@@ -1,6 +1,6 @@
 package controllers;
 
-import beans.Ipc;
+import beans.PlayerIpc;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,18 +12,18 @@ import java.io.IOException;
 @RestController
 public class Volume {
     @PostMapping("/volume")
-    void setVolume(@RequestParam("level") int targLevel, HttpServletResponse resp, Ipc ipc) throws IOException {
-        ipc.player1SetVol(targLevel);
+    void setVolume(@RequestParam("level") int targLevel, HttpServletResponse resp, PlayerIpc playerIpc) throws IOException {
+        playerIpc.player1SetVol(targLevel);
         resp.setContentType("text/plain");
         resp.getWriter().write("ok");
     }
 
     @GetMapping("/volume")
-    void getVolume(HttpServletResponse resp, Ipc ipc) throws IOException {
+    void getVolume(HttpServletResponse resp, PlayerIpc playerIpc) throws IOException {
         resp.setContentType("text/plain");
         resp.setCharacterEncoding("utf-8");
         resp.setHeader("Cache-Control", "no-cache");
         resp.setHeader("X-Content-Type-Options", "nosniff");
-        resp.getWriter().write(ipc.player2GetVol());
+        resp.getWriter().write(playerIpc.player2GetVol());
     }
 }

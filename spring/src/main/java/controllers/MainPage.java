@@ -1,6 +1,6 @@
 package controllers;
 
-import beans.Ipc;
+import beans.MetaIpc;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,8 +14,8 @@ import java.util.Map;
 @RestController
 public class MainPage {
     @GetMapping("/")
-    void mainPage(HttpServletResponse resp, Ipc store) throws IOException {
-        Map<String, List<String>> albums = store.meta0GetVol();
+    void mainPage(HttpServletResponse resp, MetaIpc metaIpc) throws IOException {
+        Map<String, List<String>> albums = metaIpc.meta0GetAlbums();
         resp.setContentType("text/html");
         resp.setCharacterEncoding("utf-8");
         resp.setHeader("Cache-Control", "no-cache");

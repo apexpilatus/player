@@ -31,7 +31,7 @@ static inline int update_mixer()
 	int mixer_card_num = snd_card_get_index(card_name);
 	if (mixer_card_num >= 0)
 	{
-		sprintf(data_addr, "hw:%d%c", mixer_card_num, '\0');
+		sprintf(data_addr, "hw:%d", mixer_card_num);
 		pid_t mixer_pid = fork();
 		if (!mixer_pid)
 		{
@@ -73,7 +73,7 @@ static void player0_play(int sock)
 		int card_num = snd_card_get_index(card_name);
 		if (card_num >= 0)
 		{
-			sprintf(data_addr + album_size + track_size, "hw:%d,0%c", card_num, '\0');
+			sprintf(data_addr + album_size + track_size, "hw:%d,0", card_num);
 			player_pid = fork();
 			if (!player_pid)
 			{
@@ -107,7 +107,7 @@ static void player2_get_vol(int sock)
 		*curvol_addr = 0;
 		*maxvol_addr = 0;
 	}
-	sprintf(data_addr, "%ld;%ld\n%c", *curvol_addr, *maxvol_addr, '\0');
+	sprintf(data_addr, "%ld;%ld%c", *curvol_addr, *maxvol_addr, '\n');
 	write(sock, data_addr, strlen(data_addr));
 }
 
