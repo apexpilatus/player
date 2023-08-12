@@ -18,7 +18,6 @@ public class PlayerIpc {
             char op = '0';
             sockWriter.write(op);
             sockWriter.flush();
-            sockReader.readLine();
             sockWriter.write(albumToPlay);
             sockWriter.flush();
             sockReader.readLine();
@@ -38,7 +37,6 @@ public class PlayerIpc {
             char op = '1';
             sockWriter.write(op);
             sockWriter.flush();
-            sockReader.readLine();
             sockWriter.write(String.valueOf(vol));
             sockWriter.flush();
             sockReader.readLine();
@@ -51,12 +49,12 @@ public class PlayerIpc {
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
             sock.setSoTimeout(timeOut);
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-            BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+            BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
             char op = '2';
-            writer.write(op);
-            writer.flush();
-            volData = reader.readLine();
+            sockWriter.write(op);
+            sockWriter.flush();
+            volData = sockReader.readLine();
         } catch (IOException ignored) {
         }
         return volData;

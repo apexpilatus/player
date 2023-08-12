@@ -32,4 +32,30 @@ public class MetaIpc {
         }
         return albums;
     }
+
+    public byte[] meta1GetPicture(String album) {
+        byte[] pictureBytes = {1, 2, 3};
+        try (Socket sock = new Socket()) {
+            sock.connect(new InetSocketAddress(metaHost, metaPort), timeOut);
+            sock.setSoTimeout(timeOut);
+            BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+            BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            char op = '1';
+            sockWriter.write(op);
+            sockWriter.flush();
+            sockWriter.write(album + "/01.flac");
+            sockWriter.flush();
+            int pictureSize = Integer.parseInt(sockReader.readLine());
+            pictureBytes = new byte[pictureSize];
+            sockWriter.write("ok");
+            sockWriter.flush();
+            for (int readSize, off = 0; pictureSize > 0; pictureSize -= readSize, off += readSize) {
+                readSize = sock.getInputStream().read(pictureBytes, off, pictureSize);
+            }
+            sockWriter.write("ok");
+            sockWriter.flush();
+        } catch (IOException ignored) {
+        }
+        return pictureBytes;
+    }
 }

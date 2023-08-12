@@ -1,5 +1,6 @@
 package controllers;
 
+import beans.MetaIpc;
 import beans.Storage;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,10 +57,10 @@ public class AlbumPage {
     }
 
     @PostMapping("/album")
-    void albumPicture(@RequestParam("album") String album, HttpServletResponse resp, Storage store) throws IOException, NoSuchFieldException, IllegalAccessException {
+    void albumPicture(@RequestParam("album") String album, HttpServletResponse resp, MetaIpc metaIpc) throws IOException, NoSuchFieldException, IllegalAccessException {
         resp.setContentType("image/jpeg");
         resp.setHeader("Cache-Control", "no-cache");
         resp.setHeader("X-Content-Type-Options", "nosniff");
-        resp.getOutputStream().write(Base64.getEncoder().encode(store.getPictureBytes(album)));
+        resp.getOutputStream().write(Base64.getEncoder().encode(metaIpc.meta1GetPicture(album)));
     }
 }

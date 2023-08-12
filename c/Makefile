@@ -25,7 +25,7 @@ player : $(PLAYSRC) playlib.c playlib.h
 	$(CC) $(PLAYSRC) playlib.c -o player $(PLAYLIBS)
 
 meta : meta.c
-	$(CC) meta.c -o meta
+	$(CC) meta.c -o meta -lFLAC
 
 .PHONY : clean
 clean :

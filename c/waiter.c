@@ -49,7 +49,6 @@ static inline int update_mixer()
 
 static void player0_play(int sock)
 {
-	write(sock, "ok\n", 3);
 	if (update_mixer())
 	{
 		*curvol_addr = 0;
@@ -85,7 +84,6 @@ static void player0_play(int sock)
 
 static void player1_set_vol(int sock)
 {
-	write(sock, "ok\n", 3);
 	ssize_t nbytes = read(sock, data_addr, data_size);
 	if (nbytes > 0)
 	{

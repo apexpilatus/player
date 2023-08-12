@@ -5,9 +5,12 @@
 #include <stdlib.h>
 #include <netinet/in.h>
 
+#include <FLAC/metadata.h>
+
 #define listen_port 9696
 
-char *dirs[] = {
+static char str[2048];
+static char *dirs[] = {
     "/home/store/music/dzr",
     "/home/store/music/qbz",
     "/home/store/music/hack1",
@@ -41,8 +44,24 @@ static void meta0_get_albums(int sock)
     write(sock, "&the_end\n", 9);
 }
 
+static void meta1_get_picture(int sock)
+{
+    ssize_t read_size;
+    read_size = read(sock, str, sizeof(str));
+    str[read_size] = '\0';
+    FLAC__StreamMetadata *picture = FLAC__metadata_object_new(FLAC__METADATA_TYPE_PICTURE);
+    FLAC__metadata_get_picture(str, &picture, -1, NULL, NULL, (uint32_t)(-1), (uint32_t)(-1), (uint32_t)(-1), (uint32_t)(-1));
+    sprintf(str, "%u%c", picture->data.picture.data_length, '\n');
+    write(sock, str, strlen(str));
+    read(sock, str, sizeof(str));
+    write(sock, picture->data.picture.data, picture->data.picture.data_length);
+    read(sock, str, sizeof(str));
+    FLAC__metadata_object_delete(picture);
+}
+
 static void (*action[])(int sock) = {
-    meta0_get_albums};
+    meta0_get_albums,
+    meta1_get_picture};
 
 int main(void)
 {

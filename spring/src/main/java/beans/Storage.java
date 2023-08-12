@@ -2,13 +2,11 @@ package beans;
 
 import org.jflac.FLACDecoder;
 import org.jflac.metadata.Metadata;
-import org.jflac.metadata.Picture;
 import org.jflac.metadata.StreamInfo;
 import org.jflac.metadata.VorbisComment;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,27 +42,4 @@ public class Storage {
         return metasMap;
     }
 
-    public byte[] getPictureBytes(String album) throws IOException, NoSuchFieldException, IllegalAccessException {
-        byte[] pictureBytes = {1, 2, 3};
-        try (FileInputStream flacIs = new FileInputStream(album + "/01.flac")) {
-            FLACDecoder flacDec = new FLACDecoder(flacIs);
-            Metadata[] metas = flacDec.readMetadata();
-            for (Metadata meta : metas) {
-                if (meta.toString().contains("Picture")) {
-                    Picture picMeta = (Picture) meta;
-                    Class<? extends Picture> c = picMeta.getClass();
-                    Field f = c.getDeclaredField("image");
-                    f.setAccessible(true);
-                    pictureBytes = (byte[]) f.get(picMeta);
-                }
-            }
-        } catch (IOException e) {
-            throw new IOException(e);
-        } catch (NoSuchFieldException e) {
-            throw new NoSuchFieldException();
-        } catch (IllegalAccessException e) {
-            throw new IllegalAccessException();
-        }
-        return pictureBytes;
-    }
 }
