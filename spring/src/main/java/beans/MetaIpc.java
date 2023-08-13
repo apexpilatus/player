@@ -62,12 +62,8 @@ public class MetaIpc {
         return pictureBytes;
     }
 
-    public Map<String, String> meta2GetTags(String file) {
-        Map<String, String> metasMap = new HashMap<>();
-        metasMap.put("ARTIST", "");
-        metasMap.put("ALBUM", "");
-        metasMap.put("TRACKNUMBER", "");
-        metasMap.put("TITLE", "");
+    public Map<String, Map<String, String>> meta2GetTags(String album) {
+        Map<String, Map<String, String>> metasMap = new TreeMap<>();
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(metaHost, metaPort), timeOut);
             sock.setSoTimeout(timeOut);
@@ -76,12 +72,19 @@ public class MetaIpc {
             char op = '2';
             sockWriter.write(op);
             sockWriter.flush();
-            sockWriter.write(file);
+            sockWriter.write(album);
             sockWriter.flush();
-            for (String comment = sockReader.readLine(); !comment.equals("&end_tags"); comment = sockReader.readLine()) {
-                metasMap.put(comment.split("=")[0], comment.substring(comment.split("=")[0].length() + 1));
+            for (String file = sockReader.readLine(); !file.equals("&the_end"); file = sockReader.readLine()) {
+                metasMap.put(file, new HashMap<>());
+                metasMap.get(file).put("ARTIST", "");
+                metasMap.get(file).put("ALBUM", "");
+                metasMap.get(file).put("TRACKNUMBER", "");
+                metasMap.get(file).put("TITLE", "");
+                metasMap.get(file).put("RATE", "");
+                for (String comment = sockReader.readLine(); !comment.equals("&end_tags"); comment = sockReader.readLine()) {
+                    metasMap.get(file).put(comment.split("=")[0], comment.substring(comment.split("=")[0].length() + 1));
+                }
             }
-            metasMap.put("RATE", sockReader.readLine());
         } catch (IOException ignored) {
         }
         return metasMap;

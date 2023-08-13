@@ -14,6 +14,7 @@
 
 #define listen_port 9696
 #define picture_getter_name "picture"
+#define tags_getter_name "tags"
 
 static volatile FLAC__uint32 *length;
 static int length_size = sizeof(FLAC__uint32);
@@ -56,6 +57,8 @@ static void meta0_get_albums(int sock)
 
 static void meta1_get_picture(int sock)
 {
+    pid_t handl_pid;
+    int handl_status;
     read_size = read(sock, data_addr, data_size);
     data_addr[read_size] = '\0';
     DIR *dp;
@@ -67,32 +70,31 @@ static void meta1_get_picture(int sock)
         {
             if (ep->d_type == DT_REG)
             {
+                data_addr[read_size] = '\0';
                 strcat(data_addr, "/");
                 strcat(data_addr, ep->d_name);
-                break;
+                handl_pid = fork();
+                if (!handl_pid)
+                {
+                    execl(picture_getter_path, picture_getter_name, NULL);
+                }
+                if (handl_pid > 0)
+                {
+                    waitpid(handl_pid, &handl_status, 0);
+                }
+                if (!handl_status)
+                {
+                    break;
+                }
             }
         }
         (void)closedir(dp);
     }
-    printf("%s\n", data_addr);
-    pid_t handl_pid = fork();
-    if (!handl_pid)
-    {
-        execl(exec_picture_getter_path, picture_getter_name, NULL);
-    }
-    int handl_status;
-    if (handl_pid > 0)
-    {
-        waitpid(handl_pid, &handl_status, 0);
-    }
-    printf("%d\n", handl_status);
     if (!handl_status)
     {
-        printf("handler ok\n");
         FILE *fl = fopen(picture_path, "r");
         if (fl)
         {
-            printf("file ok\n");
             write(sock, (int *)length, sizeof(FLAC__uint32));
             read_size = read(sock, data_addr, data_size);
             data_addr[read_size] = '\0';
@@ -123,28 +125,50 @@ static void meta1_get_picture(int sock)
 
 static void meta2_get_tags(int sock)
 {
+    pid_t handl_pid;
+    int handl_status;
     ssize_t read_size;
     read_size = read(sock, data_addr, data_size);
     data_addr[read_size] = '\0';
-    /*FLAC__StreamMetadata *tags = FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT);
-    FLAC__metadata_get_tags(str, &tags);
-    for (int i = 0; i < tags->data.vorbis_comment.num_comments; i++)
+    DIR *dp;
+    struct dirent *ep;
+    dp = opendir(data_addr);
+    if (dp != NULL)
     {
-        write(sock, tags->data.vorbis_comment.comments[i].entry, tags->data.vorbis_comment.comments[i].length);
-        write(sock, "\n", 1);
-    }*/
-
-    write(sock, "ARTIST=tururu\n", 14);
-    write(sock, "TRACKNUMBER=3\n", 14);
-    write(sock, "TITLE=tururu\n", 13);
-
-    write(sock, "&end_tags\n", 10);
-    /*FLAC__metadata_object_delete(tags);
-    FLAC__StreamMetadata *rate = FLAC__metadata_object_new(FLAC__METADATA_TYPE_STREAMINFO);
-    FLAC__metadata_get_streaminfo(str, rate);
-    sprintf(str, "%u/%g%c", rate->data.stream_info.bits_per_sample, rate->data.stream_info.sample_rate / 1000.0, '\n');*/
-    write(sock, data_addr, data_size);
-    /*FLAC__metadata_object_delete(rate);*/
+        while ((ep = readdir(dp)))
+        {
+            if (ep->d_type == DT_REG)
+            {
+                write(sock, ep->d_name, strlen(ep->d_name));
+                write(sock, "\n", 1);
+                data_addr[read_size] = '\0';
+                strcat(data_addr, "/");
+                strcat(data_addr, ep->d_name);
+                handl_pid = fork();
+                if (!handl_pid)
+                {
+                    execl(tags_getter_path, tags_getter_name, NULL);
+                }
+                if (handl_pid > 0)
+                {
+                    waitpid(handl_pid, &handl_status, 0);
+                }
+                if (!handl_status)
+                {
+                    char *str = data_addr;
+                    for (int i = 0; i < *length + 1; i++)
+                    {
+                        str = str + strlen(str) + 1;
+                        write(sock, str, strlen(str));
+                        write(sock, "\n", 1);
+                    }
+                    write(sock, "&end_tags\n", 10);
+                }
+            }
+        }
+        write(sock, "&the_end\n", 9);
+        (void)closedir(dp);
+    }
 }
 
 static void (*action[])(int sock) = {

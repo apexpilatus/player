@@ -7,13 +7,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 public class AlbumPage {
@@ -33,18 +30,15 @@ public class AlbumPage {
         respWriter.println("</head>");
         respWriter.println("<body>");
         respWriter.println("<script>gettrackspicture(\"" + album.replace(" ", "&") + "\")</script>");
-        File albumDirPath = new File(album);
-        String[] files = albumDirPath.list();
-        Arrays.sort(Objects.requireNonNull(files));
         StringBuilder title = new StringBuilder();
         StringBuilder tracks = new StringBuilder();
-        for (String file : files) {
-            Map<String, String> metasMap = metaIpc.meta2GetTags(album + "/" + file);
+        Map<String, Map<String, String>> metasMap = metaIpc.meta2GetTags(album);
+        metasMap.forEach((file, meta) -> {
             if (file.equals("01.flac")) {
-                title.append("<div class=artist>").append(metasMap.get("ARTIST")).append("</div>\n").append("<div class=album>").append(metasMap.get("ALBUM")).append("</div>\n").append("<div class=rate>").append(metasMap.get("RATE")).append("</div>");
+                title.append("<div class=artist>").append(meta.get("ARTIST")).append("</div>\n").append("<div class=album>").append(meta.get("ALBUM")).append("</div>\n").append("<div class=rate>").append(meta.get("RATE")).append("</div>");
             }
-            tracks.append("<tr onclick=play(\"").append(album.replace(" ", "&")).append("\",\"").append(file).append("\")>").append("<td class=tracknumber>").append(metasMap.get("TRACKNUMBER")).append("</td>").append("<td class=tracktitle>").append(metasMap.get("TITLE")).append("</td>").append("</tr>");
-        }
+            tracks.append("<tr onclick=play(\"").append(album.replace(" ", "&")).append("\",\"").append(file).append("\")>").append("<td class=tracknumber>").append(meta.get("TRACKNUMBER")).append("</td>").append("<td class=tracktitle>").append(meta.get("TITLE")).append("</td>").append("</tr>");
+        });
         respWriter.println("<div class=title>");
         respWriter.println(title);
         respWriter.println("</div>");
