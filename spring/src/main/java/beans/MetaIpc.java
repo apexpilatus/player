@@ -3,6 +3,8 @@ package beans;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.*;
 
 public class MetaIpc {
@@ -30,26 +32,30 @@ public class MetaIpc {
         return albums;
     }
 
-    public byte[] meta1GetPicture(String file) {
-        byte[] pictureBytes = {1, 2, 3};
+    public byte[] meta1GetPicture(String album) {
+        byte[] pictureBytes = new byte[4];
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(metaHost, metaPort), timeOut);
             sock.setSoTimeout(timeOut);
             BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-            BufferedReader sockReader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            BufferedInputStream sockReader = new BufferedInputStream(sock.getInputStream());
             char op = '1';
             sockWriter.write(op);
+            sockWriter.write(album);
             sockWriter.flush();
-            sockWriter.write(file);
-            sockWriter.flush();
-            int pictureSize = Integer.parseInt(sockReader.readLine());
-            pictureBytes = new byte[pictureSize];
-            sockWriter.write("ok");
-            sockWriter.flush();
-            for (int readSize, off = 0; pictureSize > 0; pictureSize -= readSize, off += readSize) {
-                readSize = sock.getInputStream().read(pictureBytes, off, pictureSize);
+            int readSize = sockReader.read(pictureBytes, 0, 4);
+            if (readSize == 4) {
+                sockWriter.write("ok");
+                sockWriter.flush();
+                int pictureSize = ByteBuffer.wrap(pictureBytes).order(ByteOrder.LITTLE_ENDIAN).getInt();
+                pictureBytes = new byte[pictureSize];
+                for (int off = 0; pictureSize > 0; pictureSize -= readSize, off += readSize) {
+                    readSize = new BufferedInputStream(sock.getInputStream()).read(pictureBytes, off, pictureSize);
+                }
+                sockWriter.write("ok");
+            } else {
+                sockWriter.write("not");
             }
-            sockWriter.write("ok");
             sockWriter.flush();
         } catch (IOException ignored) {
         }

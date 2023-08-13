@@ -60,6 +60,6 @@ public class AlbumPage {
         resp.setContentType("image/jpeg");
         resp.setHeader("Cache-Control", "no-cache");
         resp.setHeader("X-Content-Type-Options", "nosniff");
-        resp.getOutputStream().write(Base64.getEncoder().encode(metaIpc.meta1GetPicture(album + "/01.flac")));
+        resp.getOutputStream().write(Base64.getEncoder().encode(metaIpc.meta1GetPicture(album)));
     }
 }

@@ -12,8 +12,8 @@ else
 $(error "target" should be shure)
 endif
 
-all : waiter mixer player meta
-	mv waiter player mixer meta $(PL_PATH)
+all : waiter mixer player
+	mv waiter player mixer $(PL_PATH)
 
 waiter : waiter.c shares.h
 	$(CC) $(PLAYDEFS) waiter.c -o waiter -lasound
@@ -23,9 +23,6 @@ mixer : mixer.c shares.h
 
 player : $(PLAYSRC) playlib.c playlib.h
 	$(CC) $(PLAYSRC) playlib.c -o player $(PLAYLIBS)
-
-meta : meta.c
-	$(CC) meta.c -o meta -lFLAC
 
 .PHONY : clean
 clean :

@@ -1,4 +1,5 @@
 #include "shares.h"
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -20,11 +21,11 @@
 
 static pid_t player_pid;
 static char *data_addr;
+static int data_size;
 static volatile long *curvol_addr;
 static volatile long *maxvol_addr;
 static int curvol_size = sizeof(long);
 static int maxvol_size = sizeof(long);
-static int data_size;
 
 static inline int update_mixer()
 {
