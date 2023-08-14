@@ -105,23 +105,6 @@ static void meta1_get_picture(int sock)
     data_addr[read_size] = '\0';
 }
 
-static inline void write_tags(int sock, tags_lst *tag_ptr_begin, tags_lst *tag_ptr_end)
-{
-    if (tag_ptr_begin != NULL)
-    {
-        do
-        {
-            tag_ptr_end = tag_ptr_begin->next;
-            write(sock, tag_ptr_begin->tag, strlen(tag_ptr_begin->tag));
-            write(sock, "\n", 1);
-            free(tag_ptr_begin->tag);
-            free(tag_ptr_begin);
-            tag_ptr_begin = tag_ptr_end;
-        } while (tag_ptr_end);
-        write(sock, "&end_tags\n", 10);
-    }
-}
-
 static void meta2_get_tags(int sock)
 {
     pid_t handl_pid;
@@ -150,7 +133,19 @@ static void meta2_get_tags(int sock)
                 {
                     execl(tags_getter_path, tags_getter_name, NULL);
                 }
-                write_tags(sock, tag_ptr_begin, tag_ptr_end);
+                if (tag_ptr_begin != NULL)
+                {
+                    do
+                    {
+                        tag_ptr_end = tag_ptr_begin->next;
+                        write(sock, tag_ptr_begin->tag, strlen(tag_ptr_begin->tag));
+                        write(sock, "\n", 1);
+                        free(tag_ptr_begin->tag);
+                        free(tag_ptr_begin);
+                        tag_ptr_begin = tag_ptr_end;
+                    } while (tag_ptr_end);
+                    write(sock, "&end_tags\n", 10);
+                }
                 if (handl_pid > 0)
                 {
                     waitpid(handl_pid, &handl_status, 0);
@@ -179,7 +174,19 @@ static void meta2_get_tags(int sock)
                 }
             }
         }
-        write_tags(sock, tag_ptr_begin, tag_ptr_end);
+        if (tag_ptr_begin != NULL)
+        {
+            do
+            {
+                tag_ptr_end = tag_ptr_begin->next;
+                write(sock, tag_ptr_begin->tag, strlen(tag_ptr_begin->tag));
+                write(sock, "\n", 1);
+                free(tag_ptr_begin->tag);
+                free(tag_ptr_begin);
+                tag_ptr_begin = tag_ptr_end;
+            } while (tag_ptr_end);
+            write(sock, "&end_tags\n", 10);
+        }
         write(sock, "&the_end\n", 9);
         (void)closedir(dp);
     }
