@@ -20,8 +20,6 @@ typedef struct lst
     struct lst *next;
 } tags_lst;
 
-char *anon_addr;
-
 static char *dirs[] = {
     "/home/store/music/dzr",
     "/home/store/music/qbz",
@@ -142,7 +140,7 @@ static void meta2_get_tags(int sock)
                 if (!handl_status)
                 {
                     char *str_src = data_addr;
-                    char *str_dst = anon_addr;
+                    char *str_dst = data_addr_internal;
                     for ((*length)++; *length > 0; (*length)--)
                     {
                         if (tag_ptr_end == NULL)
@@ -204,7 +202,6 @@ int main(void)
         return 1;
     }
     void *shd_addr = mmap(NULL, shm_size(), PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
-    anon_addr = mmap(NULL, shm_size(), PROT_READ | PROT_WRITE, MAP_ANONYMOUS, 0, 0);
     if (shd_addr == MAP_FAILED)
     {
         return 1;
