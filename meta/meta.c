@@ -193,7 +193,7 @@ int main(void)
     {
         return 1;
     }
-    length = shd_addr;
+    set_shm_addr();
     data_addr = (char *)shd_addr + length_size;
     data_size = page_size - length_size;
     int sock_listen, sock;
