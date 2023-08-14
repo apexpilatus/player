@@ -199,7 +199,7 @@ int main(void)
     {
         return 1;
     }
-    if (listen(sock_listen, 1) < 0)
+    if (listen(sock_listen, 2) < 0)
     {
         return 1;
     }
