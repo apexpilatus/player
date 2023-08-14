@@ -132,7 +132,7 @@ static void meta2_get_tags(int sock)
                 if (!handl_status)
                 {
                     char *str = data_addr;
-                    for (int i = 0; i < *length + 1; i++)
+                    for (; *length >= 0; *length--)
                     {
                         str = str + strlen(str) + 1;
                         write(sock, str, strlen(str));
