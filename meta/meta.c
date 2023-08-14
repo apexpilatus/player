@@ -87,6 +87,8 @@ static void meta1_get_picture(int sock)
     if (!handl_status)
     {
         write(sock, (int *)length, sizeof(FLAC__uint32));
+        read_size = read(sock, data_addr + shm_size() - 4, 3);
+        data_addr[read_size] = '\0';
         write(sock, data_addr, *length);
     }
     else
