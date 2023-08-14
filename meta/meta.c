@@ -157,19 +157,19 @@ static void meta2_get_tags(int sock)
                         str = str + strlen(str) + 1;
                         tag_ptr_end->tag = malloc(strlen(str) + 1);
                         strcpy(tag_ptr_end->tag, str);
-                        if (tag_ptr_begin != NULL)
+                    }
+                    if (tag_ptr_begin != NULL)
+                    {
+                        do
                         {
-                            do
-                            {
-                                tag_ptr_end = tag_ptr_begin->next;
-                                write(sock, tag_ptr_begin->tag, strlen(tag_ptr_begin->tag));
-                                write(sock, "\n", 1);
-                                free(tag_ptr_begin->tag);
-                                free(tag_ptr_begin);
-                                tag_ptr_begin = tag_ptr_end;
-                            } while (tag_ptr_end);
-                            write(sock, "&end_tags\n", 10);
-                        }
+                            tag_ptr_end = tag_ptr_begin->next;
+                            write(sock, tag_ptr_begin->tag, strlen(tag_ptr_begin->tag));
+                            write(sock, "\n", 1);
+                            free(tag_ptr_begin->tag);
+                            free(tag_ptr_begin);
+                            tag_ptr_begin = tag_ptr_end;
+                        } while (tag_ptr_end);
+                        write(sock, "&end_tags\n", 10);
                     }
                 }
             }
