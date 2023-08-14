@@ -14,7 +14,6 @@
 #define picture_getter_name "picture"
 #define tags_getter_name "tags"
 
-static ssize_t read_size;
 static char *dirs[] = {
     "/home/store/music/dzr",
     "/home/store/music/qbz",
@@ -47,12 +46,14 @@ static void meta0_get_albums(int sock)
         }
     }
     write(sock, "&the_end\n", 9);
+    close(sock);
 }
 
 static void meta1_get_picture(int sock)
 {
     pid_t handl_pid;
     int handl_status;
+    ssize_t read_size;
     read_size = read(sock, data_addr, data_size);
     data_addr[read_size] = '\0';
     DIR *dp;
@@ -115,6 +116,7 @@ static void meta1_get_picture(int sock)
         read_size = read(sock, data_addr, data_size);
         data_addr[read_size] = '\0';
     }
+    close(sock);
 }
 
 static void meta2_get_tags(int sock)
@@ -163,6 +165,7 @@ static void meta2_get_tags(int sock)
         write(sock, "&the_end\n", 9);
         (void)closedir(dp);
     }
+    close(sock);
 }
 
 static void (*action[])(int sock) = {
@@ -214,6 +217,5 @@ int main(void)
         {
             action[strtol(&action_num, NULL, 10)](sock);
         }
-        close(sock);
     }
 }
