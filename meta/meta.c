@@ -14,6 +14,12 @@
 #define picture_getter_name "picture"
 #define tags_getter_name "tags"
 
+typedef struct lst
+{
+    char *tag;
+    struct lst *next;
+} tags_lst;
+
 static char *dirs[] = {
     "/home/store/music/dzr",
     "/home/store/music/qbz",
@@ -99,6 +105,23 @@ static void meta1_get_picture(int sock)
     data_addr[read_size] = '\0';
 }
 
+static inline void write_tags(int sock, tags_lst *tag_ptr_begin, tags_lst *tag_ptr_end)
+{
+    if (tag_ptr_begin != NULL)
+    {
+        do
+        {
+            tag_ptr_end = tag_ptr_begin->next;
+            write(sock, tag_ptr_begin->tag, strlen(tag_ptr_begin->tag));
+            write(sock, "\n", 1);
+            free(tag_ptr_begin->tag);
+            free(tag_ptr_begin);
+            tag_ptr_begin = tag_ptr_end;
+        } while (tag_ptr_end);
+        write(sock, "&end_tags\n", 10);
+    }
+}
+
 static void meta2_get_tags(int sock)
 {
     pid_t handl_pid;
@@ -111,6 +134,8 @@ static void meta2_get_tags(int sock)
     dp = opendir(data_addr);
     if (dp != NULL)
     {
+        tags_lst *tag_ptr_begin = NULL;
+        tags_lst *tag_ptr_end = NULL;
         while ((ep = readdir(dp)))
         {
             if (ep->d_type == DT_REG)
@@ -125,6 +150,7 @@ static void meta2_get_tags(int sock)
                 {
                     execl(tags_getter_path, tags_getter_name, NULL);
                 }
+                write_tags(sock, tag_ptr_begin, tag_ptr_end);
                 if (handl_pid > 0)
                 {
                     waitpid(handl_pid, &handl_status, 0);
@@ -132,16 +158,28 @@ static void meta2_get_tags(int sock)
                 if (!handl_status)
                 {
                     char *str = data_addr;
-                    for (; *length >= 0; *length--)
+                    for ((*length)++; *length > 0; (*length)--)
                     {
+                        if (tag_ptr_end == NULL)
+                        {
+                            tag_ptr_end = malloc(sizeof(tags_lst));
+                            tag_ptr_end->next = NULL;
+                            tag_ptr_begin = tag_ptr_end;
+                        }
+                        else
+                        {
+                            tag_ptr_end->next = malloc(sizeof(tags_lst));
+                            tag_ptr_end = tag_ptr_end->next;
+                            tag_ptr_end->next = NULL;
+                        }
                         str = str + strlen(str) + 1;
-                        write(sock, str, strlen(str));
-                        write(sock, "\n", 1);
+                        tag_ptr_end->tag = malloc(strlen(str) + 1);
+                        strcpy(tag_ptr_end->tag, str);
                     }
-                    write(sock, "&end_tags\n", 10);
                 }
             }
         }
+        write_tags(sock, tag_ptr_begin, tag_ptr_end);
         write(sock, "&the_end\n", 9);
         (void)closedir(dp);
     }
