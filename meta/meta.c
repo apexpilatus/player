@@ -10,16 +10,10 @@
 #include <sys/mman.h>
 #include <dirent.h>
 
-#include <FLAC/metadata.h>
-
 #define listen_port 9696
 #define picture_getter_name "picture"
 #define tags_getter_name "tags"
 
-static volatile FLAC__uint32 *length;
-static int length_size = sizeof(FLAC__uint32);
-static char *data_addr;
-static int data_size;
 static ssize_t read_size;
 static char *dirs[] = {
     "/home/store/music/dzr",
@@ -194,8 +188,6 @@ int main(void)
         return 1;
     }
     set_shm_addr();
-    data_addr = (char *)shd_addr + length_size;
-    data_size = page_size - length_size;
     int sock_listen, sock;
     sock_listen = socket(PF_INET, SOCK_STREAM, 0);
     struct sockaddr_in addr;

@@ -4,13 +4,6 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 
-#include <FLAC/metadata.h>
-
-static FLAC__uint32 *length;
-static int length_size = sizeof(FLAC__uint32);
-static char *data_addr;
-static int data_size;
-
 int main(void)
 {
 	int shd = shm_open(shm_file, O_RDWR, 0);
@@ -24,9 +17,7 @@ int main(void)
 	{
 		return 1;
 	}
-	length = shd_addr;
-	data_addr = (char *)shd_addr + length_size;
-	data_size = page_size - length_size;
+    set_shm_addr();
 	FLAC__StreamMetadata *picture = FLAC__metadata_object_new(FLAC__METADATA_TYPE_PICTURE);
 	if (!FLAC__metadata_get_picture(data_addr, &picture, -1, NULL, NULL, (uint32_t)(-1), (uint32_t)(-1), (uint32_t)(-1), (uint32_t)(-1)))
 	{

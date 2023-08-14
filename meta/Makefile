@@ -5,14 +5,14 @@ CC := gcc -O0
 all : meta getpicture gettags
 	mv meta getpicture gettags $(MET_PATH)
 
-meta : meta.c
-	$(CC) $(METDEFS) meta.c -o meta
+meta : meta.c shares.c shares.h
+	$(CC) $(METDEFS) meta.c shares.c -o meta
 
-getpicture : getpicture.c
-	$(CC) getpicture.c -o getpicture -lFLAC
+getpicture : getpicture.c shares.c shares.h
+	$(CC) getpicture.c shares.c -o getpicture -lFLAC
 
-gettags : gettags.c
-	$(CC) gettags.c -o gettags -lFLAC
+gettags : gettags.c shares.c shares.h
+	$(CC) gettags.c shares.c -o gettags -lFLAC
 
 .PHONY : clean
 clean :
