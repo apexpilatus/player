@@ -1,6 +1,7 @@
 #include "shares.h"
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 
@@ -11,28 +12,18 @@ int main(void)
 	{
 		return 1;
 	}
-	int page_size = getpagesize();
-	void *shd_addr = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
+	void *shd_addr = mmap(NULL, shm_size(), PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
 	if (shd_addr == MAP_FAILED)
 	{
 		return 1;
 	}
-    set_shm_addr();
+    set_shm_vars();
 	FLAC__StreamMetadata *picture = FLAC__metadata_object_new(FLAC__METADATA_TYPE_PICTURE);
 	if (!FLAC__metadata_get_picture(data_addr, &picture, -1, NULL, NULL, (uint32_t)(-1), (uint32_t)(-1), (uint32_t)(-1), (uint32_t)(-1)))
 	{
 		return 1;
 	}
-	*picture_length = picture->data.picture.data_length;
-	FILE *fl = fopen(picture_path, "w");
-	if (fl)
-	{
-		fwrite(picture->data.picture.data, 1, *picture_length, fl);
-		fclose(fl);
-	}
-	else
-	{
-		return 1;
-	}
+	*length = picture->data.picture.data_length;
+	memcpy(data_addr, picture->data.picture.data, picture->data.picture.data_length);
 	return 0;
 }

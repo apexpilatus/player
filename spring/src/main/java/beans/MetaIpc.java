@@ -45,8 +45,6 @@ public class MetaIpc {
             sockWriter.flush();
             int readSize = sockReader.read(pictureBytes, 0, 4);
             if (readSize == 4) {
-                sockWriter.write("ok");
-                sockWriter.flush();
                 int pictureSize = ByteBuffer.wrap(pictureBytes).order(ByteOrder.LITTLE_ENDIAN).getInt();
                 pictureBytes = new byte[pictureSize];
                 for (int off = 0; pictureSize > 0; pictureSize -= readSize, off += readSize) {

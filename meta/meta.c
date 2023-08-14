@@ -46,7 +46,6 @@ static void meta0_get_albums(int sock)
         }
     }
     write(sock, "&the_end\n", 9);
-    close(sock);
 }
 
 static void meta1_get_picture(int sock)
@@ -87,36 +86,15 @@ static void meta1_get_picture(int sock)
     }
     if (!handl_status)
     {
-        FILE *fl = fopen(picture_path, "r");
-        if (fl)
-        {
-            write(sock, (int *)picture_length, sizeof(FLAC__uint32));
-            read_size = read(sock, data_addr, data_size);
-            data_addr[read_size] = '\0';
-            if (!strcmp(data_addr, "ok"))
-            {
-                char buf[*picture_length];
-                fread(buf, 1, sizeof(buf), fl);
-                write(sock, buf, sizeof(buf));
-                read_size = read(sock, data_addr, data_size);
-                data_addr[read_size] = '\0';
-            }
-            fclose(fl);
-        }
-        else
-        {
-            write(sock, "!", 1);
-            read_size = read(sock, data_addr, data_size);
-            data_addr[read_size] = '\0';
-        }
+        write(sock, (int *)length, sizeof(FLAC__uint32));
+        write(sock, data_addr, *length);
     }
     else
     {
         write(sock, "!", 1);
-        read_size = read(sock, data_addr, data_size);
-        data_addr[read_size] = '\0';
     }
-    close(sock);
+    read_size = read(sock, data_addr, data_size);
+    data_addr[read_size] = '\0';
 }
 
 static void meta2_get_tags(int sock)
@@ -152,7 +130,7 @@ static void meta2_get_tags(int sock)
                 if (!handl_status)
                 {
                     char *str = data_addr;
-                    for (int i = 0; i < *num_comments + 1; i++)
+                    for (int i = 0; i < *length + 1; i++)
                     {
                         str = str + strlen(str) + 1;
                         write(sock, str, strlen(str));
@@ -165,7 +143,6 @@ static void meta2_get_tags(int sock)
         write(sock, "&the_end\n", 9);
         (void)closedir(dp);
     }
-    close(sock);
 }
 
 static void (*action[])(int sock) = {
@@ -180,17 +157,16 @@ int main(void)
     {
         return 1;
     }
-    int page_size = getpagesize();
-    if (ftruncate(shd, page_size))
+    if (ftruncate(shd, shm_size()))
     {
         return 1;
     }
-    void *shd_addr = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
+    void *shd_addr = mmap(NULL, shm_size(), PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
     if (shd_addr == MAP_FAILED)
     {
         return 1;
     }
-    set_shm_addr();
+    set_shm_vars();
     int sock_listen, sock;
     sock_listen = socket(PF_INET, SOCK_STREAM, 0);
     struct sockaddr_in addr;
@@ -202,7 +178,7 @@ int main(void)
     {
         return 1;
     }
-    if (listen(sock_listen, 2) < 0)
+    if (listen(sock_listen, 1) < 0)
     {
         return 1;
     }
@@ -217,5 +193,6 @@ int main(void)
         {
             action[strtol(&action_num, NULL, 10)](sock);
         }
+        close(sock);
     }
 }

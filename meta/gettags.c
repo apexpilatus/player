@@ -12,19 +12,18 @@ int main(void)
 	{
 		return 1;
 	}
-	int page_size = getpagesize();
-	void *shd_addr = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
+	void *shd_addr = mmap(NULL, shm_size(), PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
 	if (shd_addr == MAP_FAILED)
 	{
 		return 1;
 	}
-    set_shm_addr();
+    set_shm_vars();
 	FLAC__StreamMetadata *tags = FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT);
 	if (!FLAC__metadata_get_tags(data_addr, &tags))
 	{
 		return 1;
 	}
-	*num_comments = tags->data.vorbis_comment.num_comments;
+	*length = tags->data.vorbis_comment.num_comments;
 	char *str = data_addr;
 	for (int i = 0; i < tags->data.vorbis_comment.num_comments; i++)
 	{
