@@ -23,11 +23,11 @@ int main(void)
 	{
 		return 1;
 	}
-	*length = picture->data.picture.data_length;
+	*picture_length = picture->data.picture.data_length;
 	FILE *fl = fopen(picture_path, "w");
 	if (fl)
 	{
-		fwrite(picture->data.picture.data, 1, *length, fl);
+		fwrite(picture->data.picture.data, 1, *picture_length, fl);
 		fclose(fl);
 	}
 	else

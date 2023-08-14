@@ -89,12 +89,12 @@ static void meta1_get_picture(int sock)
         FILE *fl = fopen(picture_path, "r");
         if (fl)
         {
-            write(sock, (int *)length, sizeof(FLAC__uint32));
+            write(sock, (int *)picture_length, sizeof(FLAC__uint32));
             read_size = read(sock, data_addr, data_size);
             data_addr[read_size] = '\0';
             if (!strcmp(data_addr, "ok"))
             {
-                char buf[*length];
+                char buf[*picture_length];
                 fread(buf, 1, sizeof(buf), fl);
                 write(sock, buf, sizeof(buf));
                 read_size = read(sock, data_addr, data_size);
@@ -150,7 +150,7 @@ static void meta2_get_tags(int sock)
                 if (!handl_status)
                 {
                     char *str = data_addr;
-                    for (int i = 0; i < *length + 1; i++)
+                    for (int i = 0; i < *num_comments + 1; i++)
                     {
                         str = str + strlen(str) + 1;
                         write(sock, str, strlen(str));

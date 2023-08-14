@@ -24,7 +24,7 @@ int main(void)
 	{
 		return 1;
 	}
-	*length = tags->data.vorbis_comment.num_comments;
+	*num_comments = tags->data.vorbis_comment.num_comments;
 	char *str = data_addr;
 	for (int i = 0; i < tags->data.vorbis_comment.num_comments; i++)
 	{
