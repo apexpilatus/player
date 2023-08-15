@@ -123,6 +123,7 @@ static void meta2_get_tags(int sock)
     dp = opendir(data_addr);
     if (dp != NULL)
     {
+        *length_internal = 0;
         while ((ep = readdir(dp)))
         {
             if (ep->d_type == DT_REG)
@@ -139,7 +140,10 @@ static void meta2_get_tags(int sock)
                 }
                 if (handl_pid > 0)
                 {
-                    send_tags(sock);
+                    if (*length_internal)
+                    {
+                        send_tags(sock);
+                    }
                     waitpid(handl_pid, &handl_status, 0);
                 }
                 if (!handl_status)
