@@ -13,9 +13,9 @@ extern int data_size;
 
 #define shm_size() (getpagesize() * 300)
 
-#define set_shm_vars() \
-length = shd_addr; \
-data_addr = (char *)shd_addr + length_size; \
-length_internal = shd_addr + (shm_size() / 2); \
-data_addr_internal = (char *)length_internal + length_internal_size; \
-data_size = shm_size() - length_size;
+#define set_shm_vars()                                                   \
+    length = shd_addr;                                                   \
+    data_addr = (char *)shd_addr + length_size;                          \
+    length_internal = shd_addr + (shm_size() / 2);                       \
+    data_addr_internal = (char *)length_internal + length_internal_size; \
+    data_size = shm_size() - length_size;

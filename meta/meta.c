@@ -128,9 +128,6 @@ static void meta2_get_tags(int sock)
         {
             if (ep->d_type == DT_REG)
             {
-                /*write(sock, ep->d_name, strlen(ep->d_name));
-                write(sock, "\n", 1);*/
-                strcpy(data_addr_internal, ep->d_name);
                 data_addr[read_size] = '\0';
                 strcat(data_addr, "/");
                 strcat(data_addr, ep->d_name);
@@ -151,6 +148,7 @@ static void meta2_get_tags(int sock)
                 {
                     char *str_src = data_addr;
                     char *str_dst = data_addr_internal;
+                    strcpy(str_dst, ep->d_name);
                     *length_internal = ++(*length);
                     for (; *length > 0; (*length)--)
                     {

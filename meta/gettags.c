@@ -17,7 +17,7 @@ int main(void)
 	{
 		return 1;
 	}
-    set_shm_vars();
+	set_shm_vars();
 	FLAC__StreamMetadata *tags = FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT);
 	if (!FLAC__metadata_get_tags(data_addr, &tags))
 	{

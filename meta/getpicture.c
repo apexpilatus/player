@@ -17,7 +17,7 @@ int main(void)
 	{
 		return 1;
 	}
-    set_shm_vars();
+	set_shm_vars();
 	FLAC__StreamMetadata *picture = FLAC__metadata_object_new(FLAC__METADATA_TYPE_PICTURE);
 	if (!FLAC__metadata_get_picture(data_addr, &picture, -1, NULL, NULL, (uint32_t)(-1), (uint32_t)(-1), (uint32_t)(-1), (uint32_t)(-1)))
 	{
