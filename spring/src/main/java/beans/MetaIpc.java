@@ -13,8 +13,8 @@ public class MetaIpc {
     final int timeOut = 8000;
 
     public Map<String, List<String>> meta0GetAlbums() {
-        Map<String, List<String>> albums = new TreeMap<>();
         try (Socket sock = new Socket()) {
+            Map<String, List<String>> albums = new TreeMap<>();
             sock.connect(new InetSocketAddress(metaHost, metaPort), timeOut);
             sock.setSoTimeout(timeOut);
             BufferedWriter sockWriter = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
@@ -27,13 +27,13 @@ public class MetaIpc {
                     albums.computeIfAbsent(album, (k) -> new ArrayList<>()).add(path);
                 }
             }
+            return albums;
         } catch (IOException ignored) {
+            return new TreeMap<>();
         }
-        return albums;
     }
 
     public byte[] meta1GetPicture(String album) {
-        byte[] pictureBytes = new byte[4];
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(metaHost, metaPort), timeOut);
             sock.setSoTimeout(timeOut);
@@ -43,6 +43,7 @@ public class MetaIpc {
             sockWriter.write(op);
             sockWriter.write(album);
             sockWriter.flush();
+            byte[] pictureBytes = new byte[4];
             int readSize = sockReader.read(pictureBytes, 0, 4);
             if (readSize == 4) {
                 sockWriter.write("ok");
@@ -57,13 +58,13 @@ public class MetaIpc {
                 sockWriter.write("not");
             }
             sockWriter.flush();
+            return pictureBytes;
         } catch (IOException ignored) {
+            return new byte[]{1, 2, 3};
         }
-        return pictureBytes;
     }
 
     public Map<String, Map<String, String>> meta2GetTags(String album) {
-        Map<String, Map<String, String>> metasMap = new TreeMap<>();
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(metaHost, metaPort), timeOut);
             sock.setSoTimeout(timeOut);
@@ -74,6 +75,7 @@ public class MetaIpc {
             sockWriter.flush();
             sockWriter.write(album);
             sockWriter.flush();
+            Map<String, Map<String, String>> metasMap = new TreeMap<>();
             for (String file = sockReader.readLine(); !file.equals("&the_end"); file = sockReader.readLine()) {
                 metasMap.put(file, new HashMap<>());
                 metasMap.get(file).put("ARTIST", "");
@@ -85,8 +87,9 @@ public class MetaIpc {
                     metasMap.get(file).put(comment.split("=")[0], comment.substring(comment.split("=")[0].length() + 1));
                 }
             }
+            return metasMap;
         } catch (IOException ignored) {
+            return new TreeMap<>();
         }
-        return metasMap;
     }
 }

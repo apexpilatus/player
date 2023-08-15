@@ -83,23 +83,7 @@ static void player0_play(int sock)
 	}
 }
 
-static void player1_set_vol(int sock)
-{
-	ssize_t nbytes = read(sock, data_addr, data_size);
-	if (nbytes > 0)
-	{
-		data_addr[nbytes] = 0;
-		*curvol_addr = strtol(data_addr, NULL, 10);
-		if (update_mixer())
-		{
-			*curvol_addr = 0;
-			*maxvol_addr = 0;
-		}
-	}
-	write(sock, "ok\n", 3);
-}
-
-static void player2_get_vol(int sock)
+static void player1_set_volume(int sock)
 {
 	if (update_mixer())
 	{
@@ -108,9 +92,23 @@ static void player2_get_vol(int sock)
 	}
 	sprintf(data_addr, "%ld;%ld%c", *curvol_addr, *maxvol_addr, '\n');
 	write(sock, data_addr, strlen(data_addr));
+	ssize_t nbytes;
+	while ((nbytes = read(sock, data_addr, data_size)) > 0)
+	{
+		if (nbytes == curvol_size)
+		{
+			char buf[curvol_size];
+			for (int i = 0; i < curvol_size; i++)
+			{
+				buf[curvol_size - 1 - i] = data_addr[i];
+			}
+			*curvol_addr = *(long*)buf;
+			update_mixer();
+		}
+	}
 }
 
-static void player3_stop(int sock)
+static void player2_stop(int sock)
 {
 	if (player_pid > 0)
 	{
@@ -121,18 +119,18 @@ static void player3_stop(int sock)
 	write(sock, "ok\n", 3);
 }
 
-static void player4_exit(int sock)
+static void player3_exit(int sock)
 {
-	player3_stop(sock);
+	player2_stop(sock);
 	exit(0);
 }
 
+
 static void (*action[])(int sock) = {
 	player0_play,
-	player1_set_vol,
-	player2_get_vol,
-	player3_stop,
-	player4_exit};
+	player1_set_volume,
+	player2_stop,
+	player3_exit};
 
 int main(void)
 {

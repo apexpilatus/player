@@ -12,18 +12,23 @@ import java.io.IOException;
 @RestController
 public class Volume {
     @PostMapping("/volume")
-    void setVolume(@RequestParam("level") int targLevel, HttpServletResponse resp, PlayerIpc playerIpc) throws IOException {
-        playerIpc.player1SetVol(targLevel);
+    void setVolume(@RequestParam("level") long targLevel, HttpServletResponse resp, PlayerIpc playerIpc) throws IOException {
+        playerIpc.player1SetVolumeSetVol(targLevel);
         resp.setContentType("text/plain");
         resp.getWriter().write("ok");
     }
 
     @GetMapping("/volume")
-    void getVolume(HttpServletResponse resp, PlayerIpc playerIpc) throws IOException {
+    void getVolume(HttpServletResponse resp, @RequestParam(name = "close", required = false, defaultValue = "false") String close, PlayerIpc playerIpc) throws IOException {
         resp.setContentType("text/plain");
         resp.setCharacterEncoding("utf-8");
         resp.setHeader("Cache-Control", "no-cache");
         resp.setHeader("X-Content-Type-Options", "nosniff");
-        resp.getWriter().write(playerIpc.player2GetVol());
+        if (close.equals("true")) {
+            playerIpc.player1SetVolumeCloseVolSoc();
+            resp.getWriter().write("ok");
+        } else {
+            resp.getWriter().write(playerIpc.player1SetVolumeOpenVolSoc());
+        }
     }
 }

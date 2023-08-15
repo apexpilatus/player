@@ -23,9 +23,14 @@ function hideTracks() {
 }
 
 function hideVolume() {
-    document.getElementById("volume").hidden = true;
-    document.getElementById("showvolume").hidden = false;
-    document.getElementById("albums").setAttribute("class", "scroll");
+    const xhttp = new XMLHttpRequest();
+    xhttp.onload = function () {
+        document.getElementById("volume").hidden = true;
+        document.getElementById("showvolume").hidden = false;
+        document.getElementById("albums").setAttribute("class", "scroll");
+    }
+    xhttp.open("GET", window.location.href + "volume?close=true");
+    xhttp.send();
 }
 
 function getVolume() {
@@ -34,6 +39,7 @@ function getVolume() {
         resp = this.responseText;
         if (resp.split(";")[1] == 0) {
             document.getElementById("showvolume").innerHTML = "&#9739";
+            hideVolume();
         } else {
             document.getElementById("albums").setAttribute("class", "unscroll");
             document.getElementById("showvolume").innerHTML = "&#9738";
