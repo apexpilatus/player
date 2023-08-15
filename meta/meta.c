@@ -150,9 +150,9 @@ static void meta2_get_tags(int sock)
                     write(sock, "&end_tags\n", 10);
                 }
             }
-            write(sock, "&the_end\n", 9);
-            (void)closedir(dp);
         }
+        write(sock, "&the_end\n", 9);
+        (void)closedir(dp);
     }
 }
 
