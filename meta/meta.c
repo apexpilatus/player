@@ -127,6 +127,14 @@ static void meta2_get_tags(int sock)
                 }
                 if (handl_pid > 0)
                 {
+                    char *str_dst = data_addr_internal;
+                    for (; *length_internal > 0; (*length_internal)--)
+                    {
+                        write(sock, str_dst, strlen(str_dst));
+                        write(sock, "\n", 1);
+                        str_dst = str_dst + strlen(str_dst) + 1;
+                    }
+                    write(sock, "&end_tags\n", 10);
                     waitpid(handl_pid, &handl_status, 0);
                 }
                 if (!handl_status)
@@ -140,14 +148,6 @@ static void meta2_get_tags(int sock)
                         strcpy(str_dst, str_src);
                         str_dst = str_dst + strlen(str_dst) + 1;
                     }
-                    str_dst = data_addr_internal;
-                    for (; *length_internal > 0; (*length_internal)--)
-                    {
-                        write(sock, str_dst, strlen(str_dst));
-                        write(sock, "\n", 1);
-                        str_dst = str_dst + strlen(str_dst) + 1;
-                    }
-                    write(sock, "&end_tags\n", 10);
                 }
             }
         }
