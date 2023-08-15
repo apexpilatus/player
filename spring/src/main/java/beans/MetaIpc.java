@@ -10,7 +10,7 @@ import java.util.*;
 public class MetaIpc {
     final String metaHost = "meta";
     final int metaPort = 9696;
-    final int timeOut = 5000;
+    final int timeOut = 8000;
 
     public Map<String, List<String>> meta0GetAlbums() {
         Map<String, List<String>> albums = new TreeMap<>();

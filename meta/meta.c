@@ -101,8 +101,8 @@ static void meta1_get_picture(int sock)
 
 static inline void send_tags(int sock)
 {
-    char *str_dst = data_addr_internal;
-    for ((*length_internal)++; *length_internal > 0; (*length_internal)--)
+    char *str_dst = data_addr_half;
+    for ((*length_half)++; *length_half > 0; (*length_half)--)
     {
         write(sock, str_dst, strlen(str_dst));
         write(sock, "\n", 1);
@@ -123,7 +123,7 @@ static void meta2_get_tags(int sock)
     dp = opendir(data_addr);
     if (dp != NULL)
     {
-        *length_internal = 0;
+        *length_half = 0;
         while ((ep = readdir(dp)))
         {
             if (ep->d_type == DT_REG)
@@ -138,7 +138,7 @@ static void meta2_get_tags(int sock)
                 }
                 if (handl_pid > 0)
                 {
-                    if (*length_internal)
+                    if (*length_half)
                     {
                         send_tags(sock);
                     }
@@ -147,9 +147,9 @@ static void meta2_get_tags(int sock)
                 if (!handl_status)
                 {
                     char *str_src = data_addr;
-                    char *str_dst = data_addr_internal;
+                    char *str_dst = data_addr_half;
                     strcpy(str_dst, ep->d_name);
-                    *length_internal = ++(*length);
+                    *length_half = ++(*length);
                     for (; *length > 0; (*length)--)
                     {
                         str_src = str_src + strlen(str_src) + 1;
