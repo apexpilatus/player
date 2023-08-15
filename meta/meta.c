@@ -99,6 +99,18 @@ static void meta1_get_picture(int sock)
     data_addr[read_size] = '\0';
 }
 
+static inline void send_tags(int sock)
+{
+    char *str_dst = data_addr_internal;
+    for (; *length_internal > 0; (*length_internal)--)
+    {
+        write(sock, str_dst, strlen(str_dst));
+        write(sock, "\n", 1);
+        str_dst = str_dst + strlen(str_dst) + 1;
+    }
+    write(sock, "&end_tags\n", 10);
+}
+
 static void meta2_get_tags(int sock)
 {
     pid_t handl_pid;
@@ -111,7 +123,6 @@ static void meta2_get_tags(int sock)
     dp = opendir(data_addr);
     if (dp != NULL)
     {
-        char *str_dst;
         while ((ep = readdir(dp)))
         {
             if (ep->d_type == DT_REG)
@@ -128,20 +139,13 @@ static void meta2_get_tags(int sock)
                 }
                 if (handl_pid > 0)
                 {
-                    str_dst = data_addr_internal;
-                    for (; *length_internal > 0; (*length_internal)--)
-                    {
-                        write(sock, str_dst, strlen(str_dst));
-                        write(sock, "\n", 1);
-                        str_dst = str_dst + strlen(str_dst) + 1;
-                    }
-                    write(sock, "&end_tags\n", 10);
+                    send_tags(sock);
                     waitpid(handl_pid, &handl_status, 0);
                 }
                 if (!handl_status)
                 {
                     char *str_src = data_addr;
-                    str_dst = data_addr_internal;
+                    char *str_dst = data_addr_internal;
                     *length_internal = ++(*length);
                     for (; *length > 0; (*length)--)
                     {
@@ -152,14 +156,7 @@ static void meta2_get_tags(int sock)
                 }
             }
         }
-        str_dst = data_addr_internal;
-        for (; *length_internal > 0; (*length_internal)--)
-        {
-            write(sock, str_dst, strlen(str_dst));
-            write(sock, "\n", 1);
-            str_dst = str_dst + strlen(str_dst) + 1;
-        }
-        write(sock, "&end_tags\n", 10);
+        send_tags(sock);
         write(sock, "&the_end\n", 9);
         (void)closedir(dp);
     }
