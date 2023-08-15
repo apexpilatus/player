@@ -75,6 +75,7 @@ public class MetaIpc {
             sockWriter.write(album);
             sockWriter.flush();
             for (String file = sockReader.readLine(); !file.equals("&the_end"); file = sockReader.readLine()) {
+                System.out.println("file = "+ file);
                 metasMap.put(file, new HashMap<>());
                 metasMap.get(file).put("ARTIST", "");
                 metasMap.get(file).put("ALBUM", "");
@@ -82,6 +83,7 @@ public class MetaIpc {
                 metasMap.get(file).put("TITLE", "");
                 metasMap.get(file).put("RATE", "");
                 for (String comment = sockReader.readLine(); !comment.equals("&end_tags"); comment = sockReader.readLine()) {
+                    System.out.println("comm = "+ comment);
                     metasMap.get(file).put(comment.split("=")[0], comment.substring(comment.split("=")[0].length() + 1));
                 }
             }
