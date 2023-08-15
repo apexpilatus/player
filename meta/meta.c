@@ -111,6 +111,7 @@ static void meta2_get_tags(int sock)
     dp = opendir(data_addr);
     if (dp != NULL)
     {
+        char *str_dst;
         while ((ep = readdir(dp)))
         {
             if (ep->d_type == DT_REG)
@@ -127,7 +128,7 @@ static void meta2_get_tags(int sock)
                 }
                 if (handl_pid > 0)
                 {
-                    char *str_dst = data_addr_internal;
+                    str_dst = data_addr_internal;
                     for (; *length_internal > 0; (*length_internal)--)
                     {
                         write(sock, str_dst, strlen(str_dst));
@@ -140,7 +141,7 @@ static void meta2_get_tags(int sock)
                 if (!handl_status)
                 {
                     char *str_src = data_addr;
-                    char *str_dst = data_addr_internal;
+                    str_dst = data_addr_internal;
                     *length_internal = ++(*length);
                     for (; *length > 0; (*length)--)
                     {
@@ -151,6 +152,14 @@ static void meta2_get_tags(int sock)
                 }
             }
         }
+        str_dst = data_addr_internal;
+        for (; *length_internal > 0; (*length_internal)--)
+        {
+            write(sock, str_dst, strlen(str_dst));
+            write(sock, "\n", 1);
+            str_dst = str_dst + strlen(str_dst) + 1;
+        }
+        write(sock, "&end_tags\n", 10);
         write(sock, "&the_end\n", 9);
         (void)closedir(dp);
     }
