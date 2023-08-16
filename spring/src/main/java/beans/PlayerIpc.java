@@ -12,6 +12,7 @@ public class PlayerIpc {
     final int timeOut = 5000;
 
     public void player0Play(String albumToPlay, String trackToPlay) {
+        player1SetVolumeCloseVolSoc();
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
             sock.setSoTimeout(timeOut);
