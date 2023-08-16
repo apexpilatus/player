@@ -1,4 +1,4 @@
-PL_PATH := /home/exe/player
+PL_PATH := /home/drive/waiter
 
 CC := gcc -O2
 

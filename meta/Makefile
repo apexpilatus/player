@@ -1,4 +1,4 @@
-MET_PATH := /home/exe/meta
+MET_PATH := /home/drive/meta
 METDEFS := -D picture_getter_path=\"$(MET_PATH)/getpicture\" -D tags_getter_path=\"$(MET_PATH)/gettags\"
 CC := gcc -O0
 
