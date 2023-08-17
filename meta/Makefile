@@ -1,9 +1,9 @@
-MET_PATH := /home/drive/meta
+MET_PATH := /home/meta
 METDEFS := -D picture_getter_path=\"$(MET_PATH)/getpicture\" -D tags_getter_path=\"$(MET_PATH)/gettags\"
 CC := gcc -O0
 
 all : meta getpicture gettags
-	mv meta getpicture gettags $(MET_PATH)
+	mv meta getpicture gettags /mnt/$(MET_PATH)
 
 meta : meta.c shares.c shares.h
 	$(CC) $(METDEFS) meta.c shares.c -o meta

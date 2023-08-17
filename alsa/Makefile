@@ -1,4 +1,4 @@
-PL_PATH := /home/drive/waiter
+PL_PATH := /home/waiter
 
 CC := gcc -O2
 
@@ -13,7 +13,7 @@ $(error "target" should be shure)
 endif
 
 all : waiter mixer player
-	mv waiter player mixer $(PL_PATH)
+	mv waiter player mixer /mnt/$(PL_PATH)
 
 waiter : waiter.c shares.h
 	$(CC) $(PLAYDEFS) waiter.c -o waiter -lasound

@@ -15,11 +15,11 @@
 #define tags_getter_name "tags"
 
 static char *dirs[] = {
-    "/home/drive/music/dzr",
-    "/home/drive/music/qbz",
-    "/home/drive/music/hack1",
-    "/home/drive/music/hack2",
-    "/home/drive/music/hack3",
+    "/home/music/dzr",
+    "/home/music/qbz",
+    "/home/music/hack1",
+    "/home/music/hack2",
+    "/home/music/hack3",
     NULL};
 
 static void meta0_get_albums(int sock)
