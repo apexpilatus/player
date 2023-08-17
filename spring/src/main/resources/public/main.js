@@ -48,7 +48,7 @@ function getVolume() {
             document.getElementById("volume").value = resp.split(";")[0];
             document.getElementById("volume").hidden = false;
             document.getElementById("showvolume").hidden = true;
-            delayVar = setTimeout(hideVolume, 4000);
+            delayVar = setTimeout(hideVolume, 3000);
         }
     }
     xhttp.open("GET", window.location.href + "volume");
