@@ -59,7 +59,7 @@ function setVolume() {
     const xhttp = new XMLHttpRequest();
     xhttp.onload = function () {
         clearTimeout(delayVar);
-        delayVar = setTimeout(hideVolume, 4000);
+        delayVar = setTimeout(hideVolume, 3000);
     }
     xhttp.open("POST", window.location.href + "volume?level=" + document.getElementById("volume").value);
     xhttp.send();
