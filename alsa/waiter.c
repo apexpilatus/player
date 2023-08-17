@@ -20,41 +20,54 @@
 #define listen_port 8888
 
 static pid_t player_pid;
+static pid_t mixer_pid;
 static char *data_addr;
 static int data_size;
-static volatile long *curvol_addr;
-static volatile long *maxvol_addr;
-static int curvol_size = sizeof(long);
-static int maxvol_size = sizeof(long);
+static volatile long *target_vol_ptr;
+static volatile long *max_vol_ptr;
+static int target_vol_size = sizeof(long);
+static int max_vol_size = sizeof(long);
 
-static inline int update_mixer()
+static inline int open_mixer()
 {
+	*max_vol_ptr = 0;
 	int mixer_card_num = snd_card_get_index(card_name);
 	if (mixer_card_num >= 0)
 	{
 		sprintf(data_addr, "hw:%d", mixer_card_num);
-		pid_t mixer_pid = fork();
+		mixer_pid = fork();
 		if (!mixer_pid)
 		{
 			execl(exec_mixer_path, mixer_name, NULL);
 		}
-		int mix_status;
-		if (mixer_pid > 0)
+		while (!*max_vol_ptr)
+			;
+		if (*max_vol_ptr > 0)
 		{
-			waitpid(mixer_pid, &mix_status, 0);
+			return 0;
 		}
-		return mix_status;
 	}
 	return 1;
 }
 
+static inline int close_mixer()
+{
+	*max_vol_ptr = 0;
+	waitpid(mixer_pid, NULL, 0);
+}
+
 static void player0_play(int sock)
 {
-	if (update_mixer())
+	if (open_mixer())
 	{
-		*curvol_addr = 0;
-		*maxvol_addr = 0;
+		*target_vol_ptr = 0;
+		*max_vol_ptr = 0;
 	}
+	else
+	{
+		kill(mixer_pid, SIGUSR1);
+	}
+	close_mixer();
 	int album_size, track_size;
 	album_size = read(sock, data_addr, data_size);
 	write(sock, "ok\n", 3);
@@ -85,27 +98,26 @@ static void player0_play(int sock)
 
 static void player1_set_volume(int sock)
 {
-	if (update_mixer())
+	if (open_mixer())
 	{
-		*curvol_addr = 0;
-		*maxvol_addr = 0;
+		*target_vol_ptr = 0;
+		*max_vol_ptr = 0;
 	}
-	sprintf(data_addr, "%ld;%ld%c", *curvol_addr, *maxvol_addr, '\n');
+	sprintf(data_addr, "%ld;%ld%c", *target_vol_ptr, *max_vol_ptr, '\n');
 	write(sock, data_addr, strlen(data_addr));
 	ssize_t nbytes;
 	while ((nbytes = read(sock, data_addr, data_size)) > 0)
 	{
-		if (nbytes == curvol_size)
+		if (nbytes == target_vol_size)
 		{
-			char buf[curvol_size];
-			for (int i = 0; i < curvol_size; i++)
+			for (int i = 0; i < target_vol_size; i++)
 			{
-				buf[curvol_size - 1 - i] = data_addr[i];
+				((char *)target_vol_ptr)[target_vol_size - 1 - i] = data_addr[i];
 			}
-			*curvol_addr = *(long*)buf;
-			update_mixer();
+			kill(mixer_pid, SIGUSR1);
 		}
 	}
+	close_mixer();
 }
 
 static void player2_stop(int sock)
@@ -124,7 +136,6 @@ static void player3_exit(int sock)
 	player2_stop(sock);
 	exit(0);
 }
-
 
 static void (*action[])(int sock) = {
 	player0_play,
@@ -149,11 +160,11 @@ int main(void)
 	{
 		return 1;
 	}
-	curvol_addr = shd_addr;
-	maxvol_addr = curvol_addr + 1;
-	data_addr = (char *)shd_addr + curvol_size + maxvol_size;
-	data_size = page_size - curvol_size - maxvol_size;
-	*curvol_addr = 0;
+	target_vol_ptr = shd_addr;
+	max_vol_ptr = target_vol_ptr + 1;
+	data_addr = (char *)shd_addr + target_vol_size + max_vol_size;
+	data_size = page_size - target_vol_size - max_vol_size;
+	*target_vol_ptr = 0;
 	int sock_listen, sock;
 	sock_listen = socket(PF_INET, SOCK_STREAM, 0);
 	struct sockaddr_in addr;
