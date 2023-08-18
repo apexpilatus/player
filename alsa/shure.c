@@ -15,9 +15,9 @@
 
 static unsigned int rate;
 static unsigned short sample_size;
-extern unsigned char *buf0;
-extern unsigned char *buf1;
-void *playbuf[2];
+static unsigned char *buf0;
+static unsigned char *buf1;
+static void *playbuf[2];
 
 static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 *const buffer[], void *client_data)
 {
@@ -41,11 +41,10 @@ int main(void)
 	{
 		return 1;
 	}
+	buf0 = card_name + strlen(card_name) + 1;
+	buf1 = data_half;
 	playbuf[0] = buf0;
 	playbuf[1] = buf1;
-	extern char *album;
-	extern char *track;
-	extern char *card_name;
 	if (chdir(album))
 	{
 		return 1;

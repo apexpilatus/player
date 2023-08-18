@@ -22,8 +22,7 @@
 char *album;
 char *track;
 char *card_name;
-unsigned char *buf0;
-unsigned char *buf1;
+char *data_half;
 
 static int vol_size = sizeof(long) * 2;
 
@@ -51,8 +50,7 @@ int get_shared_vars(void)
 	album = (char *)shd_addr + vol_size;
 	track = album + strlen(album) + 1;
 	card_name = track + strlen(track) + 1;
-	buf0 = card_name + strlen(card_name) + 1;
-	buf1 = shd_addr + (shm_size() / 2);
+	data_half = (char *)shd_addr + (shm_size() / 2);
 	return 0;
 }
 
