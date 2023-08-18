@@ -15,8 +15,8 @@
 
 static unsigned int rate;
 static unsigned short sample_size;
-extern void *buf0;
-extern void *buf1;
+extern unsigned char *buf0;
+extern unsigned char *buf1;
 void *playbuf[2];
 
 static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 *const buffer[], void *client_data)
@@ -25,8 +25,8 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 	int sample_size_bytes = sample_size / 8;
 	for (size_t i = 0; i < frame->header.blocksize; i++)
 	{
-		cp_little_endian((char *)buf0 + (i * sample_size_bytes), buffer[0][i], sample_size_bytes);
-		cp_little_endian((char *)buf1 + (i * sample_size_bytes), buffer[1][i], sample_size_bytes);
+		cp_little_endian(buf0 + (i * sample_size_bytes), buffer[0][i], sample_size_bytes);
+		cp_little_endian(buf1 + (i * sample_size_bytes), buffer[1][i], sample_size_bytes);
 	}
 	if (snd_pcm_mmap_writen(pcm_p, playbuf, (snd_pcm_uframes_t)frame->header.blocksize) < 0)
 	{

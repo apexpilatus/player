@@ -22,8 +22,8 @@
 char *album;
 char *track;
 char *card_name;
-void *buf0;
-void *buf1;
+unsigned char *buf0;
+unsigned char *buf1;
 
 static int vol_size = sizeof(long) * 2;
 
