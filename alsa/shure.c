@@ -15,23 +15,23 @@
 
 static unsigned int rate;
 static unsigned short sample_size;
+extern void *buf0;
+extern void *buf1;
+void *playbuf[2];
 
 static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 *const buffer[], void *client_data)
 {
 	snd_pcm_t *pcm_p = (snd_pcm_t *)client_data;
-	int samplesize = sample_size / 8;
-	int bufsize = samplesize * 2 * frame->header.blocksize;
-	unsigned char *playbuf = malloc(bufsize);
+	int sample_size_bytes = sample_size / 8;
 	for (size_t i = 0; i < frame->header.blocksize; i++)
 	{
-		cp_little_endian(playbuf + (i * samplesize * 2), buffer[0][i], samplesize);
-		cp_little_endian(playbuf + (i * samplesize * 2) + samplesize, buffer[1][i], samplesize);
+		cp_little_endian((char *)buf0 + (i * sample_size_bytes), buffer[0][i], sample_size_bytes);
+		cp_little_endian((char *)buf1 + (i * sample_size_bytes), buffer[1][i], sample_size_bytes);
 	}
-	if (snd_pcm_mmap_writei(pcm_p, playbuf, (snd_pcm_uframes_t)frame->header.blocksize) < 0)
+	if (snd_pcm_mmap_writen(pcm_p, playbuf, (snd_pcm_uframes_t)frame->header.blocksize) < 0)
 	{
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
-	free(playbuf);
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
@@ -41,6 +41,8 @@ int main(void)
 	{
 		return 1;
 	}
+	playbuf[0] = buf0;
+	playbuf[1] = buf1;
 	extern char *album;
 	extern char *track;
 	extern char *card_name;
@@ -65,7 +67,7 @@ int main(void)
 	snd_pcm_hw_params_t *pcm_hw;
 	snd_pcm_hw_params_malloc(&pcm_hw);
 	snd_pcm_hw_params_any(pcm_p, pcm_hw);
-	snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
+	snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_NONINTERLEAVED);
 	int dir = 0;
 	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, rate, dir);
 	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, sample_size == 16 ? SND_PCM_FORMAT_S16 : SND_PCM_FORMAT_S24_3LE);

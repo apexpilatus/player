@@ -22,6 +22,8 @@
 char *album;
 char *track;
 char *card_name;
+void *buf0;
+void *buf1;
 
 static int vol_size = sizeof(long) * 2;
 
@@ -36,13 +38,12 @@ void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize)
 
 int get_shared_vars(void)
 {
-	int shd = shm_open(shm_file, O_RDONLY, 0);
+	int shd = shm_open(shm_file, O_RDWR, 0);
 	if (shd < 0)
 	{
 		return 1;
 	}
-	int page_size = getpagesize();
-	void *shd_addr = mmap(NULL, page_size, PROT_READ, MAP_SHARED, shd, 0);
+	void *shd_addr = mmap(NULL, shm_size(), PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
 	if (shd_addr == MAP_FAILED)
 	{
 		return 1;
@@ -50,6 +51,8 @@ int get_shared_vars(void)
 	album = (char *)shd_addr + vol_size;
 	track = album + strlen(album) + 1;
 	card_name = track + strlen(track) + 1;
+	buf0 = card_name + strlen(card_name) + 1;
+	buf1 = shd_addr + (shm_size() / 2);
 	return 0;
 }
 

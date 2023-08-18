@@ -47,8 +47,7 @@ int main(void)
 		*max_vol_ptr = -1;
 		return 1;
 	}
-	int page_size = getpagesize();
-	void *shd_addr = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
+	void *shd_addr = mmap(NULL, shm_size(), PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
 	if (shd_addr == MAP_FAILED)
 	{
 		*max_vol_ptr = -1;

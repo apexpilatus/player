@@ -150,12 +150,11 @@ int main(void)
 	{
 		return 1;
 	}
-	int page_size = getpagesize();
-	if (ftruncate(shd, page_size))
+	if (ftruncate(shd, shm_size()))
 	{
 		return 1;
 	}
-	void *shd_addr = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
+	void *shd_addr = mmap(NULL, shm_size(), PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
 	if (shd_addr == MAP_FAILED)
 	{
 		return 1;
@@ -163,7 +162,7 @@ int main(void)
 	target_vol_ptr = shd_addr;
 	max_vol_ptr = target_vol_ptr + 1;
 	data_addr = (char *)shd_addr + target_vol_size + max_vol_size;
-	data_size = page_size - target_vol_size - max_vol_size;
+	data_size = shm_size() - target_vol_size - max_vol_size;
 	*target_vol_ptr = 0;
 	int sock_listen, sock;
 	sock_listen = socket(PF_INET, SOCK_STREAM, 0);
