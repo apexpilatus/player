@@ -8,8 +8,11 @@ PLAYLIBS := -lFLAC -lasound
 ifeq ($(target), shure)
 PLAYSRC := shure.c
 PLAYDEFS += -D card_name=\"S50\"
+else ifeq ($(target), fiio)
+PLAYSRC := fiio.c
+PLAYDEFS += -D card_name=\"Pro\"
 else
-$(error "target" should be shure)
+$(error "target" should be shure or fiio)
 endif
 
 all : waiter mixer player

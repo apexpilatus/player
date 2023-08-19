@@ -77,7 +77,11 @@ int main(void)
 		*max_vol_ptr = -1;
 		return 1;
 	}
-	melem = snd_mixer_last_elem(mxr);
+	if (!(melem = snd_mixer_last_elem(mxr)))
+	{
+		*max_vol_ptr = -1;
+		return 1;
+	}
 	snd_mixer_selem_get_playback_volume_range(melem, &minvol, &maxvol);
 	*max_vol_ptr = maxvol;
 	signal(SIGUSR1, set_volume);
