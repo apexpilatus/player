@@ -6,10 +6,10 @@ PLAYDEFS := -D exec_player_path=\"$(PL_PATH)/player\" -D exec_mixer_path=\"$(PL_
 PLAYLIBS := -lFLAC -lasound
 
 ifeq ($(target), shure)
-PLAYSRC := shure.c
+PLAYSRC := play.c
 PLAYDEFS += -D card_name=\"S50\"
 else ifeq ($(target), fiio)
-PLAYSRC := fiio.c
+PLAYSRC := play.c
 PLAYDEFS += -D card_name=\"Pro\"
 else
 $(error "target" should be shure or fiio)
