@@ -27,14 +27,14 @@ static volatile long *target_vol_ptr;
 static volatile long *max_vol_ptr;
 static int target_vol_size = sizeof(long);
 static int max_vol_size = sizeof(long);
+static int card_num;
 
 static inline int open_mixer()
 {
 	*max_vol_ptr = 0;
-	int mixer_card_num = snd_card_get_index(card_name);
-	if (mixer_card_num >= 0)
+	if ((card_num = snd_card_get_index("Pro")) >= 0 || (card_num = snd_card_get_index("S50")) >= 0)
 	{
-		sprintf(data_addr, "hw:%d", mixer_card_num);
+		sprintf(data_addr, "hw:%d", card_num);
 		mixer_pid = fork();
 		if (!mixer_pid)
 		{
@@ -83,7 +83,6 @@ static void player0_play(int sock)
 			waitpid(player_pid, NULL, 0);
 			player_pid = 0;
 		}
-		int card_num = snd_card_get_index(card_name);
 		if (card_num >= 0)
 		{
 			sprintf(data_addr + album_size + track_size, "hw:%d,0", card_num);

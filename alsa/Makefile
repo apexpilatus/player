@@ -4,16 +4,7 @@ CC := gcc -O2
 
 PLAYDEFS := -D exec_player_path=\"$(PL_PATH)/player\" -D exec_mixer_path=\"$(PL_PATH)/mixer\"
 PLAYLIBS := -lFLAC -lasound
-
-ifeq ($(target), shure)
 PLAYSRC := play.c
-PLAYDEFS += -D card_name=\"S50\"
-else ifeq ($(target), fiio)
-PLAYSRC := play.c
-PLAYDEFS += -D card_name=\"Pro\"
-else
-$(error "target" should be shure or fiio)
-endif
 
 all : waiter mixer player
 	mv waiter player mixer /mnt/$(PL_PATH)
