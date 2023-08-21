@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 #include <netinet/in.h>
 #include <sys/mman.h>
+#include <sys/resource.h>
 
 #include <alsa/global.h>
 #include <alsa/input.h>
@@ -91,6 +92,7 @@ static void player0_play(int sock)
 			{
 				execl(exec_player_path, player_name, NULL);
 			}
+			setpriority(PRIO_PROCESS, player_pid, -20);
 		}
 	}
 }
