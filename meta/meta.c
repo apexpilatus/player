@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include "shares.h"
 
 #include <unistd.h>
@@ -9,6 +11,7 @@
 #include <netinet/in.h>
 #include <sys/mman.h>
 #include <dirent.h>
+#include <sched.h>
 
 #define listen_port 9696
 #define picture_getter_name "picture"
@@ -172,6 +175,10 @@ static void (*action[])(int sock) = {
 
 int main(void)
 {
+    cpu_set_t cpu_set;
+    CPU_ZERO(&cpu_set);
+    CPU_SET(0, &cpu_set);
+    sched_setaffinity(getpid(), sizeof(cpu_set), &cpu_set);
     int shd = shm_open(shm_file, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
     if (shd < 0)
     {

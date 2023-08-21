@@ -1,7 +1,10 @@
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sched.h>
 
 #include <alsa/global.h>
 #include <alsa/input.h>
@@ -38,6 +41,10 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 
 int main(void)
 {
+	cpu_set_t cpu_set;
+	CPU_ZERO(&cpu_set);
+	CPU_SET(2, &cpu_set);
+	sched_setaffinity(getpid(), sizeof(cpu_set), &cpu_set);
 	if (get_shared_vars())
 	{
 		return 1;

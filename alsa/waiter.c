@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include "shares.h"
 
 #include <unistd.h>
@@ -9,6 +11,7 @@
 #include <netinet/in.h>
 #include <sys/mman.h>
 #include <sys/resource.h>
+#include <sched.h>
 
 #include <alsa/global.h>
 #include <alsa/input.h>
@@ -41,11 +44,14 @@ static inline int open_mixer()
 		{
 			execl(exec_mixer_path, mixer_name, NULL);
 		}
-		while (!*max_vol_ptr)
-			;
-		if (*max_vol_ptr > 0)
+		if (mixer_pid > 0)
 		{
-			return 0;
+			while (!*max_vol_ptr)
+				;
+			if (*max_vol_ptr > 0)
+			{
+				return 0;
+			}
 		}
 	}
 	return 1;
@@ -54,7 +60,10 @@ static inline int open_mixer()
 static inline int close_mixer()
 {
 	*max_vol_ptr = 0;
-	waitpid(mixer_pid, NULL, 0);
+	if (mixer_pid > 0)
+	{
+		waitpid(mixer_pid, NULL, 0);
+	}
 }
 
 static void player0_play(int sock)
@@ -92,7 +101,10 @@ static void player0_play(int sock)
 			{
 				execl(exec_player_path, player_name, NULL);
 			}
-			setpriority(PRIO_PROCESS, player_pid, -20);
+			if (player_pid > 0)
+			{
+				setpriority(PRIO_PROCESS, player_pid, PRIO_MIN);
+			}
 		}
 	}
 }
@@ -146,6 +158,10 @@ static void (*action[])(int sock) = {
 
 int main(void)
 {
+	cpu_set_t cpu_set;
+	CPU_ZERO(&cpu_set);
+	CPU_SET(1, &cpu_set);
+	sched_setaffinity(getpid(), sizeof(cpu_set), &cpu_set);
 	int shd = shm_open(shm_file, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 	if (shd < 0)
 	{
