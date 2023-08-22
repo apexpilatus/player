@@ -185,12 +185,19 @@ int main(void)
 	data_size = shm_size() - target_vol_size - max_vol_size;
 	*target_vol_ptr = 0;
 	FILE *wp_pid = fopen("/tmp/wp", "r");
-	nbytes = fread(data_addr, 1, 10, wp_pid);
-	fclose(wp_pid);
-	data_addr[nbytes - 1] = '\0';
-	CPU_ZERO(&cpu_set);
-	CPU_SET(4, &cpu_set);
-	if (sched_setaffinity(strtol(data_addr, NULL, 10), sizeof(cpu_set), &cpu_set))
+	if (wp_pid)
+	{
+		nbytes = fread(data_addr, 1, 10, wp_pid);
+		fclose(wp_pid);
+		data_addr[nbytes - 1] = '\0';
+		CPU_ZERO(&cpu_set);
+		CPU_SET(4, &cpu_set);
+		if (sched_setaffinity(strtol(data_addr, NULL, 10), sizeof(cpu_set), &cpu_set))
+		{
+			return 1;
+		}
+	}
+	else
 	{
 		return 1;
 	}
