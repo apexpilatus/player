@@ -191,7 +191,7 @@ int main(void)
 		fclose(wp_pid);
 		data_addr[nbytes - 1] = '\0';
 		CPU_ZERO(&cpu_set);
-		CPU_SET(4, &cpu_set);
+		CPU_SET(3, &cpu_set);
 		if (sched_setaffinity(strtol(data_addr, NULL, 10), sizeof(cpu_set), &cpu_set))
 		{
 			return 1;
