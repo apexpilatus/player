@@ -25,6 +25,7 @@
 
 static pid_t player_pid;
 static pid_t mixer_pid;
+static ssize_t nbytes;
 static char *data_addr;
 static int data_size;
 static volatile long *target_vol_ptr;
@@ -118,7 +119,6 @@ static void player1_set_volume(int sock)
 	}
 	sprintf(data_addr, "%ld;%ld%c", *target_vol_ptr, *max_vol_ptr, '\n');
 	write(sock, data_addr, strlen(data_addr));
-	ssize_t nbytes;
 	while ((nbytes = read(sock, data_addr, data_size)) > 0)
 	{
 		if (nbytes == target_vol_size)
@@ -161,7 +161,10 @@ int main(void)
 	cpu_set_t cpu_set;
 	CPU_ZERO(&cpu_set);
 	CPU_SET(1, &cpu_set);
-	sched_setaffinity(getpid(), sizeof(cpu_set), &cpu_set);
+	if (sched_setaffinity(getpid(), sizeof(cpu_set), &cpu_set))
+	{
+		return 1;
+	}
 	int shd = shm_open(shm_file, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 	if (shd < 0)
 	{
@@ -181,6 +184,16 @@ int main(void)
 	data_addr = (char *)shd_addr + target_vol_size + max_vol_size;
 	data_size = shm_size() - target_vol_size - max_vol_size;
 	*target_vol_ptr = 0;
+	FILE *wp_pid = fopen("/tmp/wp", "r");
+	nbytes = fread(data_addr, 1, 10, wp_pid);
+	fclose(wp_pid);
+	data_addr[nbytes - 1] = '\0';
+	CPU_ZERO(&cpu_set);
+	CPU_SET(4, &cpu_set);
+	if (sched_setaffinity(strtol(data_addr, NULL, 10), sizeof(cpu_set), &cpu_set))
+	{
+		return 1;
+	}
 	int sock_listen, sock;
 	sock_listen = socket(PF_INET, SOCK_STREAM, 0);
 	struct sockaddr_in addr;
