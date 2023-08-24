@@ -147,6 +147,7 @@ static void player2_stop(int sock)
 static void player3_exit(int sock)
 {
 	player2_stop(sock);
+	close(sock);
 	system("poweroff -f");
 }
 
