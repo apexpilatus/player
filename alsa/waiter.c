@@ -68,6 +68,12 @@ static inline int close_mixer()
 
 static void player0_play(int sock)
 {
+	if (player_pid > 0)
+	{
+		kill(player_pid, SIGTERM);
+		waitpid(player_pid, NULL, 0);
+		player_pid = 0;
+	}
 	if (open_mixer())
 	{
 		*target_vol_ptr = 0;
@@ -87,12 +93,6 @@ static void player0_play(int sock)
 	{
 		data_addr[album_size++] = '\0';
 		data_addr[album_size + track_size++] = '\0';
-		if (player_pid > 0)
-		{
-			kill(player_pid, SIGTERM);
-			waitpid(player_pid, NULL, 0);
-			player_pid = 0;
-		}
 		if (card_num >= 0)
 		{
 			sprintf(data_addr + album_size + track_size, "hw:%d,0", card_num);
