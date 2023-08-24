@@ -7,7 +7,7 @@ PLAYLIBS := -lFLAC -lasound
 PLAYSRC := play.c
 
 all : waiter mixer player
-	mv waiter player mixer /mnt/$(PL_PATH)
+	mv waiter player mixer /mnt$(PL_PATH)
 
 waiter : waiter.c shares.h
 	$(CC) $(PLAYDEFS) waiter.c -o waiter -lasound

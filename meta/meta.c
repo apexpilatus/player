@@ -25,6 +25,8 @@ static char *dirs[] = {
     "/home/music/hack3",
     NULL};
 
+cpu_set_t cpu_set;
+
 static void meta0_get_albums(int sock)
 {
     for (int i = 0; dirs[i]; i++)
@@ -173,27 +175,117 @@ static void (*action[])(int sock) = {
     meta1_get_picture,
     meta2_get_tags};
 
+#ifdef META_INIT
+static void pre_init(void)
+{
+#ifndef META_DEBUG
+    fclose(stdin);
+    fclose(stdout);
+    fclose(stderr);
+#endif
+    if (system("mount -t tmpfs tmpfs /tmp") ||
+        system("mount -t tmpfs tmpfs /run") ||
+        system("mount -t tmpfs tmpfs /var/log") ||
+        system("touch /tmp/mtab") ||
+        system("mount -t proc proc /proc") ||
+        system("mount -t sysfs sysfs /sys") ||
+        system("ip link set up dev lo") ||
+        system("mkdir /dev/shm") ||
+        system("mount -t tmpfs shm /dev/shm"))
+    {
+        system("poweroff -f");
+    }
+}
+
+static void post_init(void)
+{
+    int i;
+    pid_t waiter_pid;
+    strcpy(data_addr, "wlan0");
+    sprintf(data_addr_half, "ip addr show dev %s", data_addr);
+    for (i = 0; i < 10 && system(data_addr_half); i++, sleep(1))
+        ;
+    sprintf(data_addr_half, "ip link set up dev %s", data_addr);
+    if (system(data_addr_half))
+    {
+        system("poweroff -f");
+    }
+    sprintf(data_addr_half, "ip addr add 192.168.0.3/24 dev %s", data_addr);
+    if (system(data_addr_half))
+    {
+        system("poweroff -f");
+    }
+    sprintf(data_addr_half, "wpa_supplicant -B -i%s -c/etc/wpa.conf -P/tmp/wp", data_addr);
+    system(data_addr_half);
+    FILE *wp_pid;
+    for (i = 0; i < 10 && !(wp_pid = fopen("/tmp/wp", "r")); i++, sleep(1))
+        ;
+    if (wp_pid)
+    {
+        size_t nbytes = fread(data_addr, 1, 10, wp_pid);
+        fclose(wp_pid);
+        data_addr[nbytes - 1] = '\0';
+        CPU_ZERO(&cpu_set);
+        CPU_SET(3, &cpu_set);
+        if (sched_setaffinity(strtol(data_addr, NULL, 10), sizeof(cpu_set), &cpu_set))
+        {
+            system("poweroff -f");
+        }
+    }
+    else
+    {
+        system("poweroff -f");
+    }
+    waiter_pid = fork();
+    if (!waiter_pid)
+    {
+        execl(exec_waiter_path, "waiter", NULL);
+    }
+    if (waiter_pid < 0)
+    {
+        system("poweroff -f");
+    }
+}
+#endif
+
 int main(void)
 {
-    cpu_set_t cpu_set;
+#ifdef META_INIT
+    pre_init();
+#endif
     CPU_ZERO(&cpu_set);
     CPU_SET(0, &cpu_set);
     sched_setaffinity(getpid(), sizeof(cpu_set), &cpu_set);
     int shd = shm_open(shm_file, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
     if (shd < 0)
     {
+#ifdef META_INIT
+        system("poweroff -f");
+#else
         return 1;
+#endif
     }
     if (ftruncate(shd, shm_size()))
     {
+#ifdef META_INIT
+        system("poweroff -f");
+#else
         return 1;
+#endif
     }
     void *shd_addr = mmap(NULL, shm_size(), PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
     if (shd_addr == MAP_FAILED)
     {
+#ifdef META_INIT
+        system("poweroff -f");
+#else
         return 1;
+#endif
     }
     set_shm_vars();
+#ifdef META_INIT
+    post_init();
+#endif
     int sock_listen, sock;
     sock_listen = socket(PF_INET, SOCK_STREAM, 0);
     struct sockaddr_in addr;
@@ -203,11 +295,19 @@ int main(void)
     socklen_t addr_size = sizeof(addr);
     if (bind(sock_listen, (struct sockaddr *)&addr, addr_size) < 0)
     {
+#ifdef META_INIT
+        system("poweroff -f");
+#else
         return 1;
+#endif
     }
     if (listen(sock_listen, 1) < 0)
     {
+#ifdef META_INIT
+        system("poweroff -f");
+#else
         return 1;
+#endif
     }
     while (1)
     {

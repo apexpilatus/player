@@ -25,7 +25,6 @@
 
 static pid_t player_pid;
 static pid_t mixer_pid;
-static ssize_t nbytes;
 static char *data_addr;
 static int data_size;
 static volatile long *target_vol_ptr;
@@ -112,6 +111,7 @@ static void player0_play(int sock)
 
 static void player1_set_volume(int sock)
 {
+	static ssize_t nbytes;
 	if (open_mixer())
 	{
 		*target_vol_ptr = 0;
@@ -147,7 +147,7 @@ static void player2_stop(int sock)
 static void player3_exit(int sock)
 {
 	player2_stop(sock);
-	exit(0);
+	system("poweroff -f");
 }
 
 static void (*action[])(int sock) = {
@@ -184,23 +184,6 @@ int main(void)
 	data_addr = (char *)shd_addr + target_vol_size + max_vol_size;
 	data_size = shm_size() - target_vol_size - max_vol_size;
 	*target_vol_ptr = 0;
-	FILE *wp_pid = fopen("/tmp/wp", "r");
-	if (wp_pid)
-	{
-		nbytes = fread(data_addr, 1, 10, wp_pid);
-		fclose(wp_pid);
-		data_addr[nbytes - 1] = '\0';
-		CPU_ZERO(&cpu_set);
-		CPU_SET(3, &cpu_set);
-		if (sched_setaffinity(strtol(data_addr, NULL, 10), sizeof(cpu_set), &cpu_set))
-		{
-			return 1;
-		}
-	}
-	else
-	{
-		return 1;
-	}
 	int sock_listen, sock;
 	sock_listen = socket(PF_INET, SOCK_STREAM, 0);
 	struct sockaddr_in addr;
