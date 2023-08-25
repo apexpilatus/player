@@ -87,5 +87,6 @@ int main(void)
 	signal(SIGUSR1, set_volume);
 	while (*max_vol_ptr)
 		;
+	snd_mixer_close(mxr);
 	return 0;
 }
