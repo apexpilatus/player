@@ -169,5 +169,6 @@ int play_album(file_lst *files, FLAC__StreamDecoderWriteCallback write_callback,
 		files = files->next;
 	}
 	snd_pcm_drain(pcm_p);
+	snd_pcm_close(pcm_p);
 	return 0;
 }
