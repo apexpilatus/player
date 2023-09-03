@@ -26,7 +26,7 @@ char *data_half;
 
 static int vol_size = sizeof(long) * 2;
 
-void cp_little_endian(unsigned char *buf, FLAC__uint32 data, int samplesize)
+void cp_little_endian(char *buf, FLAC__uint32 data, int samplesize)
 {
 	for (int i = 0; i < samplesize; i++)
 	{

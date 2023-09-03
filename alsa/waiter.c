@@ -57,7 +57,7 @@ static inline int open_mixer()
 	return 1;
 }
 
-static inline int close_mixer()
+static inline void close_mixer()
 {
 	*max_vol_ptr = 0;
 	if (mixer_pid > 0)

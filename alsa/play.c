@@ -18,8 +18,7 @@
 
 static unsigned int rate;
 static unsigned short sample_size;
-static unsigned char *buf0;
-static unsigned char *buf1;
+static char *buf0, *buf1;
 static void *playbuf[2];
 static unsigned char off;
 

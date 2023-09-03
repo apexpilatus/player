@@ -28,7 +28,7 @@ int main(void)
 	for (int i = 0; i < tags->data.vorbis_comment.num_comments; i++)
 	{
 		str = str + strlen(str) + 1;
-		strcpy(str, tags->data.vorbis_comment.comments[i].entry);
+		strcpy(str, (const char*)(tags->data.vorbis_comment.comments[i].entry));
 	}
 	str = str + strlen(str) + 1;
 	FLAC__StreamMetadata *rate = FLAC__metadata_object_new(FLAC__METADATA_TYPE_STREAMINFO);

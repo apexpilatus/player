@@ -1,7 +1,7 @@
 MET_PATH := /home/meta
 WT_PATH := /home/waiter
 METDEFS := -D picture_getter_path=\"$(MET_PATH)/getpicture\" -D tags_getter_path=\"$(MET_PATH)/gettags\"
-CC := gcc -O0
+CC := clang -O0
 
 ifdef init
 METDEFS += -D exec_waiter_path=\"$(WT_PATH)/waiter\" -D META_INIT
