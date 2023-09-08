@@ -41,7 +41,7 @@ public class MainPage {
         record.put("artist", "");
         record.put("album", "");
         albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> {
-            String albumUI = album.replace("fuckingslash", "/").replace("fuckingblackstar", "&#9733").replace("fuckingplus", "&#43").replace(" anD ", " & ");
+            String albumUI = album.replace("SlasHHH", "/").replace("StaRRR", "&#9733").replace("PluSSS", "&#43").replace("AnDDD", "&");
             String onClick = "<b onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>&#9738;</b>";
             if (!record.get("artist").equals(albumUI.split("___")[0])) {
                 record.put("artist", albumUI.split("___")[0]);
