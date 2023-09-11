@@ -30,7 +30,6 @@ void cp_little_endian(char *buf, char *data, int samplesize)
 {
 	for (int i = 0; i < samplesize; i++)
 	{
-		//*buf = *(data + i);
 		memcpy(buf, data + i, 1);
 		buf++;
 	}

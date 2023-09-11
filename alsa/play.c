@@ -28,8 +28,8 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 	int sample_size_bytes = sample_size / 8;
 	for (size_t i = 0; i < frame->header.blocksize; i++)
 	{
-		cp_little_endian(buf0 + off + (i * (sample_size_bytes + off)), (char*)(buffer[0] + i), sample_size_bytes);
-		cp_little_endian(buf1 + off + (i * (sample_size_bytes + off)), (char*)(buffer[1] + i), sample_size_bytes);
+		cp_little_endian(buf0 + off + (i * (sample_size_bytes + off)), (char *)(buffer[0] + i), sample_size_bytes);
+		cp_little_endian(buf1 + off + (i * (sample_size_bytes + off)), (char *)(buffer[1] + i), sample_size_bytes);
 	}
 	if (snd_pcm_mmap_writen(pcm_p, playbuf, (snd_pcm_uframes_t)frame->header.blocksize) < 0)
 	{
