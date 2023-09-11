@@ -22,7 +22,7 @@ static char *buf0, *buf1;
 static void *playbuf[2];
 static unsigned char off;
 
-static inline cp_little_endian(char *buf, char *data, int samplesize)
+static inline void cp_little_endian(char *buf, char *data, int samplesize)
 {
 	for (int i = 0; i < samplesize; i++)
 	{
