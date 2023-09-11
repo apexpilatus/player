@@ -26,15 +26,6 @@ char *data_half;
 
 static int vol_size = sizeof(long) * 2;
 
-void cp_little_endian(char *buf, char *data, int samplesize)
-{
-	for (int i = 0; i < samplesize; i++)
-	{
-		memcpy(buf, data + i, 1);
-		buf++;
-	}
-}
-
 int get_shared_vars(void)
 {
 	int shd = shm_open(shm_file, O_RDWR, 0);

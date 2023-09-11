@@ -22,6 +22,15 @@ static char *buf0, *buf1;
 static void *playbuf[2];
 static unsigned char off;
 
+static inline cp_little_endian(char *buf, char *data, int samplesize)
+{
+	for (int i = 0; i < samplesize; i++)
+	{
+		memcpy(buf, data + i, 1);
+		buf++;
+	}
+}
+
 static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 *const buffer[], void *client_data)
 {
 	snd_pcm_t *pcm_p = (snd_pcm_t *)client_data;
