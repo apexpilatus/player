@@ -149,7 +149,7 @@ static inline void cp_little_endian(char *buf, char *data, int samplesize)
 	}
 }
 
-static inline FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 *const buffer[], void *client_data)
+FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 *const buffer[], void *client_data)
 {
 	snd_pcm_t *pcm_p = (snd_pcm_t *)client_data;
 	int sample_size_bytes = sample_size / 8;
@@ -165,11 +165,11 @@ static inline FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDe
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
-static inline void metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data)
+void metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data)
 {
 }
 
-static inline void error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data)
+void error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data)
 {
 }
 
