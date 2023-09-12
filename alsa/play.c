@@ -22,8 +22,8 @@
 
 typedef struct lst
 {
-  char *name;
-  struct lst *next;
+	char *name;
+	struct lst *next;
 } file_lst;
 
 static char *album;
