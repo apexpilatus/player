@@ -1,9 +1,14 @@
 #define _GNU_SOURCE
 
+#include "shares.h"
+
 #include <stdio.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
 #include <sched.h>
 
 #include <alsa/global.h>
@@ -12,6 +17,7 @@
 #include <alsa/conf.h>
 #include <alsa/pcm.h>
 
+#include <FLAC/metadata.h>
 #include <FLAC/stream_decoder.h>
 
 typedef struct lst
@@ -143,7 +149,7 @@ static file_lst *get_file_lst(char *dirname)
 	return main_ptr;
 }
 
-static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 *const buffer[], void *client_data)
+static inline FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 *const buffer[], void *client_data)
 {
 	snd_pcm_t *pcm_p = (snd_pcm_t *)client_data;
 	int sample_size_bytes = sample_size / 8;
@@ -159,15 +165,15 @@ static FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
-static void metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data)
+static inline void metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data)
 {
 }
 
-static void error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data)
+static inline void error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data)
 {
 }
 
-static int play_album(file_lst *files, FLAC__StreamDecoderWriteCallback write_callback, snd_pcm_t *pcm_p)
+static inline int play_album(file_lst *files, FLAC__StreamDecoderWriteCallback write_callback, snd_pcm_t *pcm_p)
 {
 	FLAC__StreamDecoder *decoder = NULL;
 	decoder = FLAC__stream_decoder_new();
