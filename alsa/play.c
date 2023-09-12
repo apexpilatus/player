@@ -39,15 +39,6 @@ static char *buf0, *buf1;
 static void *playbuf[2];
 static unsigned char off;
 
-static inline void cp_little_endian(char *buf, char *data, int samplesize)
-{
-	for (int i = 0; i < samplesize; i++)
-	{
-		memcpy(buf, data + i, 1);
-		buf++;
-	}
-}
-
 static int get_shared_vars(void)
 {
 	int shd = shm_open(shm_file, O_RDWR, 0);
@@ -147,6 +138,15 @@ static file_lst *get_file_lst(char *dirname)
 		sort_ptr = cur_ptr;
 	}
 	return main_ptr;
+}
+
+static inline void cp_little_endian(char *buf, char *data, int samplesize)
+{
+	for (int i = 0; i < samplesize; i++)
+	{
+		memcpy(buf, data + i, 1);
+		buf++;
+	}
 }
 
 static inline FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 *const buffer[], void *client_data)
