@@ -201,7 +201,7 @@ static void post_init(void)
 {
     int i;
     pid_t waiter_pid;
-    strcpy(data_addr, "wlan0");
+    strcpy(data_addr, "usb0");
     sprintf(data_addr_half, "ip addr show dev %s", data_addr);
     for (i = 0; i < 10 && system(data_addr_half); i++, sleep(1))
         ;
@@ -210,29 +210,8 @@ static void post_init(void)
     {
         system("poweroff -f");
     }
-    sprintf(data_addr_half, "ip addr add 192.168.0.3/24 dev %s", data_addr);
+    sprintf(data_addr_half, "ip addr add 192.168.0.2/24 dev %s", data_addr);
     if (system(data_addr_half))
-    {
-        system("poweroff -f");
-    }
-    sprintf(data_addr_half, "wpa_supplicant -B -i%s -c/etc/wpa.conf -P/tmp/wp", data_addr);
-    system(data_addr_half);
-    FILE *wp_pid;
-    for (i = 0; i < 10 && !(wp_pid = fopen("/tmp/wp", "r")); i++, sleep(1))
-        ;
-    if (wp_pid)
-    {
-        size_t nbytes = fread(data_addr, 1, 10, wp_pid);
-        fclose(wp_pid);
-        data_addr[nbytes - 1] = '\0';
-        CPU_ZERO(&cpu_set);
-        CPU_SET(3, &cpu_set);
-        if (sched_setaffinity(strtol(data_addr, NULL, 10), sizeof(cpu_set), &cpu_set))
-        {
-            system("poweroff -f");
-        }
-    }
-    else
     {
         system("poweroff -f");
     }
