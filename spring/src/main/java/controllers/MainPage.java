@@ -30,7 +30,7 @@ public class MainPage {
         respWriter.println("<script src=main.js></script>");
         respWriter.println("</head>");
         respWriter.println("<body>");
-        respWriter.println("<button type=button id=showvolume onclick=getVolume()>&#9738</button>");
+        respWriter.println("<button type=button id=showvolume onclick=getVolume()>&#9738;</button>");
         respWriter.println("<input hidden id=volume type=range oninput=setVolume() min=0 max=5 title=volume>");
         respWriter.println("<iframe hidden id=tracks title=meta></iframe>");
         respWriter.println("<script>document.getElementById(\"tracks\").src=\"data:text/plain,ok\"</script>");
@@ -41,7 +41,7 @@ public class MainPage {
         record.put("artist", "");
         record.put("album", "");
         albums.forEach((album, albumPathList) -> albumPathList.forEach((albumPath) -> {
-            String albumUI = album.replace("SlasHHH", "/").replace("StaRRR", "&#9733").replace("PluSSS", "&#43").replace("AnDDD", "&");
+            String albumUI = album.replace("SlasHHH", "/").replace("StaRRR", "&#9733;").replace("PluSSS", "&#43;").replace("AnDDD", "&amp;").replace("QuoteSSS", "&quot;");
             String onClick = "<b onclick=getTracks(\"" + (albumPath + "/" + album).replace(" ", "&") + "\")>&#9738;</b>";
             if (!record.get("artist").equals(albumUI.split("___")[0])) {
                 record.put("artist", albumUI.split("___")[0]);
