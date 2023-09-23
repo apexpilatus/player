@@ -26,16 +26,10 @@ typedef struct lst
 	struct lst *next;
 } file_lst;
 
-static char *album;
-static char *track;
-static char *card_name;
-static char *data_half;
-
+static char *album, *track, *card_name, *data_half, *buf;
 static int vol_size = sizeof(long) * 2;
-
 static unsigned int rate;
 size_t sample_size;
-static char *buf;
 static unsigned char off;
 
 static int get_shared_vars(void)
@@ -143,12 +137,17 @@ static file_lst *get_file_lst(char *dirname)
 
 FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 *const buffer[], void *client_data)
 {
+	buf = data_half;
 	for (size_t i = 0; i < frame->header.blocksize; i++)
 	{
-		memcpy(buf + off + (i * (sample_size + off)), buffer[0] + i, sample_size);
-		memcpy(buf + off + (i * (sample_size + off)) + sample_size + off, buffer[1] + i, sample_size);
+		buf += off;
+		memcpy(buf, buffer[0] + i, sample_size);
+		buf += sample_size;
+		buf += off;
+		memcpy(buf, buffer[1] + i, sample_size);
+		buf += sample_size;
 	}
-	if (snd_pcm_mmap_writei((snd_pcm_t *)client_data, buf, (snd_pcm_uframes_t)frame->header.blocksize) < 0)
+	if (snd_pcm_mmap_writei((snd_pcm_t *)client_data, data_half, (snd_pcm_uframes_t)frame->header.blocksize) < 0)
 	{
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
@@ -202,7 +201,6 @@ int main(void)
 	{
 		return 1;
 	}
-	buf = data_half;
 	if (chdir(album))
 	{
 		return 1;
