@@ -22,7 +22,7 @@ public class Volume {
     void getVolume(HttpServletResponse resp, @RequestParam(name = "close", required = false, defaultValue = "false") String close, PlayerIpc playerIpc) throws IOException {
         resp.setContentType("text/plain");
         resp.setCharacterEncoding("utf-8");
-        resp.setHeader("Cache-Control", "no-cache");
+        resp.setHeader("Cache-Control", "no-cache, no-store");
         resp.setHeader("X-Content-Type-Options", "nosniff");
         if (close.equals("true")) {
             playerIpc.player1SetVolumeCloseVolSoc();

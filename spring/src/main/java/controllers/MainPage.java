@@ -18,7 +18,7 @@ public class MainPage {
         Map<String, List<String>> albums = metaIpc.meta0GetAlbums();
         resp.setContentType("text/html");
         resp.setCharacterEncoding("utf-8");
-        resp.setHeader("Cache-Control", "no-cache");
+        resp.setHeader("Cache-Control", "no-cache, no-store");
         resp.setHeader("X-Content-Type-Options", "nosniff");
         PrintWriter respWriter = resp.getWriter();
         respWriter.println("<!DOCTYPE html>");

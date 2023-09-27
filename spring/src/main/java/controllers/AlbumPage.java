@@ -18,7 +18,7 @@ public class AlbumPage {
     void albumPage(@RequestParam("album") String album, HttpServletResponse resp, MetaIpc metaIpc) throws IOException {
         resp.setContentType("text/html");
         resp.setCharacterEncoding("utf-8");
-        resp.setHeader("Cache-Control", "no-cache");
+        resp.setHeader("Cache-Control", "no-cache, no-store");
         resp.setHeader("X-Content-Type-Options", "nosniff");
         PrintWriter respWriter = resp.getWriter();
         respWriter.println("<!DOCTYPE html>");
@@ -52,7 +52,7 @@ public class AlbumPage {
     @PostMapping("/album")
     void albumPicture(@RequestParam("album") String album, HttpServletResponse resp, MetaIpc metaIpc) throws IOException {
         resp.setContentType("image/jpeg");
-        resp.setHeader("Cache-Control", "no-cache");
+        resp.setHeader("Cache-Control", "no-cache, no-store");
         resp.setHeader("X-Content-Type-Options", "nosniff");
         resp.getOutputStream().write(Base64.getEncoder().encode(metaIpc.meta1GetPicture(album)));
     }
