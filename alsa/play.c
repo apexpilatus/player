@@ -44,9 +44,9 @@ static int get_shared_vars(void)
 		return 1;
 	}
 	album = (char *)shd_addr + vol_size;
-	bits = (unsigned int*)(album + strlen(album) + 1);
-	kHz = (unsigned int*)((char*)bits + sizeof(unsigned int));
-	track = (char*)kHz + sizeof(unsigned int);
+	bits = (unsigned int *)(album + strlen(album) + 1);
+	kHz = (unsigned int *)((char *)bits + sizeof(unsigned int));
+	track = (char *)kHz + sizeof(unsigned int);
 	card_name = track + strlen(track) + 1;
 	data_half = (char *)shd_addr + (shm_size() / 2);
 	return 0;
