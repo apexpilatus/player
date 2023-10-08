@@ -28,8 +28,7 @@ typedef struct lst
 
 static char *album, *track, *card_name, *data_half, *buf;
 static int vol_size = sizeof(long) * 2;
-static unsigned int rate, *kHz;
-size_t sample_size, *bits;
+static unsigned int *kHz, *bits;
 static unsigned char off;
 
 static int get_shared_vars(void)
@@ -45,47 +44,11 @@ static int get_shared_vars(void)
 		return 1;
 	}
 	album = (char *)shd_addr + vol_size;
-	bits = album + strlen(album) + 1;
-	kHz = bits + sizeof(bits);
-	track = kHz + sizeof(kHz);
+	bits = (unsigned int*)(album + strlen(album) + 1);
+	kHz = (unsigned int*)((char*)bits + sizeof(unsigned int));
+	track = (char*)kHz + sizeof(unsigned int);
 	card_name = track + strlen(track) + 1;
 	data_half = (char *)shd_addr + (shm_size() / 2);
-	return 0;
-}
-
-static int get_params(file_lst *files, unsigned int *rate, size_t *sample_size)
-{
-	file_lst *first_file = files;
-	unsigned int rate_1st;
-	unsigned int sample_size_1st;
-	unsigned int sample_size_cur;
-	while (files->next)
-	{
-		FLAC__StreamMetadata streaminfo;
-		if (FLAC__metadata_get_streaminfo(files->name, &streaminfo))
-		{
-			*rate = streaminfo.data.stream_info.sample_rate;
-			sample_size_cur = streaminfo.data.stream_info.bits_per_sample;
-			if (first_file == files)
-			{
-				rate_1st = *rate;
-				sample_size_1st = sample_size_cur;
-			}
-			else
-			{
-				if (rate_1st != *rate || sample_size_1st != sample_size_cur)
-				{
-					return 1;
-				}
-			}
-		}
-		else
-		{
-			return 1;
-		}
-		files = files->next;
-	}
-	*sample_size = sample_size_cur / 8;
 	return 0;
 }
 
@@ -143,11 +106,11 @@ FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder
 	for (size_t i = 0; i < frame->header.blocksize; i++)
 	{
 		buf += off;
-		memcpy(buf, buffer[0] + i, sample_size);
-		buf += sample_size;
+		memcpy(buf, buffer[0] + i, *bits);
+		buf += *bits;
 		buf += off;
-		memcpy(buf, buffer[1] + i, sample_size);
-		buf += sample_size;
+		memcpy(buf, buffer[1] + i, *bits);
+		buf += *bits;
 	}
 	if (snd_pcm_mmap_writei((snd_pcm_t *)client_data, data_half, (snd_pcm_uframes_t)frame->header.blocksize) < 0)
 	{
@@ -212,12 +175,8 @@ int main(void)
 	{
 		return 1;
 	}
-	if (get_params(files, &rate, &sample_size))
-	{
-		return 1;
-	}
 	snd_pcm_t *pcm_p;
-	off = sample_size == 2 ? 0 : 1;
+	off = *bits == 2 ? 0 : 1;
 	if (snd_pcm_open(&pcm_p, card_name, SND_PCM_STREAM_PLAYBACK, 0))
 	{
 		return 1;
@@ -227,8 +186,8 @@ int main(void)
 	snd_pcm_hw_params_any(pcm_p, pcm_hw);
 	snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
 	int dir = 0;
-	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, rate, dir);
-	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, sample_size == 2 ? SND_PCM_FORMAT_S16 : SND_PCM_FORMAT_S32);
+	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, *kHz, dir);
+	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, *bits == 2 ? SND_PCM_FORMAT_S16 : SND_PCM_FORMAT_S32);
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p))
 	{
 		return 1;
