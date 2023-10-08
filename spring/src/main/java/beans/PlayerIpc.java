@@ -11,7 +11,7 @@ public class PlayerIpc {
     final int playerPort = 8888;
     final int timeOut = 5000;
 
-    public void player0Play(String albumToPlay, String trackToPlay) {
+    public void player0Play(String albumToPlay, String rate, String trackToPlay) {
         player1SetVolumeCloseVolSoc();
         try (Socket sock = new Socket()) {
             sock.connect(new InetSocketAddress(playerHost, playerPort), timeOut);
@@ -22,6 +22,12 @@ public class PlayerIpc {
             sockWriter.write(op);
             sockWriter.flush();
             sockWriter.write(albumToPlay);
+            sockWriter.flush();
+            sockReader.readLine();
+            int bits = Integer.parseInt(rate.split("/")[0]) / 8;
+            int kHz = (int) (Float.parseFloat(rate.split("/")[1]) * 1000);
+            sock.getOutputStream().write(ByteBuffer.allocate(4).putInt(bits).array());
+            sock.getOutputStream().write(ByteBuffer.allocate(4).putInt(kHz).array());
             sockWriter.flush();
             sockReader.readLine();
             sockWriter.write(trackToPlay);

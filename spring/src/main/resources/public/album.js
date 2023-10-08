@@ -1,9 +1,9 @@
-function gettrackspicture(album) {
+function gettrackspicture(album, rate) {
     const xhttp = new XMLHttpRequest();
     xhttp.onload = function () {
         element = parent.document.getElementById("trackspicture");
         element.src = "data:image/jpeg;base64," + this.responseText;
-        element.setAttribute("onclick", "play(\"" + album + "\")");
+        element.setAttribute("onclick", "play(\"" + album + "\",\"" + rate + "\")");
         element.hidden = false;
         parent.document.getElementById("hidetracks").hidden = false;
         parent.document.getElementById("tracks").hidden = false;
@@ -12,11 +12,10 @@ function gettrackspicture(album) {
     xhttp.send();
 }
 
-function play(album, track) {
+function play(album, rate, track) {
     const xhttp = new XMLHttpRequest();
     xhttp.onload = function () {
-        parent.document.getElementById("trackspicture").hidden = true;
     }
-    xhttp.open("GET", parent.window.location.href + "play?album=" + album.replace(/&/g, " ") + "&track=" + track);
+    xhttp.open("GET", parent.window.location.href + "play?album=" + album.replace(/&/g, " ") + "&rate=" + rate + "&track=" + track);
     xhttp.send();
 }

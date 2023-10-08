@@ -28,8 +28,8 @@ typedef struct lst
 
 static char *album, *track, *card_name, *data_half, *buf;
 static int vol_size = sizeof(long) * 2;
-static unsigned int rate;
-size_t sample_size;
+static unsigned int rate, *kHz;
+size_t sample_size, *bits;
 static unsigned char off;
 
 static int get_shared_vars(void)
@@ -45,7 +45,9 @@ static int get_shared_vars(void)
 		return 1;
 	}
 	album = (char *)shd_addr + vol_size;
-	track = album + strlen(album) + 1;
+	bits = album + strlen(album) + 1;
+	kHz = bits + sizeof(bits);
+	track = kHz + sizeof(kHz);
 	card_name = track + strlen(track) + 1;
 	data_half = (char *)shd_addr + (shm_size() / 2);
 	return 0;

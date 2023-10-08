@@ -1,9 +1,9 @@
-function play(album) {
+function play(album, rate) {
     const xhttp = new XMLHttpRequest();
     xhttp.onload = function () {
         hideTracks();
     }
-    xhttp.open("GET", window.location.href + "play?album=" + album.replace(/&/g, " "));
+    xhttp.open("GET", window.location.href + "play?album=" + album.replace(/&/g, " ") + "&rate=" + rate);
     xhttp.send();
 }
 

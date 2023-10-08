@@ -29,15 +29,15 @@ public class AlbumPage {
         respWriter.println("<script src=album.js></script>");
         respWriter.println("</head>");
         respWriter.println("<body>");
-        respWriter.println("<script>gettrackspicture(\"" + album.replace(" ", "&") + "\")</script>");
         StringBuilder title = new StringBuilder();
         StringBuilder tracks = new StringBuilder();
         Map<String, Map<String, String>> metasMap = metaIpc.meta2GetTags(album);
         metasMap.forEach((file, meta) -> {
             if (file.equals("01.flac")) {
+                respWriter.println("<script>gettrackspicture(\"" + album.replace(" ", "&") + "\",\"" + meta.get("RATE") + "\")</script>");
                 title.append("<div class=artist>").append(meta.get("ARTIST")).append("</div>\n").append("<div class=album>").append(meta.get("ALBUM")).append("</div>\n").append("<div class=rate>").append(meta.get("RATE")).append("</div>");
             }
-            tracks.append("<tr onclick=play(\"").append(album.replace(" ", "&")).append("\",\"").append(file).append("\")>").append("<td class=tracknumber>").append(meta.get("TRACKNUMBER")).append("</td>").append("<td class=tracktitle>").append(meta.get("TITLE")).append("</td>").append("</tr>");
+            tracks.append("<tr onclick=play(\"").append(album.replace(" ", "&")).append("\",\"").append(meta.get("RATE")).append("\",\"").append(file).append("\")>").append("<td class=tracknumber>").append(meta.get("TRACKNUMBER")).append("</td>").append("<td class=tracktitle>").append(meta.get("TITLE")).append("</td>").append("</tr>");
         });
         respWriter.println("<div class=title>");
         respWriter.println(title);

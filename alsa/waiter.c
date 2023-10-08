@@ -25,8 +25,8 @@
 
 static pid_t player_pid;
 static pid_t mixer_pid;
-static char *data_addr;
-static int data_size;
+static char *data_addr, *album_addr, *bits_addr, *kHz_addr, *track_addr;
+static int data_size, album_size, bits_size = sizeof(int), kHz_size = sizeof(int), track_size;
 static volatile long *target_vol_ptr;
 static volatile long *max_vol_ptr;
 static int target_vol_size = sizeof(long);
@@ -84,18 +84,33 @@ static void player0_play(int sock)
 		kill(mixer_pid, SIGUSR1);
 	}
 	close_mixer();
-	int album_size, track_size;
-	album_size = read(sock, data_addr, data_size);
+	album_addr = data_addr;
+	album_size = read(sock, album_addr, data_size);
 	write(sock, "ok\n", 3);
-	track_size = read(sock, data_addr + album_size + 1, data_size - album_size - 1);
+	bits_addr = album_addr + album_size + 1;
+	kHz_addr = bits_addr + bits_size;
+	track_addr = kHz_addr + kHz_size;
+	int i;
+	read(sock, track_addr, bits_size);
+	for (i = 0; i < bits_size; i++)
+	{
+		bits_addr[bits_size - 1 - i] = track_addr[i];
+	}
+	read(sock, track_addr, kHz_size);
+	for (i = 0; i < kHz_size; i++)
+	{
+		kHz_addr[kHz_size - 1 - i] = track_addr[i];
+	}
+	write(sock, "ok\n", 3);
+	track_size = read(sock, track_addr, data_size - album_size - 1 - bits_size - kHz_size);
 	write(sock, "ok\n", 3);
 	if (album_size > 0 && track_size > 0)
 	{
-		data_addr[album_size++] = '\0';
-		data_addr[album_size + track_size++] = '\0';
+		album_addr[album_size++] = '\0';
+		track_addr[track_size++] = '\0';
 		if (card_num >= 0)
 		{
-			sprintf(data_addr + album_size + track_size, "hw:%d,0", card_num);
+			sprintf(track_addr + track_size, "hw:%d,0", card_num);
 			player_pid = fork();
 			if (!player_pid)
 			{
