@@ -31,7 +31,11 @@ public class MainPage {
         respWriter.println("<script src=main.js></script>");
         respWriter.println("</head>");
         respWriter.println("<body>");
-        System.out.println(System.getProperty("os.name"));
+        if (System.getProperty("os.name").contains("Linux") && new File("/sys/class/power_supply/BAT0/capacity").exists()){
+		respWriter.println("<strong id=power>&#9889;</strong>");
+        	respWriter.println("<script>getpower()</script>");
+        	respWriter.println("<script>setInterval(getpower, 60000)</script>");
+	}
         respWriter.println("<button type=button id=showvolume onclick=getVolume()>&#9738;</button>");
         respWriter.println("<input hidden id=volume type=range oninput=setVolume() min=0 max=5 title=volume>");
         respWriter.println("<iframe hidden id=tracks title=meta></iframe>");

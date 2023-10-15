@@ -4,7 +4,6 @@ body {
 
 button {
     position: fixed;
-    top: 5%;
     right: 7%;
     color: red;
     font-size: 130%;
@@ -22,6 +21,21 @@ button {
     top: 15%;
     left: 10%;
     width: 80%
+}
+
+#showvolume {
+    top: 5%;
+}
+
+#hidetracks {
+    top: 5%;
+}
+
+#power {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    font-size: 110%;
 }
 
 #tracks {

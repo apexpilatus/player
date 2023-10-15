@@ -64,3 +64,13 @@ function setVolume() {
     xhttp.open("POST", window.location.href + "volume?level=" + document.getElementById("volume").value);
     xhttp.send();
 }
+
+function getpower() {
+    const xhttp = new XMLHttpRequest();
+    xhttp.onload = function () {
+        document.getElementById("power").innerHTML = "&#9889; " + this.responseText;
+    }
+    xhttp.open("GET", window.location.href + "power");
+    xhttp.send();
+}
+
