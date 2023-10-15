@@ -37,7 +37,7 @@ public class MainPage {
             respWriter.println("<script>setInterval(getpower, 60000)</script>");
         }
         respWriter.println("<button type=button id=showvolume onclick=getVolume()>&#9738;</button>");
-        respWriter.println("<button type=button id=reload onclick=location.reload()>&#9851;</button>");
+        respWriter.println("<button type=button id=reload onclick=location.reload()>&#9850;</button>");
         respWriter.println("<input hidden id=volume type=range oninput=setVolume() min=0 max=5 title=volume>");
         respWriter.println("<iframe hidden id=tracks title=meta></iframe>");
         respWriter.println("<script>document.getElementById(\"tracks\").src=\"data:text/plain,ok\"</script>");
