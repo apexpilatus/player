@@ -18,7 +18,7 @@ button {
 
 #volume {
     position: fixed;
-    top: 15%;
+    top: 45%;
     left: 10%;
     width: 80%
 }
@@ -32,7 +32,7 @@ button {
 }
 
 #reload {
-    top: 25%;
+    top: 15%;
 }
 
 #power {
