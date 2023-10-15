@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ public class MainPage {
         respWriter.println("<script src=main.js></script>");
         respWriter.println("</head>");
         respWriter.println("<body>");
+        System.out.println(System.getProperty("os.name"));
         respWriter.println("<button type=button id=showvolume onclick=getVolume()>&#9738;</button>");
         respWriter.println("<input hidden id=volume type=range oninput=setVolume() min=0 max=5 title=volume>");
         respWriter.println("<iframe hidden id=tracks title=meta></iframe>");
