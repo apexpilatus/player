@@ -27,6 +27,7 @@ function hideVolume() {
     xhttp.onload = function () {
         document.getElementById("volume").hidden = true;
         document.getElementById("showvolume").hidden = false;
+        document.getElementById("reload").hidden = false;
         document.getElementById("albums").setAttribute("class", "scroll");
     }
     xhttp.open("GET", window.location.href + "volume?close=true");
