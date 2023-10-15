@@ -31,9 +31,13 @@ button {
     top: 5%;
 }
 
+#reload {
+    bottom: 1%;
+}
+
 #power {
     position: fixed;
-    bottom: 0;
+    bottom: 1%;
     left: 0;
     font-size: 110%;
 }
