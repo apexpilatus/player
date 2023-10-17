@@ -1,4 +1,7 @@
+#define _GNU_SOURCE
+
 #include "shares.h"
+
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -40,7 +43,8 @@ void set_volume(int signum)
 }
 
 int main(void)
-{	cpu_set_t cpu_set;
+{
+	cpu_set_t cpu_set;
 	CPU_ZERO(&cpu_set);
 	CPU_SET(3, &cpu_set);
 	if (sched_setaffinity(getpid(), sizeof(cpu_set), &cpu_set))
