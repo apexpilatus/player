@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <signal.h>
+#include <sched.h>
 
 #include <alsa/global.h>
 #include <alsa/input.h>
