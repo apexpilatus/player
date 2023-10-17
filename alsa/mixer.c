@@ -27,6 +27,7 @@ snd_mixer_elem_t *melem;
 
 void set_volume(int signum)
 {
+	signal(SIGUSR1, SIG_IGN);
 	long curr_vol;
 	if (*target_vol_ptr < minvol)
 	{
@@ -95,9 +96,10 @@ int main(void)
 	}
 	snd_mixer_selem_get_playback_volume_range(melem, &minvol, &maxvol);
 	*max_vol_ptr = maxvol;
-	signal(SIGUSR1, set_volume);
 	while (*max_vol_ptr)
-		;
+	{
+		signal(SIGUSR1, set_volume);
+	}
 	snd_mixer_close(mxr);
 	return 0;
 }
