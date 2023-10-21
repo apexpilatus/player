@@ -11,7 +11,7 @@ extern char *data_addr;
 extern char *data_addr_half;
 extern int data_size;
 
-#define shm_size() (getpagesize() * 300)
+#define shm_size() (getpagesize() * 1000)
 
 #define set_shm_vars()                                                   \
     length = shd_addr;                                                   \
