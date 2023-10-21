@@ -23,16 +23,16 @@ public class PlayerIpc {
             sockWriter.flush();
             sockWriter.write(albumToPlay);
             sockWriter.flush();
-	    sockReader.readLine();
+            sockReader.readLine();
             sockWriter.write(rate.split("/")[0]);
             sockWriter.flush();
-	    sockReader.readLine();
+            sockReader.readLine();
             sockWriter.write(rate.split("/")[1]);
             sockWriter.flush();
-	    sockReader.readLine();
+            sockReader.readLine();
             sockWriter.write(trackToPlay);
             sockWriter.flush();
-	    sockReader.readLine();
+            sockReader.readLine();
         } catch (IOException ignored) {
         }
     }

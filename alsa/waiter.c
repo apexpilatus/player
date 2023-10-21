@@ -191,7 +191,7 @@ int main(void)
 	album = malloc(read_big_size);
 	bytes = malloc(read_small_size);
 	kHz = malloc(read_small_size);
-	track = malloc (read_small_size);
+	track = malloc(read_small_size);
 	int sock_listen, sock;
 	sock_listen = socket(PF_INET, SOCK_STREAM, 0);
 	struct sockaddr_in addr;

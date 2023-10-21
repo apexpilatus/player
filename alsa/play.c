@@ -150,7 +150,7 @@ int main(int argn, char *args[])
 		return 1;
 	}
 	snd_pcm_t *pcm_p;
-	bytes = strtol(args[2], NULL, 10)/8;
+	bytes = strtol(args[2], NULL, 10) / 8;
 	off = bytes == 2 ? 0 : 1;
 	card_name = args[3];
 	if (snd_pcm_open(&pcm_p, card_name, SND_PCM_STREAM_PLAYBACK, 0))
@@ -162,7 +162,7 @@ int main(int argn, char *args[])
 	snd_pcm_hw_params_any(pcm_p, pcm_hw);
 	snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
 	int dir = 0;
-	kHz = strtod(args[4], NULL)*1000;
+	kHz = strtod(args[4], NULL) * 1000;
 	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, kHz, dir);
 	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, bytes == 2 ? SND_PCM_FORMAT_S16 : SND_PCM_FORMAT_S32);
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p))
