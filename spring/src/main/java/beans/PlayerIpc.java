@@ -23,16 +23,16 @@ public class PlayerIpc {
             sockWriter.flush();
             sockWriter.write(albumToPlay);
             sockWriter.flush();
-            sockReader.readLine();
-            int bits = Integer.parseInt(rate.split("/")[0]) / 8;
-            int kHz = (int) (Float.parseFloat(rate.split("/")[1]) * 1000);
-            sock.getOutputStream().write(ByteBuffer.allocate(4).putInt(bits).array());
-            sock.getOutputStream().write(ByteBuffer.allocate(4).putInt(kHz).array());
+	    sockReader.readLine();
+            sockWriter.write(rate.split("/")[0]);
             sockWriter.flush();
-            sockReader.readLine();
+	    sockReader.readLine();
+            sockWriter.write(rate.split("/")[1]);
+            sockWriter.flush();
+	    sockReader.readLine();
             sockWriter.write(trackToPlay);
             sockWriter.flush();
-            sockReader.readLine();
+	    sockReader.readLine();
         } catch (IOException ignored) {
         }
     }

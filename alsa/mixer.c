@@ -19,7 +19,6 @@
 
 static volatile long *target_vol_ptr;
 static volatile long *max_vol_ptr;
-static char *data_addr;
 static int target_vol_size = sizeof(long);
 static int max_vol_size = sizeof(long);
 long minvol, maxvol;
@@ -39,11 +38,11 @@ void set_volume(int signum)
 	snd_mixer_selem_get_playback_volume(melem, -1, &curr_vol);
 	if (curr_vol != *target_vol_ptr)
 	{
-		snd_mixer_selem_set_playback_volume_all(melem, *target_vol_ptr);
+		snd_mixer_selem_set_playback_volume(melem, -1, *target_vol_ptr);
 	}
 }
 
-int main(void)
+int main(int arg_n, char *args[])
 {
 	cpu_set_t cpu_set;
 	CPU_ZERO(&cpu_set);
@@ -58,7 +57,7 @@ int main(void)
 		*max_vol_ptr = -1;
 		return 1;
 	}
-	void *shd_addr = mmap(NULL, shm_size(), PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
+	void *shd_addr = mmap(NULL, getpagesize(), PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
 	if (shd_addr == MAP_FAILED)
 	{
 		*max_vol_ptr = -1;
@@ -66,14 +65,13 @@ int main(void)
 	}
 	target_vol_ptr = shd_addr;
 	max_vol_ptr = target_vol_ptr + 1;
-	data_addr = (char *)shd_addr + target_vol_size + max_vol_size;
 	snd_mixer_t *mxr;
 	if (snd_mixer_open(&mxr, 0))
 	{
 		*max_vol_ptr = -1;
 		return 1;
 	}
-	if (snd_mixer_attach(mxr, data_addr))
+	if (snd_mixer_attach(mxr, args[1]))
 	{
 		*max_vol_ptr = -1;
 		return 1;
@@ -88,7 +86,7 @@ int main(void)
 		*max_vol_ptr = -1;
 		return 1;
 	}
-	if (!(melem = snd_mixer_first_elem(mxr)))
+	if (!(melem = snd_mixer_last_elem(mxr)))
 	{
 		*max_vol_ptr = -1;
 		return 1;

@@ -17,7 +17,6 @@
 #include <alsa/conf.h>
 #include <alsa/pcm.h>
 
-#include <FLAC/metadata.h>
 #include <FLAC/stream_decoder.h>
 
 typedef struct lst
@@ -26,31 +25,9 @@ typedef struct lst
 	struct lst *next;
 } file_lst;
 
-static char *album, *track, *card_name, *data_half, *buf;
-static int vol_size = sizeof(long) * 2;
-static unsigned int *kHz, *bits;
-static unsigned char off;
-
-static int get_shared_vars(void)
-{
-	int shd = shm_open(shm_file, O_RDWR, 0);
-	if (shd < 0)
-	{
-		return 1;
-	}
-	void *shd_addr = mmap(NULL, shm_size(), PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
-	if (shd_addr == MAP_FAILED)
-	{
-		return 1;
-	}
-	album = (char *)shd_addr + vol_size;
-	bits = (unsigned int *)(album + strlen(album) + 1);
-	kHz = (unsigned int *)((char *)bits + sizeof(unsigned int));
-	track = (char *)kHz + sizeof(unsigned int);
-	card_name = track + strlen(track) + 1;
-	data_half = (char *)shd_addr + (shm_size() / 2);
-	return 0;
-}
+static char *album, *track, *card_name, *buf, *buf_ptr;
+static long bytes;
+static unsigned int kHz, off;
 
 static file_lst *get_file_lst(char *dirname)
 {
@@ -102,17 +79,17 @@ static file_lst *get_file_lst(char *dirname)
 
 FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 *const buffer[], void *client_data)
 {
-	buf = data_half;
+	buf = buf_ptr;
 	for (size_t i = 0; i < frame->header.blocksize; i++)
 	{
 		buf += off;
-		memcpy(buf, buffer[0] + i, *bits);
-		buf += *bits;
+		memcpy(buf, buffer[0] + i, bytes);
+		buf += bytes;
 		buf += off;
-		memcpy(buf, buffer[1] + i, *bits);
-		buf += *bits;
+		memcpy(buf, buffer[1] + i, bytes);
+		buf += bytes;
 	}
-	if (snd_pcm_mmap_writei((snd_pcm_t *)client_data, data_half, (snd_pcm_uframes_t)frame->header.blocksize) < 0)
+	if (snd_pcm_mmap_writei((snd_pcm_t *)client_data, buf_ptr, (snd_pcm_uframes_t)frame->header.blocksize) < 0)
 	{
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
@@ -156,16 +133,13 @@ static inline int play_album(file_lst *files, FLAC__StreamDecoderWriteCallback w
 	return 0;
 }
 
-int main(void)
+int main(int argn, char *args[])
 {
 	cpu_set_t cpu_set;
 	CPU_ZERO(&cpu_set);
 	CPU_SET(2, &cpu_set);
 	sched_setaffinity(getpid(), sizeof(cpu_set), &cpu_set);
-	if (get_shared_vars())
-	{
-		return 1;
-	}
+	album = args[1];
 	if (chdir(album))
 	{
 		return 1;
@@ -176,7 +150,9 @@ int main(void)
 		return 1;
 	}
 	snd_pcm_t *pcm_p;
-	off = *bits == 2 ? 0 : 1;
+	bytes = strtol(args[2], NULL, 10)/8;
+	off = bytes == 2 ? 0 : 1;
+	card_name = args[3];
 	if (snd_pcm_open(&pcm_p, card_name, SND_PCM_STREAM_PLAYBACK, 0))
 	{
 		return 1;
@@ -186,12 +162,14 @@ int main(void)
 	snd_pcm_hw_params_any(pcm_p, pcm_hw);
 	snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
 	int dir = 0;
-	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, *kHz, dir);
-	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, *bits == 2 ? SND_PCM_FORMAT_S16 : SND_PCM_FORMAT_S32);
+	kHz = strtod(args[4], NULL)*1000;
+	snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, kHz, dir);
+	snd_pcm_hw_params_set_format(pcm_p, pcm_hw, bytes == 2 ? SND_PCM_FORMAT_S16 : SND_PCM_FORMAT_S32);
 	if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p))
 	{
 		return 1;
 	}
+	track = args[5];
 	while (files->next)
 	{
 		if (!strcmp(files->name, track))
@@ -200,5 +178,6 @@ int main(void)
 		}
 		files = files->next;
 	}
+	buf_ptr = malloc(getpagesize() * 1000);
 	return play_album(files, write_callback, pcm_p);
 }

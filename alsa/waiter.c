@@ -25,24 +25,21 @@
 
 static pid_t player_pid;
 static pid_t mixer_pid;
-static char *data_addr, *album_addr, *bits_addr, *kHz_addr, *track_addr;
-static int data_size, album_size, bits_size = sizeof(int), kHz_size = sizeof(int), track_size;
+static int card_num, card_name_size, album_size, bytes_size, kHz_size, track_size, target_vol_size = sizeof(long), max_vol_size = sizeof(long), read_small_size = 10, read_big_size = 2048;
+static char *card_name, *album, *bytes, *kHz, *track;
 static volatile long *target_vol_ptr;
 static volatile long *max_vol_ptr;
-static int target_vol_size = sizeof(long);
-static int max_vol_size = sizeof(long);
-static int card_num;
 
 static inline int open_mixer()
 {
 	*max_vol_ptr = 0;
 	if ((card_num = snd_card_get_index("Pro")) >= 0 || (card_num = snd_card_get_index("S50")) >= 0)
 	{
-		sprintf(data_addr, "hw:%d", card_num);
+		sprintf(card_name, "hw:%d", card_num);
 		mixer_pid = fork();
 		if (!mixer_pid)
 		{
-			execl(exec_mixer_path, mixer_name, NULL);
+			execl(exec_mixer_path, mixer_name, card_name, NULL);
 		}
 		if (mixer_pid > 0)
 		{
@@ -63,6 +60,7 @@ static inline void close_mixer()
 	if (mixer_pid > 0)
 	{
 		waitpid(mixer_pid, NULL, 0);
+		mixer_pid = 0;
 	}
 }
 
@@ -84,37 +82,28 @@ static void player0_play(int sock)
 		kill(mixer_pid, SIGUSR1);
 	}
 	close_mixer();
-	album_addr = data_addr;
-	album_size = read(sock, album_addr, data_size);
+	album_size = read(sock, album, read_big_size);
+	album[album_size] = '\0';
 	write(sock, "ok\n", 3);
-	bits_addr = album_addr + album_size + 1;
-	kHz_addr = bits_addr + bits_size;
-	track_addr = kHz_addr + kHz_size;
-	int i;
-	read(sock, track_addr, bits_size);
-	for (i = 0; i < bits_size; i++)
-	{
-		bits_addr[bits_size - 1 - i] = track_addr[i];
-	}
-	read(sock, track_addr, kHz_size);
-	for (i = 0; i < kHz_size; i++)
-	{
-		kHz_addr[kHz_size - 1 - i] = track_addr[i];
-	}
+	bytes_size = read(sock, bytes, read_small_size);
+	bytes[bytes_size] = '\0';
 	write(sock, "ok\n", 3);
-	track_size = read(sock, track_addr, data_size - album_size - 1 - bits_size - kHz_size);
+	kHz_size = read(sock, kHz, read_small_size);
+	kHz[kHz_size] = '\0';
 	write(sock, "ok\n", 3);
-	if (album_size > 0 && track_size > 0)
+	track_size = read(sock, track, read_small_size);
+	track[track_size] = '\0';
+	write(sock, "ok\n", 3);
+	if (album_size > 0 && bytes_size > 0 && kHz_size > 0 && track_size > 0)
 	{
-		album_addr[album_size++] = '\0';
-		track_addr[track_size++] = '\0';
 		if (card_num >= 0)
 		{
-			sprintf(track_addr + track_size, "hw:%d,0", card_num);
+			card_name_size = strlen(card_name);
+			sprintf(card_name + card_name_size, ",0");
 			player_pid = fork();
 			if (!player_pid)
 			{
-				execl(exec_player_path, player_name, NULL);
+				execl(exec_player_path, player_name, album, bytes, card_name, kHz, track, NULL);
 			}
 			if (player_pid > 0)
 			{
@@ -132,15 +121,15 @@ static void player1_set_volume(int sock)
 		*target_vol_ptr = 0;
 		*max_vol_ptr = 0;
 	}
-	sprintf(data_addr, "%ld;%ld%c", *target_vol_ptr, *max_vol_ptr, '\n');
-	write(sock, data_addr, strlen(data_addr));
-	while ((nbytes = read(sock, data_addr, data_size)) > 0)
+	sprintf(bytes, "%ld;%ld%c", *target_vol_ptr, *max_vol_ptr, '\n');
+	write(sock, bytes, strlen(bytes));
+	while ((nbytes = read(sock, bytes, read_small_size)) > 0)
 	{
 		if (nbytes == target_vol_size)
 		{
 			for (int i = 0; i < target_vol_size; i++)
 			{
-				((char *)target_vol_ptr)[target_vol_size - 1 - i] = data_addr[i];
+				((char *)target_vol_ptr)[target_vol_size - 1 - i] = bytes[i];
 			}
 			kill(mixer_pid, SIGUSR1);
 		}
@@ -186,20 +175,23 @@ int main(void)
 	{
 		return 1;
 	}
-	if (ftruncate(shd, shm_size()))
+	if (ftruncate(shd, getpagesize()))
 	{
 		return 1;
 	}
-	void *shd_addr = mmap(NULL, shm_size(), PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
+	void *shd_addr = mmap(NULL, getpagesize(), PROT_READ | PROT_WRITE, MAP_SHARED, shd, 0);
 	if (shd_addr == MAP_FAILED)
 	{
 		return 1;
 	}
 	target_vol_ptr = shd_addr;
-	max_vol_ptr = target_vol_ptr + 1;
-	data_addr = (char *)shd_addr + target_vol_size + max_vol_size;
-	data_size = shm_size() - target_vol_size - max_vol_size;
 	*target_vol_ptr = 0;
+	max_vol_ptr = target_vol_ptr + 1;
+	card_name = malloc(read_small_size);
+	album = malloc(read_big_size);
+	bytes = malloc(read_small_size);
+	kHz = malloc(read_small_size);
+	track = malloc (read_small_size);
 	int sock_listen, sock;
 	sock_listen = socket(PF_INET, SOCK_STREAM, 0);
 	struct sockaddr_in addr;
