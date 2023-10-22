@@ -38,7 +38,7 @@ void set_volume(int signum)
 	snd_mixer_selem_get_playback_volume(melem, -1, &curr_vol);
 	if (curr_vol != *target_vol_ptr)
 	{
-		snd_mixer_selem_set_playback_volume(melem, -1, *target_vol_ptr);
+		snd_mixer_selem_set_playback_volume_all(melem, *target_vol_ptr);
 	}
 }
 
