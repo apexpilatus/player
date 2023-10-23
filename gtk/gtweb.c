@@ -1,27 +1,29 @@
 #include <gtk/gtk.h>
 #include <webkit2/webkit2.h>
 
-static void activate (GtkApplication *app, gpointer user_data)
+static void destroyWindowCb(GtkWidget* widget, GtkWidget* window)
 {
-  GtkWidget *window;
-  GtkWidget *webview;
-  
-  webview = webkit_web_view_new();
-  window = gtk_application_window_new(app);
-  gtk_window_set_default_size(GTK_WINDOW (window), 700, 700);
-  gtk_container_add(GTK_CONTAINER (window), webview);
-  gtk_widget_show_all(window);
-  webkit_web_view_load_uri(WEBKIT_WEB_VIEW(webview), "http://localhost:8080");
+  gtk_main_quit();
+}
+
+static gboolean closeWebViewCb(WebKitWebView* webView, GtkWidget* window)
+{
+  gtk_widget_destroy(window);
+  return TRUE;
 }
 
 int main (int    argc, char **argv)
 {
-  GtkApplication *app;
-  int status;
-
-  app = gtk_application_new ("org.gtk.example", G_APPLICATION_DEFAULT_FLAGS);
-  g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
-  status = g_application_run (G_APPLICATION (app), argc, argv);
-  g_object_unref (app);
-  return status;
+  gtk_init(&argc, &argv);
+  GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_default_size(GTK_WINDOW(window), 700, 700);
+  WebKitWebView *webView = WEBKIT_WEB_VIEW(webkit_web_view_new());
+  gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(webView));
+  g_signal_connect(window, "destroy", G_CALLBACK(destroyWindowCb), NULL);
+  g_signal_connect(webView, "close", G_CALLBACK(closeWebViewCb), main_window);
+  webkit_web_view_load_uri(webView, "http://www.webkitgtk.org/");
+  gtk_widget_grab_focus(GTK_WIDGET(webView));
+  gtk_widget_show_all(window);
+  gtk_main();
+  return 0;
 }
