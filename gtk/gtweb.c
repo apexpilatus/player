@@ -9,7 +9,7 @@ static void activate (GtkApplication *app, gpointer user_data)
   webview = webkit_web_view_new();
   window = gtk_application_window_new(app);
   gtk_window_set_default_size (GTK_WINDOW (window), 700, 700);
-  gtk_container_add(GTK_WINDOW (window), webview);
+  gtk_container_add(GTK_CONTAINER (window), webview);
   gtk_widget_show_all(window);
   webkit_web_view_load_uri(WEBKIT_WEB_VIEW(webview), "http://localhost:8080");
 }
