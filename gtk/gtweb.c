@@ -20,7 +20,7 @@ int main (int    argc, char **argv)
   WebKitWebView *webView = WEBKIT_WEB_VIEW(webkit_web_view_new());
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(webView));
   g_signal_connect(window, "destroy", G_CALLBACK(destroyWindowCb), NULL);
-  g_signal_connect(webView, "close", G_CALLBACK(closeWebViewCb), main_window);
+  g_signal_connect(webView, "close", G_CALLBACK(closeWebViewCb), window);
   webkit_web_view_load_uri(webView, "http://www.webkitgtk.org/");
   gtk_widget_grab_focus(GTK_WIDGET(webView));
   gtk_widget_show_all(window);
