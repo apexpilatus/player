@@ -38,19 +38,53 @@ void kill_zombie(int signum) {
   }
 }
 
-void selector(int sock){
+static inline void selector(int sock){
   ssize_t msg_size = 4096, read_size;
   char req[msg_size];
+  pid_t pid;
+  char arg[15];
+  pid_lst *pids_new;
+  sprintf(arg, "%d", sock);
   read_size = read(sock, req, msg_size);
+  req[read_size] = '\0';
+  if (!strncmp("GET / ", req, 6)) {
+    pid = fork();
+    if (!pid) {
+      execl(page_main, "page_main", arg, NULL);
+    }
+  } else if (!(strncmp("GET /favicon.ico ", req, 17) && strncmp("GET /apple-touch-icon-precomposed.png ", req, 17))) {
+    pid = fork();
+    if (!pid) {
+      execl(picture_favicon, "picture_favicon", arg, NULL);
+    }
+  } else {
+    pid = fork();
+    if (!pid) {
+      execl(page_err, "page_err", arg, NULL);
+    }
+  }
+    if (pid > 0) {
+      pids_new = malloc(sizeof(pid_lst));
+      if (!pids_first) {
+        pids_first = pids_new;
+        pids_new->prev = NULL;
+      } else {
+        pids_last->next = pids_new;
+        pids_new->prev = pids_last;
+      }
+      pids_last = pids_new;
+      pids_last->pid = pid;
+      pids_last->sock = sock;
+      pids_last->next = NULL;
+    } else {
+      close(sock);
+    }
 }
 
 int main(void) {
   sigset_t block_alarm;
-  pid_t pid;
-  char arg[12];
   int sock_listen, sock;
   struct sockaddr_in addr;
-
   sigemptyset(&block_alarm);
   sigaddset(&block_alarm, SIGUSR1);
   signal(SIGUSR1, kill_zombie);
@@ -71,25 +105,7 @@ int main(void) {
       continue;
     }
     sigprocmask(SIG_BLOCK, &block_alarm, NULL);
-    sprintf(arg, "%d", sock);
-    pid = fork();
-    if (!pid) {
-      execl(selector, "selector", arg, NULL);
-    }
-    if (pid > 0) {
-      pid_lst *pids_new = malloc(sizeof(pid_lst));
-      if (!pids_first) {
-        pids_first = pids_new;
-        pids_new->prev = NULL;
-      } else {
-        pids_last->next = pids_new;
-        pids_new->prev = pids_last;
-      }
-      pids_last = pids_new;
-      pids_last->pid = pid;
-      pids_last->sock = sock;
-      pids_last->next = NULL;
-    }
+    selector(sock);
     sigprocmask(SIG_UNBLOCK, &block_alarm, NULL);
   }
   return 1;
