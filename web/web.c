@@ -1,6 +1,7 @@
 #include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -38,12 +39,12 @@ void kill_zombie(int signum) {
   }
 }
 
-static inline void selector(int sock){
+static inline void selector(int sock) {
   ssize_t msg_size = 4096, read_size;
   char req[msg_size];
   pid_t pid;
-  char arg[15];
   pid_lst *pids_new;
+  char arg[15];
   sprintf(arg, "%d", sock);
   read_size = read(sock, req, msg_size);
   req[read_size] = '\0';
@@ -52,7 +53,8 @@ static inline void selector(int sock){
     if (!pid) {
       execl(page_main, "page_main", arg, NULL);
     }
-  } else if (!(strncmp("GET /favicon.ico ", req, 17) && strncmp("GET /apple-touch-icon-precomposed.png ", req, 17))) {
+  } else if (!(strncmp("GET /favicon.ico ", req, 17) &&
+               strncmp("GET /apple-touch-icon-precomposed.png ", req, 17))) {
     pid = fork();
     if (!pid) {
       execl(picture_favicon, "picture_favicon", arg, NULL);
@@ -63,22 +65,22 @@ static inline void selector(int sock){
       execl(page_err, "page_err", arg, NULL);
     }
   }
-    if (pid > 0) {
-      pids_new = malloc(sizeof(pid_lst));
-      if (!pids_first) {
-        pids_first = pids_new;
-        pids_new->prev = NULL;
-      } else {
-        pids_last->next = pids_new;
-        pids_new->prev = pids_last;
-      }
-      pids_last = pids_new;
-      pids_last->pid = pid;
-      pids_last->sock = sock;
-      pids_last->next = NULL;
+  if (pid > 0) {
+    pids_new = malloc(sizeof(pid_lst));
+    if (!pids_first) {
+      pids_first = pids_new;
+      pids_new->prev = NULL;
     } else {
-      close(sock);
+      pids_last->next = pids_new;
+      pids_new->prev = pids_last;
     }
+    pids_last = pids_new;
+    pids_last->pid = pid;
+    pids_last->sock = sock;
+    pids_last->next = NULL;
+  } else {
+    close(sock);
+  }
 }
 
 int main(void) {

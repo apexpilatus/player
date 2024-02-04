@@ -41,9 +41,9 @@ void list_albums(char *msg) {
 
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
-  ssize_t msg_size = 4096, write_size;
-  char rsp[msg_size], *msg;
-  msg = malloc(msg_size * 10000);
+  ssize_t rsp_size = 4096, write_size;
+  char rsp[rsp_size], *msg;
+  msg = malloc(rsp_size * 10000);
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<head>");
   strcat(msg, "<meta charset=utf-8>");
