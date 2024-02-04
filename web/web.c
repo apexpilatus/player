@@ -41,6 +41,7 @@ void kill_zombie(int signum) {
 void selector(int sock){
   ssize_t msg_size = 4096, read_size;
   char req[msg_size];
+  read_size = read(sock, req, msg_size);
 }
 
 int main(void) {
