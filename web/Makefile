@@ -1,8 +1,11 @@
-WEB_PATH := /home/store/works/player/web
+WEB_PATH := /home/player
 MUSIC_PATH := /home/store/music
 WEB_DEFINES := -D page_main=\"$(WEB_PATH)/page_main\"
 WEB_DEFINES += -D picture_favicon=\"$(WEB_PATH)/picture_favicon\"
 WEB_DEFINES += -D page_err=\"$(WEB_PATH)/page_err\"
+ifdef init
+WEB_DEFINES += -D WEB_INIT
+endif
 CC := clang -O2
 
 web : web.c page_main picture_favicon page_err

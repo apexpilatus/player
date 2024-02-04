@@ -84,6 +84,11 @@ static inline void selector(int sock) {
 }
 
 int main(void) {
+#ifdef WEB_INIT
+  if (system("/init.sh")) {
+    system("poweroff -f");
+  }
+#endif
   sigset_t block_alarm;
   int sock_listen, sock;
   struct sockaddr_in addr;
@@ -96,10 +101,18 @@ int main(void) {
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
   socklen_t addr_size = sizeof(addr);
   if (bind(sock_listen, (struct sockaddr *)&addr, addr_size) < 0) {
+#ifdef WEB_INIT
+    system("poweroff -f");
+#else
     return 1;
+#endif
   }
   if (listen(sock_listen, 10) < 0) {
+#ifdef WEB_INIT
+    system("poweroff -f");
+#else
     return 1;
+#endif
   }
   while (1) {
     sock = accept(sock_listen, (struct sockaddr *)&addr, &addr_size);
@@ -110,5 +123,9 @@ int main(void) {
     selector(sock);
     sigprocmask(SIG_UNBLOCK, &block_alarm, NULL);
   }
+#ifdef WEB_INIT
+  system("poweroff -f");
+#else
   return 1;
+#endif
 }
