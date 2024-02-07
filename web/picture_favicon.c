@@ -110,9 +110,8 @@ int main(int prm_n, char *prm[]) {
   write_size = write(sock, rsp, strlen(rsp));
   write_size += write(sock, png, png_len);
   kill(getppid(), SIGUSR1);
-  if (write_size == strlen(rsp) + png_len) {
+  if (write_size == strlen(rsp) + png_len)
     return 0;
-  } else {
+  else
     return 1;
-  }
 }

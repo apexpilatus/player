@@ -5,7 +5,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define listen_port 8080
+#define listen_port 80
 
 typedef struct pid_lst_t {
   pid_t pid;
@@ -42,7 +42,7 @@ void kill_zombie(int signum) {
 static inline void selector(int sock) {
   ssize_t msg_size = 4096, read_size;
   char req[msg_size];
-  pid_t pid;
+  pid_t pid = -1;
   pid_lst *pids_new;
   char arg[15];
   sprintf(arg, "%d", sock);
@@ -50,20 +50,32 @@ static inline void selector(int sock) {
   req[read_size] = '\0';
   if (!strncmp("GET / ", req, 6)) {
     pid = fork();
-    if (!pid) {
+    if (!pid)
       execl(page_main, "page_main", arg, NULL);
-    }
   } else if (!(strncmp("GET /favicon.ico ", req, 17) &&
                strncmp("GET /apple-touch-icon-precomposed.png ", req, 17))) {
     pid = fork();
-    if (!pid) {
+    if (!pid)
       execl(picture_favicon, "picture_favicon", arg, NULL);
+  } else if (!strncmp("GET /poweroff ", req, 14)) {
+    char rsp[msg_size];
+    ssize_t write_size;
+    strcpy(rsp, "HTTP/1.1 200 OK\r\n\r\n");
+    write_size = write(sock, rsp, strlen(rsp));
+    if (write_size == strlen(rsp))
+#ifdef WEB_INIT
+    {
+      close(sock);
+      if (system("poweroff -f"))
+        ;
     }
+#else
+      ;
+#endif
   } else {
     pid = fork();
-    if (!pid) {
+    if (!pid)
       execl(page_err, "page_err", arg, NULL);
-    }
   }
   if (pid > 0) {
     pids_new = malloc(sizeof(pid_lst));
@@ -78,16 +90,14 @@ static inline void selector(int sock) {
     pids_last->pid = pid;
     pids_last->sock = sock;
     pids_last->next = NULL;
-  } else {
+  } else
     close(sock);
-  }
 }
 
 int main(void) {
 #ifdef WEB_INIT
-  if (system("/init.sh") && system("poweroff -f")) {
+  if (system("/init.sh") && system("poweroff -f"))
     return 1;
-  }
 #endif
   sigset_t block_alarm;
   int sock_listen, sock;
@@ -100,23 +110,20 @@ int main(void) {
   addr.sin_port = htons(listen_port);
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
   socklen_t addr_size = sizeof(addr);
-  if (bind(sock_listen, (struct sockaddr *)&addr, addr_size) < 0) {
+  if (bind(sock_listen, (struct sockaddr *)&addr, addr_size) < 0)
 #ifdef WEB_INIT
     if (system("poweroff -f"))
 #endif
       return 1;
-  }
-  if (listen(sock_listen, 10) < 0) {
+  if (listen(sock_listen, 10) < 0)
 #ifdef WEB_INIT
     if (system("poweroff -f"))
 #endif
       return 1;
-  }
   while (1) {
     sock = accept(sock_listen, (struct sockaddr *)&addr, &addr_size);
-    if (sock < 0) {
+    if (sock < 0)
       continue;
-    }
     sigprocmask(SIG_BLOCK, &block_alarm, NULL);
     selector(sock);
     sigprocmask(SIG_UNBLOCK, &block_alarm, NULL);

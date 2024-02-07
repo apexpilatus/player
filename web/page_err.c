@@ -10,9 +10,8 @@ int main(int prm_n, char *prm[]) {
   strcpy(rsp, "HTTP/1.1 404 Not Found");
   write_size = write(sock, rsp, strlen(rsp));
   kill(getppid(), SIGUSR1);
-  if (write_size == strlen(rsp)) {
+  if (write_size == strlen(rsp))
     return 0;
-  } else {
+  else
     return 1;
-  }
 }
