@@ -31,7 +31,7 @@ void list_albums(char *msg) {
               strcat(msg, src_path);
               strcat(msg, "/");
               strcat(msg, albm_ep->d_name);
-              strcat(msg, ">");
+              strcat(msg, " alt=picture>");
             }
           }
           closedir(dp_src);
