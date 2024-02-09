@@ -3,15 +3,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <threads.h>
 #include <unistd.h>
 
-#define listen_port 8080
+#define listen_port 80
 
 ssize_t msg_size;
 char *req;
 
-void kill_zombie(int signum) {
-  wait(NULL);
+int kill_zombies(void *prm) {
+  while (1)
+    wait(NULL);
 }
 
 static inline void selector(int sock) {
@@ -31,20 +33,9 @@ static inline void selector(int sock) {
     if (!pid)
       execl(picture_favicon, "picture_favicon", sock_txt, NULL);
   } else if (!strncmp("GET /poweroff ", req, 14)) {
-    char rsp[msg_size];
-    ssize_t write_size;
-    strcpy(rsp, "HTTP/1.1 200 OK\r\n\r\n");
-    write_size = write(sock, rsp, strlen(rsp));
-    if (write_size == strlen(rsp))
-#ifdef WEB_INIT
-    {
-      close(sock);
-      if (system("poweroff -f"))
-        ;
-    }
-#else
-      ;
-#endif
+    pid = fork();
+    if (!pid)
+      execl(system_poweroff, "system_poweroff", sock_txt, NULL);
   } else {
     pid = fork();
     if (!pid)
@@ -58,14 +49,16 @@ int main(void) {
   if (system("/init.sh") && system("poweroff -f"))
     return 1;
 #endif
-  sigset_t block_alarm;
   int sock_listen, sock;
   struct sockaddr_in addr;
+  thrd_t thr;
   msg_size = getpagesize();
   req = malloc(msg_size);
-  sigemptyset(&block_alarm);
-  sigaddset(&block_alarm, SIGUSR1);
-  signal(SIGUSR1, kill_zombie);
+  if (thrd_create(&thr, kill_zombies, NULL) != thrd_success)
+#ifdef WEB_INIT
+    if (system("poweroff -f"))
+#endif
+      return 1;
   sock_listen = socket(PF_INET, SOCK_STREAM, 0);
   addr.sin_family = AF_INET;
   addr.sin_port = htons(listen_port);
@@ -85,9 +78,7 @@ int main(void) {
     sock = accept(sock_listen, (struct sockaddr *)&addr, &addr_size);
     if (sock < 0)
       continue;
-    sigprocmask(SIG_BLOCK, &block_alarm, NULL);
     selector(sock);
-    sigprocmask(SIG_UNBLOCK, &block_alarm, NULL);
   }
 #ifdef WEB_INIT
   if (system("poweroff -f"))

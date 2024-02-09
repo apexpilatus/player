@@ -24,9 +24,6 @@ void list_albums(char *msg) {
             if (albm_ep->d_type == DT_DIR && strcmp(albm_ep->d_name, ".") &&
                 strcmp(albm_ep->d_name, "..") &&
                 strcmp(albm_ep->d_name, "lost+found")) {
-              /*for(char *replace=strchr(albm_ep->d_name, ' ');replace;replace=strchr(replace,' ')){
-              *replace='&';
-              }*/
               strcat(msg, "<img src=\"");
               strcat(msg, src_path);
               strcat(msg, "/");
@@ -51,8 +48,9 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
   strcat(msg, "<meta charset=utf-8>");
-  strcat(msg,
-         "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
+  strcat(
+      msg,
+      "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
   strcat(msg, "<title>player</title>");
   strcat(msg, "</head>");
   strcat(msg, "<body>");
@@ -66,7 +64,6 @@ int main(int prm_n, char *prm[]) {
   write_size = write(sock, rsp, strlen(rsp));
   write_size += write(sock, msg, strlen(msg));
   close(sock);
-  kill(getppid(), SIGUSR1);
   if (write_size == strlen(rsp) + strlen(msg))
     return 0;
   else

@@ -106,10 +106,11 @@ int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   ssize_t rsp_size = 4096, write_size;
   char rsp[rsp_size];
-  sprintf(rsp, "%s\r\nContent-Type: image/x-icon\r\nContent-Length: %u\r\n\r\n", "HTTP/1.1 200 OK", png_len);
+  sprintf(rsp, "%s\r\nContent-Type: image/x-icon\r\nContent-Length: %u\r\n\r\n",
+          "HTTP/1.1 200 OK", png_len);
   write_size = write(sock, rsp, strlen(rsp));
   write_size += write(sock, png, png_len);
-close(sock);
+  close(sock);
   kill(getppid(), SIGUSR1);
   if (write_size == strlen(rsp) + png_len)
     return 0;
