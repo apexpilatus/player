@@ -17,8 +17,8 @@ typedef struct pid_lst_t {
 pid_lst *pids_first = NULL, *pids_last = NULL;
 
 void kill_zombie(int signum) {
-  pid_t pid = wait(NULL);
-  pid_lst *pid_tmp = pids_first;
+  /*pid_t pid = */wait(NULL);
+  /*pid_lst *pid_tmp = pids_first;
   while (pid_tmp) {
     if (pid_tmp->pid == pid) {
       if (pid_tmp->prev) {
@@ -36,7 +36,7 @@ void kill_zombie(int signum) {
       break;
     }
     pid_tmp = pid_tmp->next;
-  }
+  }*/
 }
 
 static inline void selector(int sock) {
@@ -77,7 +77,7 @@ static inline void selector(int sock) {
     if (!pid)
       execl(page_err, "page_err", arg, NULL);
   }
-  if (pid > 0) {
+  /*if (pid > 0) {
     pids_new = malloc(sizeof(pid_lst));
     if (!pids_first) {
       pids_first = pids_new;
@@ -90,7 +90,7 @@ static inline void selector(int sock) {
     pids_last->pid = pid;
     pids_last->sock = sock;
     pids_last->next = NULL;
-  } else
+  } else*/
     close(sock);
 }
 
