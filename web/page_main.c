@@ -25,6 +25,9 @@ void list_albums(char *msg) {
             if (albm_ep->d_type == DT_DIR && strcmp(albm_ep->d_name, ".") &&
                 strcmp(albm_ep->d_name, "..") &&
                 strcmp(albm_ep->d_name, "lost+found")) {
+              for(char *replace=strchr(albm_ep->d_name, ' ');replace;replace=strchr(replace,' '){
+              *replace='&';
+              }
               strcat(msg, "<dt>");
               strcat(msg, albm_ep->d_name);
               strcat(msg, "</dt>");
