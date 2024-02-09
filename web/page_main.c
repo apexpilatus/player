@@ -49,7 +49,7 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<head>");
   strcat(msg, "<meta charset=utf-8>");
   strcat(msg,
-         "<meta name=viewport content=width=device-width, initial-scale=1.0>");
+         "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
   strcat(msg, "<title>player</title>");
   strcat(msg, "</head>");
   strcat(msg, "<body>");
