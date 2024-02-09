@@ -11,7 +11,6 @@ void list_albums(char *msg) {
   struct dirent *src_ep;
   dp_music = opendir(music);
   if (dp_music) {
-    strcat(msg, "<dl>");
     while ((src_ep = readdir(dp_music))) {
       if (src_ep->d_type == DT_DIR && strcmp(src_ep->d_name, ".") &&
           strcmp(src_ep->d_name, "..") &&
@@ -28,16 +27,17 @@ void list_albums(char *msg) {
               for(char *replace=strchr(albm_ep->d_name, ' ');replace;replace=strchr(replace,' ')){
               *replace='&';
               }
-              strcat(msg, "<dt>");
+              strcat(msg, "<img src=");
+              strcat(msg, src_path);
+              strcat(msg, "/");
               strcat(msg, albm_ep->d_name);
-              strcat(msg, "</dt>");
+              strcat(msg, ">");
             }
           }
           closedir(dp_src);
         }
       }
     }
-    strcat(msg, "</dl>");
     closedir(dp_music);
   }
 }
