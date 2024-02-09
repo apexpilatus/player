@@ -7,27 +7,29 @@
 
 #define listen_port 8080
 
+ssize_t msg_size;
+char *req;
+
 void kill_zombie(int signum) {
   wait(NULL);
 }
 
 static inline void selector(int sock) {
-  ssize_t msg_size = 4096, read_size;
-  char req[msg_size];
+  ssize_t read_size;
   pid_t pid = -1;
-  char arg[15];
-  sprintf(arg, "%d", sock);
+  char sock_txt[15];
+  sprintf(sock_txt, "%d", sock);
   read_size = read(sock, req, msg_size);
   req[read_size] = '\0';
   if (!strncmp("GET / ", req, 6)) {
     pid = fork();
     if (!pid)
-      execl(page_main, "page_main", arg, NULL);
+      execl(page_main, "page_main", sock_txt, NULL);
   } else if (!(strncmp("GET /favicon.ico ", req, 17) &&
                strncmp("GET /apple-touch-icon-precomposed.png ", req, 17))) {
     pid = fork();
     if (!pid)
-      execl(picture_favicon, "picture_favicon", arg, NULL);
+      execl(picture_favicon, "picture_favicon", sock_txt, NULL);
   } else if (!strncmp("GET /poweroff ", req, 14)) {
     char rsp[msg_size];
     ssize_t write_size;
@@ -59,6 +61,8 @@ int main(void) {
   sigset_t block_alarm;
   int sock_listen, sock;
   struct sockaddr_in addr;
+  msg_size = getpagesize();
+  req = malloc(msg_size);
   sigemptyset(&block_alarm);
   sigaddset(&block_alarm, SIGUSR1);
   signal(SIGUSR1, kill_zombie);
@@ -72,7 +76,7 @@ int main(void) {
     if (system("poweroff -f"))
 #endif
       return 1;
-  if (listen(sock_listen, 10) < 0)
+  if (listen(sock_listen, 1) < 0)
 #ifdef WEB_INIT
     if (system("poweroff -f"))
 #endif
