@@ -45,7 +45,7 @@ int main(int prm_n, char *prm[]) {
   char rsp[rsp_size], *msg;
   msg = malloc(rsp_size * 10000);
   strcpy(msg, "<!DOCTYPE html>");
-  strcat(msg, "<html>");
+  strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
   strcat(msg, "<meta charset=utf-8>");
   strcat(msg,
