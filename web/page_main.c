@@ -25,8 +25,8 @@ void list_albums(char *msg) {
                 strcmp(albm_ep->d_name, "..") &&
                 strcmp(albm_ep->d_name, "lost+found")) {
               /*for(char *replace=strchr(albm_ep->d_name, ' ');replace;replace=strchr(replace,' ')){
-              *replace='&';*/
-              }
+              *replace='&';
+              }*/
               strcat(msg, "<img src=\"");
               strcat(msg, src_path);
               strcat(msg, "/");
