@@ -36,6 +36,14 @@ static inline void selector(int sock) {
     pid = fork();
     if (!pid)
       execl(system_poweroff, "system_poweroff", sock_txt, NULL);
+  } else if (!strncmp(music, req + 4, strlen(music))) {
+    char *end = strchr(req, '\r');
+    while (strncmp(end, "HTTP", 4))
+      end--;
+    *(end - 1) = '\0';
+    pid = fork();
+    if (!pid)
+      execl(picture_album, "picture_album", sock_txt, req + 4, NULL);
   } else {
     pid = fork();
     if (!pid)
@@ -69,7 +77,7 @@ int main(void) {
     if (system("poweroff -f"))
 #endif
       return 1;
-  if (listen(sock_listen, 1) < 0)
+  if (listen(sock_listen, 100) < 0)
 #ifdef WEB_INIT
     if (system("poweroff -f"))
 #endif

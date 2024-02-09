@@ -10,11 +10,11 @@ int main(int prm_n, char *prm[]) {
   strcpy(rsp, "HTTP/1.1 200 OK\r\n\r\n");
   write_size = write(sock, rsp, strlen(rsp));
   close(sock);
-  if (write_size == strlen(rsp))
+  if (write_size == strlen(rsp)) {
 #ifdef WEB_INIT
     if (!system("poweroff -f"))
 #endif
       return 0;
-    else
-      return 1;
+  } else
+    return 1;
 }
