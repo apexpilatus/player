@@ -1,5 +1,5 @@
-WEB_PATH := /home/player
-MUSIC_PATH := /home/store/music
+WEB_PATH := /home/player/web
+MUSIC_PATH := /home/music
 WEB_DEFINES := -D page_main=\"$(WEB_PATH)/page_main\"
 WEB_DEFINES += -D picture_favicon=\"$(WEB_PATH)/picture_favicon\"
 WEB_DEFINES += -D page_err=\"$(WEB_PATH)/page_err\"
