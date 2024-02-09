@@ -15,7 +15,6 @@ static inline void selector(int sock) {
   ssize_t msg_size = 4096, read_size;
   char req[msg_size];
   pid_t pid = -1;
-  pid_lst *pids_new;
   char arg[15];
   sprintf(arg, "%d", sock);
   read_size = read(sock, req, msg_size);
