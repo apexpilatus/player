@@ -48,7 +48,7 @@ static inline void selector(int sock) {
   } else {
     pid = fork();
     if (!pid)
-      execl(page_err, "page_err", arg, NULL);
+      execl(page_err, "page_err", sock_txt, NULL);
   }
   close(sock);
 }
