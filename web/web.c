@@ -7,36 +7,8 @@
 
 #define listen_port 8080
 
-typedef struct pid_lst_t {
-  pid_t pid;
-  int sock;
-  struct pid_lst_t *prev;
-  struct pid_lst_t *next;
-} pid_lst;
-
-pid_lst *pids_first = NULL, *pids_last = NULL;
-
 void kill_zombie(int signum) {
-  /*pid_t pid = */wait(NULL);
-  /*pid_lst *pid_tmp = pids_first;
-  while (pid_tmp) {
-    if (pid_tmp->pid == pid) {
-      if (pid_tmp->prev) {
-        pid_tmp->prev->next = pid_tmp->next;
-      } else {
-        pids_first = pid_tmp->next;
-      }
-      if (pid_tmp->next) {
-        pid_tmp->next->prev = pid_tmp->prev;
-      } else {
-        pids_last = pid_tmp->prev;
-      }
-      close(pid_tmp->sock);
-      free(pid_tmp);
-      break;
-    }
-    pid_tmp = pid_tmp->next;
-  }*/
+  wait(NULL);
 }
 
 static inline void selector(int sock) {
@@ -77,21 +49,7 @@ static inline void selector(int sock) {
     if (!pid)
       execl(page_err, "page_err", arg, NULL);
   }
-  /*if (pid > 0) {
-    pids_new = malloc(sizeof(pid_lst));
-    if (!pids_first) {
-      pids_first = pids_new;
-      pids_new->prev = NULL;
-    } else {
-      pids_last->next = pids_new;
-      pids_new->prev = pids_last;
-    }
-    pids_last = pids_new;
-    pids_last->pid = pid;
-    pids_last->sock = sock;
-    pids_last->next = NULL;
-  } else*/
-    close(sock);
+  close(sock);
 }
 
 int main(void) {
