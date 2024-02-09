@@ -27,11 +27,11 @@ void list_albums(char *msg) {
               for(char *replace=strchr(albm_ep->d_name, ' ');replace;replace=strchr(replace,' ')){
               *replace='&';
               }
-              strcat(msg, "<img src=");
+              strcat(msg, "<img src=\"");
               strcat(msg, src_path);
               strcat(msg, "/");
               strcat(msg, albm_ep->d_name);
-              strcat(msg, " alt=picture>");
+              strcat(msg, "\" alt=picture>");
             }
           }
           closedir(dp_src);
