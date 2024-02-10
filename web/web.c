@@ -31,10 +31,12 @@ static inline void selector(int sock) {
     if (!pid)
       execl(resp_main, "resp_main", sock_txt, NULL);
   } else if (!(strcmp("/favicon.ico", url) &&
-               strcmp("/apple-touch-icon-precomposed.png", url))) {
+               strcmp("/apple-touch-icon-precomposed.png", url) &&
+               strncmp("/style", url, strlen("/style")) &&
+               strncmp("/script", url, strlen("/script")))) {
     pid = fork();
     if (!pid)
-      execl(data_static, "data_static", sock_txt, NULL);
+      execl(data_static, "data_static", sock_txt, url, NULL);
   } else if (!strcmp("/poweroff", url)) {
     pid = fork();
     if (!pid)
@@ -43,6 +45,10 @@ static inline void selector(int sock) {
     pid = fork();
     if (!pid)
       execl(data_picture, "data_picture", sock_txt, url, NULL);
+  } else if (!strncmp("/gettracks", url, strlen("/gettracks"))) {
+    pid = fork();
+    if (!pid)
+      execl(resp_tracks, "resp_tracks", sock_txt, url, NULL);
   } else {
     pid = fork();
     if (!pid)

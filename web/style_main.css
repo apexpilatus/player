@@ -1,0 +1,54 @@
+body {
+    background-color: #cec5b7;
+}
+
+img {
+    width: 30%;
+}
+
+#albums {
+    position: relative;
+    left: 10%;
+    z-index: 1;
+}
+
+.clear {
+    filter: none;
+    pointer-events: auto;
+}
+
+.blur {
+    filter: blur(100px);
+    pointer-events: none;
+}
+
+#tracks {
+    position: fixed;
+    top: 20%;
+    left: 15%;
+    width: 80%;
+    height: 60%;
+    border-style: none;
+    z-index: 2;
+}
+
+button {
+    position: fixed;
+    left: 1%;
+    color: red;
+    font-size: 130%;
+    font-weight: bold;
+    background-color: #cec5b7;
+    width: 8%;
+    text-align: center;
+    padding: 0 0;
+    border-radius: 20%;
+}
+
+#poweroff {
+    top: 70%;
+}
+
+#hidetracks {
+    top: 30%;
+}

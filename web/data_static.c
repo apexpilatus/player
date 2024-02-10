@@ -101,18 +101,58 @@ unsigned char png[] = {
     0x4d, 0xbe, 0xe4, 0x00, 0xca, 0x4a, 0xb8, 0x00, 0x00, 0x00, 0x00, 0x49,
     0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82};
 unsigned int png_len = 1135;
-extern unsigned char style_css[];
-extern unsigned int style_css_len;
+extern unsigned char style_main_css[], script_main_js[], style_tracks_css[],
+    script_tracks_js[];
+extern unsigned int style_main_css_len, script_main_js_len,
+    style_tracks_css_len, script_tracks_js_len;
 
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   ssize_t rsp_size = getpagesize(), write_size;
-  char *rsp = malloc(rsp_size);
-  sprintf(rsp, "%s\r\nContent-Type: image/x-icon\r\nContent-Length: %u\r\n\r\n",
-          "HTTP/1.1 200 OK", png_len);
+  char *rsp = malloc(rsp_size), *url = prm[2];
+  unsigned char *data;
+  unsigned int data_len;
+  if (!(strcmp("/favicon.ico", url) &&
+        strcmp("/apple-touch-icon-precomposed.png", url))) {
+    data = png;
+    data_len = png_len;
+    sprintf(rsp,
+            "HTTP/1.1 200 OK\r\nContent-Type: image/x-icon\r\n"
+            "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
+            data_len);
+  } else if (!strcmp("/style_main.css", url)) {
+    data = style_main_css;
+    data_len = style_main_css_len;
+    sprintf(rsp,
+            "HTTP/1.1 200 OK\r\nContent-Type: text/css\r\n"
+            "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
+            data_len);
+  } else if (!strcmp("/script_main.js", url)) {
+    data = script_main_js;
+    data_len = script_main_js_len;
+    sprintf(rsp,
+            "HTTP/1.1 200 OK\r\nContent-Type: text/javascript\r\n"
+            "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
+            data_len);
+  } else if (!strcmp("/style_tracks.css", url)) {
+    data = style_tracks_css;
+    data_len = style_tracks_css_len;
+    sprintf(rsp,
+            "HTTP/1.1 200 OK\r\nContent-Type: text/css\r\n"
+            "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
+            data_len);
+  } else if (!strcmp("/script_tracks.js", url)) {
+    data = script_tracks_js;
+    data_len = script_tracks_js_len;
+    sprintf(rsp,
+            "HTTP/1.1 200 OK\r\nContent-Type: text/javascript\r\n"
+            "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
+            data_len);
+  } else
+    execl(resp_err, "resp_err", prm[1], NULL);
   write_size = write(sock, rsp, strlen(rsp));
-  write_size += write(sock, png, png_len);
-  if (write_size == strlen(rsp) + png_len)
+  write_size += write(sock, data, data_len);
+  if (write_size == strlen(rsp) + data_len)
     return 0;
   else
     return 1;

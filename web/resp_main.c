@@ -28,7 +28,11 @@ void list_albums(char *msg) {
               strcat(msg, src_path);
               strcat(msg, "/");
               strcat(msg, albm_ep->d_name);
-              strcat(msg, "\" alt=picture>");
+              strcat(msg, "\" onclick=gettracks(\"");
+              strcat(msg, src_path);
+              strcat(msg, "/");
+              strcat(msg, albm_ep->d_name);
+              strcat(msg, "\") alt=picture>");
             }
           closedir(dp_src);
         }
@@ -51,9 +55,18 @@ int main(int prm_n, char *prm[]) {
       msg,
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
   strcat(msg, "<title>player</title>");
+  strcat(msg, "<link rel=stylesheet href=style_main.css>");
+  strcat(msg, "<script src=script_main.js></script>");
   strcat(msg, "</head>");
   strcat(msg, "<body>");
+  strcat(msg, "<button type=button id=poweroff onclick=fetch(\"poweroff\")>"
+              "&#9760;</button>");
+  strcat(msg, "<button type=button hidden id=hidetracks onclick=hidetracks()>"
+              "&#9769</button>");
+  strcat(msg, "<iframe hidden id=tracks title=meta></iframe>");
+  strcat(msg, "<div id=albums>");
   list_albums(msg);
+  strcat(msg, "</div>");
   strcat(msg, "</body>");
   strcat(msg, "</html>");
   strcpy(rsp, "HTTP/1.1 200 OK\r\n");
