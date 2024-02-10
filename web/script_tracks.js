@@ -1,3 +1,3 @@
-function showtracks(){
+function showtracks() {
     parent.document.getElementById("tracks").hidden = false;
 }
