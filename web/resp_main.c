@@ -62,7 +62,6 @@ int main(int prm_n, char *prm[]) {
   sprintf(rsp + write_size, "Content-Length: %lu\r\n\r\n", strlen(msg));
   write_size = write(sock, rsp, strlen(rsp));
   write_size += write(sock, msg, strlen(msg));
-  close(sock);
   if (write_size == strlen(rsp) + strlen(msg))
     return 0;
   else

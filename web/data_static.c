@@ -101,6 +101,8 @@ unsigned char png[] = {
     0x4d, 0xbe, 0xe4, 0x00, 0xca, 0x4a, 0xb8, 0x00, 0x00, 0x00, 0x00, 0x49,
     0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82};
 unsigned int png_len = 1135;
+extern unsigned char style_css[];
+extern unsigned int style_css_len;
 
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
@@ -110,7 +112,6 @@ int main(int prm_n, char *prm[]) {
           "HTTP/1.1 200 OK", png_len);
   write_size = write(sock, rsp, strlen(rsp));
   write_size += write(sock, png, png_len);
-  close(sock);
   if (write_size == strlen(rsp) + png_len)
     return 0;
   else

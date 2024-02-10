@@ -18,36 +18,35 @@ int kill_zombies(void *prm) {
 
 static inline void selector(int sock) {
   ssize_t read_size;
-  pid_t pid = -1;
-  char sock_txt[15];
+  pid_t pid;
+  char sock_txt[15], *url, *end;
   sprintf(sock_txt, "%d", sock);
   read_size = read(sock, req, msg_size);
-  req[read_size] = '\0';
-  if (!strncmp("GET / ", req, 6)) {
+  url = req + 4;
+  end = strchr(url, ' ');
+  if (end)
+    *end = '\0';
+  if (!strcmp("/", url)) {
     pid = fork();
     if (!pid)
-      execl(page_main, "page_main", sock_txt, NULL);
-  } else if (!(strncmp("GET /favicon.ico ", req, 17) &&
-               strncmp("GET /apple-touch-icon-precomposed.png ", req, 17))) {
+      execl(resp_main, "resp_main", sock_txt, NULL);
+  } else if (!(strcmp("/favicon.ico", url) &&
+               strcmp("/apple-touch-icon-precomposed.png", url))) {
     pid = fork();
     if (!pid)
-      execl(picture_favicon, "picture_favicon", sock_txt, NULL);
-  } else if (!strncmp("GET /poweroff ", req, 14)) {
+      execl(data_static, "data_static", sock_txt, NULL);
+  } else if (!strcmp("/poweroff", url)) {
     pid = fork();
     if (!pid)
       execl(system_poweroff, "system_poweroff", sock_txt, NULL);
-  } else if (!strncmp(music, req + 4, strlen(music))) {
-    char *end = strchr(req, '\r');
-    while (strncmp(end, "HTTP", 4))
-      end--;
-    *(end - 1) = '\0';
+  } else if (!strncmp(music, url, strlen(music))) {
     pid = fork();
     if (!pid)
-      execl(picture_album, "picture_album", sock_txt, req + 4, NULL);
+      execl(data_picture, "data_picture", sock_txt, url, NULL);
   } else {
     pid = fork();
     if (!pid)
-      execl(page_err, "page_err", sock_txt, NULL);
+      execl(resp_err, "resp_err", sock_txt, NULL);
   }
   close(sock);
 }
