@@ -26,10 +26,22 @@ static inline void selector(int sock) {
   end = strchr(url, ' ');
   if (end)
     *end = '\0';
-  if (!strcmp("/", url)) {
+  if (!strncmp(music, url, strlen(music))) {
+    pid = fork();
+    if (!pid)
+      execl(data_picture, "data_picture", sock_txt, url, NULL);
+  } else if (!strncmp("/tracks", url, strlen("/tracks"))) {
+    pid = fork();
+    if (!pid)
+      execl(resp_tracks, "resp_tracks", sock_txt, url, NULL);
+  } else if (!strcmp("/", url)) {
     pid = fork();
     if (!pid)
       execl(resp_main, "resp_main", sock_txt, NULL);
+  } else if (!strncmp("/albums", url, strlen("/albums"))) {
+    pid = fork();
+    if (!pid)
+      execl(resp_albums, "resp_albums", sock_txt, NULL);
   } else if (!(strcmp("/favicon.ico", url) &&
                strcmp("/apple-touch-icon-precomposed.png", url) &&
                strncmp("/style", url, strlen("/style")) &&
@@ -41,14 +53,6 @@ static inline void selector(int sock) {
     pid = fork();
     if (!pid)
       execl(system_poweroff, "system_poweroff", sock_txt, NULL);
-  } else if (!strncmp(music, url, strlen(music))) {
-    pid = fork();
-    if (!pid)
-      execl(data_picture, "data_picture", sock_txt, url, NULL);
-  } else if (!strncmp("/gettracks", url, strlen("/gettracks"))) {
-    pid = fork();
-    if (!pid)
-      execl(resp_tracks, "resp_tracks", sock_txt, url, NULL);
   } else {
     pid = fork();
     if (!pid)

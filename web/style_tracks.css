@@ -1,3 +1,42 @@
-body::-webkit-scrollbar {
-    display: none;
+button {
+    position: fixed;
+    bottom: 1%;
+    color: red;
+    font-weight: bold;
+    background-color: #cec5b7;
+    width: 10%;
+    text-align: center;
+    padding: 0 0;
+    border-radius: 20%;
+}
+
+#poweroff {
+    right: 2%;
+    bottom: 2%;
+}
+
+#hidetracks {
+    left: 2%;
+    bottom: 2%;
+}
+
+#volume {
+    left: 40%;
+    bottom: 2%;
+}
+
+.title {
+    position: sticky;
+    top: 0;
+    width: 100%;
+}
+
+.artist {
+    padding: 0 1%;
+    font-size: 110%;
+}
+
+.album {
+    color: white;
+    padding: 0 2%;
 }
