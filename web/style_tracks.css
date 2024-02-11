@@ -1,31 +1,9 @@
-button {
-    position: fixed;
-    bottom: 2%;
-    color: red;
-    font-weight: bold;
-    background-color: #cec5b7;
-    width: 25px;
-    text-align: center;
-    padding: 0 0;
-    border-radius: 20%;
-}
-
-#poweroff {
-    right: 2%;
-}
-
-#hidetracks {
-    left: 2%;
-}
-
-#volume {
-    left: 40%;
-}
-
 .title {
     position: sticky;
     top: 0;
     width: 100%;
+    background-color: #cec5b7;
+    font-weight: bold;
 }
 
 .artist {
@@ -36,4 +14,24 @@ button {
 .album {
     color: white;
     padding: 0 2%;
+}
+
+.rate {
+    color: red;
+    font-size: 90%;
+    padding: 0 4%;
+}
+
+tr {
+    vertical-align: text-top;
+}
+
+.tracknumber {
+    color: white;
+    width: 6%;
+    padding: 1% 1%;
+}
+
+.tracktitle {
+    padding: 1% 2%;
 }

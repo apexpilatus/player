@@ -5,20 +5,39 @@ body {
 #albums {
     position: fixed;
     top: 0;
-    left: 0;
-    width: 100%;
+    right: 0;
+    width: 40%;
     height: 100%;
-    border-bottom-style: solid;
-    z-index: 2;
+    border-style: none;
 }
 
 #tracks {
     position: fixed;
-    bottom: 0;
+    top: 15%;
     left: 0;
-    width: 100%;
+    width: 60%;
     height: 70%;
     border-style: none;
-    display: none;
-    z-index: 1;
 }
+
+button {
+    position: fixed;
+    color: red;
+    font-weight: bold;
+    background-color: #cec5b7;
+    width: 30px;
+    text-align: center;
+    padding: 2px 2px;
+    border-radius: 20%;
+}
+
+#poweroff {
+    left: 5%;
+    top: 5%;
+}
+
+#volume {
+    left: 5%;
+    bottom: 5%;
+}
+
