@@ -54,7 +54,7 @@ int main(int prm_n, char *prm[]) {
   strcat(
       msg,
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
-  strcat(msg, "<title>player</title>");
+  strcat(msg, "<title>albums</title>");
   strcat(msg, "<link rel=stylesheet href=style_albums.css>");
   strcat(msg, "<script src=script_albums.js></script>");
   strcat(msg, "</head>");

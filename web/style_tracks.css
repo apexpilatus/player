@@ -1,10 +1,10 @@
 button {
     position: fixed;
-    bottom: 1%;
+    bottom: 2%;
     color: red;
     font-weight: bold;
     background-color: #cec5b7;
-    width: 10%;
+    width: 25px;
     text-align: center;
     padding: 0 0;
     border-radius: 20%;
@@ -12,17 +12,14 @@ button {
 
 #poweroff {
     right: 2%;
-    bottom: 2%;
 }
 
 #hidetracks {
     left: 2%;
-    bottom: 2%;
 }
 
 #volume {
     left: 40%;
-    bottom: 2%;
 }
 
 .title {

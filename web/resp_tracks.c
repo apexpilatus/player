@@ -79,6 +79,10 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
   strcat(msg, "<meta charset=utf-8>");
+  strcat(
+      msg,
+      "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
+  strcat(msg, "<title>tracks</title>");
   strcat(msg, "<link rel=stylesheet href=style_tracks.css>");
   strcat(msg, "<script src=script_tracks.js></script>");
   strcat(msg, "</head>");
