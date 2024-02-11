@@ -24,7 +24,7 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "</head>");
   strcat(msg, "<body>");
   strcat(msg, "<iframe id=albums title=albums></iframe>");
-  strcat(msg, "<iframe hidden id=tracks title=tracks></iframe>");
+  strcat(msg, "<iframe id=tracks title=tracks></iframe>");
   strcat(msg, "<script>getalbums()</script>");
   strcat(msg, "</body>");
   strcat(msg, "</html>");
