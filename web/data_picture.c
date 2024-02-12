@@ -6,7 +6,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-int get_picture(FLAC__StreamMetadata **picture) {
+static inline int get_picture(FLAC__StreamMetadata **picture) {
   DIR *dp;
   struct dirent *ep;
   dp = opendir(".");

@@ -15,7 +15,7 @@ typedef struct meta_list_t {
   char *rate;
 } meta_list;
 
-void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
+static inline void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
   for (int i = 0; i < tags->data.vorbis_comment.num_comments; i++) {
     if (!strncmp("ARTIST", (char *)tags->data.vorbis_comment.comments[i].entry,
                  strlen("ARTIST"))) {
@@ -45,7 +45,7 @@ void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
   }
 }
 
-void list_tracks(char *msg) {
+static inline void list_tracks(char *msg) {
   DIR *dp;
   struct dirent *ep;
   meta_list *list_first, *list_tmp;

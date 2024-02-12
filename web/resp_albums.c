@@ -5,7 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
-void list_albums(char *msg) {
+static inline void list_albums(char *msg) {
   char *src_path = malloc(getpagesize());
   DIR *dp_music;
   struct dirent *src_ep;
