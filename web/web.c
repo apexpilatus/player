@@ -8,8 +8,8 @@
 
 #define listen_port 80
 
-ssize_t msg_size;
-char *req;
+static ssize_t msg_size;
+static char *req;
 
 int kill_zombies(void *prm) {
   while (1)
