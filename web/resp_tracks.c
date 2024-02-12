@@ -16,10 +16,18 @@ typedef struct meta_list_t {
 } meta_list;
 
 static inline void sort_tags(meta_list *list_first) {
+  char *title_tmp, *track_tmp;
   for (meta_list *go_slow = list_first; go_slow && go_slow->next;
        go_slow = go_slow->next)
     for (meta_list *go_fast = go_slow->next; go_fast; go_fast = go_fast->next)
-      printf("go_slow - %s;go_fast - %s\n", go_slow->track, go_fast->track);
+      if (strtol(go_slow->track, NULL, 10) > strtol(go_fast->track, NULL, 10)) {
+        title_tmp = go_fast->title;
+        track_tmp = go_fast->track;
+        go_fast->title = go_slow->title;
+        go_fast->track = go_slow->track;
+        go_slow->title = title_tmp;
+        go_slow->track = track_tmp;
+      }
 }
 
 static inline void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
@@ -55,7 +63,7 @@ static inline void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
 static inline void list_tracks(char *msg) {
   DIR *dp;
   struct dirent *ep;
-  meta_list *list_first, *list_tmp;
+  meta_list *list_first = NULL, *list_tmp = NULL;
   FLAC__StreamMetadata *tags =
       FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT);
   FLAC__StreamMetadata *rate =
@@ -64,43 +72,40 @@ static inline void list_tracks(char *msg) {
   if (dp) {
     strcat(msg, "<div class=title>");
     while ((ep = readdir(dp)))
-      if (ep->d_type == DT_REG) {
-        if (FLAC__metadata_get_tags(ep->d_name, &tags)) {
-          list_first = malloc(sizeof(meta_list));
-          list_tmp = list_first;
-          memset(list_first, 0, sizeof(meta_list));
-          cpy_tags(list_first, tags);
-          if (list_first->artist) {
-            strcat(msg, "<div class=artist>");
-            strcat(msg, list_first->artist);
-            strcat(msg, "</div>");
-          }
-          if (list_first->album) {
-            strcat(msg, "<div class=album>");
-            strcat(msg, list_first->album);
-            strcat(msg, "</div>");
-          }
-          if (FLAC__metadata_get_streaminfo(ep->d_name, rate)) {
-            list_first->rate = malloc(30);
-            sprintf(list_first->rate, "%u/%g",
-                    rate->data.stream_info.bits_per_sample,
-                    rate->data.stream_info.sample_rate / 1000.0);
-            strcat(msg, "<div class=rate>");
-            strcat(msg, list_first->rate);
-            strcat(msg, "</div>");
-          }
+      if (ep->d_type == DT_REG && FLAC__metadata_get_tags(ep->d_name, &tags)) {
+        list_first = malloc(sizeof(meta_list));
+        memset(list_first, 0, sizeof(meta_list));
+        cpy_tags(list_first, tags);
+        if (list_first->artist) {
+          strcat(msg, "<div class=artist>");
+          strcat(msg, list_first->artist);
+          strcat(msg, "</div>");
+        }
+        if (list_first->album) {
+          strcat(msg, "<div class=album>");
+          strcat(msg, list_first->album);
+          strcat(msg, "</div>");
+        }
+        if (FLAC__metadata_get_streaminfo(ep->d_name, rate)) {
+          list_first->rate = malloc(30);
+          sprintf(list_first->rate, "%u/%g",
+                  rate->data.stream_info.bits_per_sample,
+                  rate->data.stream_info.sample_rate / 1000.0);
+          strcat(msg, "<div class=rate>");
+          strcat(msg, list_first->rate);
+          strcat(msg, "</div>");
         }
         break;
       }
     strcat(msg, "</div>");
+    list_tmp = list_first;
     while ((ep = readdir(dp)))
-      if (ep->d_type == DT_REG)
-        if (FLAC__metadata_get_tags(ep->d_name, &tags)) {
-          list_tmp->next = malloc(sizeof(meta_list));
-          list_tmp = list_tmp->next;
-          memset(list_tmp, 0, sizeof(meta_list));
-          cpy_tags(list_tmp, tags);
-        }
+      if (ep->d_type == DT_REG && FLAC__metadata_get_tags(ep->d_name, &tags)) {
+        list_tmp->next = malloc(sizeof(meta_list));
+        memset(list_tmp->next, 0, sizeof(meta_list));
+        list_tmp = list_tmp->next;
+        cpy_tags(list_tmp, tags);
+      }
     strcat(msg, "<table>");
     sort_tags(list_first);
     list_tmp = list_first;
