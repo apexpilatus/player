@@ -1,4 +1,4 @@
-.title {
+#albumtitle {
     position: sticky;
     top: 0;
     width: 100%;
@@ -6,18 +6,18 @@
     font-weight: bold;
 }
 
-.artist {
+#artist {
     padding: 0 1%;
     font-size: 110%;
 }
 
-.album {
+#album {
     color: white;
     padding: 0 2%;
 }
 
-.rate {
-    color: red;
+#rate {
+    color: gray;
     font-size: 90%;
     padding: 0 4%;
 }

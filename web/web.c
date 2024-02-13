@@ -6,14 +6,19 @@
 #include <threads.h>
 #include <unistd.h>
 
-#define listen_port 80
+#define listen_port 8080
 
 static ssize_t msg_size;
 static char *req;
+static volatile pid_t player_pid = -1;
 
 int kill_zombies(void *prm) {
-  while (1)
-    wait(NULL);
+  pid_t pid;
+  while (1) {
+    pid = wait(NULL);
+    if (pid == player_pid)
+      player_pid = -1;
+  }
 }
 
 static inline void selector(int sock) {
@@ -42,6 +47,15 @@ static inline void selector(int sock) {
     pid = fork();
     if (!pid)
       execl(resp_albums, "resp_albums", sock_txt, NULL);
+  } else if (!strncmp("/play", url, strlen("/play"))) {
+    if (player_pid > 0) {
+      kill(player_pid, SIGTERM);
+      while (player_pid > 0)
+        ;
+    }
+    player_pid = fork();
+    if (!player_pid)
+      execl(system_play, "system_play", sock_txt, NULL);
   } else if (!(strcmp("/favicon.ico", url) &&
                strcmp("/apple-touch-icon-precomposed.png", url) &&
                strncmp("/style", url, strlen("/style")) &&

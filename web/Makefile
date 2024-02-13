@@ -8,12 +8,13 @@ WEB_DEFINES += -D resp_err=\"$(WEB_PATH)/resp_err\"
 WEB_DEFINES += -D data_static=\"$(WEB_PATH)/data_static\"
 WEB_DEFINES += -D data_picture=\"$(WEB_PATH)/data_picture\"
 WEB_DEFINES += -D system_poweroff=\"$(WEB_PATH)/system_poweroff\"
+WEB_DEFINES += -D system_play=\"$(WEB_PATH)/system_play\"
 ifdef init
 WEB_DEFINES += -D WEB_INIT
 endif
 CC := clang -O2
 
-web : web.c resp_main resp_tracks resp_albums resp_err data_static data_picture system_poweroff
+web : web.c resp_main resp_tracks resp_albums resp_err data_static data_picture system_play system_poweroff
 	clang-format -i web.c
 	$(CC) web.c -o web $(WEB_DEFINES)
 
@@ -47,6 +48,10 @@ data_static : data_static.c style_main.css script_main.js style_tracks.css scrip
 data_picture : data_picture.c
 	clang-format -i data_picture.c
 	$(CC) data_picture.c -o data_picture $(WEB_DEFINES) -lFLAC
+
+system_play : system_play.c
+	clang-format -i system_play.c
+	$(CC) system_play.c -o system_play
 
 system_poweroff : system_poweroff.c
 	clang-format -i system_poweroff.c

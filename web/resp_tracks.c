@@ -60,7 +60,7 @@ static inline void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
   }
 }
 
-static inline void list_tracks(char *msg) {
+static inline void list_tracks(char *album_dir, char *msg) {
   DIR *dp;
   struct dirent *ep;
   meta_list *list_first = NULL, *list_tmp = NULL;
@@ -70,19 +70,19 @@ static inline void list_tracks(char *msg) {
       FLAC__metadata_object_new(FLAC__METADATA_TYPE_STREAMINFO);
   dp = opendir(".");
   if (dp) {
-    strcat(msg, "<div class=title>");
+    strcat(msg, "<div id=albumtitle>");
     while ((ep = readdir(dp)))
       if (ep->d_type == DT_REG && FLAC__metadata_get_tags(ep->d_name, &tags)) {
         list_first = malloc(sizeof(meta_list));
         memset(list_first, 0, sizeof(meta_list));
         cpy_tags(list_first, tags);
         if (list_first->artist) {
-          strcat(msg, "<div class=artist>");
+          strcat(msg, "<div id=artist>");
           strcat(msg, list_first->artist);
           strcat(msg, "</div>");
         }
         if (list_first->album) {
-          strcat(msg, "<div class=album>");
+          strcat(msg, "<div id=album>");
           strcat(msg, list_first->album);
           strcat(msg, "</div>");
         }
@@ -91,7 +91,7 @@ static inline void list_tracks(char *msg) {
           sprintf(list_first->rate, "%u/%g",
                   rate->data.stream_info.bits_per_sample,
                   rate->data.stream_info.sample_rate / 1000.0);
-          strcat(msg, "<div class=rate>");
+          strcat(msg, "<div id=rate>");
           strcat(msg, list_first->rate);
           strcat(msg, "</div>");
         }
@@ -110,7 +110,13 @@ static inline void list_tracks(char *msg) {
     sort_tags(list_first);
     list_tmp = list_first;
     while (list_tmp) {
-      strcat(msg, "<tr>");
+      strcat(msg, "<tr onclick=play(\"");
+      strcat(msg, album_dir);
+      if (list_tmp->track) {
+        strcat(msg, "&");
+        strcat(msg, list_tmp->track);
+      }
+      strcat(msg, "\")>");
       strcat(msg, "<td class=tracknumber>");
       if (list_tmp->track)
         strcat(msg, list_tmp->track);
@@ -130,9 +136,9 @@ static inline void list_tracks(char *msg) {
 int main(int prm_n, char *prm[]) {
   int sock;
   ssize_t rsp_size, write_size;
-  char *rsp, *msg, *album;
-  album = strchr(prm[2], '?');
-  if (!album || chdir(++album))
+  char *rsp, *msg, *album_dir;
+  album_dir = strchr(prm[2], '?');
+  if (!album_dir || chdir(++album_dir))
     execl(resp_err, "resp_err", prm[1], NULL);
   sock = strtol(prm[1], NULL, 10);
   rsp_size = getpagesize();
@@ -151,7 +157,7 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "</head>");
   strcat(msg, "<body>");
   strcat(msg, "<script>showtracks()</script>");
-  list_tracks(msg);
+  list_tracks(album_dir, msg);
   strcat(msg, "</body>");
   strcat(msg, "</html>");
   strcpy(rsp, "HTTP/1.1 200 OK\r\n");
