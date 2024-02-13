@@ -17,7 +17,7 @@ int main(int prm_n, char *prm[]) {
   ssize_t rsp_size = getpagesize(), write_size;
   char *rsp = malloc(rsp_size);
   char *album_dir, *start_track;
-  int card = -2;
+  int card = -1;
   album_dir = strchr(prm[2], '?');
   if (!album_dir)
     execl(resp_err, "resp_err", prm[1], NULL);
