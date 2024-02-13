@@ -150,6 +150,7 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<script src=script_tracks.js></script>");
   strcat(msg, "</head>");
   strcat(msg, "<body>");
+  strcat(msg, "<script>showtracks()</script>");
   list_tracks(msg);
   strcat(msg, "</body>");
   strcat(msg, "</html>");
