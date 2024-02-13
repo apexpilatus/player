@@ -51,7 +51,7 @@ data_picture : data_picture.c
 
 system_play : system_play.c
 	clang-format -i system_play.c
-	$(CC) system_play.c -o system_play
+	$(CC) system_play.c -o system_play $(WEB_DEFINES) -lasound
 
 system_poweroff : system_poweroff.c
 	clang-format -i system_poweroff.c

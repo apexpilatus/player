@@ -55,7 +55,7 @@ static inline void selector(int sock) {
     }
     player_pid = fork();
     if (!player_pid)
-      execl(system_play, "system_play", sock_txt, NULL);
+      execl(system_play, "system_play", sock_txt, url, NULL);
   } else if (!(strcmp("/favicon.ico", url) &&
                strcmp("/apple-touch-icon-precomposed.png", url) &&
                strncmp("/style", url, strlen("/style")) &&

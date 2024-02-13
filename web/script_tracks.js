@@ -2,10 +2,10 @@ function showtracks() {
     parent.document.getElementById("tracks").hidden = false;
 }
 
-function play(starting_track) {
+function play(startingtrack) {
     elem = document.getElementById("rate");
     elem.style.color = "gray";
-    fetch("play?" + starting_track)
+    fetch("play?" + startingtrack)
         .then(x => x.status)
         .then(y => {
             if (y == 200) {
