@@ -15,7 +15,7 @@ typedef struct meta_list_t {
   char *rate;
 } meta_list;
 
-static inline void sort_tags(meta_list *list_first) {
+static inline void sort_tracks(meta_list *list_first) {
   char *title_tmp, *track_tmp;
   for (meta_list *go_slow = list_first; go_slow && go_slow->next;
        go_slow = go_slow->next)
@@ -31,7 +31,7 @@ static inline void sort_tags(meta_list *list_first) {
 }
 
 static inline void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
-  for (int i = 0; i < tags->data.vorbis_comment.num_comments; i++) {
+  for (int i = 0; i < tags->data.vorbis_comment.num_comments; i++)
     if (!strncmp("ARTIST", (char *)tags->data.vorbis_comment.comments[i].entry,
                  strlen("ARTIST"))) {
       list->artist = malloc(tags->data.vorbis_comment.comments[i].length + 1);
@@ -57,7 +57,6 @@ static inline void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
       strcpy(list->track, (char *)(tags->data.vorbis_comment.comments[i].entry +
                                    strlen("TRACKNUMBER=")));
     }
-  }
 }
 
 static inline void list_tracks(char *album_dir, char *msg) {
@@ -70,34 +69,19 @@ static inline void list_tracks(char *album_dir, char *msg) {
       FLAC__metadata_object_new(FLAC__METADATA_TYPE_STREAMINFO);
   dp = opendir(".");
   if (dp) {
-    strcat(msg, "<div id=albumtitle>");
     while ((ep = readdir(dp)))
       if (ep->d_type == DT_REG && FLAC__metadata_get_tags(ep->d_name, &tags)) {
         list_first = malloc(sizeof(meta_list));
         memset(list_first, 0, sizeof(meta_list));
         cpy_tags(list_first, tags);
-        if (list_first->artist) {
-          strcat(msg, "<div id=artist>");
-          strcat(msg, list_first->artist);
-          strcat(msg, "</div>");
-        }
-        if (list_first->album) {
-          strcat(msg, "<div id=album>");
-          strcat(msg, list_first->album);
-          strcat(msg, "</div>");
-        }
         if (FLAC__metadata_get_streaminfo(ep->d_name, rate)) {
           list_first->rate = malloc(30);
           sprintf(list_first->rate, "%u/%g",
                   rate->data.stream_info.bits_per_sample,
                   rate->data.stream_info.sample_rate / 1000.0);
-          strcat(msg, "<div id=rate>");
-          strcat(msg, list_first->rate);
-          strcat(msg, "</div>");
         }
         break;
       }
-    strcat(msg, "</div>");
     list_tmp = list_first;
     while ((ep = readdir(dp)))
       if (ep->d_type == DT_REG && FLAC__metadata_get_tags(ep->d_name, &tags)) {
@@ -106,31 +90,48 @@ static inline void list_tracks(char *album_dir, char *msg) {
         list_tmp = list_tmp->next;
         cpy_tags(list_tmp, tags);
       }
-    strcat(msg, "<table>");
-    sort_tags(list_first);
-    list_tmp = list_first;
-    while (list_tmp) {
-      strcat(msg, "<tr onclick=play(\"");
-      strcat(msg, album_dir);
-      if (list_tmp->track) {
-        strcat(msg, "&");
-        strcat(msg, list_tmp->track);
-      }
-      strcat(msg, "\")>");
-      strcat(msg, "<td class=tracknumber>");
-      if (list_tmp->track)
-        strcat(msg, list_tmp->track);
-      strcat(msg, "</td>");
-      strcat(msg, "<td class=tracktitle>");
-      if (list_tmp->title)
-        strcat(msg, list_tmp->title);
-      strcat(msg, "</td>");
-      strcat(msg, "</tr>");
-      list_tmp = list_tmp->next;
-    }
-    strcat(msg, "</table>");
     closedir(dp);
   }
+  strcat(msg, "<div id=albumtitle>");
+  if (list_first->artist) {
+    strcat(msg, "<div id=artist>");
+    strcat(msg, list_first->artist);
+    strcat(msg, "</div>");
+  }
+  if (list_first->album) {
+    strcat(msg, "<div id=album>");
+    strcat(msg, list_first->album);
+    strcat(msg, "</div>");
+  }
+  if (list_first->rate) {
+    strcat(msg, "<div id=rate>");
+    strcat(msg, list_first->rate);
+    strcat(msg, "</div>");
+  }
+  strcat(msg, "</div>");
+  sort_tracks(list_first);
+  strcat(msg, "<table>");
+  list_tmp = list_first;
+  while (list_tmp) {
+    strcat(msg, "<tr onclick=play(\"");
+    strcat(msg, album_dir);
+    if (list_tmp->track) {
+      strcat(msg, "&");
+      strcat(msg, list_tmp->track);
+    }
+    strcat(msg, "\")>");
+    strcat(msg, "<td class=tracknumber>");
+    if (list_tmp->track)
+      strcat(msg, list_tmp->track);
+    strcat(msg, "</td>");
+    strcat(msg, "<td class=tracktitle>");
+    if (list_tmp->title)
+      strcat(msg, list_tmp->title);
+    strcat(msg, "</td>");
+    strcat(msg, "</tr>");
+    list_tmp = list_tmp->next;
+  }
+  strcat(msg, "</table>");
 }
 
 int main(int prm_n, char *prm[]) {
