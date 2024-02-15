@@ -57,3 +57,7 @@ system_poweroff : system_poweroff.c
 	clang-format -i system_poweroff.c
 	$(CC) system_poweroff.c -o system_poweroff $(WEB_DEFINES)
 
+.PHONY: clean
+clean:
+	rm $(shell ls|grep -v "Makefile\|\.")
+

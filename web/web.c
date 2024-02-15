@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/resource.h>
 #include <sys/wait.h>
 #include <threads.h>
 #include <unistd.h>
@@ -56,6 +57,8 @@ static inline void selector(int sock) {
     player_pid = fork();
     if (!player_pid)
       execl(system_play, "system_play", sock_txt, url, NULL);
+    if (player_pid > 0)
+      setpriority(PRIO_PROCESS, player_pid, PRIO_MIN);
   } else if (!(strcmp("/favicon.ico", url) &&
                strcmp("/apple-touch-icon-precomposed.png", url) &&
                strncmp("/style", url, strlen("/style")) &&

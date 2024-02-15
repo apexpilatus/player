@@ -1,4 +1,3 @@
-#include <FLAC/metadata.h>
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +11,10 @@
 #include <alsa/output.h>
 #include <alsa/conf.h>
 #include <alsa/control.h>
+#include <alsa/pcm.h>
+
+#include <FLAC/metadata.h>
+#include <FLAC/stream_decoder.h>
 // clang-format on
 
 typedef struct track_list_t {
@@ -19,6 +22,10 @@ typedef struct track_list_t {
   char *file_name;
   char *track_number;
 } track_list;
+
+static unsigned int off;
+static long bytes_per_sample;
+static char *buf_tmp, *buf_ptr;
 
 static inline void sort_tracks(track_list *track_first) {
   char *file_name_tmp, *track_number_tmp;
@@ -77,11 +84,67 @@ static inline track_list *get_tracks(char *start_track) {
   return track_first;
 }
 
+FLAC__StreamDecoderWriteStatus
+write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
+               const FLAC__int32 *const buffer[], void *client_data) {
+  buf_tmp = buf_ptr;
+  for (size_t i = 0; i < frame->header.blocksize; i++) {
+    buf_tmp += off;
+    memcpy(buf_tmp, buffer[0] + i, bytes_per_sample);
+    buf_tmp += bytes_per_sample;
+    buf_tmp += off;
+    memcpy(buf_tmp, buffer[1] + i, bytes_per_sample);
+    buf_tmp += bytes_per_sample;
+  }
+  if (snd_pcm_mmap_writei((snd_pcm_t *)client_data, buf_ptr,
+                          (snd_pcm_uframes_t)frame->header.blocksize) < 0) {
+    return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+  }
+  return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
+}
+
+void metadata_callback(const FLAC__StreamDecoder *decoder,
+                       const FLAC__StreamMetadata *metadata,
+                       void *client_data) {}
+
+void error_callback(const FLAC__StreamDecoder *decoder,
+                    FLAC__StreamDecoderErrorStatus status, void *client_data) {}
+
+static inline int play_album(track_list *tracks,
+                             FLAC__StreamDecoderWriteCallback write_callback,
+                             snd_pcm_t *pcm_p) {
+  FLAC__StreamDecoder *decoder = NULL;
+  decoder = FLAC__stream_decoder_new();
+  FLAC__stream_decoder_set_md5_checking(decoder, false);
+  FLAC__stream_decoder_set_metadata_ignore_all(decoder);
+  while (tracks) {
+    FLAC__StreamDecoderInitStatus init_status;
+    init_status = FLAC__stream_decoder_init_file(
+        decoder, tracks->file_name, write_callback, metadata_callback,
+        error_callback, pcm_p);
+    if (init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
+      if (!FLAC__stream_decoder_process_until_end_of_stream(decoder)) {
+        return 1;
+      }
+      FLAC__stream_decoder_finish(decoder);
+    } else {
+      return 1;
+    }
+    tracks = tracks->next;
+  }
+  snd_pcm_drain(pcm_p);
+  return 0;
+}
+
 int main(int prm_n, char *prm[]) {
-  int sock = strtol(prm[1], NULL, 10);
+  int sock = strtol(prm[1], NULL, 10), card = -1;
   ssize_t rsp_size = getpagesize(), write_size;
-  char *rsp = malloc(rsp_size);
-  char *album_dir, *start_track;
+  char card_name[10], *album_dir, *start_track, *rsp = malloc(rsp_size);
+  snd_pcm_t *pcm_p;
+  snd_pcm_hw_params_t *pcm_hw;
+  FLAC__StreamMetadata *rate =
+      FLAC__metadata_object_new(FLAC__METADATA_TYPE_STREAMINFO);
+  track_list *tracks;
   album_dir = strchr(prm[2], '?');
   if (!album_dir)
     execl(resp_err, "resp_err", prm[1], NULL);
@@ -92,13 +155,48 @@ int main(int prm_n, char *prm[]) {
   start_track++;
   if (chdir(album_dir))
     execl(resp_err, "resp_err", prm[1], NULL);
-  track_list *tracks = get_tracks(start_track);
+  tracks = get_tracks(start_track);
   if (!tracks)
     execl(resp_err, "resp_err", prm[1], NULL);
   sort_tracks(tracks);
-
+  if (snd_card_next(&card) || card == -1)
+    execl(resp_err, "resp_err", prm[1], NULL);
+  sprintf(card_name, "hw:%d,0", card);
+  if (snd_pcm_open(&pcm_p, card_name, SND_PCM_STREAM_PLAYBACK, 0))
+    execl(resp_err, "resp_err", prm[1], NULL);
+  if (!FLAC__metadata_get_streaminfo(tracks->file_name, rate))
+    execl(resp_err, "resp_err", prm[1], NULL);
+  snd_pcm_hw_params_malloc(&pcm_hw);
+  snd_pcm_hw_params_any(pcm_p, pcm_hw);
+  if (snd_pcm_hw_params_test_rate(pcm_p, pcm_hw,
+                                  rate->data.stream_info.sample_rate, 0))
+    execl(resp_err, "resp_err", prm[1], NULL);
+  snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, rate->data.stream_info.sample_rate,
+                             0);
+  if (rate->data.stream_info.bits_per_sample == 16) {
+    if (snd_pcm_hw_params_test_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S16))
+      execl(resp_err, "resp_err", prm[1], NULL);
+    snd_pcm_hw_params_set_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S16);
+  } else if (rate->data.stream_info.bits_per_sample == 24) {
+    if (!snd_pcm_hw_params_test_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S24_3LE)) {
+      snd_pcm_hw_params_set_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S24_3LE);
+    } else if (!snd_pcm_hw_params_test_format(pcm_p, pcm_hw,
+                                              SND_PCM_FORMAT_S32)) {
+      snd_pcm_hw_params_set_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S32);
+      off = 1;
+    } else
+      execl(resp_err, "resp_err", prm[1], NULL);
+  } else
+    execl(resp_err, "resp_err", prm[1], NULL);
+  bytes_per_sample = rate->data.stream_info.bits_per_sample / 8;
+  snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
+  if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p))
+    execl(resp_err, "resp_err", prm[1], NULL);
   strcpy(rsp, "HTTP/1.1 200 OK\r\n\r\n");
   write_size = write(sock, rsp, strlen(rsp));
   if (write_size != strlen(rsp))
     return 1;
+  close(sock);
+  buf_ptr = malloc(getpagesize() * 10000);
+  return play_album(tracks, write_callback, pcm_p);
 }
