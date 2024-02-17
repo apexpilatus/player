@@ -35,8 +35,10 @@ int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   ssize_t rsp_size = getpagesize(), write_size;
   char *rsp = malloc(rsp_size);
-  sprintf(rsp, "%s\r\nContent-Length: %u\r\n\r\n", "HTTP/1.1 200 OK",
-          picture->data.picture.data_length);
+  sprintf(
+      rsp,
+      "%s\r\nContent-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
+      "HTTP/1.1 200 OK", picture->data.picture.data_length);
   write_size = write(sock, rsp, strlen(rsp));
   write_size += write(sock, picture->data.picture.data,
                       picture->data.picture.data_length);
