@@ -8,24 +8,21 @@
 
 #artist {
     padding: 0 1%;
-    font-size: 150%;
+    font-size: 110%;
 }
 
 #album {
     color: white;
     padding: 0 2%;
-    font-size: 140%;
 }
 
 #rate {
     color: gray;
-    font-size: 130%;
     padding: 0 4%;
 }
 
 tr {
     vertical-align: text-top;
-    font-size: 120%;
 }
 
 .tracknumber {

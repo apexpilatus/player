@@ -26,10 +26,11 @@ button {
     font-weight: bold;
     background-color: #cec5b7;
     width: 30px;
+    height: 30px;
     text-align: center;
+    vertical-align: center;
     padding: 2px 2px;
     border-radius: 20%;
-    font-size: 120%;
 }
 
 #poweroff {
