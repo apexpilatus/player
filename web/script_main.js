@@ -1,4 +1,5 @@
 const timeout = 3000;
+let timeleft;
 
 function getalbums() {
     document.getElementById("albums").src = window.location.href + "albums";
@@ -19,8 +20,21 @@ function getvolume() {
                 document.getElementById("control").max = resp.statusText.split("_")[2];
                 document.getElementById("volume").hidden = true;
                 document.getElementById("control").hidden = false;
-                delayVar = setTimeout(hidecontrol, timeout);
+                timeleft = setTimeout(hidecontrol, timeout);
             } else {
+                document.getElementById("volume").innerHTML = "&#9739";
+            }
+        })
+}
+
+function setvolume() {
+    fetch("setvolume&" + document.getElementById("control").value)
+        .then(resp => {
+            if (resp.status == 200) {
+                clearTimeout(timeleft);
+                timeleft = setTimeout(hideVolume, 3000);
+            } else {
+                hidecontrol();
                 document.getElementById("volume").innerHTML = "&#9739";
             }
         })
