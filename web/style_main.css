@@ -42,3 +42,10 @@ button {
     left: 5%;
     bottom: 5%;
 }
+
+#control {
+    position: fixed;
+    left: 5%;
+    bottom: 5%;
+    width: 50%;
+}
