@@ -70,7 +70,8 @@ static inline void selector(int sock) {
     pid = fork();
     if (!pid)
       execl(data_static, "data_static", sock_txt, url, NULL);
-  } else if (!(strcmp("/getvolume", url) && strcmp("/setvolume", url))) {
+  } else if (!(strcmp("/getvolume", url) &&
+               strncmp("/setvolume", url, strlen("/setvolume")))) {
     pid = fork();
     if (!pid)
       execl(system_volume, "system_volume", sock_txt, url, NULL);

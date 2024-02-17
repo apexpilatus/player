@@ -16,7 +16,7 @@
 int main(int prm_n, char *prm[]) {
   int card_number = -1, sock = strtol(prm[1], NULL, 10);
   ssize_t rsp_size = getpagesize(), write_size;
-  char card_name[10], *rsp = malloc(rsp_size), *url = prm[2];
+  char card_name[10], *rsp = malloc(rsp_size), *url = prm[2], *url_vol;
   long min_vol, max_vol, curr_vol;
   snd_mixer_t *mxr;
   snd_mixer_elem_t *melem;
@@ -33,19 +33,21 @@ int main(int prm_n, char *prm[]) {
     ;
   if (!melem)
     execl(resp_err, "resp_err", prm[1], NULL);
+  snd_mixer_selem_get_playback_volume_range(melem, &min_vol, &max_vol);
   if (!(strcmp("/getvolume", url))) {
-    snd_mixer_selem_get_playback_volume_range(melem, &min_vol, &max_vol);
     snd_mixer_selem_get_playback_volume(melem, SND_MIXER_SCHN_UNKNOWN,
                                         &curr_vol);
     sprintf(rsp, "HTTP/1.1 200 %ld_%ld_%ld\r\n\r\n", min_vol, curr_vol,
             max_vol);
   } else {
+    url_vol = strchr(url, '&');
+    if (!(url_vol && (curr_vol = strtol(++url_vol, NULL, 10)) &&
+          curr_vol <= max_vol && curr_vol >= min_vol))
+      execl(resp_err, "resp_err", prm[1], NULL);
     strcpy(rsp, "HTTP/1.1 200 OK\r\n\r\n");
+    snd_mixer_selem_set_playback_volume(melem, SND_MIXER_SCHN_UNKNOWN,
+                                        curr_vol);
   }
-  printf("min - %ld;vol - %ld;max - %ld\n", min_vol, curr_vol, max_vol);
-  snd_mixer_selem_set_playback_volume(melem, SND_MIXER_SCHN_UNKNOWN,
-                                      --curr_vol);
-
   write_size = write(sock, rsp, strlen(rsp));
   if (write_size == strlen(rsp))
     return 0;
