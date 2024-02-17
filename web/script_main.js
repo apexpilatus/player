@@ -1,3 +1,5 @@
+const timeout = 3000;
+
 function getalbums() {
     document.getElementById("albums").src = window.location.href + "albums";
 }
@@ -17,7 +19,7 @@ function getvolume() {
                 document.getElementById("control").max = resp.statusText.split("_")[2];
                 document.getElementById("volume").hidden = true;
                 document.getElementById("control").hidden = false;
-                delayVar = setTimeout(hidecontrol, 3000);
+                delayVar = setTimeout(hidecontrol, timeout);
             } else {
                 document.getElementById("volume").innerHTML = "&#9739";
             }
