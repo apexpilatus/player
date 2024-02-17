@@ -1,5 +1,4 @@
 #include <netdb.h>
-#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -71,6 +70,10 @@ static inline void selector(int sock) {
     pid = fork();
     if (!pid)
       execl(data_static, "data_static", sock_txt, url, NULL);
+  } else if (!(strcmp("/getvolume", url) && strcmp("/setvolume", url))) {
+    pid = fork();
+    if (!pid)
+      execl(system_volume, "system_volume", sock_txt, url, NULL);
   } else if (!strcmp("/poweroff", url)) {
     pid = fork();
     if (!pid)
@@ -102,7 +105,6 @@ int main(void) {
   sock_listen = socket(PF_INET, SOCK_STREAM, 0);
   addr.sin_family = AF_INET;
   addr.sin_port = htons(listen_port);
-
   struct hostent *host_by_name = gethostbyname("player");
   if (!host_by_name)
 #ifdef WEB_INIT

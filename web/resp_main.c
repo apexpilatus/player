@@ -1,5 +1,3 @@
-#include <dirent.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,8 +25,10 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<iframe id=tracks title=tracks></iframe>");
   strcat(msg, "<button type=button id=poweroff onclick=fetch(\"poweroff\")>"
               "&#9932;</button>");
-  strcat(msg, "<button type=button id=volume onclick=hidetracks()>"
+  strcat(msg, "<button type=button id=volume onclick=getvolume()>"
               "&#9738</button>");
+  strcat(msg, "<input hidden id=control type=range oninput=setVolume() min=0 "
+              "max=5 title=volume>");
   strcat(msg, "<script>getalbums()</script>");
   strcat(msg, "</body>");
   strcat(msg, "</html>");

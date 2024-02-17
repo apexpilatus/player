@@ -1,5 +1,5 @@
-WEB_PATH := /home/player
-MUSIC_PATH := /home/music
+WEB_PATH := /home/store/works/player/web
+MUSIC_PATH := /home/store/works/music
 WEB_DEFINES := -D music=\"$(MUSIC_PATH)\"
 WEB_DEFINES += -D resp_main=\"$(WEB_PATH)/resp_main\"
 WEB_DEFINES += -D resp_tracks=\"$(WEB_PATH)/resp_tracks\"
@@ -9,12 +9,13 @@ WEB_DEFINES += -D data_static=\"$(WEB_PATH)/data_static\"
 WEB_DEFINES += -D data_picture=\"$(WEB_PATH)/data_picture\"
 WEB_DEFINES += -D system_poweroff=\"$(WEB_PATH)/system_poweroff\"
 WEB_DEFINES += -D system_play=\"$(WEB_PATH)/system_play\"
+WEB_DEFINES += -D system_volume=\"$(WEB_PATH)/system_volume\"
 ifdef init
 WEB_DEFINES += -D WEB_INIT
 endif
 CC := clang -O2
 
-web : web.c resp_main resp_tracks resp_albums resp_err data_static data_picture system_play system_poweroff
+web : web.c resp_main resp_tracks resp_albums resp_err data_static data_picture system_play system_volume system_poweroff
 	clang-format -i web.c
 	$(CC) web.c -o web $(WEB_DEFINES)
 
@@ -52,6 +53,10 @@ data_picture : data_picture.c
 system_play : system_play.c
 	clang-format -i system_play.c
 	$(CC) system_play.c -o system_play $(WEB_DEFINES) -lasound -lFLAC
+
+system_volume : system_volume.c
+	clang-format -i system_volume.c
+	$(CC) system_volume.c -o system_volume $(WEB_DEFINES) -lasound
 
 system_poweroff : system_poweroff.c
 	clang-format -i system_poweroff.c
