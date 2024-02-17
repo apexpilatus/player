@@ -16,7 +16,7 @@
 int main(int prm_n, char *prm[]) {
   int card_number = -1, sock = strtol(prm[1], NULL, 10);
   ssize_t rsp_size = getpagesize(), write_size;
-  char card_name[10], *rsp = malloc(rsp_size), *url = prm[2], vol_inf[15];
+  char card_name[10], *rsp = malloc(rsp_size), *url = prm[2];
   long min_vol, max_vol, curr_vol;
   snd_mixer_t *mxr;
   snd_mixer_elem_t *melem;
@@ -37,9 +37,8 @@ int main(int prm_n, char *prm[]) {
     snd_mixer_selem_get_playback_volume_range(melem, &min_vol, &max_vol);
     snd_mixer_selem_get_playback_volume(melem, SND_MIXER_SCHN_UNKNOWN,
                                         &curr_vol);
-    sprintf(vol_inf, "%ld;%ld;%ld", min_vol, curr_vol, max_vol);
-    sprintf(rsp, "HTTP/1.1 200 OK\r\nContent-Length: %lu\r\n\r\n%s",
-            strlen(vol_inf), vol_inf);
+    sprintf(rsp, "HTTP/1.1 200 %ld_%ld_%ld\r\n\r\n", min_vol, curr_vol,
+            max_vol);
   } else {
     strcpy(rsp, "HTTP/1.1 200 OK\r\n\r\n");
   }
