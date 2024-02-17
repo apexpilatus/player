@@ -3,7 +3,7 @@ function showtracks() {
 }
 
 function play(startingtrack) {
-    elem = document.getElementById("rate");
+    let elem = document.getElementById("rate");
     elem.style.color = "gray";
     fetch("play?" + startingtrack)
         .then(resp => {

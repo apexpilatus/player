@@ -10,7 +10,9 @@ function getvolume() {
                 document.getElementById("control").min = resp.statusText.split("_")[0];
                 document.getElementById("control").value = resp.statusText.split("_")[1];
                 document.getElementById("control").max = resp.statusText.split("_")[2];
+                document.getElementById("volume").hidden = true;
                 document.getElementById("control").hidden = false;
+                delayVar = setTimeout(hideVolume, 3000);
             } else {
                 document.getElementById("volume").innerHTML = "&#9739";
             }
