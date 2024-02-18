@@ -4,18 +4,18 @@ body {
 
 #albums {
     position: fixed;
-    top: 0;
-    right: 0;
-    width: 40%;
-    height: 100%;
+    top: 2%;
+    right: 2%;
+    width: 35%;
+    height: 85%;
     border-style: none;
 }
 
 #tracks {
     position: fixed;
     top: 15%;
-    left: 0;
-    width: 60%;
+    left: 2%;
+    width: 55%;
     height: 70%;
     border-style: none;
 }
@@ -47,5 +47,5 @@ button {
     position: fixed;
     left: 5%;
     bottom: 5%;
-    width: 50%;
+    width: 90%;
 }
