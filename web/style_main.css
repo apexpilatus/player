@@ -34,12 +34,12 @@ button {
 }
 
 #poweroff {
-    left: 50%;
+    left: 5%;
     top: 5%;
 }
 
 #volume {
-    left: 50%;
+    right: 5%;
     bottom: 5%;
 }
 
