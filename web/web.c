@@ -7,7 +7,7 @@
 #include <threads.h>
 #include <unistd.h>
 
-#define listen_port 8080
+#define listen_port 80
 
 static ssize_t msg_size;
 static char *req;
