@@ -27,9 +27,7 @@ button {
     background-color: #cec5b7;
     width: 30px;
     height: 30px;
-    text-align: center;
-    vertical-align: center;
-    padding-bottom: 2px;
+    padding: 1px;
     border-radius: 20%;
 }
 
