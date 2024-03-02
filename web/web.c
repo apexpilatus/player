@@ -76,6 +76,11 @@ static inline void selector(int sock) {
     if (!pid)
       execl(system_volume, "system_volume", sock_txt, url, NULL);
   } else if (!strcmp("/poweroff", url)) {
+    if (player_pid > 0) {
+      kill(player_pid, SIGTERM);
+      while (player_pid > 0)
+        ;
+    }
     pid = fork();
     if (!pid)
       execl(system_poweroff, "system_poweroff", sock_txt, NULL);
