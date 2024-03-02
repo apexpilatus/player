@@ -24,7 +24,7 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<iframe id=albums title=albums></iframe>");
   strcat(msg, "<iframe id=tracks title=tracks></iframe>");
   strcat(msg, "<button type=button id=poweroff onclick=fetch(\"poweroff\")>"
-              "&#9932;</button>");
+              "&#9769;</button>");
   strcat(msg, "<button type=button id=volume onclick=getvolume()>"
               "&#9738</button>");
   strcat(
