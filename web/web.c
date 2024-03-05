@@ -11,12 +11,14 @@
 
 static ssize_t msg_size;
 static char *req;
-static volatile pid_t player_pid = -1;
+static volatile pid_t player_pid = -1, mixer_pid = -1;
 
 int kill_zombies(void *prm) {
   pid_t pid;
   while (1) {
     pid = wait(NULL);
+    if (pid == mixer_pid)
+      mixer_pid = -1;
     if (pid == player_pid)
       player_pid = -1;
   }
@@ -72,9 +74,12 @@ static inline void selector(int sock) {
       execl(data_static, "data_static", sock_txt, url, NULL);
   } else if (!(strcmp("/getvolume", url) &&
                strncmp("/setvolume", url, strlen("/setvolume")))) {
-    pid = fork();
-    if (!pid)
+    mixer_pid = fork();
+    if (!mixer_pid)
       execl(system_volume, "system_volume", sock_txt, url, NULL);
+    if (mixer_pid > 0)
+      while (mixer_pid > 0)
+        ;
   } else if (!strcmp("/poweroff", url)) {
     if (player_pid > 0) {
       kill(player_pid, SIGTERM);
