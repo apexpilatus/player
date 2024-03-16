@@ -27,7 +27,7 @@ button {
     font-weight: bold;
     font-size: 20px;
     text-align: center;
-    vertical-align: baseline;
+    vertical-align: text-top;
     width: 30px;
     height: 30px;
     border-radius: 5%;
