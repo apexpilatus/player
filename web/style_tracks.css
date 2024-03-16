@@ -11,18 +11,21 @@ body {
 }
 
 #artist {
-    padding: 0 1%;
+    padding-top: 0;
+    padding-left: 2px;
     font-size: 110%;
 }
 
 #album {
     color: white;
-    padding: 0 2%;
+    padding-top: 0;
+    padding-left: 4px;
 }
 
 #rate {
     color: gray;
-    padding: 0 4%;
+    padding-top: 0;
+    padding-left: 6px;
 }
 
 tr {
@@ -32,9 +35,11 @@ tr {
 .tracknumber {
     color: white;
     width: 6%;
-    padding: 1% 1%;
+    padding-top: 2px;
+    padding-left: 2px;
 }
 
 .tracktitle {
-    padding: 1% 2%;
+    padding-top: 2px;
+    padding-left: 4px;
 }
