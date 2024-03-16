@@ -26,9 +26,10 @@ button {
     background-color: #cec5b7;
     font-weight: bold;
     font-size: 20px;
-    padding: auto;
-    width: 40px;
-    height: 40px;
+    text-align: center;
+    padding: 1%;
+    width: 30px;
+    height: 30px;
     border-radius: 15%;
 }
 
