@@ -25,7 +25,8 @@ button {
     color: red;
     background-color: #cec5b7;
     font-weight: bold;
-    font-size: 25px;
+    font-size: 20px;
+    padding: auto;
     width: 40px;
     height: 40px;
     border-radius: 15%;
