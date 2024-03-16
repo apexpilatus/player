@@ -26,8 +26,7 @@ button {
     background-color: #cec5b7;
     font-weight: bold;
     font-size: 20px;
-    text-align: center;
-    vertical-align: text-top;
+    padding: 1px;
     width: 30px;
     height: 30px;
     border-radius: 5%;
