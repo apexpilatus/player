@@ -119,8 +119,11 @@ static inline void list_tracks(char *album_dir, char *msg) {
     }
     strcat(msg, "\")>");
     strcat(msg, "<td class=tracknumber>");
-    if (list_tmp->track)
+    if (list_tmp->track) {
+      if (strtol(list_tmp->track, NULL, 10) < 10)
+        strcat(msg, "&nbsp;&nbsp;");
       strcat(msg, list_tmp->track);
+    }
     strcat(msg, "</td>");
     strcat(msg, "<td class=tracktitle>");
     if (list_tmp->title)
