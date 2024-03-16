@@ -24,6 +24,7 @@ button {
     position: fixed;
     color: red;
     font-weight: bold;
+    font-size: medium;
     background-color: #cec5b7;
     width: 30px;
     height: 30px;
