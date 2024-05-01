@@ -128,7 +128,7 @@ int main(void) {
     if (system("poweroff -f"))
 #endif
       return 1;
-  if (listen(sock_listen, 100) < 0)
+  if (listen(sock_listen, 20) < 0)
 #ifdef WEB_INIT
     if (system("poweroff -f"))
 #endif
