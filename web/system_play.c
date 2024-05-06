@@ -194,6 +194,7 @@ int main(int prm_n, char *prm[]) {
   write_size = write(sock, rsp, strlen(rsp));
   if (write_size != strlen(rsp))
     return 1;
+  close(sock);
   buf_ptr = malloc(getpagesize() * 10000);
   return play_album(tracks, write_callback, pcm_p);
 }
