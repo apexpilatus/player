@@ -30,27 +30,27 @@ static inline void sort_tracks(meta_list *list_first) {
 
 static inline void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
   for (int i = 0; i < tags->data.vorbis_comment.num_comments; i++)
-    if (!strncmp("ARTIST", (char *)tags->data.vorbis_comment.comments[i].entry,
-                 strlen("ARTIST"))) {
+    if (!strncmp("ARTIST=", (char *)tags->data.vorbis_comment.comments[i].entry,
+                 strlen("ARTIST="))) {
       list->artist = malloc(tags->data.vorbis_comment.comments[i].length + 1);
       strcpy(list->artist,
              (char *)(tags->data.vorbis_comment.comments[i].entry +
                       strlen("ARTIST=")));
-    } else if (!strncmp("ALBUM",
+    } else if (!strncmp("ALBUM=",
                         (char *)tags->data.vorbis_comment.comments[i].entry,
-                        strlen("ALBUM"))) {
+                        strlen("ALBUM="))) {
       list->album = malloc(tags->data.vorbis_comment.comments[i].length + 1);
       strcpy(list->album, (char *)(tags->data.vorbis_comment.comments[i].entry +
                                    strlen("ALBUM=")));
-    } else if (!strncmp("TITLE",
+    } else if (!strncmp("TITLE=",
                         (char *)tags->data.vorbis_comment.comments[i].entry,
-                        strlen("TITLE"))) {
+                        strlen("TITLE="))) {
       list->title = malloc(tags->data.vorbis_comment.comments[i].length + 1);
       strcpy(list->title, (char *)(tags->data.vorbis_comment.comments[i].entry +
                                    strlen("TITLE=")));
-    } else if (!strncmp("TRACKNUMBER",
+    } else if (!strncmp("TRACKNUMBER=",
                         (char *)tags->data.vorbis_comment.comments[i].entry,
-                        strlen("TRACKNUMBER"))) {
+                        strlen("TRACKNUMBER="))) {
       list->track = malloc(tags->data.vorbis_comment.comments[i].length + 1);
       strcpy(list->track, (char *)(tags->data.vorbis_comment.comments[i].entry +
                                    strlen("TRACKNUMBER=")));
