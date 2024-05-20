@@ -23,7 +23,7 @@ typedef struct track_list_t {
 
 static unsigned int off;
 static long bytes_per_sample;
-static char *buf_tmp, *buf_ptr;
+static char *buf_tmp, *buf_1, *buf_2;
 
 static inline void sort_tracks(track_list *track_first) {
   char *file_name_tmp, *track_number_tmp;
@@ -85,7 +85,9 @@ static inline track_list *get_tracks(char *start_track) {
 FLAC__StreamDecoderWriteStatus
 write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
                const FLAC__int32 *const buffer[], void *client_data) {
-  buf_tmp = buf_ptr;
+  buf_tmp = buf_1;
+  buf_1 = buf_2;
+  buf_2 = buf_tmp;
   for (size_t i = 0; i < frame->header.blocksize; i++) {
     buf_tmp += off;
     memcpy(buf_tmp, buffer[0] + i, bytes_per_sample);
@@ -94,7 +96,7 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
     memcpy(buf_tmp, buffer[1] + i, bytes_per_sample);
     buf_tmp += bytes_per_sample;
   }
-  if (snd_pcm_mmap_writei((snd_pcm_t *)client_data, buf_ptr,
+  if (snd_pcm_mmap_writei((snd_pcm_t *)client_data, buf_2,
                           (snd_pcm_uframes_t)frame->header.blocksize) < 0) {
     return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
   }
@@ -195,6 +197,7 @@ int main(int prm_n, char *prm[]) {
   if (write_size != strlen(rsp))
     return 1;
   close(sock);
-  buf_ptr = malloc(getpagesize() * 10000);
+  buf_1 = malloc(getpagesize() * 100000);
+  buf_2 = malloc(getpagesize() * 100000);
   return play_album(tracks, write_callback, pcm_p);
 }
