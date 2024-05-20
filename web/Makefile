@@ -1,4 +1,4 @@
-WEB_PATH := /home/player
+WEB_PATH := /home/player/web
 MUSIC_PATH := /home/music
 WEB_DEFINES := -D music=\"$(MUSIC_PATH)\"
 WEB_DEFINES += -D resp_main=\"$(WEB_PATH)/resp_main\"

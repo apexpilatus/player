@@ -85,7 +85,42 @@ static inline track_list *get_tracks(char *start_track) {
 FLAC__StreamDecoderWriteStatus
 write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
                const FLAC__int32 *const buffer[], void *client_data) {
-  buf_tmp = buf_1;
+  snd_pcm_t *pcm_p = (snd_pcm_t *)client_data;
+  snd_pcm_sframes_t avail_frames = 0, commitres;
+  const snd_pcm_channel_area_t *areas;
+  snd_pcm_uframes_t offset, frames,
+      blocksize = (snd_pcm_uframes_t)frame->header.blocksize;
+  while (avail_frames < blocksize)
+    if ((avail_frames = snd_pcm_avail_update(pcm_p)) < 0) {
+      return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    }
+  while (blocksize > 0) {
+    if (snd_pcm_mmap_begin(pcm_p, &areas, &offset, &frames) < 0) {
+      return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    }
+    printf("avail = %ld\n", avail_frames);
+    printf("buf = %lu\n", blocksize);
+    printf("offset = %lu\n", offset);
+    printf("frames = %lu\n", frames);
+    printf("areas[0].addr = %u\n", areas[0].addr);
+    printf("areas[0].first = %u\n", areas[0].first);
+    printf("areas[0].step = %u\n", areas[0].step);
+    printf("areas[1].addr = %u\n", areas[1].addr);
+    printf("areas[1].first = %u\n", areas[1].first);
+    printf("areas[1].step = %u\n", areas[1].step);
+
+    commitres = snd_pcm_mmap_commit(pcm_p, offset,
+                                    blocksize < frames ? blocksize : frames);
+    printf("commitres = %ld\n", commitres);
+    printf("--------\n");
+    if (commitres < 0 || blocksize < frames ? commitres != blocksize
+                                            : commitres != frames)
+      return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    blocksize -= commitres;
+  }
+  printf("+++++++++\n");
+
+  /*buf_tmp = buf_1;
   buf_1 = buf_2;
   buf_2 = buf_tmp;
   for (size_t i = 0; i < frame->header.blocksize; i++) {
@@ -99,7 +134,7 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
   if (snd_pcm_mmap_writei((snd_pcm_t *)client_data, buf_2,
                           (snd_pcm_uframes_t)frame->header.blocksize) < 0) {
     return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
-  }
+  }*/
   return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
