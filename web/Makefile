@@ -1,5 +1,5 @@
-WEB_PATH := /home/player/web
-MUSIC_PATH := /home/music
+WEB_PATH := /home/works/player/web
+MUSIC_PATH := /home/works/music
 WEB_DEFINES := -D music=\"$(MUSIC_PATH)\"
 WEB_DEFINES += -D resp_main=\"$(WEB_PATH)/resp_main\"
 WEB_DEFINES += -D resp_tracks=\"$(WEB_PATH)/resp_tracks\"
@@ -15,7 +15,7 @@ WEB_DEFINES += -D WEB_INIT
 endif
 CC := clang -O2
 
-web : web.c resp_main resp_tracks resp_albums resp_err data_static data_picture system_play system_volume system_poweroff
+web : Makefile web.c resp_main resp_tracks resp_albums resp_err data_static data_picture system_play system_volume system_poweroff
 	clang-format -i web.c
 	$(CC) web.c -o web $(WEB_DEFINES)
 
@@ -23,11 +23,11 @@ resp_main : resp_main.c
 	clang-format -i resp_main.c
 	$(CC) resp_main.c -o resp_main
 
-resp_tracks : resp_tracks.c
+resp_tracks : Makefile resp_tracks.c
 	clang-format -i resp_tracks.c
 	$(CC) resp_tracks.c -o resp_tracks $(WEB_DEFINES) -lFLAC
 
-resp_albums : resp_albums.c
+resp_albums : Makefile resp_albums.c
 	clang-format -i resp_albums.c
 	$(CC) resp_albums.c -o resp_albums $(WEB_DEFINES)
 
@@ -35,7 +35,7 @@ resp_err : resp_err.c
 	clang-format -i resp_err.c
 	$(CC) resp_err.c -o resp_err
 
-data_static : data_static.c style_main.css script_main.js style_tracks.css script_tracks.js style_albums.css script_albums.js
+data_static : Makefile data_static.c style_main.css script_main.js style_tracks.css script_tracks.js style_albums.css script_albums.js
 	xxd -i style_main.css style_main_css.c
 	xxd -i script_main.js script_main_js.c
 	xxd -i style_tracks.css style_tracks_css.c
@@ -46,19 +46,19 @@ data_static : data_static.c style_main.css script_main.js style_tracks.css scrip
 	$(CC) data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c -o data_static $(WEB_DEFINES)
 	rm style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c
 
-data_picture : data_picture.c
+data_picture : Makefile data_picture.c
 	clang-format -i data_picture.c
 	$(CC) data_picture.c -o data_picture $(WEB_DEFINES) -lFLAC
 
-system_play : system_play.c
+system_play : Makefile system_play.c
 	clang-format -i system_play.c
 	$(CC) system_play.c -o system_play $(WEB_DEFINES) -lasound -lFLAC
 
-system_volume : system_volume.c
+system_volume : Makefile system_volume.c
 	clang-format -i system_volume.c
 	$(CC) system_volume.c -o system_volume $(WEB_DEFINES) -lasound
 
-system_poweroff : system_poweroff.c
+system_poweroff : Makefile system_poweroff.c
 	clang-format -i system_poweroff.c
 	$(CC) system_poweroff.c -o system_poweroff $(WEB_DEFINES)
 

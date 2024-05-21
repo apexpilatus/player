@@ -88,16 +88,19 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
   snd_pcm_sframes_t avail_frames = 0, commitres;
   const snd_pcm_channel_area_t *areas;
   snd_pcm_uframes_t offset, frames;
-  uint32_t cpy_count, blocksize = frame->header.blocksize;
+  uint32_t blocksize = frame->header.blocksize;
+  char *buf_tmp;
   while (avail_frames < blocksize)
     if ((avail_frames = snd_pcm_avail_update(pcm_p)) < 0)
       return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    else
+      usleep(10);
   while (blocksize > 0) {
+    frames = blocksize;
     if (snd_pcm_mmap_begin(pcm_p, &areas, &offset, &frames) < 0)
       return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
-    char *buf_tmp = areas[0].addr + (offset * (areas[0].step / 8));
-    cpy_count = blocksize < frames ? blocksize : frames;
-    for (uint32_t i = 0; i < cpy_count; i++) {
+    buf_tmp = areas[0].addr + (offset * (areas[0].step / 8));
+    for (uint32_t i = 0; i < frames; i++) {
       buf_tmp += off;
       memcpy(buf_tmp, buffer[0] + i, bytes_per_sample);
       buf_tmp += bytes_per_sample;
@@ -105,8 +108,8 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
       memcpy(buf_tmp, buffer[1] + i, bytes_per_sample);
       buf_tmp += bytes_per_sample;
     }
-    commitres = snd_pcm_mmap_commit(pcm_p, offset, cpy_count);
-    if (commitres < 0 || commitres != cpy_count)
+    commitres = snd_pcm_mmap_commit(pcm_p, offset, frames);
+    if (commitres < 0 || commitres != frames)
       return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     if (snd_pcm_state(pcm_p) == SND_PCM_STATE_PREPARED && snd_pcm_start(pcm_p))
       return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
