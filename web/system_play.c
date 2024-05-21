@@ -21,9 +21,8 @@ typedef struct track_list_t {
   char *track_number;
 } track_list;
 
-static unsigned int off;
+static uint32_t off;
 static long bytes_per_sample;
-static char *buf_tmp, *buf_1, *buf_2;
 
 static inline void sort_tracks(track_list *track_first) {
   char *file_name_tmp, *track_number_tmp;
@@ -52,9 +51,9 @@ static inline track_list *get_tracks(char *start_track) {
     while ((ep = readdir(dp)))
       if (ep->d_type == DT_REG && FLAC__metadata_get_tags(ep->d_name, &tags)) {
         for (int i = 0; i < tags->data.vorbis_comment.num_comments; i++)
-          if (!strncmp("TRACKNUMBER",
+          if (!strncmp("TRACKNUMBER=",
                        (char *)tags->data.vorbis_comment.comments[i].entry,
-                       strlen("TRACKNUMBER"))) {
+                       strlen("TRACKNUMBER="))) {
             if (strtol((char *)(tags->data.vorbis_comment.comments[i].entry +
                                 strlen("TRACKNUMBER=")),
                        NULL, 10) >= strtol(start_track, NULL, 10)) {
@@ -88,53 +87,31 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
   snd_pcm_t *pcm_p = (snd_pcm_t *)client_data;
   snd_pcm_sframes_t avail_frames = 0, commitres;
   const snd_pcm_channel_area_t *areas;
-  snd_pcm_uframes_t offset, frames,
-      blocksize = (snd_pcm_uframes_t)frame->header.blocksize;
+  snd_pcm_uframes_t offset, frames;
+  uint32_t cpy_count, blocksize = frame->header.blocksize;
   while (avail_frames < blocksize)
-    if ((avail_frames = snd_pcm_avail_update(pcm_p)) < 0) {
+    if ((avail_frames = snd_pcm_avail_update(pcm_p)) < 0)
       return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
-    }
   while (blocksize > 0) {
-    if (snd_pcm_mmap_begin(pcm_p, &areas, &offset, &frames) < 0) {
+    if (snd_pcm_mmap_begin(pcm_p, &areas, &offset, &frames) < 0)
       return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    char *buf_tmp = areas[0].addr + (offset * (areas[0].step / 8));
+    cpy_count = blocksize < frames ? blocksize : frames;
+    for (uint32_t i = 0; i < cpy_count; i++) {
+      buf_tmp += off;
+      memcpy(buf_tmp, buffer[0] + i, bytes_per_sample);
+      buf_tmp += bytes_per_sample;
+      buf_tmp += off;
+      memcpy(buf_tmp, buffer[1] + i, bytes_per_sample);
+      buf_tmp += bytes_per_sample;
     }
-    printf("avail = %ld\n", avail_frames);
-    printf("buf = %lu\n", blocksize);
-    printf("offset = %lu\n", offset);
-    printf("frames = %lu\n", frames);
-    printf("areas[0].addr = %u\n", areas[0].addr);
-    printf("areas[0].first = %u\n", areas[0].first);
-    printf("areas[0].step = %u\n", areas[0].step);
-    printf("areas[1].addr = %u\n", areas[1].addr);
-    printf("areas[1].first = %u\n", areas[1].first);
-    printf("areas[1].step = %u\n", areas[1].step);
-
-    commitres = snd_pcm_mmap_commit(pcm_p, offset,
-                                    blocksize < frames ? blocksize : frames);
-    printf("commitres = %ld\n", commitres);
-    printf("--------\n");
-    if (commitres < 0 || blocksize < frames ? commitres != blocksize
-                                            : commitres != frames)
+    commitres = snd_pcm_mmap_commit(pcm_p, offset, cpy_count);
+    if (commitres < 0 || commitres != cpy_count)
+      return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    if (snd_pcm_state(pcm_p) == SND_PCM_STATE_PREPARED && snd_pcm_start(pcm_p))
       return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     blocksize -= commitres;
   }
-  printf("+++++++++\n");
-
-  /*buf_tmp = buf_1;
-  buf_1 = buf_2;
-  buf_2 = buf_tmp;
-  for (size_t i = 0; i < frame->header.blocksize; i++) {
-    buf_tmp += off;
-    memcpy(buf_tmp, buffer[0] + i, bytes_per_sample);
-    buf_tmp += bytes_per_sample;
-    buf_tmp += off;
-    memcpy(buf_tmp, buffer[1] + i, bytes_per_sample);
-    buf_tmp += bytes_per_sample;
-  }
-  if (snd_pcm_mmap_writei((snd_pcm_t *)client_data, buf_2,
-                          (snd_pcm_uframes_t)frame->header.blocksize) < 0) {
-    return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
-  }*/
   return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
@@ -232,7 +209,5 @@ int main(int prm_n, char *prm[]) {
   if (write_size != strlen(rsp))
     return 1;
   close(sock);
-  buf_1 = malloc(getpagesize() * 100000);
-  buf_2 = malloc(getpagesize() * 100000);
   return play_album(tracks, write_callback, pcm_p);
 }
