@@ -124,44 +124,47 @@ int main(int prm_n, char *prm[]) {
     data = style_main_css;
     data_len = style_main_css_len;
     sprintf(rsp,
-            "HTTP/1.1 200 OK\r\nContent-Type: text/css\r\n"
+            "HTTP/1.1 200 OK\r\nContent-Type: text/css; charset=utf-8\r\n"
             "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
             data_len);
   } else if (!strcmp("/script_main.js", url)) {
     data = script_main_js;
     data_len = script_main_js_len;
-    sprintf(rsp,
-            "HTTP/1.1 200 OK\r\nContent-Type: text/javascript\r\n"
-            "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
-            data_len);
+    sprintf(
+        rsp,
+        "HTTP/1.1 200 OK\r\nContent-Type: text/javascript; charset=utf-8\r\n"
+        "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
+        data_len);
   } else if (!strcmp("/style_tracks.css", url)) {
     data = style_tracks_css;
     data_len = style_tracks_css_len;
     sprintf(rsp,
-            "HTTP/1.1 200 OK\r\nContent-Type: text/css\r\n"
+            "HTTP/1.1 200 OK\r\nContent-Type: text/css; charset=utf-8\r\n"
             "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
             data_len);
   } else if (!strcmp("/script_tracks.js", url)) {
     data = script_tracks_js;
     data_len = script_tracks_js_len;
-    sprintf(rsp,
-            "HTTP/1.1 200 OK\r\nContent-Type: text/javascript\r\n"
-            "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
-            data_len);
+    sprintf(
+        rsp,
+        "HTTP/1.1 200 OK\r\nContent-Type: text/javascript; charset=utf-8\r\n"
+        "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
+        data_len);
   } else if (!strcmp("/style_albums.css", url)) {
     data = style_albums_css;
     data_len = style_albums_css_len;
     sprintf(rsp,
-            "HTTP/1.1 200 OK\r\nContent-Type: text/css\r\n"
+            "HTTP/1.1 200 OK\r\nContent-Type: text/css; charset=utf-8\r\n"
             "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
             data_len);
   } else if (!strcmp("/script_albums.js", url)) {
     data = script_albums_js;
     data_len = script_albums_js_len;
-    sprintf(rsp,
-            "HTTP/1.1 200 OK\r\nContent-Type: text/javascript\r\n"
-            "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
-            data_len);
+    sprintf(
+        rsp,
+        "HTTP/1.1 200 OK\r\nContent-Type: text/javascript; charset=utf-8\r\n"
+        "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
+        data_len);
   } else
     execl(resp_err, "resp_err", prm[1], NULL);
   write_size = write(sock, rsp, strlen(rsp));
