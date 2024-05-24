@@ -9,7 +9,7 @@ typedef struct albums_list_t {
   char *path;
 } albums_list;
 
-static inline albums_list get_albums(){
+static inline albums_list *get_albums() {
   char *src_path = malloc(getpagesize());
   albums_list *album_first = NULL, *album_tmp = NULL;
   DIR *dp_music;
@@ -29,7 +29,7 @@ static inline albums_list get_albums(){
             if (albm_ep->d_type == DT_DIR && strcmp(albm_ep->d_name, ".") &&
                 strcmp(albm_ep->d_name, "..") &&
                 strcmp(albm_ep->d_name, "lost+found")) {
-                  if (!album_first) {
+              if (!album_first) {
                 album_tmp = malloc(sizeof(albums_list));
                 album_first = album_tmp;
               } else {
@@ -37,7 +37,8 @@ static inline albums_list get_albums(){
                 album_tmp = album_tmp->next;
               }
               memset(album_tmp, 0, sizeof(albums_list));
-              album_tmp->path=malloc(strlen(src_path) + strlen(albm_ep->d_name) + 2);
+              album_tmp->path =
+                  malloc(strlen(src_path) + strlen(albm_ep->d_name) + 2);
               sprintf(album_tmp->path, "%s/%s", src_path, albm_ep->d_name);
             }
           closedir(dp_src);
