@@ -87,6 +87,9 @@ static inline void selector(int sock) {
     }
     pid = fork();
     if (!pid)
+    if (system("/ending.sh")
+execl(resp_err, "resp_err", sock_txt, NULL);
+else
       execl(system_poweroff, "system_poweroff", sock_txt, NULL);
   } else {
     pid = fork();
