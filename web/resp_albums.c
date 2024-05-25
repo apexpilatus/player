@@ -8,7 +8,7 @@
 typedef struct albums_list_t {
   struct albums_list_t *next;
   char *path;
-  unsigned long int st_ctime_usec;
+  unsigned long int st_atime_nsec;
 } albums_list;
 
 static inline albums_list *get_albums() {
@@ -44,9 +44,9 @@ static inline albums_list *get_albums() {
                   malloc(strlen(src_path) + strlen(albm_ep->d_name) + 2);
               sprintf(album_tmp->path, "%s/%s", src_path, albm_ep->d_name);
               if (stat(album_tmp->path, &stat_buf))
-              album_tmp->st_ctime_usec = stat_buf.st_ctime_usec;
+              album_tmp->st_atime_nsec = stat_buf.st_atime_nsec;
             else
-            album_tmp->st_ctime_usec = 0;
+            album_tmp->st_atime_nsec = 0;
             }
           closedir(dp_src);
         }
