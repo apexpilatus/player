@@ -166,7 +166,7 @@ int main(int prm_n, char *prm[]) {
     execl(resp_err, "resp_err", prm[1], NULL);
   *start_track = '\0';
   start_track++;
-  if (chdir(album_dir))
+  if (utime(album_dir, NULL) || chdir(album_dir))
     execl(resp_err, "resp_err", prm[1], NULL);
   tracks = get_tracks(start_track);
   if (!tracks)
