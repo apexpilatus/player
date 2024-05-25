@@ -9,23 +9,23 @@
 typedef struct albums_list_t {
   struct albums_list_t *next;
   char *path;
-  time_t atime;
+  time_t mtime;
 } albums_list;
 
 static inline void sort_albums(albums_list *album_first) {
   char *path_tmp;
-  time_t atime_tmp;
+  time_t mtime_tmp;
   for (albums_list *go_slow = album_first; go_slow && go_slow->next;
        go_slow = go_slow->next)
     for (albums_list *go_fast = go_slow->next; go_fast;
          go_fast = go_fast->next) {
-      if (difftime(go_fast->atime, go_slow->atime) < 0) {
+      if (difftime(go_fast->mtime, go_slow->mtime) < 0) {
         path_tmp = go_fast->path;
-        atime_tmp = go_fast->atime;
+        mtime_tmp = go_fast->mtime;
         go_fast->path = go_slow->path;
-        go_fast->atime = go_slow->atime;
+        go_fast->mtime = go_slow->mtime;
         go_slow->path = path_tmp;
-        go_slow->atime = atime_tmp;
+        go_slow->mtime = mtime_tmp;
       }
     }
 }
@@ -63,7 +63,7 @@ static inline albums_list *get_albums() {
                   malloc(strlen(src_path) + strlen(albm_ep->d_name) + 2);
               sprintf(album_tmp->path, "%s/%s", src_path, albm_ep->d_name);
               if (!stat(album_tmp->path, &stat_buf))
-                album_tmp->atime = stat_buf.st_atime;
+                album_tmp->mtime = stat_buf.st_mtime;
             }
           closedir(dp_src);
         }
