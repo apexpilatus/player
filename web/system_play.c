@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <utime.h>
 
 // clang-format off
 #include <alsa/global.h>
