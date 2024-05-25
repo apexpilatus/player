@@ -7,6 +7,7 @@
 typedef struct albums_list_t {
   struct albums_list_t *next;
   char *path;
+  unsigned long int st_ctime_usec;
 } albums_list;
 
 static inline albums_list *get_albums() {
@@ -14,6 +15,7 @@ static inline albums_list *get_albums() {
   albums_list *album_first = NULL, *album_tmp = NULL;
   DIR *dp_music;
   struct dirent *src_ep;
+  struct stat stat_buf;
   dp_music = opendir(music);
   if (dp_music) {
     while ((src_ep = readdir(dp_music)))
@@ -40,6 +42,10 @@ static inline albums_list *get_albums() {
               album_tmp->path =
                   malloc(strlen(src_path) + strlen(albm_ep->d_name) + 2);
               sprintf(album_tmp->path, "%s/%s", src_path, albm_ep->d_name);
+              if (stat(album_tmp->path, &stat_buf))
+              album_tmp->st_ctime_usec = stat_buf.st_ctime_usec;
+            else
+            album_tmp->st_ctime_usec = 0;
             }
           closedir(dp_src);
         }
