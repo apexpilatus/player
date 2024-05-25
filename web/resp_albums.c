@@ -50,14 +50,15 @@ static inline albums_list *get_albums() {
 }
 
 static inline void list_albums(char *msg) {
-albums_list *albums = get_albums();
-while(albums){
-              strcat(msg, "<img src=\"");
-              strcat(msg, albums->path);
-              strcat(msg, "\" onclick=gettracks(\"");
-              strcat(msg, albums->path);
-              strcat(msg, "\") alt=picture>");
-              }
+  albums_list *albums = get_albums();
+  while (albums) {
+    strcat(msg, "<img src=\"");
+    strcat(msg, albums->path);
+    strcat(msg, "\" onclick=gettracks(\"");
+    strcat(msg, albums->path);
+    strcat(msg, "\") alt=picture>");
+    albums = albums->next;
+  }
 }
 
 int main(int prm_n, char *prm[]) {
