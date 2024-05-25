@@ -11,6 +11,15 @@ typedef struct albums_list_t {
   time_t atime;
 } albums_list;
 
+static inline void sort_albums(albums_list *album_first) {
+  char *path_tmp;
+  time_t atime_tmp;
+  for (albums_list *go_slow = album_first; go_slow && go_slow->next;
+       go_slow = go_slow->next)
+    for (albums_list *go_fast = go_slow->next; go_fast; go_fast = go_fast->next)
+    printf("%f\n", difftime(go_fast->atime, go_slow->atime));
+}
+
 static inline albums_list *get_albums() {
   char *src_path = malloc(getpagesize());
   albums_list *album_first = NULL, *album_tmp = NULL;
@@ -43,7 +52,7 @@ static inline albums_list *get_albums() {
               album_tmp->path =
                   malloc(strlen(src_path) + strlen(albm_ep->d_name) + 2);
               sprintf(album_tmp->path, "%s/%s", src_path, albm_ep->d_name);
-              if (stat(album_tmp->path, &stat_buf))
+              if (!stat(album_tmp->path, &stat_buf))
                 album_tmp->atime = stat_buf.st_atime;
             }
           closedir(dp_src);
@@ -51,6 +60,7 @@ static inline albums_list *get_albums() {
       }
     closedir(dp_music);
   }
+sort_albums(album_first);
   return album_first;
 }
 
