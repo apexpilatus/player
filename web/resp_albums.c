@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <time.h>
 #include <unistd.h>
 
 typedef struct albums_list_t {
@@ -16,8 +17,17 @@ static inline void sort_albums(albums_list *album_first) {
   time_t atime_tmp;
   for (albums_list *go_slow = album_first; go_slow && go_slow->next;
        go_slow = go_slow->next)
-    for (albums_list *go_fast = go_slow->next; go_fast; go_fast = go_fast->next)
-    printf("%f\n", difftime(go_fast->atime, go_slow->atime));
+    for (albums_list *go_fast = go_slow->next; go_fast;
+         go_fast = go_fast->next) {
+      if (difftime(go_fast->atime, go_slow->atime) < 0) {
+        path_tmp = go_fast->path;
+        atime_tmp = go_fast->atime;
+        go_fast->path = go_slow->path;
+        go_fast->atime = go_slow->atime;
+        go_slow->path = path_tmp;
+        go_slow->atime = atime_tmp;
+      }
+    }
 }
 
 static inline albums_list *get_albums() {
@@ -60,7 +70,7 @@ static inline albums_list *get_albums() {
       }
     closedir(dp_music);
   }
-sort_albums(album_first);
+  sort_albums(album_first);
   return album_first;
 }
 
@@ -86,9 +96,8 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
   strcat(msg, "<meta charset=utf-8>");
-  strcat(
-      msg,
-      "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
+  strcat(msg, "<meta name=viewport content=\"width=device-width, "
+              "initial-scale=1.0\">");
   strcat(msg, "<title>albums</title>");
   strcat(msg, "<link rel=stylesheet href=style_albums.css>");
   strcat(msg, "<script src=script_albums.js></script>");
