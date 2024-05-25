@@ -167,7 +167,7 @@ int main(int prm_n, char *prm[]) {
     execl(resp_err, "resp_err", prm[1], NULL);
   *start_track = '\0';
   start_track++;
-  if (utime(album_dir, NULL) || chdir(album_dir))
+  if (chdir(album_dir))
     execl(resp_err, "resp_err", prm[1], NULL);
   tracks = get_tracks(start_track);
   if (!tracks)
@@ -205,6 +205,8 @@ int main(int prm_n, char *prm[]) {
   bytes_per_sample = rate->data.stream_info.bits_per_sample / 8;
   snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
   if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p))
+    execl(resp_err, "resp_err", prm[1], NULL);
+  if (utime(".", NULL))
     execl(resp_err, "resp_err", prm[1], NULL);
   strcpy(rsp, "HTTP/1.1 200 OK\r\n\r\n");
   write_size = write(sock, rsp, strlen(rsp));
