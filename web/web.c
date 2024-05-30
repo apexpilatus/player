@@ -102,7 +102,7 @@ exit:
 }
 
 int main(void) {
-#ifdef WEB_INIT
+#ifdef PLAYER_AS_INIT
   if (system("/init.sh") && system("poweroff -f"))
     return 1;
 #endif
@@ -112,7 +112,7 @@ int main(void) {
   msg_size = getpagesize();
   req = malloc(msg_size);
   if (thrd_create(&thr, kill_zombies, NULL) != thrd_success)
-#ifdef WEB_INIT
+#ifdef PLAYER_AS_INIT
     if (system("poweroff -f"))
 #endif
       return 1;
@@ -121,19 +121,19 @@ int main(void) {
   addr.sin_port = htons(listen_port);
   struct hostent *host_by_name = gethostbyname("player");
   if (!host_by_name)
-#ifdef WEB_INIT
+#ifdef PLAYER_AS_INIT
     if (system("poweroff -f"))
 #endif
       return 1;
   addr.sin_addr.s_addr = *((uint32_t *)host_by_name->h_addr);
   socklen_t addr_size = sizeof(addr);
   if (bind(sock_listen, (struct sockaddr *)&addr, addr_size) < 0)
-#ifdef WEB_INIT
+#ifdef PLAYER_AS_INIT
     if (system("poweroff -f"))
 #endif
       return 1;
   if (listen(sock_listen, 20) < 0)
-#ifdef WEB_INIT
+#ifdef PLAYER_AS_INIT
     if (system("poweroff -f"))
 #endif
       return 1;
@@ -143,7 +143,7 @@ int main(void) {
       continue;
     selector(sock);
   }
-#ifdef WEB_INIT
+#ifdef PLAYER_AS_INIT
   if (system("poweroff -f"))
 #endif
     return 1;

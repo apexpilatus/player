@@ -11,7 +11,7 @@ int main(int prm_n, char *prm[]) {
   write_size = write(sock, rsp, strlen(rsp));
   close(sock);
   if (write_size == strlen(rsp)) {
-#ifdef WEB_INIT
+#ifdef PLAYER_AS_INIT
     if (!system("poweroff -f"))
 #endif
       return 0;
