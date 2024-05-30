@@ -36,7 +36,7 @@ static inline albums_list *get_albums() {
   DIR *dp_music;
   struct dirent *src_ep;
   struct stat stat_buf;
-  dp_music = opendir(music);
+  dp_music = opendir(music_path);
   if (dp_music) {
     while ((src_ep = readdir(dp_music)))
       if (src_ep->d_type == DT_DIR && strcmp(src_ep->d_name, ".") &&
@@ -44,7 +44,7 @@ static inline albums_list *get_albums() {
           strcmp(src_ep->d_name, "lost+found")) {
         DIR *dp_src;
         struct dirent *albm_ep;
-        sprintf(src_path, "%s/%s", music, src_ep->d_name);
+        sprintf(src_path, "%s/%s", music_path, src_ep->d_name);
         dp_src = opendir(src_path);
         if (dp_src) {
           while ((albm_ep = readdir(dp_src)))

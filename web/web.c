@@ -38,7 +38,7 @@ static inline void selector(int sock) {
     *end = '\0';
   else
     goto exit;
-  if (!strncmp(music, url, strlen(music))) {
+  if (!strncmp(music_path, url, strlen(music_path))) {
     pid = fork();
     if (!pid)
       execl(data_picture, "data_picture", sock_txt, url, NULL);

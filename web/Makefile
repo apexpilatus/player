@@ -1,6 +1,6 @@
 PLAYER_PATH := /home/player
 MUSIC_PATH := /home/music
-PLAYER_DEFINES := -D music=\"$(MUSIC_PATH)\"
+PLAYER_DEFINES := -D music_path=\"$(MUSIC_PATH)\"
 PLAYER_DEFINES += -D resp_main=\"$(PLAYER_PATH)/resp_main\"
 PLAYER_DEFINES += -D resp_tracks=\"$(PLAYER_PATH)/resp_tracks\"
 PLAYER_DEFINES += -D resp_albums=\"$(PLAYER_PATH)/resp_albums\"
