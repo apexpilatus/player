@@ -1,23 +1,23 @@
-WEB_PATH := /home/player
+PLAYER_PATH := /home/player
 MUSIC_PATH := /home/music
-WEB_DEFINES := -D music=\"$(MUSIC_PATH)\"
-WEB_DEFINES += -D resp_main=\"$(WEB_PATH)/resp_main\"
-WEB_DEFINES += -D resp_tracks=\"$(WEB_PATH)/resp_tracks\"
-WEB_DEFINES += -D resp_albums=\"$(WEB_PATH)/resp_albums\"
-WEB_DEFINES += -D resp_err=\"$(WEB_PATH)/resp_err\"
-WEB_DEFINES += -D data_static=\"$(WEB_PATH)/data_static\"
-WEB_DEFINES += -D data_picture=\"$(WEB_PATH)/data_picture\"
-WEB_DEFINES += -D system_poweroff=\"$(WEB_PATH)/system_poweroff\"
-WEB_DEFINES += -D system_play=\"$(WEB_PATH)/system_play\"
-WEB_DEFINES += -D system_volume=\"$(WEB_PATH)/system_volume\"
+PLAYER_DEFINES := -D music=\"$(MUSIC_PATH)\"
+PLAYER_DEFINES += -D resp_main=\"$(PLAYER_PATH)/resp_main\"
+PLAYER_DEFINES += -D resp_tracks=\"$(PLAYER_PATH)/resp_tracks\"
+PLAYER_DEFINES += -D resp_albums=\"$(PLAYER_PATH)/resp_albums\"
+PLAYER_DEFINES += -D resp_err=\"$(PLAYER_PATH)/resp_err\"
+PLAYER_DEFINES += -D data_static=\"$(PLAYER_PATH)/data_static\"
+PLAYER_DEFINES += -D data_picture=\"$(PLAYER_PATH)/data_picture\"
+PLAYER_DEFINES += -D system_poweroff=\"$(PLAYER_PATH)/system_poweroff\"
+PLAYER_DEFINES += -D system_play=\"$(PLAYER_PATH)/system_play\"
+PLAYER_DEFINES += -D system_volume=\"$(PLAYER_PATH)/system_volume\"
 ifdef init
-WEB_DEFINES += -D WEB_INIT
+PLAYER_DEFINES += -D PLAYER_AS_INIT
 endif
 CC := clang -O2
 
 web : Makefile web.c resp_main resp_tracks resp_albums resp_err data_static data_picture system_play system_volume system_poweroff
 	clang-format -i web.c
-	$(CC) web.c -o web $(WEB_DEFINES)
+	$(CC) web.c -o web $(PLAYER_DEFINES)
 
 resp_main : resp_main.c
 	clang-format -i resp_main.c
@@ -25,11 +25,11 @@ resp_main : resp_main.c
 
 resp_tracks : Makefile resp_tracks.c
 	clang-format -i resp_tracks.c
-	$(CC) resp_tracks.c -o resp_tracks $(WEB_DEFINES) -lFLAC
+	$(CC) resp_tracks.c -o resp_tracks $(PLAYER_DEFINES) -lFLAC
 
 resp_albums : Makefile resp_albums.c
 	clang-format -i resp_albums.c
-	$(CC) resp_albums.c -o resp_albums $(WEB_DEFINES)
+	$(CC) resp_albums.c -o resp_albums $(PLAYER_DEFINES)
 
 resp_err : resp_err.c
 	clang-format -i resp_err.c
@@ -43,24 +43,24 @@ data_static : Makefile data_static.c style_main.css script_main.js style_tracks.
 	xxd -i style_albums.css style_albums_css.c
 	xxd -i script_albums.js script_albums_js.c
 	clang-format -i data_static.c
-	$(CC) data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c -o data_static $(WEB_DEFINES)
+	$(CC) data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c -o data_static $(PLAYER_DEFINES)
 	rm style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c
 
 data_picture : Makefile data_picture.c
 	clang-format -i data_picture.c
-	$(CC) data_picture.c -o data_picture $(WEB_DEFINES) -lFLAC
+	$(CC) data_picture.c -o data_picture $(PLAYER_DEFINES) -lFLAC
 
 system_play : Makefile system_play.c
 	clang-format -i system_play.c
-	$(CC) system_play.c -o system_play $(WEB_DEFINES) -lasound -lFLAC
+	$(CC) system_play.c -o system_play $(PLAYER_DEFINES) -lasound -lFLAC
 
 system_volume : Makefile system_volume.c
 	clang-format -i system_volume.c
-	$(CC) system_volume.c -o system_volume $(WEB_DEFINES) -lasound
+	$(CC) system_volume.c -o system_volume $(PLAYER_DEFINES) -lasound
 
 system_poweroff : Makefile system_poweroff.c
 	clang-format -i system_poweroff.c
-	$(CC) system_poweroff.c -o system_poweroff $(WEB_DEFINES)
+	$(CC) system_poweroff.c -o system_poweroff $(PLAYER_DEFINES)
 
 .PHONY: clean
 clean:
