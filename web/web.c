@@ -45,15 +45,15 @@ static inline void selector(int sock) {
   } else if (!strncmp("/tracks", url, strlen("/tracks"))) {
     pid = fork();
     if (!pid)
-      execl(resp_tracks, "resp_tracks", sock_txt, url, NULL);
+      execl(html_tracks, "html_tracks", sock_txt, url, NULL);
   } else if (!strcmp("/", url)) {
     pid = fork();
     if (!pid)
-      execl(resp_main, "resp_main", sock_txt, NULL);
+      execl(html_main, "html_main", sock_txt, NULL);
   } else if (!strncmp("/albums", url, strlen("/albums"))) {
     pid = fork();
     if (!pid)
-      execl(resp_albums, "resp_albums", sock_txt, NULL);
+      execl(html_albums, "html_albums", sock_txt, NULL);
   } else if (!strncmp("/play", url, strlen("/play"))) {
     if (player_pid > 0) {
       kill(player_pid, SIGTERM);

@@ -1,9 +1,9 @@
 PLAYER_PATH := /home/player
 MUSIC_PATH := /home/music
 PLAYER_DEFINES := -D music_path=\"$(MUSIC_PATH)\"
-PLAYER_DEFINES += -D resp_main=\"$(PLAYER_PATH)/resp_main\"
-PLAYER_DEFINES += -D resp_tracks=\"$(PLAYER_PATH)/resp_tracks\"
-PLAYER_DEFINES += -D resp_albums=\"$(PLAYER_PATH)/resp_albums\"
+PLAYER_DEFINES += -D html_main=\"$(PLAYER_PATH)/html_main\"
+PLAYER_DEFINES += -D html_tracks=\"$(PLAYER_PATH)/html_tracks\"
+PLAYER_DEFINES += -D html_albums=\"$(PLAYER_PATH)/html_albums\"
 PLAYER_DEFINES += -D resp_err=\"$(PLAYER_PATH)/resp_err\"
 PLAYER_DEFINES += -D data_static=\"$(PLAYER_PATH)/data_static\"
 PLAYER_DEFINES += -D data_picture=\"$(PLAYER_PATH)/data_picture\"
@@ -15,21 +15,21 @@ PLAYER_DEFINES += -D PLAYER_AS_INIT
 endif
 CC := clang -O2
 
-web : Makefile web.c resp_main resp_tracks resp_albums resp_err data_static data_picture system_play system_volume system_poweroff
+web : Makefile web.c html_main html_tracks html_albums resp_err data_static data_picture system_play system_volume system_poweroff
 	clang-format -i web.c
 	$(CC) web.c -o web $(PLAYER_DEFINES)
 
-resp_main : resp_main.c
-	clang-format -i resp_main.c
-	$(CC) resp_main.c -o resp_main
+html_main : html_main.c
+	clang-format -i html_main.c
+	$(CC) html_main.c -o html_main
 
-resp_tracks : Makefile resp_tracks.c
-	clang-format -i resp_tracks.c
-	$(CC) resp_tracks.c -o resp_tracks $(PLAYER_DEFINES) -lFLAC
+html_tracks : Makefile html_tracks.c
+	clang-format -i html_tracks.c
+	$(CC) html_tracks.c -o html_tracks $(PLAYER_DEFINES) -lFLAC
 
-resp_albums : Makefile resp_albums.c
-	clang-format -i resp_albums.c
-	$(CC) resp_albums.c -o resp_albums $(PLAYER_DEFINES)
+html_albums : Makefile html_albums.c
+	clang-format -i html_albums.c
+	$(CC) html_albums.c -o html_albums $(PLAYER_DEFINES)
 
 resp_err : resp_err.c
 	clang-format -i resp_err.c
