@@ -116,57 +116,43 @@ int main(int prm_n, char *prm[]) {
         strcmp("/apple-touch-icon-precomposed.png", url))) {
     data = png;
     data_len = png_len;
-    sprintf(rsp,
-            "HTTP/1.1 200 OK\r\nContent-Type: image/x-icon\r\n"
-            "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
-            data_len);
+    strcpy(rsp, "HTTP/1.1 200 OK\r\nContent-Type: image/x-icon\r\n");
   } else if (!strcmp("/style_main.css", url)) {
     data = style_main_css;
     data_len = style_main_css_len;
-    sprintf(rsp,
-            "HTTP/1.1 200 OK\r\nContent-Type: text/css; charset=utf-8\r\n"
-            "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
-            data_len);
+    strcpy(rsp, "HTTP/1.1 200 OK\r\nContent-Type: text/css; charset=utf-8\r\n");
   } else if (!strcmp("/script_main.js", url)) {
     data = script_main_js;
     data_len = script_main_js_len;
-    sprintf(
+    strcpy(
         rsp,
-        "HTTP/1.1 200 OK\r\nContent-Type: text/javascript; charset=utf-8\r\n"
-        "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
-        data_len);
+        "HTTP/1.1 200 OK\r\nContent-Type: text/javascript; charset=utf-8\r\n");
   } else if (!strcmp("/style_tracks.css", url)) {
     data = style_tracks_css;
     data_len = style_tracks_css_len;
-    sprintf(rsp,
-            "HTTP/1.1 200 OK\r\nContent-Type: text/css; charset=utf-8\r\n"
-            "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
-            data_len);
+    strcpy(rsp, "HTTP/1.1 200 OK\r\nContent-Type: text/css; charset=utf-8\r\n");
   } else if (!strcmp("/script_tracks.js", url)) {
     data = script_tracks_js;
     data_len = script_tracks_js_len;
-    sprintf(
+    strcpy(
         rsp,
-        "HTTP/1.1 200 OK\r\nContent-Type: text/javascript; charset=utf-8\r\n"
-        "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
-        data_len);
+        "HTTP/1.1 200 OK\r\nContent-Type: text/javascript; charset=utf-8\r\n");
   } else if (!strcmp("/style_albums.css", url)) {
     data = style_albums_css;
     data_len = style_albums_css_len;
-    sprintf(rsp,
-            "HTTP/1.1 200 OK\r\nContent-Type: text/css; charset=utf-8\r\n"
-            "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
-            data_len);
+    strcpy(rsp, "HTTP/1.1 200 OK\r\nContent-Type: text/css; charset=utf-8\r\n");
   } else if (!strcmp("/script_albums.js", url)) {
     data = script_albums_js;
     data_len = script_albums_js_len;
-    sprintf(
+    strcpy(
         rsp,
-        "HTTP/1.1 200 OK\r\nContent-Type: text/javascript; charset=utf-8\r\n"
-        "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
-        data_len);
+        "HTTP/1.1 200 OK\r\nContent-Type: text/javascript; charset=utf-8\r\n");
   } else
     execl(resp_err, "resp_err", prm[1], NULL);
+  write_size = strlen(rsp);
+  sprintf(rsp + write_size,
+          "Content-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
+          data_len);
   write_size = write(sock, rsp, strlen(rsp));
   write_size += write(sock, data, data_len);
   if (write_size == strlen(rsp) + data_len)
