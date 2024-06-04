@@ -15,13 +15,9 @@ PLAYER_DEFINES += -D PLAYER_AS_INIT
 endif
 CC := clang -O2
 
-web : Makefile web.c html_main html_tracks html_albums resp_err data_static data_picture system_play system_volume system_poweroff
+web : Makefile web.c html_tracks html_albums resp_err data_static data_picture system_play system_volume system_poweroff
 	clang-format -i web.c
 	$(CC) web.c -o web $(PLAYER_DEFINES)
-
-html_main : html_main.c
-	clang-format -i html_main.c
-	$(CC) html_main.c -o html_main
 
 html_tracks : Makefile html_tracks.c
 	clang-format -i html_tracks.c
