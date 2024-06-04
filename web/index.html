@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html lang=en>
+
 <head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width, initial-scale=1.0">
-<title>player</title>
-<link rel=stylesheet href=style_main.css>
-<script src=script_main.js></script>
+    <meta charset=utf-8>
+    <meta name=viewport content="width=device-width, initial-scale=1.0">
+    <title>player</title>
+    <link rel=stylesheet href=style_main.css>
+    <script src=script_main.js></script>
 </head>
+
 <body>
+    <iframe id=albums title=albums></iframe>
+    <iframe id=tracks title=tracks></iframe>
+    <button type=button id=poweroff onclick=fetch(poweroff)>&#9769;</button>
+    <button type=button id=volume onclick=getvolume()>&#9738</button>
+    <input hidden id=control type=range oninput=setvolume() title=volume>
+    <script>getalbums()</script>
 </body>
+
 </html>

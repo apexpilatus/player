@@ -46,10 +46,6 @@ static inline void selector(int sock) {
     pid = fork();
     if (!pid)
       execl(html_tracks, "html_tracks", sock_txt, url, NULL);
-  } else if (!strcmp("/", url)) {
-    pid = fork();
-    if (!pid)
-      execl(html_main, "html_main", sock_txt, NULL);
   } else if (!strncmp("/albums", url, strlen("/albums"))) {
     pid = fork();
     if (!pid)
@@ -65,7 +61,8 @@ static inline void selector(int sock) {
       execl(system_play, "system_play", sock_txt, url, NULL);
     if (player_pid > 0)
       setpriority(PRIO_PROCESS, player_pid, PRIO_MIN);
-  } else if (!(strcmp("/favicon.ico", url) &&
+  } else if (!(strcmp("/", url) &&
+                strcmp("/favicon.ico", url) &&
                strcmp("/apple-touch-icon-precomposed.png", url) &&
                strncmp("/style", url, strlen("/style")) &&
                strncmp("/script", url, strlen("/script")))) {
