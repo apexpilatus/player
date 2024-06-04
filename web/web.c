@@ -61,14 +61,6 @@ static inline void selector(int sock) {
       execl(system_play, "system_play", sock_txt, url, NULL);
     if (player_pid > 0)
       setpriority(PRIO_PROCESS, player_pid, PRIO_MIN);
-  } else if (!(strcmp("/", url) &&
-                strcmp("/favicon.ico", url) &&
-               strcmp("/apple-touch-icon-precomposed.png", url) &&
-               strncmp("/style", url, strlen("/style")) &&
-               strncmp("/script", url, strlen("/script")))) {
-    pid = fork();
-    if (!pid)
-      execl(data_static, "data_static", sock_txt, url, NULL);
   } else if (!(strcmp("/getvolume", url) &&
                strncmp("/setvolume", url, strlen("/setvolume")))) {
     mixer_pid = fork();
@@ -92,7 +84,7 @@ static inline void selector(int sock) {
   } else {
     pid = fork();
     if (!pid)
-      execl(resp_err, "resp_err", sock_txt, NULL);
+      execl(data_static, "data_static", sock_txt, url, NULL);
   }
 exit:
   close(sock);

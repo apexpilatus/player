@@ -100,9 +100,10 @@ unsigned char png[] = {
     0x4d, 0xbe, 0xe4, 0x00, 0xca, 0x4a, 0xb8, 0x00, 0x00, 0x00, 0x00, 0x49,
     0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82};
 unsigned int png_len = 1135;
-extern unsigned char style_main_css[], script_main_js[], style_tracks_css[],
-    script_tracks_js[], style_albums_css[], script_albums_js[];
-extern unsigned int style_main_css_len, script_main_js_len,
+extern unsigned char index_html[], style_main_css[], script_main_js[],
+    style_tracks_css[], script_tracks_js[], style_albums_css[],
+    script_albums_js[];
+extern unsigned int index_html_len, style_main_css_len, script_main_js_len,
     style_tracks_css_len, script_tracks_js_len, style_albums_css_len,
     script_albums_js_len;
 
@@ -112,8 +113,13 @@ int main(int prm_n, char *prm[]) {
   char *rsp = malloc(rsp_size), *url = prm[2];
   unsigned char *data;
   unsigned int data_len;
-  if (!(strcmp("/favicon.ico", url) &&
-        strcmp("/apple-touch-icon-precomposed.png", url))) {
+  if (!strcmp("/", url)) {
+    data = index_html;
+    data_len = index_html_len;
+    strcpy(rsp,
+           "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n");
+  } else if (!(strcmp("/favicon.ico", url) &&
+               strcmp("/apple-touch-icon-precomposed.png", url))) {
     data = png;
     data_len = png_len;
     strcpy(rsp, "HTTP/1.1 200 OK\r\nContent-Type: image/x-icon\r\n");

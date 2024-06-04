@@ -35,16 +35,17 @@ resp_err : resp_err.c
 	clang-format -i resp_err.c
 	$(CC) resp_err.c -o resp_err
 
-data_static : Makefile data_static.c style_main.css script_main.js style_tracks.css script_tracks.js style_albums.css script_albums.js
+data_static : Makefile data_static.c style_main.css script_main.js style_tracks.css script_tracks.js style_albums.css script_albums.js index.html
 	xxd -i style_main.css style_main_css.c
 	xxd -i script_main.js script_main_js.c
 	xxd -i style_tracks.css style_tracks_css.c
 	xxd -i script_tracks.js script_tracks_js.c
 	xxd -i style_albums.css style_albums_css.c
 	xxd -i script_albums.js script_albums_js.c
+	xxd -i index.html index_html.c
 	clang-format -i data_static.c
-	$(CC) data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c -o data_static $(PLAYER_DEFINES)
-	rm style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c
+	$(CC) data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c index_html.c -o data_static $(PLAYER_DEFINES)
+	rm style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c index_html.c
 
 data_picture : Makefile data_picture.c
 	clang-format -i data_picture.c

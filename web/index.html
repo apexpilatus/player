@@ -12,7 +12,7 @@
 <body>
     <iframe id=albums title=albums></iframe>
     <iframe id=tracks title=tracks></iframe>
-    <button type=button id=poweroff onclick=fetch(poweroff)>&#9769;</button>
+    <button type=button id=poweroff onclick=fetch("poweroff")>&#9769;</button>
     <button type=button id=volume onclick=getvolume()>&#9738</button>
     <input hidden id=control type=range oninput=setvolume() title=volume>
     <script>getalbums()</script>
