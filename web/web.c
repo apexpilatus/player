@@ -7,7 +7,7 @@
 #include <threads.h>
 #include <unistd.h>
 
-#define listen_port 80
+#define listen_port 8080
 
 static ssize_t msg_size;
 static char *req;
@@ -108,13 +108,7 @@ int main(void) {
   sock_listen = socket(PF_INET, SOCK_STREAM, 0);
   addr.sin_family = AF_INET;
   addr.sin_port = htons(listen_port);
-  struct hostent *host_by_name = gethostbyname("player");
-  if (!host_by_name)
-#ifdef PLAYER_AS_INIT
-    if (system("poweroff -f"))
-#endif
-      return 1;
-  addr.sin_addr.s_addr = *((uint32_t *)host_by_name->h_addr);
+  addr.sin_addr.s_addr = htonl(INADDR_ANY);
   socklen_t addr_size = sizeof(addr);
   if (bind(sock_listen, (struct sockaddr *)&addr, addr_size) < 0)
 #ifdef PLAYER_AS_INIT
