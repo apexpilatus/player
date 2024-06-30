@@ -1,5 +1,5 @@
-PLAYER_PATH := /home/player
-MUSIC_PATH := /home/music
+PLAYER_PATH := /home/works/player/web
+MUSIC_PATH := /home/max/Desktop
 PLAYER_DEFINES := -D music_path=\"$(MUSIC_PATH)\"
 PLAYER_DEFINES += -D html_tracks=\"$(PLAYER_PATH)/html_tracks\"
 PLAYER_DEFINES += -D html_albums=\"$(PLAYER_PATH)/html_albums\"
@@ -38,9 +38,11 @@ data_static : Makefile data_static.c style_main.css script_main.js style_tracks.
 	xxd -i style_albums.css style_albums_css.c
 	xxd -i script_albums.js script_albums_js.c
 	xxd -i index.html index_html.c
+	xxd -i favicon32.png favicon32.c
+	xxd -i favicon192.png favicon192.c
 	clang-format -i data_static.c
-	$(CC) data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c index_html.c -o data_static $(PLAYER_DEFINES)
-	rm style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c index_html.c
+	$(CC) data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c index_html.c favicon32.c favicon192.c -o data_static $(PLAYER_DEFINES)
+	rm style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c index_html.c favicon32.c favicon192.c
 
 data_picture : Makefile data_picture.c
 	clang-format -i data_picture.c

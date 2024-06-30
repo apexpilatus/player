@@ -18,7 +18,8 @@ static inline void sort_tracks(meta_list *list_first) {
   for (meta_list *go_slow = list_first; go_slow && go_slow->next;
        go_slow = go_slow->next)
     for (meta_list *go_fast = go_slow->next; go_fast; go_fast = go_fast->next)
-      if (strtol(go_slow->track, NULL, 10) > strtol(go_fast->track, NULL, 10)) {
+      if (go_slow->track && go_fast->track &&
+          strtol(go_slow->track, NULL, 10) > strtol(go_fast->track, NULL, 10)) {
         title_tmp = go_fast->title;
         track_tmp = go_fast->track;
         go_fast->title = go_slow->title;
