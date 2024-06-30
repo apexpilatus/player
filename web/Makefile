@@ -1,5 +1,5 @@
-PLAYER_PATH := /home/works/player/web
-MUSIC_PATH := /home/max/Desktop
+PLAYER_PATH := /home/player
+MUSIC_PATH := /home/music
 PLAYER_DEFINES := -D music_path=\"$(MUSIC_PATH)\"
 PLAYER_DEFINES += -D html_tracks=\"$(PLAYER_PATH)/html_tracks\"
 PLAYER_DEFINES += -D html_albums=\"$(PLAYER_PATH)/html_albums\"
