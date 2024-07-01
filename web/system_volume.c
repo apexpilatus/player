@@ -47,7 +47,8 @@ int main(int prm_n, char *prm[]) {
     snd_mixer_selem_set_playback_volume(melem, SND_MIXER_SCHN_UNKNOWN,
                                         curr_vol);
   }
-  strcat(rsp, "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
+  strcat(rsp, "\r\nContent-Type: text/html; charset=utf-8\r\nCache-control: "
+              "no-cache\r\nX-Content-Type-Options: nosniff\r\n\r\n");
   write_size = write(sock, rsp, strlen(rsp));
   if (write_size == strlen(rsp))
     return 0;
