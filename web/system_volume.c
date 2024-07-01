@@ -37,18 +37,19 @@ int main(int prm_n, char *prm[]) {
   if (!(strcmp("/getvolume", url))) {
     snd_mixer_selem_get_playback_volume(melem, SND_MIXER_SCHN_UNKNOWN,
                                         &curr_vol);
-    sprintf(rsp, "HTTP/1.1 200 %ld_%ld_%ld", min_vol, curr_vol, max_vol);
+    sprintf(rsp, "HTTP/1.1 200 %ld_%ld_%ld\r\n", min_vol, curr_vol, max_vol);
   } else {
     url_vol = strchr(url, '&');
     if (!(url_vol && (curr_vol = strtol(++url_vol, NULL, 10)) &&
           curr_vol <= max_vol && curr_vol >= min_vol))
       execl(resp_err, "resp_err", prm[1], NULL);
-    strcpy(rsp, "HTTP/1.1 200 OK");
+    strcpy(rsp, "HTTP/1.1 200 OK\r\n");
     snd_mixer_selem_set_playback_volume(melem, SND_MIXER_SCHN_UNKNOWN,
                                         curr_vol);
   }
-  strcat(rsp, "\r\nContent-Type: text/html; charset=utf-8\r\nCache-control: "
-              "no-cache\r\nX-Content-Type-Options: nosniff\r\n\r\n");
+  strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
+  strcat(rsp, "Cache-control: no-cache\r\n");
+  strcat(rsp, "X-Content-Type-Options: nosniff\r\n\r\n");
   write_size = write(sock, rsp, strlen(rsp));
   if (write_size == strlen(rsp))
     return 0;

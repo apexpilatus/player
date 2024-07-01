@@ -33,10 +33,11 @@ int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   ssize_t rsp_size = getpagesize(), write_size;
   char *rsp = malloc(rsp_size);
-  sprintf(
-      rsp,
-      "%s\r\nContent-Length: %u\r\nCache-control: no-cache, no-store\r\n\r\n",
-      "HTTP/1.1 200 OK", picture->data.picture.data_length);
+  sprintf(rsp, "%s\r\n%s%u\r\n%s\r\n%s%s\r\n%s\r\n\r\n", "HTTP/1.1 200 OK",
+          "Content-Length: ", picture->data.picture.data_length,
+          "Cache-control: max-age=31536000, immutable",
+          "Content-Type: ", picture->data.picture.mime_type,
+          "X-Content-Type-Options: nosniff");
   write_size = write(sock, rsp, strlen(rsp));
   write_size += write(sock, picture->data.picture.data,
                       picture->data.picture.data_length);

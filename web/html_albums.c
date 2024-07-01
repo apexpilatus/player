@@ -108,6 +108,8 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "</html>");
   strcpy(rsp, "HTTP/1.1 200 OK\r\n");
   strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
+  strcat(rsp, "Cache-control: no-cache\r\n");
+  strcat(rsp, "X-Content-Type-Options: nosniff\r\n");
   write_size = strlen(rsp);
   sprintf(rsp + write_size, "Content-Length: %lu\r\n\r\n", strlen(msg));
   write_size = write(sock, rsp, strlen(rsp));

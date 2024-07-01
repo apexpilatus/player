@@ -208,7 +208,10 @@ int main(int prm_n, char *prm[]) {
     execl(resp_err, "resp_err", prm[1], NULL);
   if (utime(".", NULL))
     execl(resp_err, "resp_err", prm[1], NULL);
-  strcpy(rsp, "HTTP/1.1 200 OK\r\n\r\n");
+  strcpy(rsp, "HTTP/1.1 200 OK\r\n");
+  strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
+  strcat(rsp, "Cache-control: no-cache\r\n");
+  strcat(rsp, "X-Content-Type-Options: nosniff\r\n\r\n");
   write_size = write(sock, rsp, strlen(rsp));
   if (write_size != strlen(rsp))
     return 1;
