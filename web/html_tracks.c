@@ -126,7 +126,8 @@ static inline void list_tracks(char *album_dir, char *msg) {
       if (strlen(list_tmp->track) == 1)
         strcat(msg, "&nbsp;&nbsp;");
       strcat(msg, list_tmp->track);
-    }
+    } else
+      strcat(msg, "!!!!!!!! NO TRACK !!!!!!!!!");
     strcat(msg, "</td>");
     strcat(msg, "<td class=tracktitle>");
     if (list_tmp->title)
