@@ -26,7 +26,8 @@ static uint32_t off;
 static long bytes_per_sample;
 
 static inline void sort_tracks(track_list *track_first) {
-  char *file_name_tmp, *track_number_tmp;
+  char *file_name_tmp;
+  char *track_number_tmp;
   for (track_list *go_slow = track_first; go_slow && go_slow->next;
        go_slow = go_slow->next)
     for (track_list *go_fast = go_slow->next; go_fast; go_fast = go_fast->next)
@@ -41,12 +42,25 @@ static inline void sort_tracks(track_list *track_first) {
       }
 }
 
-static inline track_list *get_tracks(char *start_track) {
+static inline track_list *get_tracks_in_dir(char *url) {
+  char *album_dir;
+  char *start_track;
   DIR *dp;
   struct dirent *ep;
-  track_list *track_first = NULL, *track_tmp = NULL;
+  track_list *track_first = NULL;
+  track_list *track_tmp = NULL;
   FLAC__StreamMetadata *tags =
       FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT);
+  album_dir = strchr(url, '?');
+  if (!album_dir)
+    goto exit;
+  start_track = strchr(++album_dir, '&');
+  if (!start_track)
+    goto exit;
+  *start_track = '\0';
+  start_track++;
+  if (chdir(album_dir))
+    goto exit;
   dp = opendir(".");
   if (dp) {
     while ((ep = readdir(dp)))
@@ -79,6 +93,8 @@ static inline track_list *get_tracks(char *start_track) {
       }
     closedir(dp);
   }
+  sort_tracks(track_first);
+exit:
   return track_first;
 }
 
@@ -150,61 +166,59 @@ static inline int play_album(track_list *tracks,
   return 0;
 }
 
-int main(int prm_n, char *prm[]) {
-  int sock = strtol(prm[1], NULL, 10), card = -1;
-  ssize_t rsp_size = getpagesize(), write_size;
-  char card_name[10], *album_dir, *start_track, *rsp = malloc(rsp_size);
-  snd_pcm_t *pcm_p;
-  snd_pcm_hw_params_t *pcm_hw;
+static inline int init_alsa(snd_pcm_t **pcm_p, track_list *tracks) {
+  int card = -1;
+  char card_name[10];
   FLAC__StreamMetadata *rate =
       FLAC__metadata_object_new(FLAC__METADATA_TYPE_STREAMINFO);
-  track_list *tracks;
-  album_dir = strchr(prm[2], '?');
-  if (!album_dir)
-    execl(resp_err, "resp_err", prm[1], NULL);
-  start_track = strchr(++album_dir, '&');
-  if (!start_track)
-    execl(resp_err, "resp_err", prm[1], NULL);
-  *start_track = '\0';
-  start_track++;
-  if (chdir(album_dir))
-    execl(resp_err, "resp_err", prm[1], NULL);
-  tracks = get_tracks(start_track);
-  if (!tracks)
-    execl(resp_err, "resp_err", prm[1], NULL);
-  sort_tracks(tracks);
+  snd_pcm_hw_params_t *pcm_hw;
   if (snd_card_next(&card) || card == -1)
-    execl(resp_err, "resp_err", prm[1], NULL);
+    return 1;
   sprintf(card_name, "hw:%d,0", card);
-  if (snd_pcm_open(&pcm_p, card_name, SND_PCM_STREAM_PLAYBACK, 0))
-    execl(resp_err, "resp_err", prm[1], NULL);
+  if (snd_pcm_open(pcm_p, card_name, SND_PCM_STREAM_PLAYBACK, 0))
+    return 1;
   if (!FLAC__metadata_get_streaminfo(tracks->file_name, rate))
-    execl(resp_err, "resp_err", prm[1], NULL);
+    return 1;
   snd_pcm_hw_params_malloc(&pcm_hw);
-  snd_pcm_hw_params_any(pcm_p, pcm_hw);
-  if (snd_pcm_hw_params_test_rate(pcm_p, pcm_hw,
+  snd_pcm_hw_params_any(*pcm_p, pcm_hw);
+  if (snd_pcm_hw_params_test_rate(*pcm_p, pcm_hw,
                                   rate->data.stream_info.sample_rate, 0))
-    execl(resp_err, "resp_err", prm[1], NULL);
-  snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, rate->data.stream_info.sample_rate,
+    return 1;
+  snd_pcm_hw_params_set_rate(*pcm_p, pcm_hw, rate->data.stream_info.sample_rate,
                              0);
   if (rate->data.stream_info.bits_per_sample == 16) {
-    if (snd_pcm_hw_params_test_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S16))
-      execl(resp_err, "resp_err", prm[1], NULL);
-    snd_pcm_hw_params_set_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S16);
+    if (snd_pcm_hw_params_test_format(*pcm_p, pcm_hw, SND_PCM_FORMAT_S16))
+      return 1;
+    snd_pcm_hw_params_set_format(*pcm_p, pcm_hw, SND_PCM_FORMAT_S16);
   } else if (rate->data.stream_info.bits_per_sample == 24) {
-    if (!snd_pcm_hw_params_test_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S24_3LE)) {
-      snd_pcm_hw_params_set_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S24_3LE);
-    } else if (!snd_pcm_hw_params_test_format(pcm_p, pcm_hw,
+    if (!snd_pcm_hw_params_test_format(*pcm_p, pcm_hw,
+                                       SND_PCM_FORMAT_S24_3LE)) {
+      snd_pcm_hw_params_set_format(*pcm_p, pcm_hw, SND_PCM_FORMAT_S24_3LE);
+    } else if (!snd_pcm_hw_params_test_format(*pcm_p, pcm_hw,
                                               SND_PCM_FORMAT_S32)) {
-      snd_pcm_hw_params_set_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S32);
+      snd_pcm_hw_params_set_format(*pcm_p, pcm_hw, SND_PCM_FORMAT_S32);
       off = 1;
     } else
-      execl(resp_err, "resp_err", prm[1], NULL);
+      return 1;
   } else
-    execl(resp_err, "resp_err", prm[1], NULL);
+    return 1;
   bytes_per_sample = rate->data.stream_info.bits_per_sample / 8;
-  snd_pcm_hw_params_set_access(pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
-  if (snd_pcm_hw_params(pcm_p, pcm_hw) || snd_pcm_prepare(pcm_p))
+  snd_pcm_hw_params_set_access(*pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
+  if (snd_pcm_hw_params(*pcm_p, pcm_hw) || snd_pcm_prepare(*pcm_p))
+    return 1;
+  return 0;
+}
+
+int main(int prm_n, char *prm[]) {
+  int sock = strtol(prm[1], NULL, 10);
+  ssize_t write_size;
+  char *rsp = malloc(getpagesize());
+  snd_pcm_t *pcm_p;
+  track_list *tracks;
+  tracks = get_tracks_in_dir(prm[2]);
+  if (!tracks)
+    execl(resp_err, "resp_err", prm[1], NULL);
+  if (init_alsa(&pcm_p, tracks))
     execl(resp_err, "resp_err", prm[1], NULL);
   if (utime(".", NULL))
     execl(resp_err, "resp_err", prm[1], NULL);
