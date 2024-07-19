@@ -14,7 +14,8 @@ typedef struct meta_list_t {
 } meta_list;
 
 static inline void sort_tracks(meta_list *list_first) {
-  char *title_tmp, *track_tmp;
+  char *title_tmp;
+  char *track_tmp;
   for (meta_list *go_slow = list_first; go_slow && go_slow->next;
        go_slow = go_slow->next)
     for (meta_list *go_fast = go_slow->next; go_fast; go_fast = go_fast->next)
@@ -58,14 +59,16 @@ static inline void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
     }
 }
 
-static inline void list_tracks(char *album_dir, char *msg) {
+static inline void list_tracks(char *msg) {
   DIR *dp;
   struct dirent *ep;
-  meta_list *list_first = NULL, *list_tmp = NULL;
+  meta_list *list_first = NULL;
+  meta_list *list_tmp = NULL;
   FLAC__StreamMetadata *tags =
       FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT);
   FLAC__StreamMetadata *rate =
       FLAC__metadata_object_new(FLAC__METADATA_TYPE_STREAMINFO);
+  char *album_dir = getcwd(NULL, 0);
   dp = opendir(".");
   if (dp) {
     while ((ep = readdir(dp)))
@@ -139,17 +142,7 @@ static inline void list_tracks(char *album_dir, char *msg) {
   strcat(msg, "</table>");
 }
 
-int main(int prm_n, char *prm[]) {
-  int sock;
-  ssize_t rsp_size, write_size;
-  char *rsp, *msg, *album_dir;
-  album_dir = strchr(prm[2], '?');
-  if (!album_dir || chdir(++album_dir))
-    execl(resp_err, "resp_err", prm[1], NULL);
-  sock = strtol(prm[1], NULL, 10);
-  rsp_size = getpagesize();
-  rsp = malloc(rsp_size);
-  msg = malloc(rsp_size * 10000);
+static inline void create_html(char *msg) {
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -163,18 +156,38 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "</head>");
   strcat(msg, "<body>");
   strcat(msg, "<script>showtracks()</script>");
-  list_tracks(album_dir, msg);
+  list_tracks(msg);
   strcat(msg, "</body>");
   strcat(msg, "</html>");
-  strcpy(rsp, "HTTP/1.1 200 OK\r\n");
-  strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
-  strcat(rsp, "Cache-control: no-cache\r\n");
-  strcat(rsp, "X-Content-Type-Options: nosniff\r\n");
-  write_size = strlen(rsp);
-  sprintf(rsp + write_size, "Content-Length: %lu\r\n\r\n", strlen(msg));
-  write_size = write(sock, rsp, strlen(rsp));
+}
+
+static inline void create_header(char *hdr, unsigned long msg_len) {
+  unsigned long hdr_end;
+  strcpy(hdr, "HTTP/1.1 200 OK\r\n");
+  strcat(hdr, "Content-Type: text/html; charset=utf-8\r\n");
+  strcat(hdr, "Cache-control: no-cache\r\n");
+  strcat(hdr, "X-Content-Type-Options: nosniff\r\n");
+  hdr_end = strlen(hdr);
+  sprintf(hdr + hdr_end, "Content-Length: %lu\r\n\r\n", msg_len);
+}
+
+int main(int prm_n, char *prm[]) {
+  int sock;
+  ssize_t write_size;
+  char *hdr;
+  char *msg;
+  char *album_dir;
+  album_dir = strchr(prm[2], '?');
+  if (!album_dir || chdir(++album_dir))
+    execl(resp_err, "resp_err", prm[1], NULL);
+  sock = strtol(prm[1], NULL, 10);
+  hdr = malloc(getpagesize());
+  msg = malloc(getpagesize() * 10000);
+  create_html(msg);
+  create_header(hdr, strlen(msg));
+  write_size = write(sock, hdr, strlen(hdr));
   write_size += write(sock, msg, strlen(msg));
-  if (write_size == strlen(rsp) + strlen(msg))
+  if (write_size == strlen(hdr) + strlen(msg))
     return 0;
   else
     return 1;

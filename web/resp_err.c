@@ -5,8 +5,8 @@
 
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
-  ssize_t rsp_size = getpagesize(), write_size;
-  char *rsp = malloc(rsp_size);
+  ssize_t write_size;
+  char *rsp = malloc(getpagesize());
   sprintf(rsp, "%s\r\n%s\r\n%s\r\n\r\n", "HTTP/1.1 404 shit happens",
           "Cache-control: no-cache", "X-Content-Type-Options: nosniff");
   write_size = write(sock, rsp, strlen(rsp));

@@ -32,7 +32,8 @@ static inline void sort_albums(albums_list *album_first) {
 
 static inline albums_list *get_albums() {
   char *src_path = malloc(getpagesize());
-  albums_list *album_first = NULL, *album_tmp = NULL;
+  albums_list *album_first = NULL;
+  albums_list *album_tmp = NULL;
   DIR *dp_music;
   struct dirent *src_ep;
   struct stat stat_buf;
@@ -86,12 +87,7 @@ static inline void list_albums(char *msg) {
   }
 }
 
-int main(int prm_n, char *prm[]) {
-  int sock = strtol(prm[1], NULL, 10);
-  ssize_t rsp_size = getpagesize(), write_size;
-  char *rsp, *msg;
-  rsp = malloc(rsp_size);
-  msg = malloc(rsp_size * 10000);
+static inline void create_html(char *msg) {
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -106,15 +102,30 @@ int main(int prm_n, char *prm[]) {
   list_albums(msg);
   strcat(msg, "</body>");
   strcat(msg, "</html>");
-  strcpy(rsp, "HTTP/1.1 200 OK\r\n");
-  strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
-  strcat(rsp, "Cache-control: no-cache\r\n");
-  strcat(rsp, "X-Content-Type-Options: nosniff\r\n");
-  write_size = strlen(rsp);
-  sprintf(rsp + write_size, "Content-Length: %lu\r\n\r\n", strlen(msg));
-  write_size = write(sock, rsp, strlen(rsp));
+}
+
+static inline void create_header(char *hdr, unsigned long msg_len) {
+  unsigned long hdr_end;
+  strcpy(hdr, "HTTP/1.1 200 OK\r\n");
+  strcat(hdr, "Content-Type: text/html; charset=utf-8\r\n");
+  strcat(hdr, "Cache-control: no-cache\r\n");
+  strcat(hdr, "X-Content-Type-Options: nosniff\r\n");
+  hdr_end = strlen(hdr);
+  sprintf(hdr + hdr_end, "Content-Length: %lu\r\n\r\n", msg_len);
+}
+
+int main(int prm_n, char *prm[]) {
+  int sock = strtol(prm[1], NULL, 10);
+  ssize_t write_size;
+  char *hdr;
+  char *msg;
+  hdr = malloc(getpagesize());
+  msg = malloc(getpagesize() * 10000);
+  create_html(msg);
+  create_header(hdr, strlen(msg));
+  write_size = write(sock, hdr, strlen(hdr));
   write_size += write(sock, msg, strlen(msg));
-  if (write_size == strlen(rsp) + strlen(msg))
+  if (write_size == strlen(hdr) + strlen(msg))
     return 0;
   else
     return 1;

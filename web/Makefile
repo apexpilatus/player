@@ -42,7 +42,15 @@ data_static : Makefile data_static.c style_main.css script_main.js style_tracks.
 	xxd -i favicon192.png favicon192.c
 	clang-format -i data_static.c
 	$(CC) data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c index_html.c favicon32.c favicon192.c -o data_static $(PLAYER_DEFINES)
-	rm style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c index_html.c favicon32.c favicon192.c
+	rm style_main_css.c
+	rm script_main_js.c
+	rm style_tracks_css.c
+	rm script_tracks_js.c
+	rm style_albums_css.c
+	rm script_albums_js.c
+	rm index_html.c
+	rm favicon32.c
+	rm favicon192.c
 
 data_picture : Makefile data_picture.c
 	clang-format -i data_picture.c
