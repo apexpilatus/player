@@ -55,10 +55,14 @@ static inline track_list *get_tracks_in_dir(char *url) {
   if (!album_dir)
     goto exit;
   start_track = strchr(++album_dir, '&');
-  if (!start_track)
-    goto exit;
-  *start_track = '\0';
-  start_track++;
+  if (!start_track) {
+    start_track = malloc(2);
+    start_track[0] = '0';
+    start_track[1] = '\0';
+  } else {
+    *start_track = '\0';
+    start_track++;
+  }
   if (chdir(album_dir))
     goto exit;
   dp = opendir(".");
