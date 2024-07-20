@@ -2,15 +2,8 @@ function showtracks() {
     parent.document.getElementById("tracks").hidden = false;
 }
 
-function play(startingtrack) {
+function play(dirtrack) {
     let elem = document.getElementById("rate");
     elem.style.color = "gray";
-    fetch("play?" + startingtrack)
-        .then(resp => {
-            if (resp.status == 200) {
-                elem.style.color = "green";
-            } else {
-                elem.style.color = "red";
-            }
-        })
+    fetch("play?" + dirtrack);
 }
