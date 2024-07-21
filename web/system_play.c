@@ -55,11 +55,7 @@ static inline track_list *get_tracks_in_dir(char *url) {
   if (!album_dir)
     goto exit;
   start_track = strchr(++album_dir, '&');
-  if (!start_track) {
-    start_track = malloc(2);
-    start_track[0] = '0';
-    start_track[1] = '\0';
-  } else {
+  if (start_track) {
     *start_track = '\0';
     start_track++;
   }
@@ -73,7 +69,8 @@ static inline track_list *get_tracks_in_dir(char *url) {
           if (!strncmp("TRACKNUMBER=",
                        (char *)tags->data.vorbis_comment.comments[i].entry,
                        strlen("TRACKNUMBER="))) {
-            if (strtol((char *)(tags->data.vorbis_comment.comments[i].entry +
+            if (!start_track ||
+                strtol((char *)(tags->data.vorbis_comment.comments[i].entry +
                                 strlen("TRACKNUMBER=")),
                        NULL, 10) >= strtol(start_track, NULL, 10)) {
               if (!track_first) {
