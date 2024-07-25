@@ -11,31 +11,29 @@ function hidecontrol() {
 }
 
 function getvolume() {
-    fetch("getvolume")
-        .then(resp => {
-            if (resp.status == 200) {
-                document.getElementById("volume").innerHTML = "&#9738";
-                document.getElementById("volume").hidden = true;
-                document.getElementById("control").hidden = false;
-                document.getElementById("control").max = resp.statusText.split("_")[2];
-                document.getElementById("control").min = resp.statusText.split("_")[0];
-                document.getElementById("control").value = resp.statusText.split("_")[1];
-                timeleft = setTimeout(hidecontrol, timeout);
-            } else {
-                document.getElementById("volume").innerHTML = "&#9739";
-            }
-        })
+    fetch("getvolume").then(resp => {
+        if (resp.status == 200) {
+            document.getElementById("volume").innerHTML = "&#9738";
+            document.getElementById("volume").hidden = true;
+            document.getElementById("control").hidden = false;
+            document.getElementById("control").max = resp.statusText.split("_")[2];
+            document.getElementById("control").min = resp.statusText.split("_")[0];
+            document.getElementById("control").value = resp.statusText.split("_")[1];
+            timeleft = setTimeout(hidecontrol, timeout);
+        } else {
+            document.getElementById("volume").innerHTML = "&#9739";
+        }
+    })
 }
 
 function setvolume() {
-    fetch("setvolume&" + document.getElementById("control").value)
-        .then(resp => {
-            if (resp.status == 200) {
-                clearTimeout(timeleft);
-                timeleft = setTimeout(hidecontrol, timeout);
-            } else {
-                hidecontrol();
-                document.getElementById("volume").innerHTML = "&#9739";
-            }
-        })
+    fetch("setvolume&" + document.getElementById("control").value).then(resp => {
+        if (resp.status == 200) {
+            clearTimeout(timeleft);
+            timeleft = setTimeout(hidecontrol, timeout);
+        } else {
+            hidecontrol();
+            document.getElementById("volume").innerHTML = "&#9739";
+        }
+    })
 }
