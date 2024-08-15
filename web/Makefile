@@ -38,10 +38,11 @@ data_static : Makefile data_static.c style_main.css script_main.js style_tracks.
 	xxd -i style_albums.css style_albums_css.c
 	xxd -i script_albums.js script_albums_js.c
 	xxd -i index.html index_html.c
-	xxd -i favicon32.png favicon32.c
-	xxd -i favicon192.png favicon192.c
+	xxd -i favicon.ico favicon.c
+	xxd -i favicon152.png favicon152.c
+	xxd -i favicon180.png favicon180.c
 	clang-format -i data_static.c
-	$(CC) data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c index_html.c favicon32.c favicon192.c -o data_static $(PLAYER_DEFINES)
+	$(CC) data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_albums_css.c script_albums_js.c index_html.c favicon.c favicon152.c favicon180.c -o data_static $(PLAYER_DEFINES)
 	rm style_main_css.c
 	rm script_main_js.c
 	rm style_tracks_css.c
@@ -49,8 +50,9 @@ data_static : Makefile data_static.c style_main.css script_main.js style_tracks.
 	rm style_albums_css.c
 	rm script_albums_js.c
 	rm index_html.c
-	rm favicon32.c
-	rm favicon192.c
+	rm favicon.c
+	rm favicon152.c
+	rm favicon180.c
 
 data_picture : Makefile data_picture.c
 	clang-format -i data_picture.c
