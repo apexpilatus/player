@@ -18,10 +18,10 @@ function hidecontrol() {
 }
 
 function setcontrol(controlElem, resp) {
-            controlElem.hidden = false;
-            controlElem.max = resp.statusText.split("_")[2];
-            controlElem.min = resp.statusText.split("_")[0];
-            controlElem.value = resp.statusText.split("_")[1];
+    controlElem.hidden = false;
+    controlElem.max = resp.statusText.split("_")[2];
+    controlElem.min = resp.statusText.split("_")[0];
+    controlElem.value = resp.statusText.split("_")[1];
 }
 
 function getvolume() {
@@ -57,9 +57,9 @@ function setvolume(control1, control2) {
 }
 
 function setvolume1() {
-setvolume(control1Elem, control2Elem);
+    setvolume(control1Elem, control2Elem);
 }
 
 function setvolume2() {
-setvolume(control2Elem, control1Elem);
+    setvolume(control2Elem, control1Elem);
 }
