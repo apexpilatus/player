@@ -1,13 +1,27 @@
+const volumeElem = document.getElementById("volume");
+const powerElem = document.getElementById("poweroff");
+const control1Elem = document.getElementById("control1");
+const control2Elem = document.getElementById("control2");
+const albumsElem = document.getElementById("albums");
 const timeout = 3000;
 let timeId = null;
 
 function getalbums() {
-    document.getElementById("albums").src = window.location.href + "albums";
+    albumsElem.src = window.location.href + "albums";
 }
 
 function hidecontrol() {
-    document.getElementById("volume").hidden = false;
-    document.getElementById("control").hidden = true;
+    volumeElem.hidden = false;
+    powerElem.hidden = false;
+    control1Elem.hidden = true;
+    control2Elem.hidden = true;
+}
+
+function setcontrol(controlElem, resp) {
+            controlElem.hidden = false;
+            controlElem.max = resp.statusText.split("_")[2];
+            controlElem.min = resp.statusText.split("_")[0];
+            controlElem.value = resp.statusText.split("_")[1];
 }
 
 function getvolume() {
@@ -16,27 +30,36 @@ function getvolume() {
             if (timeId != null) {
                 clearTimeout(timeId);
             }
-            document.getElementById("volume").innerHTML = "&#9738";
-            document.getElementById("volume").hidden = true;
-            document.getElementById("control").hidden = false;
-            document.getElementById("control").max = resp.statusText.split("_")[2];
-            document.getElementById("control").min = resp.statusText.split("_")[0];
-            document.getElementById("control").value = resp.statusText.split("_")[1];
+            volumeElem.innerHTML = "&#9738";
+            volumeElem.hidden = true;
+            powerElem.hidden = true;
+            setcontrol(control1Elem, resp);
+            setcontrol(control2Elem, resp);
             timeId = setTimeout(hidecontrol, timeout);
         } else {
-            document.getElementById("volume").innerHTML = "&#9739";
+            volumeElem.innerHTML = "&#9739";
         }
     })
 }
 
-function setvolume() {
-    fetch("setvolume&" + document.getElementById("control").value).then(resp => {
+function setvolume(control1, control2) {
+    let level = control1.value;
+    fetch("setvolume&" + level).then(resp => {
         if (resp.status == 200) {
+            control2.value = level;
             clearTimeout(timeId);
             timeId = setTimeout(hidecontrol, timeout);
         } else {
             hidecontrol();
-            document.getElementById("volume").innerHTML = "&#9739";
+            volumeElem.innerHTML = "&#9739";
         }
     })
+}
+
+function setvolume1() {
+setvolume(control1Elem, control2Elem);
+}
+
+function setvolume2() {
+setvolume(control2Elem, control1Elem);
 }

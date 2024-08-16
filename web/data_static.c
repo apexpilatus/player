@@ -29,7 +29,6 @@ unsigned int data_len;
 
 static inline int select_data(char *url, char *rsp) {
   unsigned long hdr_end;
-  printf("%s\n", url);
   if (!strcmp("/", url)) {
     data = index_html;
     data_len = index_html_len;

@@ -6,7 +6,6 @@
     <meta name=viewport content="width=device-width, initial-scale=1.0">
     <title>player</title>
     <link rel=stylesheet href=style_main.css>
-    <script src=script_main.js></script>
 </head>
 
 <body>
@@ -14,7 +13,9 @@
     <iframe id=tracks title=tracks></iframe>
     <button type=button id=poweroff onclick=fetch("poweroff")>&#9769;</button>
     <button type=button id=volume onclick=getvolume()>&#9738</button>
-    <input hidden id=control type=range oninput=setvolume() title=volume>
+    <input hidden id=control1 type=range oninput=setvolume1() title=volume>
+    <input hidden id=control2 type=range oninput=setvolume2() title=volume>
+    <script src=script_main.js></script>
     <script>getalbums()</script>
 </body>
 
