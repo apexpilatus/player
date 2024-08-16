@@ -42,16 +42,16 @@ button {
     bottom: 5%;
 }
 
-#control1 {
+#level {
     position: fixed;
     left: 5%;
     top: 5%;
     width: 50%;
 }
 
-#control2 {
+#control {
     position: fixed;
-    left: 10%;
+    left: 5%;
     bottom: 5%;
-    width: 80%;
+    width: 85%;
 }

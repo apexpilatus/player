@@ -1,7 +1,7 @@
 const volumeElem = document.getElementById("volume");
 const powerElem = document.getElementById("poweroff");
-const control1Elem = document.getElementById("control1");
-const control2Elem = document.getElementById("control2");
+const controlElem = document.getElementById("control");
+const levelElem = document.getElementById("level");
 const albumsElem = document.getElementById("albums");
 const timeout = 3000;
 let timeId = null;
@@ -13,15 +13,8 @@ function getalbums() {
 function hidecontrol() {
     volumeElem.hidden = false;
     powerElem.hidden = false;
-    control1Elem.hidden = true;
-    control2Elem.hidden = true;
-}
-
-function setcontrol(controlElem, resp) {
-    controlElem.hidden = false;
-    controlElem.max = resp.statusText.split("_")[2];
-    controlElem.min = resp.statusText.split("_")[0];
-    controlElem.value = resp.statusText.split("_")[1];
+    controlElem.hidden = true;
+    levelElem.hidden = true;
 }
 
 function getvolume() {
@@ -30,11 +23,16 @@ function getvolume() {
             if (timeId != null) {
                 clearTimeout(timeId);
             }
-            volumeElem.innerHTML = "&#9738";
             volumeElem.hidden = true;
+            volumeElem.innerHTML = "&#9738";
             powerElem.hidden = true;
-            setcontrol(control1Elem, resp);
-            setcontrol(control2Elem, resp);
+            controlElem.hidden = false;
+            controlElem.max = resp.statusText.split("_")[2];
+            controlElem.min = resp.statusText.split("_")[0];
+            controlElem.value = resp.statusText.split("_")[1];
+            levelElem.hidden = false;
+            levelElem.max = resp.statusText.split("_")[2];
+            levelElem.value = resp.statusText.split("_")[1];
             timeId = setTimeout(hidecontrol, timeout);
         } else {
             volumeElem.innerHTML = "&#9739";
@@ -42,11 +40,11 @@ function getvolume() {
     })
 }
 
-function setvolume(control1, control2) {
-    let level = control1.value;
+function setvolume() {
+    let level = controlElem.value;
     fetch("setvolume&" + level).then(resp => {
         if (resp.status == 200) {
-            control2.value = level;
+            levelElem.value = level;
             clearTimeout(timeId);
             timeId = setTimeout(hidecontrol, timeout);
         } else {
@@ -54,12 +52,4 @@ function setvolume(control1, control2) {
             volumeElem.innerHTML = "&#9739";
         }
     })
-}
-
-function setvolume1() {
-    setvolume(control1Elem, control2Elem);
-}
-
-function setvolume2() {
-    setvolume(control2Elem, control1Elem);
 }
