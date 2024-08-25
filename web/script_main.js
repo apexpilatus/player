@@ -7,7 +7,7 @@ const timeout = 3000;
 let timeId = null;
 
 function getalbums() {
-    albumsElem.src = window.location.href + "albums";
+    albumsElem.src = window.location.href + "albums?" + new Date().getTime();
 }
 
 function hidecontrol() {
