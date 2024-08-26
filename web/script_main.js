@@ -54,6 +54,6 @@ function setvolume() {
     })
 }
 
-function setdate(){
+function setdate() {
     fetch("setdate?" + new Date().getTime());
 }
