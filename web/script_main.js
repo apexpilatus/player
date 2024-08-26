@@ -55,5 +55,9 @@ function setvolume() {
 }
 
 function setdate() {
-    fetch("setdate?" + new Date().getTime());
+    fetch("setdate?" + new Date().getTime()).then(resp => {
+        if (resp.status != 200) {
+            window.alert("time was not updated");
+        }
+    });
 }
