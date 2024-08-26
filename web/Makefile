@@ -9,12 +9,13 @@ PLAYER_DEFINES += -D data_picture=\"$(PLAYER_PATH)/data_picture\"
 PLAYER_DEFINES += -D system_poweroff=\"$(PLAYER_PATH)/system_poweroff\"
 PLAYER_DEFINES += -D system_play=\"$(PLAYER_PATH)/system_play\"
 PLAYER_DEFINES += -D system_volume=\"$(PLAYER_PATH)/system_volume\"
+PLAYER_DEFINES += -D system_setdate=\"$(PLAYER_PATH)/system_setdate\"
 ifdef init
 PLAYER_DEFINES += -D PLAYER_AS_INIT
 endif
 CC := clang -O2
 
-web : Makefile web.c html_tracks html_albums resp_err data_static data_picture system_play system_volume system_poweroff
+web : Makefile web.c html_tracks html_albums resp_err data_static data_picture system_play system_volume system_poweroff system_setdate
 	clang-format -i web.c
 	$(CC) web.c -o web $(PLAYER_DEFINES)
 
@@ -69,6 +70,10 @@ system_volume : Makefile system_volume.c
 system_poweroff : Makefile system_poweroff.c
 	clang-format -i system_poweroff.c
 	$(CC) system_poweroff.c -o system_poweroff $(PLAYER_DEFINES)
+
+system_setdate : Makefile system_setdate.c
+	clang-format -i system_setdate.c
+	$(CC) system_setdate.c -o system_setdate $(PLAYER_DEFINES)
 
 .PHONY: clean
 clean:

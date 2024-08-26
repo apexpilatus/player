@@ -7,7 +7,7 @@ const timeout = 3000;
 let timeId = null;
 
 function getalbums() {
-    albumsElem.src = window.location.href + "albums?" + new Date().getTime();
+    albumsElem.src = window.location.href + "albums";
 }
 
 function hidecontrol() {
@@ -52,4 +52,8 @@ function setvolume() {
             volumeElem.innerHTML = "&#9739";
         }
     })
+}
+
+function setdate(){
+    fetch("setdate?" + new Date().getTime());
 }

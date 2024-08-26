@@ -50,15 +50,6 @@ static inline void selector(int sock) {
     if (!pid)
       execl(html_tracks, "html_tracks", sock_txt, url, NULL);
   } else if (!strncmp("/albums", url, strlen("/albums"))) {
-    char *browser_date;
-    browser_date = strchr(url, '?');
-    if (browser_date) {
-      browser_date++;
-      if (strlen(browser_date) > 3)
-        *(browser_date + strlen(browser_date) - 3) = '\0';
-      struct timespec date = {strtol(browser_date, NULL, 10), 0};
-      clock_settime(CLOCK_REALTIME, &date);
-    }
     pid = fork();
     if (!pid)
       execl(html_albums, "html_albums", sock_txt, NULL);
@@ -92,6 +83,11 @@ static inline void selector(int sock) {
         execl(resp_err, "resp_err", sock_txt, NULL);
       else
         execl(system_poweroff, "system_poweroff", sock_txt, NULL);
+    }
+  } else if (!strncmp("/setdate", url, strlen("/setdate"))) {
+    pid = fork();
+    if (!pid) {
+      execl(system_setdate, "system_setdate", sock_txt, url, NULL);
     }
   } else {
     pid = fork();
