@@ -103,11 +103,16 @@ FLAC__StreamDecoderWriteStatus
 write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
                const FLAC__int32 *const buffer[], void *client_data) {
   snd_pcm_t *pcm_p = (snd_pcm_t *)client_data;
-  snd_pcm_sframes_t avail_frames, commitres;
+  snd_pcm_sframes_t avail_frames;
+  snd_pcm_sframes_t commitres;
   const snd_pcm_channel_area_t *areas;
-  snd_pcm_uframes_t offset, frames, cpy_count;
+  snd_pcm_uframes_t offset;
+  snd_pcm_uframes_t frames;
+  snd_pcm_uframes_t cpy_count;
   uint32_t blocksize = frame->header.blocksize;
-  char channel, channels = 2, *buf_tmp[channels];
+  char channel;
+  char channels = 2;
+  char *buf_tmp[channels];
   while ((avail_frames = snd_pcm_avail_update(pcm_p)) < blocksize)
     if (avail_frames < 0)
       return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
