@@ -3,26 +3,26 @@
 #include <string.h>
 #include <unistd.h>
 
-extern unsigned char index_html[];
-extern unsigned char style_main_css[];
-extern unsigned char script_main_js[];
-extern unsigned char style_tracks_css[];
-extern unsigned char script_tracks_js[];
-extern unsigned char style_albums_css[];
-extern unsigned char script_albums_js[];
-extern unsigned char favicon_ico[];
-extern unsigned char favicon152_png[];
-extern unsigned char favicon180_png[];
-extern unsigned int index_html_len;
-extern unsigned int style_main_css_len;
-extern unsigned int script_main_js_len;
-extern unsigned int style_tracks_css_len;
-extern unsigned int script_tracks_js_len;
-extern unsigned int style_albums_css_len;
-extern unsigned int script_albums_js_len;
-extern unsigned int favicon_ico_len;
-extern unsigned int favicon152_png_len;
-extern unsigned int favicon180_png_len;
+extern unsigned char static_style_main_css[];
+extern unsigned char static_script_main_js[];
+extern unsigned char static_style_tracks_css[];
+extern unsigned char static_script_tracks_js[];
+extern unsigned char static_style_albums_css[];
+extern unsigned char static_script_albums_js[];
+extern unsigned char static_index_html[];
+extern unsigned char static_favicon_ico[];
+extern unsigned char static_favicon152_png[];
+extern unsigned char static_favicon180_png[];
+extern unsigned int static_style_main_css_len;
+extern unsigned int static_script_main_js_len;
+extern unsigned int static_style_tracks_css_len;
+extern unsigned int static_script_tracks_js_len;
+extern unsigned int static_style_albums_css_len;
+extern unsigned int static_script_albums_js_len;
+extern unsigned int static_index_html_len;
+extern unsigned int static_favicon_ico_len;
+extern unsigned int static_favicon152_png_len;
+extern unsigned int static_favicon180_png_len;
 
 unsigned char *data;
 unsigned int data_len;
@@ -30,62 +30,62 @@ unsigned int data_len;
 static inline int select_data(char *url, char *rsp) {
   unsigned long hdr_end;
   if (!strcmp("/", url)) {
-    data = index_html;
-    data_len = index_html_len;
+    data = static_index_html;
+    data_len = static_index_html_len;
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
             "Content-Type: text/html; charset=utf-8",
             "Cache-control: no-cache");
   } else if (!strcmp("/favicon.ico", url)) {
-    data = favicon_ico;
-    data_len = favicon_ico_len;
+    data = static_favicon_ico;
+    data_len = static_favicon_ico_len;
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
             "Content-Type: image/x-icon",
             "Cache-control: max-age=31536000, immutable");
   } else if (!strcmp("/apple-touch-icon-precomposed.png", url)) {
-    data = favicon152_png;
-    data_len = favicon152_png_len;
+    data = static_favicon152_png;
+    data_len = static_favicon152_png_len;
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
             "Content-Type: image/png",
             "Cache-control: max-age=31536000, immutable");
   } else if (!strcmp("/apple-touch-icon.png", url)) {
-    data = favicon180_png;
-    data_len = favicon180_png_len;
+    data = static_favicon180_png;
+    data_len = static_favicon180_png_len;
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
             "Content-Type: image/png",
             "Cache-control: max-age=31536000, immutable");
   } else if (!strcmp("/style_main.css", url)) {
-    data = style_main_css;
-    data_len = style_main_css_len;
+    data = static_style_main_css;
+    data_len = static_style_main_css_len;
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
             "Content-Type: text/css; charset=utf-8",
             "Cache-control: max-age=31536000, immutable");
   } else if (!strcmp("/style_tracks.css", url)) {
-    data = style_tracks_css;
-    data_len = style_tracks_css_len;
+    data = static_style_tracks_css;
+    data_len = static_style_tracks_css_len;
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
             "Content-Type: text/css; charset=utf-8",
             "Cache-control: max-age=31536000, immutable");
   } else if (!strcmp("/style_albums.css", url)) {
-    data = style_albums_css;
-    data_len = style_albums_css_len;
+    data = static_style_albums_css;
+    data_len = static_style_albums_css_len;
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
             "Content-Type: text/css; charset=utf-8",
             "Cache-control: max-age=31536000, immutable");
   } else if (!strcmp("/script_main.js", url)) {
-    data = script_main_js;
-    data_len = script_main_js_len;
+    data = static_script_main_js;
+    data_len = static_script_main_js_len;
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
             "Content-Type: text/javascript; charset=utf-8",
             "Cache-control: max-age=31536000, immutable");
   } else if (!strcmp("/script_tracks.js", url)) {
-    data = script_tracks_js;
-    data_len = script_tracks_js_len;
+    data = static_script_tracks_js;
+    data_len = static_script_tracks_js_len;
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
             "Content-Type: text/javascript; charset=utf-8",
             "Cache-control: max-age=31536000, immutable");
   } else if (!strcmp("/script_albums.js", url)) {
-    data = script_albums_js;
-    data_len = script_albums_js_len;
+    data = static_script_albums_js;
+    data_len = static_script_albums_js_len;
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
             "Content-Type: text/javascript; charset=utf-8",
             "Cache-control: max-age=31536000, immutable");

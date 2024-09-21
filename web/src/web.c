@@ -61,7 +61,7 @@ static inline void selector(int sock) {
     }
     player_pid = fork();
     if (!player_pid)
-      execl(system_play, "system_play", sock_txt, url, NULL);
+      execl(system_play_flac, "system_play_flac", sock_txt, url, NULL);
     if (player_pid > 0)
       setpriority(PRIO_PROCESS, player_pid, PRIO_MIN);
   } else if (!(strcmp("/getvolume", url) &&
