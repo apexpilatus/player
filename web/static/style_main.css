@@ -27,8 +27,7 @@ button {
     font-weight: bold;
     font-size: 20px;
     text-align: center;
-    padding-left: 10px;
-    padding-right: 10px;
+    width: 60px;
     border-radius: 15%;
 }
 
@@ -39,6 +38,11 @@ button {
 
 #volume {
     right: 5%;
+    bottom: 5%;
+}
+
+#getcd {
+    left: 5%;
     bottom: 5%;
 }
 

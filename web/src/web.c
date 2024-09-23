@@ -14,7 +14,7 @@ static char *req;
 static volatile pid_t player_pid = -1;
 static volatile pid_t mixer_pid = -1;
 
-int kill_zombies(void *prm) {
+static int kill_zombies(void *prm) {
   pid_t pid;
   while (1) {
     pid = wait(NULL);

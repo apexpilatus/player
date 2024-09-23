@@ -1,5 +1,6 @@
 const volumeElem = document.getElementById("volume");
 const powerElem = document.getElementById("poweroff");
+const getcdElem = document.getElementById("getcd");
 const controlElem = document.getElementById("control");
 const levelElem = document.getElementById("level");
 const albumsElem = document.getElementById("albums");
@@ -13,6 +14,7 @@ function getalbums() {
 function hidecontrol() {
     volumeElem.hidden = false;
     powerElem.hidden = false;
+    getcdElem.hidden = false;
     controlElem.hidden = true;
     levelElem.hidden = true;
 }
@@ -26,6 +28,7 @@ function getvolume() {
             volumeElem.hidden = true;
             volumeElem.innerHTML = "&#9738";
             powerElem.hidden = true;
+            getcdElem.hidden = true;
             controlElem.hidden = false;
             controlElem.max = resp.statusText.split("_")[2];
             controlElem.min = resp.statusText.split("_")[0];
