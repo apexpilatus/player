@@ -18,6 +18,7 @@ body {
     width: 55%;
     height: 70%;
     border-style: none;
+    border-radius: 5%;
 }
 
 button {

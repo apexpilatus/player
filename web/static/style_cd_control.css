@@ -1,0 +1,27 @@
+body {
+    background-color: #cec9bf;
+}
+
+button {
+    position: fixed;
+    color: red;
+    background-color: #cec5b7;
+    font-size: 25px;
+    text-align: center;
+    border-radius: 15%;
+}
+
+#cdplay {
+    left: 55%;
+    bottom: 40%;
+}
+
+#cdnext {
+    left: 55%;
+    bottom: 10%;
+}
+
+#cdprev {
+    right: 60%;
+    bottom: 10%;
+}

@@ -25,7 +25,8 @@ function gettracks(album) {
         })
     } else {
         current = album.slice();
-        tracksElem.hidden = true;
-        tracksElem.src = parent.window.location.href + "tracks?" + album;
     }
+    tracksElem.hidden = true;
+    tracksElem.style.borderStyle = "none";
+    tracksElem.src = parent.window.location.href + "tracks?" + album;
 }

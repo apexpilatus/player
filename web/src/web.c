@@ -49,7 +49,11 @@ static inline void selector(int sock) {
     pid = fork();
     if (!pid)
       execl(html_tracks, "html_tracks", sock_txt, url, NULL);
-  } else if (!strncmp("/albums", url, strlen("/albums"))) {
+  } else if (!strcmp("/cdcontrol", url)) {
+    pid = fork();
+    if (!pid)
+      execl(html_cd_control, "html_cd_control", sock_txt, NULL);
+  } else if (!strcmp("/albums", url)) {
     pid = fork();
     if (!pid)
       execl(html_albums, "html_albums", sock_txt, NULL);

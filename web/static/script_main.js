@@ -4,6 +4,7 @@ const getcdElem = document.getElementById("getcd");
 const controlElem = document.getElementById("control");
 const levelElem = document.getElementById("level");
 const albumsElem = document.getElementById("albums");
+const tracksElem = document.getElementById("tracks");
 const timeout = 3000;
 let timeId = null;
 
@@ -63,4 +64,13 @@ function setdate() {
             window.alert("time was not updated");
         }
     });
+}
+
+function getcd() {
+    tracksElem.hidden = true;
+    tracksElem.src = parent.window.location.href + "cdcontrol";
+}
+
+function poweroff() {
+    fetch("poweroff");
 }
