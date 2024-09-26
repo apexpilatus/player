@@ -18,7 +18,7 @@ function gettracks(album) {
                 }
             }
         })
-        fetch("play?" + album).then(resp => {
+        fetch("playflac?" + album).then(resp => {
             if (resp.status == 200) {
                 location.reload();
             }

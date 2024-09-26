@@ -117,7 +117,7 @@ static inline void list_tracks(char *msg) {
   strcat(msg, "<table>");
   list_tmp = list_first;
   while (list_tmp) {
-    strcat(msg, "<tr onclick=play(\"");
+    strcat(msg, "<tr onclick=playflac(\"");
     strcat(msg, album_dir);
     if (list_tmp->track) {
       strcat(msg, "&");

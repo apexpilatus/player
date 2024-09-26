@@ -6,7 +6,7 @@ function showtracks() {
     tracksElem.hidden = false;
 }
 
-function play(dirtrack) {
+function playflac(dirtrack) {
     fetch("getvolume").then(resp => {
         if (resp.status == 200) {
             if (resp.statusText.split("_")[1] == resp.statusText.split("_")[2]) {
@@ -20,5 +20,5 @@ function play(dirtrack) {
             }
         }
     })
-    fetch("play?" + dirtrack);
+    fetch("playflac?" + dirtrack);
 }

@@ -57,7 +57,7 @@ static inline void selector(int sock) {
     pid = fork();
     if (!pid)
       execl(html_albums, "html_albums", sock_txt, NULL);
-  } else if (!strncmp("/play", url, strlen("/play"))) {
+  } else if (!strncmp("/playflac", url, strlen("/playflac"))) {
     if (player_pid > 0) {
       kill(player_pid, SIGTERM);
       while (player_pid > 0)
@@ -66,6 +66,17 @@ static inline void selector(int sock) {
     player_pid = fork();
     if (!player_pid)
       execl(system_play_flac, "system_play_flac", sock_txt, url, NULL);
+    if (player_pid > 0)
+      setpriority(PRIO_PROCESS, player_pid, PRIO_MIN);
+  } else if (!strcmp("/cdplay", url)) {
+    if (player_pid > 0) {
+      kill(player_pid, SIGTERM);
+      while (player_pid > 0)
+        ;
+    }
+    player_pid = fork();
+    if (!player_pid)
+      execl(system_play_cd, "system_play_cd", sock_txt, NULL);
     if (player_pid > 0)
       setpriority(PRIO_PROCESS, player_pid, PRIO_MIN);
   } else if (!(strcmp("/getvolume", url) &&
