@@ -29,9 +29,9 @@ static void callback(long inpos, int function) {}
 static int cd_reader(void *prm) {
   cdrom_drive *d = prm;
   data_list volatile *data_new = NULL;
-  data_list volatile *data_pv = data_first;
   long cursor;
   long lastsector;
+  int16_t *readbuf;
   cdrom_paranoia *p = paranoia_init(d);
   paranoia_modeset(p, PARANOIA_MODE_FULL ^ PARANOIA_MODE_NEVERSKIP);
   for (int i = first_track; i <= d->tracks; i++)
@@ -39,32 +39,28 @@ static int cd_reader(void *prm) {
       paranoia_seek(p, cursor = cdda_track_firstsector(d, i), SEEK_SET);
       lastsector = cdda_track_lastsector(d, i);
       while (cursor <= lastsector) {
-        if (data_new) {
-          data_pv->next = data_new;
-          data_pv = data_new;
-          data_new = malloc(sizeof(data_list));
-          data_new->next = NULL;
-          data_new->buf = malloc(CD_FRAMESIZE_RAW);
-        } else {
-          data_new = data_pv;
-        }
-        int16_t *readbuf = paranoia_read_limited(p, callback, 5);
+        readbuf = paranoia_read_limited(p, callback, 5);
         if (readbuf == NULL) {
           if (errno == EBADF || errno == ENOMEDIUM) {
             data_first = NULL;
             return 1;
           }
-          if (data_pv != data_new) {
-            data_pv->next = data_new;
-            data_pv = data_new;
-          }
-          data_new = NULL;
         } else {
+          if (!data_new) {
+            data_new = data_first;
+          } else {
+            data_new->next = malloc(sizeof(data_list));
+            data_new->next->next = NULL;
+            data_new = data_new->next;
+            data_new->buf = malloc(CD_FRAMESIZE_RAW);
+          }
           memcpy(data_new->buf, readbuf, CD_FRAMESIZE_RAW);
         }
         cursor++;
       }
     }
+  paranoia_free(p);
+  cdda_close(d);
   return 0;
 }
 
