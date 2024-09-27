@@ -1,9 +1,10 @@
 #include <cdda_interface.h>
 #include <cdda_paranoia.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <threads.h>
 #include <unistd.h>
-#include <errno.h>
 
 // clang-format off
 #include <alsa/global.h>
@@ -14,28 +15,80 @@
 #include <alsa/pcm.h>
 // clang-format on
 
+typedef struct data_list_t {
+  struct data_list_t volatile *next;
+  char *buf;
+} data_list;
+
+static data_list volatile *volatile data_first;
+static data_list volatile *volatile data_cur;
+static int volatile first_track;
+
 static void callback(long inpos, int function) {}
 
-static inline int play_cd(cdrom_drive *d, snd_pcm_t *pcm_p) {
+static int cd_reader(void *prm) {
+  cdrom_drive *d = prm;
+  data_list volatile *data_new = NULL;
+  data_list volatile *data_pv = data_first;
   long cursor;
   long lastsector;
-  int16_t *readbuf;
   cdrom_paranoia *p = paranoia_init(d);
   paranoia_modeset(p, PARANOIA_MODE_FULL ^ PARANOIA_MODE_NEVERSKIP);
-  for (int i = 1; i <= d->tracks; i++)
+  for (int i = first_track; i <= d->tracks; i++)
     if (cdda_track_audiop(d, i)) {
       paranoia_seek(p, cursor = cdda_track_firstsector(d, i), SEEK_SET);
       lastsector = cdda_track_lastsector(d, i);
       while (cursor <= lastsector) {
-        readbuf = paranoia_read_limited(p, callback, 5);
-        if (readbuf == NULL) {
-          if (errno == EBADF || errno == ENOMEDIUM)
-            return 1;
+        if (data_new) {
+          data_pv->next = data_new;
+          data_pv = data_new;
+          data_new = malloc(sizeof(data_list));
+          data_new->next = NULL;
+          data_new->buf = malloc(CD_FRAMESIZE_RAW);
         } else {
-          snd_pcm_mmap_writei(pcm_p, readbuf, CD_FRAMESIZE_RAW / 4);
+          data_new = data_pv;
         }
+        int16_t *readbuf = paranoia_read_limited(p, callback, 5);
+        if (readbuf == NULL) {
+          if (errno == EBADF || errno == ENOMEDIUM) {
+            data_first = NULL;
+            return 1;
+          }
+          if (data_pv != data_new) {
+            data_pv->next = data_new;
+            data_pv = data_new;
+          }
+          data_new = NULL;
+        } else {
+          memcpy(data_new->buf, readbuf, CD_FRAMESIZE_RAW);
+        }
+        cursor++;
       }
     }
+  return 0;
+}
+
+static inline int cd_player(snd_pcm_t *pcm_p) {
+  long data_size;
+  while (data_first && data_size <= CD_FRAMESIZE_RAW) {
+    data_cur = data_first;
+    data_size = 0;
+    while (data_cur) {
+      data_size += CD_FRAMESIZE_RAW / 4;
+      data_cur = data_cur->next;
+    }
+  }
+  if (!data_first)
+    return 1;
+  data_cur = data_first;
+  while (data_first && data_cur) {
+    snd_pcm_mmap_writei(pcm_p, data_cur->buf, CD_FRAMESIZE_RAW / 4);
+    data_cur = data_cur->next;
+  }
+  if (!data_first)
+    return 1;
+  snd_pcm_drain(pcm_p);
+  return 0;
 }
 
 static inline int init_alsa(snd_pcm_t **pcm_p) {
@@ -52,6 +105,8 @@ static inline int init_alsa(snd_pcm_t **pcm_p) {
   snd_pcm_hw_params_set_rate(*pcm_p, pcm_hw, 44100, 0);
   snd_pcm_hw_params_set_format(*pcm_p, pcm_hw, SND_PCM_FORMAT_S16);
   snd_pcm_hw_params_set_access(*pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
+  snd_pcm_hw_params_set_buffer_size(*pcm_p, pcm_hw,
+                                    (snd_pcm_uframes_t)CD_FRAMESIZE_RAW);
   if (snd_pcm_hw_params(*pcm_p, pcm_hw) || snd_pcm_prepare(*pcm_p))
     return 1;
   return 0;
@@ -60,9 +115,11 @@ static inline int init_alsa(snd_pcm_t **pcm_p) {
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   ssize_t write_size;
+  char *url_track;
   char *rsp = malloc(getpagesize());
   cdrom_drive *d = cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL);
   snd_pcm_t *pcm_p;
+  thrd_t thr;
   if (!d || cdda_open(d) || init_alsa(&pcm_p))
     execl(resp_err, "resp_err", prm[1], NULL);
   strcpy(rsp, "HTTP/1.1 200 OK\r\n");
@@ -73,5 +130,17 @@ int main(int prm_n, char *prm[]) {
   if (write_size != strlen(rsp))
     return 1;
   close(sock);
-  return play_cd(d, pcm_p);
+  url_track = strchr(prm[2], '?');
+  if (!url_track)
+    first_track = 1;
+  else {
+    url_track++;
+    first_track = strtol(url_track, NULL, 10);
+  }
+  data_first = malloc(sizeof(data_list));
+  data_first->next = NULL;
+  data_first->buf = malloc(CD_FRAMESIZE_RAW);
+  if (thrd_create(&thr, cd_reader, d) != thrd_success)
+    return 1;
+  return cd_player(pcm_p);
 }

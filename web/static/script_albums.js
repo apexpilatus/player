@@ -27,6 +27,5 @@ function gettracks(album) {
         current = album.slice();
     }
     tracksElem.hidden = true;
-    tracksElem.style.borderStyle = "none";
     tracksElem.src = parent.window.location.href + "tracks?" + album;
 }

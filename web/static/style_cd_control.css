@@ -1,27 +1,9 @@
-body {
-    background-color: #cec9bf;
+div {
+    position: relative;
+    right: 25%;
 }
 
-button {
-    position: fixed;
-    color: red;
-    background-color: #cec5b7;
-    font-size: 25px;
-    text-align: center;
-    border-radius: 15%;
-}
-
-#cdplay {
-    right: 60%;
-    bottom: 10%;
-}
-
-#cdnext {
-    left: 55%;
-    bottom: 25%;
-}
-
-#cdprev {
-    right: 60%;
-    bottom: 25%;
+p {
+    text-align: right;
+    font-size: 20px;
 }

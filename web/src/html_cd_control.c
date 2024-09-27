@@ -6,6 +6,7 @@
 
 static inline void create_html(char *msg) {
   cdrom_drive *d;
+  unsigned long msg_end;
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -21,12 +22,17 @@ static inline void create_html(char *msg) {
   strcat(msg, "<script>showtracks()</script>");
   d = cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL);
   if (d && !cdda_open(d)) {
-    strcat(msg, "<button type=button id=cdplay "
-                "onclick=fetch(\"cdplay\")>&#10148</button>");
-    strcat(msg, "<button type=button id=cdnext "
-                "onclick=fetch(\"cdnext\")>&#8696</button>");
-    strcat(msg, "<button type=button id=cdprev "
-                "onclick=fetch(\"cdprev\")>&#8695</button>");
+    strcat(msg, "<div>");
+    for (int i = 1; i <= d->tracks; i++) {
+      strcat(msg, "<p onclick=fetch(\"cdplay?");
+      msg_end = strlen(msg);
+      sprintf(msg + msg_end, "%d", i);
+      strcat(msg, "\")>");
+      msg_end = strlen(msg);
+      sprintf(msg + msg_end, "%d", i);
+      strcat(msg, "</p>");
+    }
+    strcat(msg, "</div>");
   }
   strcat(msg, "</body>");
   strcat(msg, "</html>");
