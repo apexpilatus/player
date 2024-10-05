@@ -20,7 +20,7 @@ function gettracks(album) {
         })
         fetch("playflac?" + album).then(resp => {
             if (resp.status == 200) {
-                location.reload();
+                window.location.assign(window.location.href);
             }
         })
     } else {

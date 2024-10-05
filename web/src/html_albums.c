@@ -19,7 +19,7 @@ static inline void sort_albums(albums_list *album_first) {
        go_slow = go_slow->next)
     for (albums_list *go_fast = go_slow->next; go_fast;
          go_fast = go_fast->next) {
-      if (difftime(go_fast->mtime, go_slow->mtime) < 0) {
+      if (difftime(go_fast->mtime, go_slow->mtime) > 0) {
         path_tmp = go_fast->path;
         mtime_tmp = go_fast->mtime;
         go_fast->path = go_slow->path;
