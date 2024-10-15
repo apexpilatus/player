@@ -87,7 +87,7 @@ static inline void list_albums(char *msg) {
   }
 }
 
-static inline void create_html(char *msg) {
+static inline void create_html(char *msg, char *bottom) {
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -98,7 +98,9 @@ static inline void create_html(char *msg) {
   strcat(msg, "<link rel=stylesheet href=style_albums.css>");
   strcat(msg, "<script src=script_albums.js></script>");
   strcat(msg, "</head>");
-  strcat(msg, "<body>");
+  strcat(msg,
+         bottom ? "<body onload=window.scrollTo(0,document.body.scrollHeight)>"
+                : "<body>");
   list_albums(msg);
   strcat(msg, "</body>");
   strcat(msg, "</html>");
@@ -121,7 +123,7 @@ int main(int prm_n, char *prm[]) {
   char *msg;
   hdr = malloc(getpagesize());
   msg = malloc(getpagesize() * 10000);
-  create_html(msg);
+  create_html(msg, strchr(prm[2], '?'));
   create_header(hdr, strlen(msg));
   write_size = write(sock, hdr, strlen(hdr));
   write_size += write(sock, msg, strlen(msg));

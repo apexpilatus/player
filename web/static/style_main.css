@@ -46,6 +46,18 @@ button {
     bottom: 5%;
 }
 
+#scrollup {
+    left: 35%;
+    bottom: 5%;
+    border-style: none;
+}
+
+#scrolldown {
+    right: 35%;
+    bottom: 5%;
+    border-style: none;
+}
+
 #level {
     position: fixed;
     left: 5%;

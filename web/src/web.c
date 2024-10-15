@@ -53,10 +53,10 @@ static inline void selector(int sock) {
     pid = fork();
     if (!pid)
       execl(html_cd_control, "html_cd_control", sock_txt, NULL);
-  } else if (!strcmp("/albums", url)) {
+  } else if (!strncmp("/albums", url, strlen("/albums"))) {
     pid = fork();
     if (!pid)
-      execl(html_albums, "html_albums", sock_txt, NULL);
+      execl(html_albums, "html_albums", sock_txt, url, NULL);
   } else if (!strncmp("/playflac", url, strlen("/playflac"))) {
     if (player_pid > 0) {
       kill(player_pid, SIGTERM);

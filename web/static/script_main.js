@@ -5,6 +5,8 @@ const controlElem = document.getElementById("control");
 const levelElem = document.getElementById("level");
 const albumsElem = document.getElementById("albums");
 const tracksElem = document.getElementById("tracks");
+const scrollupElem = document.getElementById("scrollup");
+const scrolldownElem = document.getElementById("scrolldown");
 const timeout = 3000;
 let timeId = null;
 
@@ -12,12 +14,28 @@ function getalbums() {
     albumsElem.src = window.location.href + "albums";
 }
 
+function scrolldown() {
+    albumsElem.src = window.location.href + "albums?down";
+}
+
 function hidecontrol() {
     volumeElem.hidden = false;
     powerElem.hidden = false;
     getcdElem.hidden = false;
+    scrollupElem.hidden = false;
+    scrolldownElem.hidden = false;
     controlElem.hidden = true;
     levelElem.hidden = true;
+}
+
+function showcontrol() {
+    volumeElem.hidden = true;
+    powerElem.hidden = true;
+    getcdElem.hidden = true;
+    scrollupElem.hidden = true;
+    scrolldownElem.hidden = true;
+    controlElem.hidden = false;
+    levelElem.hidden = false;
 }
 
 function getvolume() {
@@ -26,18 +44,14 @@ function getvolume() {
             if (timeId != null) {
                 clearTimeout(timeId);
             }
-            volumeElem.hidden = true;
             volumeElem.innerHTML = "&#9738";
-            powerElem.hidden = true;
-            getcdElem.hidden = true;
-            controlElem.hidden = false;
             controlElem.max = resp.statusText.split("_")[2];
             controlElem.min = resp.statusText.split("_")[0];
             controlElem.value = resp.statusText.split("_")[1];
-            levelElem.hidden = false;
             levelElem.max = resp.statusText.split("_")[2];
             levelElem.value = resp.statusText.split("_")[1];
             timeId = setTimeout(hidecontrol, timeout);
+            showcontrol()
         } else {
             volumeElem.innerHTML = "&#9739";
         }
