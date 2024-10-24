@@ -17,12 +17,12 @@ function gettracks(album) {
                     }
                 }
             }
-        })
+        });
         fetch("playflac?" + album).then(resp => {
             if (resp.status == 200) {
                 window.location.assign(parent.window.location.href + "albums");
             }
-        })
+        });
     } else {
         current = album.slice();
     }

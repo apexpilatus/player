@@ -55,7 +55,7 @@ function getvolume() {
         } else {
             volumeElem.innerHTML = "&#9739";
         }
-    })
+    });
 }
 
 function setvolume() {
@@ -69,7 +69,7 @@ function setvolume() {
             hidecontrol();
             volumeElem.innerHTML = "&#9739";
         }
-    })
+    });
 }
 
 function setdate() {

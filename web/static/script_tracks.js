@@ -1,6 +1,8 @@
 const controlElem = parent.document.getElementById("control");
 const levelElem = parent.document.getElementById("level");
 const tracksElem = parent.document.getElementById("tracks");
+const albumsElem = parent.document.getElementById("albums");
+let notPlaying = true;
 
 function showtracks() {
     tracksElem.hidden = false;
@@ -19,6 +21,11 @@ function playflac(dirtrack) {
                 }
             }
         }
-    })
-    fetch("playflac?" + dirtrack);
+    });
+    fetch("playflac?" + dirtrack).then(resp => {
+        if (resp.status == 200 && notPlaying) {
+            notPlaying = false;
+            albumsElem.src = parent.window.location.href + "albums";
+        }
+    });
 }
