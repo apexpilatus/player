@@ -81,11 +81,11 @@ static inline void selector(int sock) {
       setpriority(PRIO_PROCESS, player_pid, PRIO_MIN);
   } else if (!(strcmp("/getvolume", url) &&
                strncmp("/setvolume", url, strlen("/setvolume")))) {
+    while (mixer_pid > 0)
+      ;
     mixer_pid = fork();
     if (!mixer_pid)
       execl(system_volume, "system_volume", sock_txt, url, NULL);
-    while (mixer_pid > 0)
-      ;
   } else if (!strcmp("/poweroff", url)) {
     if (player_pid > 0) {
       kill(player_pid, SIGTERM);
