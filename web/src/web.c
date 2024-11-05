@@ -25,6 +25,11 @@ static int kill_zombies(void *prm) {
   }
 }
 
+static int kill_zombie(void *pid) {
+  printf("%d\n", *((pid_t *)pid));
+  return 0;
+}
+
 static inline void selector(int sock) {
   ssize_t read_size;
   pid_t pid;
@@ -127,10 +132,8 @@ static inline int init_socket(int *sock_listen, struct sockaddr_in *addr,
 }
 
 int main(void) {
-#ifdef PLAYER_AS_INIT
-  if (system("/init.sh") && system("poweroff -f"))
-    return 1;
-#endif
+  pid_t pid;
+  char sock_txt[15];
   int sock_listen;
   int sock;
   struct sockaddr_in addr;
@@ -138,7 +141,12 @@ int main(void) {
   thrd_t thr;
   msg_size = getpagesize();
   req = malloc(msg_size);
-  if (thrd_create(&thr, kill_zombies, NULL) != thrd_success)
+#ifdef PLAYER_AS_INIT
+  if (system("/init.sh") && system("poweroff -f"))
+    return 1;
+#endif
+  if (thrd_create(&thr, kill_zombies, NULL) != thrd_success ||
+      thrd_detach(thr) != thrd_success)
 #ifdef PLAYER_AS_INIT
     if (system("poweroff -f"))
 #endif
@@ -152,6 +160,17 @@ int main(void) {
     sock = accept(sock_listen, (struct sockaddr *)&addr, &addr_size);
     if (sock < 0)
       continue;
-    selector(sock);
+    sprintf(sock_txt, "%d", sock);
+    pid = fork();
+    if (!pid)
+      execl(web_selector, "web_selector", sock_txt, NULL);
+    if (pid > 0) {
+      setpriority(PRIO_PROCESS, pid, PRIO_MIN);
+      if (thrd_create(&thr, kill_zombie, &pid) != thrd_success ||
+          thrd_detach(thr) != thrd_success) {
+        printf("fuck\n");
+      }
+    }
+    close(sock);
   }
 }

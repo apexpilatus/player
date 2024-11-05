@@ -1,9 +1,10 @@
 PLAYER_PATH := /home/player
 MUSIC_PATH := /home/music
 PLAYER_DEFINES := -D music_path=\"$(MUSIC_PATH)\"
+PLAYER_DEFINES += -D web_selector=\"$(PLAYER_PATH)/web_selector\"
 PLAYER_DEFINES += -D html_tracks=\"$(PLAYER_PATH)/html_tracks\"
-PLAYER_DEFINES += -D play_pid=\"/run/play_pid\"
-PLAYER_DEFINES += -D mix_pid=\"/run/mix_pid\"
+PLAYER_DEFINES += -D play_pid_path=\"/run/play_pid\"
+PLAYER_DEFINES += -D mix_pid_path=\"/run/mix_pid\"
 PLAYER_DEFINES += -D html_cd_control=\"$(PLAYER_PATH)/html_cd_control\"
 PLAYER_DEFINES += -D html_albums=\"$(PLAYER_PATH)/html_albums\"
 PLAYER_DEFINES += -D resp_err=\"$(PLAYER_PATH)/resp_err\"
@@ -19,8 +20,11 @@ PLAYER_DEFINES += -D PLAYER_AS_INIT
 endif
 CC := gcc -O2
 
-web : Makefile src/web.c html_tracks html_cd_control html_albums resp_err data_static data_picture system_play_flac system_play_cd system_volume system_poweroff system_setdate
+web : Makefile src/web.c web_selector html_tracks html_cd_control html_albums resp_err data_static data_picture system_play_flac system_play_cd system_volume system_poweroff system_setdate
 	$(CC) src/web.c -o web $(PLAYER_DEFINES)
+
+web_selector : Makefile src/web_selector.c
+	$(CC) src/web_selector.c -o web_selector $(PLAYER_DEFINES)
 
 html_tracks : Makefile src/html_tracks.c
 	$(CC) src/html_tracks.c -o html_tracks $(PLAYER_DEFINES) -lFLAC
