@@ -2,6 +2,8 @@ PLAYER_PATH := /home/player
 MUSIC_PATH := /home/music
 PLAYER_DEFINES := -D music_path=\"$(MUSIC_PATH)\"
 PLAYER_DEFINES += -D html_tracks=\"$(PLAYER_PATH)/html_tracks\"
+PLAYER_DEFINES += -D play_pid=\"/run/play_pid\"
+PLAYER_DEFINES += -D mix_pid=\"/run/mix_pid\"
 PLAYER_DEFINES += -D html_cd_control=\"$(PLAYER_PATH)/html_cd_control\"
 PLAYER_DEFINES += -D html_albums=\"$(PLAYER_PATH)/html_albums\"
 PLAYER_DEFINES += -D resp_err=\"$(PLAYER_PATH)/resp_err\"
