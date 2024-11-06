@@ -9,25 +9,10 @@
 
 #define listen_port 80
 
-static ssize_t msg_size;
-static char *req;
-static volatile pid_t player_pid = -1;
-static volatile pid_t mixer_pid = -1;
-
-static int kill_zombies(void *prm) {
+static void kill_zombie(int signum) {
   pid_t pid;
-  while (1) {
-    pid = wait(NULL);
-    if (pid == mixer_pid)
-      mixer_pid = -1;
-    else if (pid == player_pid)
-      player_pid = -1;
-  }
-}
-
-static int kill_zombie(void *pid) {
-  printf("%d\n", *((pid_t *)pid));
-  return 0;
+  while ((pid = waitpid(WAIT_ANY, NULL, WNOHANG)) > 0)
+    ;
 }
 
 static inline void selector(int sock) {
@@ -36,6 +21,12 @@ static inline void selector(int sock) {
   char sock_txt[15];
   char *url;
   char *end;
+  static ssize_t msg_size;
+  static char *req;
+  static pid_t player_pid = -1;
+  static pid_t mixer_pid = -1;
+  msg_size = getpagesize();
+  req = malloc(msg_size);
   sprintf(sock_txt, "%d", sock);
   read_size = read(sock, req, msg_size);
   if (read_size < 5 || strncmp(req, "GET ", 4))
@@ -126,31 +117,22 @@ static inline int init_socket(int *sock_listen, struct sockaddr_in *addr,
   addr->sin_addr.s_addr = htonl(INADDR_ANY);
   *addr_size = sizeof(struct sockaddr_in);
   if (bind(*sock_listen, (struct sockaddr *)addr, *addr_size) < 0 ||
-      listen(*sock_listen, 20) < 0)
+      listen(*sock_listen, 8) < 0)
     return 1;
   return 0;
 }
 
 int main(void) {
   pid_t pid;
-  char sock_txt[15];
   int sock_listen;
   int sock;
   struct sockaddr_in addr;
   socklen_t addr_size;
-  thrd_t thr;
-  msg_size = getpagesize();
-  req = malloc(msg_size);
+  signal(SIGCHLD, kill_zombie);
 #ifdef PLAYER_AS_INIT
   if (system("/init.sh") && system("poweroff -f"))
     return 1;
 #endif
-  if (thrd_create(&thr, kill_zombies, NULL) != thrd_success ||
-      thrd_detach(thr) != thrd_success)
-#ifdef PLAYER_AS_INIT
-    if (system("poweroff -f"))
-#endif
-      return 1;
   if (init_socket(&sock_listen, &addr, &addr_size))
 #ifdef PLAYER_AS_INIT
     if (system("poweroff -f"))
@@ -160,17 +142,14 @@ int main(void) {
     sock = accept(sock_listen, (struct sockaddr *)&addr, &addr_size);
     if (sock < 0)
       continue;
-    sprintf(sock_txt, "%d", sock);
     pid = fork();
-    if (!pid)
+    if (!pid) {
+      char sock_txt[15];
+      sprintf(sock_txt, "%d", sock);
       execl(web_selector, "web_selector", sock_txt, NULL);
-    if (pid > 0) {
-      setpriority(PRIO_PROCESS, pid, PRIO_MIN);
-      if (thrd_create(&thr, kill_zombie, &pid) != thrd_success ||
-          thrd_detach(thr) != thrd_success) {
-        printf("fuck\n");
-      }
     }
+    if (pid > 0)
+      setpriority(PRIO_PROCESS, pid, PRIO_MIN);
     close(sock);
   }
 }
