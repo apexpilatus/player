@@ -1,112 +1,35 @@
+#include <fcntl.h>
 #include <netdb.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
-#include <threads.h>
 #include <unistd.h>
 
 #define listen_port 80
 
 static void kill_zombie(int signum) {
   pid_t pid;
-  while ((pid = waitpid(WAIT_ANY, NULL, WNOHANG)) > 0)
-    ;
-}
-
-static inline void selector(int sock) {
+  pid_t run_pid;
+  int fd;
   ssize_t read_size;
-  pid_t pid;
-  char sock_txt[15];
-  char *url;
-  char *end;
-  static ssize_t msg_size;
-  static char *req;
-  static pid_t player_pid = -1;
-  static pid_t mixer_pid = -1;
-  msg_size = getpagesize();
-  req = malloc(msg_size);
-  sprintf(sock_txt, "%d", sock);
-  read_size = read(sock, req, msg_size);
-  if (read_size < 5 || strncmp(req, "GET ", 4))
-    goto exit;
-  url = req + 4;
-  end = strchr(url, ' ');
-  if (end)
-    *end = '\0';
-  else
-    goto exit;
-  if (!strncmp(music_path, url, strlen(music_path))) {
-    pid = fork();
-    if (!pid)
-      execl(data_picture, "data_picture", sock_txt, url, NULL);
-  } else if (!strncmp("/tracks", url, strlen("/tracks"))) {
-    pid = fork();
-    if (!pid)
-      execl(html_tracks, "html_tracks", sock_txt, url, NULL);
-  } else if (!strcmp("/cdcontrol", url)) {
-    pid = fork();
-    if (!pid)
-      execl(html_cd_control, "html_cd_control", sock_txt, NULL);
-  } else if (!strncmp("/albums", url, strlen("/albums"))) {
-    pid = fork();
-    if (!pid)
-      execl(html_albums, "html_albums", sock_txt, url, NULL);
-  } else if (!strncmp("/playflac", url, strlen("/playflac"))) {
-    if (player_pid > 0) {
-      kill(player_pid, SIGTERM);
-      while (player_pid > 0)
-        ;
+  while ((pid = waitpid(WAIT_ANY, NULL, WNOHANG)) > 0) {
+    fd = open(play_pid_path, O_RDONLY);
+    if (fd >= 0) {
+      read_size = read(fd, &run_pid, sizeof(pid_t));
+      close(fd);
+      if (run_pid == pid) {
+        unlink(play_pid_path);
+        continue;
+      }
     }
-    player_pid = fork();
-    if (!player_pid)
-      execl(system_play_flac, "system_play_flac", sock_txt, url, NULL);
-    if (player_pid > 0)
-      setpriority(PRIO_PROCESS, player_pid, PRIO_MIN);
-  } else if (!strncmp("/cdplay", url, strlen("/cdplay"))) {
-    if (player_pid > 0) {
-      kill(player_pid, SIGTERM);
-      while (player_pid > 0)
-        ;
+    fd = open(mix_pid_path, O_RDONLY);
+    if (fd >= 0) {
+      read_size = read(fd, &run_pid, sizeof(pid_t));
+      close(fd);
+      if (run_pid == pid)
+        unlink(mix_pid_path);
     }
-    player_pid = fork();
-    if (!player_pid)
-      execl(system_play_cd, "system_play_cd", sock_txt, url, NULL);
-    if (player_pid > 0)
-      setpriority(PRIO_PROCESS, player_pid, PRIO_MIN);
-  } else if (!(strcmp("/getvolume", url) &&
-               strncmp("/setvolume", url, strlen("/setvolume")))) {
-    while (mixer_pid > 0)
-      ;
-    mixer_pid = fork();
-    if (!mixer_pid)
-      execl(system_volume, "system_volume", sock_txt, url, NULL);
-  } else if (!strcmp("/poweroff", url)) {
-    if (player_pid > 0) {
-      kill(player_pid, SIGTERM);
-      while (player_pid > 0)
-        ;
-    }
-    pid = fork();
-    if (!pid) {
-      if (system("/init.sh finish"))
-        execl(resp_err, "resp_err", sock_txt, NULL);
-      else
-        execl(system_poweroff, "system_poweroff", sock_txt, NULL);
-    }
-  } else if (!strncmp("/setdate", url, strlen("/setdate"))) {
-    pid = fork();
-    if (!pid) {
-      execl(system_setdate, "system_setdate", sock_txt, url, NULL);
-    }
-  } else {
-    pid = fork();
-    if (!pid)
-      execl(data_static, "data_static", sock_txt, url, NULL);
   }
-exit:
-  close(sock);
 }
 
 static inline int init_socket(int *sock_listen, struct sockaddr_in *addr,
@@ -117,7 +40,7 @@ static inline int init_socket(int *sock_listen, struct sockaddr_in *addr,
   addr->sin_addr.s_addr = htonl(INADDR_ANY);
   *addr_size = sizeof(struct sockaddr_in);
   if (bind(*sock_listen, (struct sockaddr *)addr, *addr_size) < 0 ||
-      listen(*sock_listen, 8) < 0)
+      listen(*sock_listen, 20) < 0)
     return 1;
   return 0;
 }
@@ -129,6 +52,8 @@ int main(void) {
   struct sockaddr_in addr;
   socklen_t addr_size;
   signal(SIGCHLD, kill_zombie);
+  unlink(play_pid_path);
+  unlink(mix_pid_path);
 #ifdef PLAYER_AS_INIT
   if (system("/init.sh") && system("poweroff -f"))
     return 1;
@@ -146,7 +71,7 @@ int main(void) {
     if (!pid) {
       char sock_txt[15];
       sprintf(sock_txt, "%d", sock);
-      execl(web_selector, "web_selector", sock_txt, NULL);
+      execl(web_select, "web_select", sock_txt, NULL);
     }
     if (pid > 0)
       setpriority(PRIO_PROCESS, pid, PRIO_MIN);

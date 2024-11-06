@@ -1,6 +1,7 @@
 #include <cdda_interface.h>
 #include <cdda_paranoia.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <threads.h>
@@ -116,6 +117,13 @@ int main(int prm_n, char *prm[]) {
   cdrom_drive *d = cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL);
   snd_pcm_t *pcm_p;
   thrd_t thr;
+  int fd;
+  pid_t pid = getpid();
+  fd = open(play_pid_path, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+  if (fd < 0)
+    execl(resp_err, "resp_err", prm[1], NULL);
+  write_size = write(fd, &pid, sizeof(pid_t));
+  close(fd);
   if (!d || cdda_open(d) || init_alsa(&pcm_p))
     execl(resp_err, "resp_err", prm[1], NULL);
   strcpy(rsp, "HTTP/1.1 200 OK\r\n");

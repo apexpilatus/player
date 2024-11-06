@@ -25,7 +25,7 @@ static inline void create_html(char *msg) {
     strcat(msg, "<div>");
     for (int i = 1; i <= d->tracks; i++)
       if (cdda_track_audiop(d, i)) {
-        strcat(msg, "<p onclick=fetch(\"cdplay?");
+        strcat(msg, "<p onclick=fetch(\"playcd?");
         msg_end = strlen(msg);
         sprintf(msg + msg_end, "%d", i);
         strcat(msg, "\")>");

@@ -1,3 +1,4 @@
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -48,6 +49,13 @@ int main(int prm_n, char *prm[]) {
   long min_vol;
   long max_vol;
   long curr_vol;
+  int fd;
+  pid_t pid = getpid();
+  while ((fd = open(mix_pid_path, O_WRONLY | O_CREAT | O_EXCL,
+                    S_IRUSR | S_IWUSR)) < 0)
+    ;
+  write_size = write(fd, &pid, sizeof(pid_t));
+  close(fd);
   snd_mixer_elem_t *melem;
   if (init_mixer(&melem, &min_vol, &max_vol, &curr_vol))
     execl(resp_err, "resp_err", prm[1], NULL);

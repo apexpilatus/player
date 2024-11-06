@@ -1,4 +1,5 @@
 #include <dirent.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -221,9 +222,16 @@ int main(int prm_n, char *prm[]) {
   char *rsp = malloc(getpagesize());
   snd_pcm_t *pcm_p;
   track_list *tracks;
+  int fd;
+  pid_t pid = getpid();
   tracks = get_tracks_in_dir(prm[2]);
   if (!tracks)
     execl(resp_err, "resp_err", prm[1], NULL);
+  fd = open(play_pid_path, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+  if (fd < 0)
+    execl(resp_err, "resp_err", prm[1], NULL);
+  write_size = write(fd, &pid, sizeof(pid_t));
+  close(fd);
   if (init_alsa(&pcm_p, tracks))
     execl(resp_err, "resp_err", prm[1], NULL);
   if (utime(".", NULL))
