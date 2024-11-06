@@ -1,6 +1,7 @@
 #include <fcntl.h>
 #include <netdb.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
 #include <unistd.h>
