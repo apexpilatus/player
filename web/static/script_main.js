@@ -7,8 +7,11 @@ const albumsElem = document.getElementById("albums");
 const tracksElem = document.getElementById("tracks");
 const scrollupElem = document.getElementById("scrollup");
 const scrolldownElem = document.getElementById("scrolldown");
-const timeout = 3000;
-let timeId = null;
+const hideTimeout = 3000;
+let hideTimeId = setTimeout(hidecontrol, hideTimeout);
+let canSetVol = false;
+const volumeTimeout = 100;
+let volumeTimeId = setTimeout(function () { canSetVol = true }, volumeTimeout);
 
 function getalbums() {
     albumsElem.src = window.location.href + "albums";
@@ -41,16 +44,14 @@ function showcontrol() {
 function getvolume() {
     fetch("getvolume").then(resp => {
         if (resp.status == 200) {
-            if (timeId != null) {
-                clearTimeout(timeId);
-            }
+            clearTimeout(hideTimeId);
             volumeElem.innerHTML = "&#9738";
             controlElem.max = resp.statusText.split("_")[2];
             controlElem.min = resp.statusText.split("_")[0];
             controlElem.value = resp.statusText.split("_")[1];
             levelElem.max = resp.statusText.split("_")[2];
             levelElem.value = resp.statusText.split("_")[1];
-            timeId = setTimeout(hidecontrol, timeout);
+            hideTimeId = setTimeout(hidecontrol, hideTimeout);
             showcontrol()
         } else {
             volumeElem.innerHTML = "&#9739";
@@ -60,19 +61,23 @@ function getvolume() {
 
 function setlevel() {
     levelElem.value = controlElem.value;
-    clearTimeout(timeId);
-    timeId = setTimeout(hidecontrol, timeout);
+    if (canSetVol) {
+        canSetVol = false;
+        clearTimeout(volumeTimeId);
+        setvolume();
+        volumeTimeId = setTimeout(function () { canSetVol = true }, volumeTimeout);
+    }
 }
 
 function setvolume() {
     let level = controlElem.value;
     fetch("setvolume&" + level).then(resp => {
-        if (resp.status == 200) {
-            levelElem.value = level;
-        } else {
+        clearTimeout(hideTimeId);
+        if (resp.status != 200) {
             hidecontrol();
             volumeElem.innerHTML = "&#9739";
-        }
+        } else
+            hideTimeId = setTimeout(hidecontrol, hideTimeout);
     });
 }
 

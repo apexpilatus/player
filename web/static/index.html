@@ -11,13 +11,13 @@
 <body>
     <iframe id=albums title=albums></iframe>
     <iframe id=tracks title=tracks></iframe>
-    <button type=button id=poweroff onclick=poweroff()>&#9769;</button>
+    <button hidden type=button id=poweroff onclick=poweroff()>&#9769;</button>
     <button type=button id=volume onclick=getvolume()>&#9738</button>
     <button type=button id=getcd onclick=getcd()>&#9740</button>
     <button type=button id=scrollup onclick=getalbums()>&#8657</button>
     <button type=button id=scrolldown onclick=scrolldown()>&#8659</button>
     <progress hidden id=level></progress>
-    <input hidden id=control type=range oninput=setlevel() onchange=setvolume() title=volume>
+    <input hidden id=control type=range oninput=setlevel() title=volume>
     <script src=script_main.js></script>
     <script>setdate()</script>
     <script>getalbums()</script>
