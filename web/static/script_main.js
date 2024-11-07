@@ -58,13 +58,17 @@ function getvolume() {
     });
 }
 
+function setlevel() {
+    levelElem.value = controlElem.value;
+    clearTimeout(timeId);
+    timeId = setTimeout(hidecontrol, timeout);
+}
+
 function setvolume() {
     let level = controlElem.value;
     fetch("setvolume&" + level).then(resp => {
         if (resp.status == 200) {
             levelElem.value = level;
-            clearTimeout(timeId);
-            timeId = setTimeout(hidecontrol, timeout);
         } else {
             hidecontrol();
             volumeElem.innerHTML = "&#9739";
