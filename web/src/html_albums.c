@@ -77,13 +77,15 @@ static inline albums_list *get_albums() {
 
 static inline void list_albums(char *msg) {
   albums_list *albums = get_albums();
-  while (albums) {
-    strcat(msg, "<img src=\"");
-    strcat(msg, albums->path);
-    strcat(msg, "\" onclick=gettracks(\"");
-    strcat(msg, albums->path);
-    strcat(msg, "\") alt=picture>");
-    albums = albums->next;
+  if (albums && difftime(time(NULL), albums->mtime) >= 0) {
+    while (albums) {
+      strcat(msg, "<img src=\"");
+      strcat(msg, albums->path);
+      strcat(msg, "\" onclick=gettracks(\"");
+      strcat(msg, albums->path);
+      strcat(msg, "\") alt=picture>");
+      albums = albums->next;
+    }
   }
 }
 

@@ -27,13 +27,33 @@ int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   ssize_t read_size;
   ssize_t msg_size = getpagesize() * 100;
-  char *url;
   char *end;
-  char req[msg_size];
-  read_size = read(sock, req, msg_size);
-  if (read_size < 5 || strncmp(req, "GET ", 4))
+  char *host;
+  char *url = malloc(msg_size);
+  read_size = read(sock, url, msg_size);
+  if (read_size < 5 || strncmp(url, "GET", 3))
     return 1;
-  url = req + 4;
+  url[read_size] = '\0';
+  host = strstr(url, "Host:");
+  if (host) {
+    host += 5;
+    while (*host == ' ') {
+      host++;
+    }
+    end = strchr(host, '\n');
+    if (end)
+      *end = '\0';
+    end = strchr(host, '\r');
+    if (end)
+      *end = '\0';
+    end = strchr(host, ':');
+    if (end)
+      *end = '\0';
+  }
+  url += 3;
+  while (*url == ' ') {
+    url++;
+  }
   end = strchr(url, ' ');
   if (end)
     *end = '\0';
@@ -63,7 +83,10 @@ int main(int prm_n, char *prm[]) {
     else
       execl(system_poweroff, "system_poweroff", prm[1], NULL);
   } else if (!strncmp("/setdate", url, strlen("/setdate"))) {
-    execl(system_setdate, "system_setdate", prm[1], url, NULL);
+    if (strcmp(host, "localhost") && strcmp(host, "127.0.0.1"))
+      execl(system_setdate, "system_setdate", prm[1], url, NULL);
+    else
+      execl(resp_err, "resp_err", prm[1], NULL);
   } else if (!strcmp("/cdcontrol", url)) {
     execl(html_cd_control, "html_cd_control", prm[1], NULL);
   } else {
