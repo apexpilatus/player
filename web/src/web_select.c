@@ -34,21 +34,15 @@ int main(int prm_n, char *prm[]) {
   if (read_size < 5 || strncmp(url, "GET", 3))
     return 1;
   url[read_size] = '\0';
-  host = strstr(url, "Host:");
-  if (host) {
+  if ((host = strstr(url, "Host:"))) {
     host += 5;
     while (*host == ' ') {
       host++;
     }
-    end = strchr(host, '\n');
-    if (end)
+    while ((end = strchr(host, '\n')) || (end = strchr(host, '\r')) ||
+           (end = strchr(host, ':'))) {
       *end = '\0';
-    end = strchr(host, '\r');
-    if (end)
-      *end = '\0';
-    end = strchr(host, ':');
-    if (end)
-      *end = '\0';
+    }
   }
   url += 3;
   while (*url == ' ') {
