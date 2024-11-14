@@ -77,7 +77,7 @@ int main(int prm_n, char *prm[]) {
     else
       execl(system_poweroff, "system_poweroff", prm[1], NULL);
   } else if (!strncmp("/setdate", url, strlen("/setdate"))) {
-    if (strcmp(host, "localhost") && strcmp(host, "127.0.0.1"))
+    if (host && strcmp(host, "localhost") && strcmp(host, "127.0.0.1"))
       execl(system_setdate, "system_setdate", prm[1], url, NULL);
     else
       execl(resp_err, "resp_err", prm[1], NULL);
