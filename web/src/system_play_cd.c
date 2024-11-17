@@ -65,7 +65,7 @@ static int cd_reader(void *prm) {
   return 0;
 }
 
-static inline int cd_player(snd_pcm_t *pcm_p) {
+static int cd_player(snd_pcm_t *pcm_p) {
   long data_size;
   while (data_first && data_size <= CD_FRAMESIZE_RAW) {
     data_cur = data_first;
@@ -88,7 +88,7 @@ static inline int cd_player(snd_pcm_t *pcm_p) {
   return 0;
 }
 
-static inline int init_alsa(snd_pcm_t **pcm_p) {
+static int init_alsa(snd_pcm_t **pcm_p) {
   int card = -1;
   char card_name[10];
   snd_pcm_hw_params_t *pcm_hw;

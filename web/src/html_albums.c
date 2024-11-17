@@ -12,7 +12,7 @@ typedef struct albums_list_t {
   time_t mtime;
 } albums_list;
 
-static inline void sort_albums(albums_list *album_first) {
+static void sort_albums(albums_list *album_first) {
   char *path_tmp;
   time_t mtime_tmp;
   for (albums_list *go_slow = album_first; go_slow && go_slow->next;
@@ -30,7 +30,7 @@ static inline void sort_albums(albums_list *album_first) {
     }
 }
 
-static inline albums_list *get_albums() {
+static albums_list *get_albums() {
   char *src_path = malloc(getpagesize());
   albums_list *album_first = NULL;
   albums_list *album_tmp = NULL;
@@ -75,7 +75,7 @@ static inline albums_list *get_albums() {
   return album_first;
 }
 
-static inline void list_albums(char *msg) {
+static void list_albums(char *msg) {
   albums_list *albums = get_albums();
   if (albums && difftime(time(NULL), albums->mtime) >= 0) {
     while (albums) {
@@ -89,7 +89,7 @@ static inline void list_albums(char *msg) {
   }
 }
 
-static inline void create_html(char *msg, char *bottom) {
+static void create_html(char *msg, char *bottom) {
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -108,7 +108,7 @@ static inline void create_html(char *msg, char *bottom) {
   strcat(msg, "</html>");
 }
 
-static inline void create_header(char *hdr, unsigned long msg_len) {
+static void create_header(char *hdr, unsigned long msg_len) {
   unsigned long hdr_end;
   strcpy(hdr, "HTTP/1.1 200 OK\r\n");
   strcat(hdr, "Content-Type: text/html; charset=utf-8\r\n");

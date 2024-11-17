@@ -31,7 +31,7 @@ extern unsigned int static_favicon180_png_len;
 unsigned char *data;
 unsigned int data_len;
 
-static inline int select_data(char *url, char *rsp) {
+static int select_data(char *url, char *rsp) {
   unsigned long hdr_end;
   if (!strcmp("/", url)) {
     data = static_index_html;

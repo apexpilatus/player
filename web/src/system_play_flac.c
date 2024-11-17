@@ -26,7 +26,7 @@ typedef struct track_list_t {
 static uint32_t off;
 static long bytes_per_sample;
 
-static inline void sort_tracks(track_list *track_first) {
+static void sort_tracks(track_list *track_first) {
   char *file_name_tmp;
   char *track_number_tmp;
   for (track_list *go_slow = track_first; go_slow && go_slow->next;
@@ -43,7 +43,7 @@ static inline void sort_tracks(track_list *track_first) {
       }
 }
 
-static inline track_list *get_tracks_in_dir(char *url) {
+static track_list *get_tracks_in_dir(char *url) {
   char *album_dir;
   char *start_track;
   DIR *dp;
@@ -147,9 +147,9 @@ void metadata_callback(const FLAC__StreamDecoder *decoder,
 void error_callback(const FLAC__StreamDecoder *decoder,
                     FLAC__StreamDecoderErrorStatus status, void *client_data) {}
 
-static inline int play_album(track_list *tracks,
-                             FLAC__StreamDecoderWriteCallback write_callback,
-                             snd_pcm_t *pcm_p) {
+static int play_album(track_list *tracks,
+                      FLAC__StreamDecoderWriteCallback write_callback,
+                      snd_pcm_t *pcm_p) {
   FLAC__StreamDecoder *decoder = NULL;
   decoder = FLAC__stream_decoder_new();
   FLAC__stream_decoder_set_md5_checking(decoder, false);
@@ -173,7 +173,7 @@ static inline int play_album(track_list *tracks,
   return 0;
 }
 
-static inline int init_alsa(snd_pcm_t **pcm_p, track_list *tracks) {
+static int init_alsa(snd_pcm_t **pcm_p, track_list *tracks) {
   int card = -1;
   char card_name[10];
   FLAC__StreamMetadata *rate =

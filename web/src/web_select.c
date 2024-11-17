@@ -4,7 +4,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-static inline int stop_playing() {
+static int stop_playing() {
   pid_t pid = -1;
   ssize_t read_size;
   int fd = open(play_pid_path, O_RDONLY);

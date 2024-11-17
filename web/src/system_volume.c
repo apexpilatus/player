@@ -14,8 +14,8 @@
 #include <alsa/mixer.h>
 // clang-format on
 
-static inline int init_mixer(snd_mixer_elem_t **melem, long *min_vol,
-                             long *max_vol, long *curr_vol) {
+static int init_mixer(snd_mixer_elem_t **melem, long *min_vol, long *max_vol,
+                      long *curr_vol) {
   int card_number = -1;
   char card_name[10];
   snd_mixer_t *mxr;
