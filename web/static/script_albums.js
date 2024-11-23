@@ -1,6 +1,9 @@
 const controlElem = parent.document.getElementById("control");
 const levelElem = parent.document.getElementById("level");
 const tracksElem = parent.document.getElementById("tracks");
+const volumeElem = parent.document.getElementById("volume");
+const scrollupElem = parent.document.getElementById("scrollup");
+const scrolldownElem = parent.document.getElementById("scrolldown");
 let current = "empty";
 
 function gettracks(album) {
@@ -28,4 +31,12 @@ function gettracks(album) {
     }
     tracksElem.hidden = true;
     tracksElem.src = parent.window.location.href + "tracks?" + album;
+}
+
+function showscroll(initscroll) {
+    if (initscroll == "down")
+        window.scrollTo(0, document.body.scrollHeight);
+    volumeElem.hidden = false;
+    scrollupElem.hidden = false;
+    scrolldownElem.hidden = false;
 }

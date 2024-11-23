@@ -47,13 +47,13 @@ button {
 }
 
 #scrollup {
-    left: 35%;
-    bottom: 5%;
+    right: 40%;
+    top: 5%;
     border-style: none;
 }
 
 #scrolldown {
-    right: 35%;
+    right: 40%;
     bottom: 5%;
     border-style: none;
 }

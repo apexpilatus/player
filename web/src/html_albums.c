@@ -100,9 +100,8 @@ static void create_html(char *msg, char *bottom) {
   strcat(msg, "<link rel=stylesheet href=style_albums.css>");
   strcat(msg, "<script src=script_albums.js></script>");
   strcat(msg, "</head>");
-  strcat(msg,
-         bottom ? "<body onload=window.scrollTo(0,document.body.scrollHeight)>"
-                : "<body>");
+  strcat(msg, bottom ? "<body onload=showscroll(\"down\")>"
+                     : "<body onload=showscroll(\"up\")>");
   list_albums(msg);
   strcat(msg, "</body>");
   strcat(msg, "</html>");

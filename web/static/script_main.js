@@ -8,16 +8,23 @@ const tracksElem = document.getElementById("tracks");
 const scrollupElem = document.getElementById("scrollup");
 const scrolldownElem = document.getElementById("scrolldown");
 const hideTimeout = 3000;
-let hideTimeId = setTimeout(hidecontrol, hideTimeout);
+let hideTimeId = setTimeout(function () {
+    powerElem.hidden = false;
+    getcdElem.hidden = false;
+}, hideTimeout);
 let canSetVol = false;
 const volumeTimeout = 100;
 let volumeTimeId = setTimeout(function () { canSetVol = true }, volumeTimeout);
 
 function getalbums() {
+    scrollupElem.hidden = true;
+    volumeElem.hidden = true;
     albumsElem.src = window.location.href + "albums";
 }
 
 function scrolldown() {
+    scrolldownElem.hidden = true;
+    volumeElem.hidden = true;
     albumsElem.src = window.location.href + "albums?down";
 }
 
