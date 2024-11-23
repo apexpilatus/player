@@ -19,12 +19,14 @@ let volumeTimeId = setTimeout(function () { canSetVol = true }, volumeTimeout);
 function getalbums() {
     scrollupElem.hidden = true;
     volumeElem.hidden = true;
+    tracksElem.hidden = true;
     albumsElem.src = window.location.href + "albums";
 }
 
 function scrolldown() {
     scrolldownElem.hidden = true;
     volumeElem.hidden = true;
+    tracksElem.hidden = true;
     albumsElem.src = window.location.href + "albums?down";
 }
 
@@ -95,6 +97,7 @@ function setdate() {
 function getcd() {
     tracksElem.hidden = true;
     tracksElem.src = parent.window.location.href + "cdcontrol";
+    albumsElem.src = window.location.href + "albums";
 }
 
 function poweroff() {
