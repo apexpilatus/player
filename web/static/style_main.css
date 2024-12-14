@@ -6,7 +6,7 @@ body {
     position: fixed;
     top: 5%;
     right: 2%;
-    width: 35%;
+    width: 30%;
     height: 75%;
     border-style: none;
 }
@@ -15,7 +15,7 @@ body {
     position: fixed;
     top: 15%;
     left: 2%;
-    width: 55%;
+    width: 65%;
     height: 65%;
     border-style: none;
 }
@@ -47,13 +47,13 @@ button {
 }
 
 #scrollup {
-    right: 40%;
+    right: 35%;
     top: 5%;
     border-style: none;
 }
 
 #scrolldown {
-    right: 40%;
+    right: 35%;
     bottom: 5%;
     border-style: none;
 }
