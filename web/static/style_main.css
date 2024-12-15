@@ -22,12 +22,14 @@ body {
 
 button {
     position: fixed;
-    color: red;
+    color: black;
     background-color: #cec5b7;
     font-weight: bold;
     font-size: 20px;
     text-align: center;
     width: 60px;
+    border-color: white;
+    border-style: solid;
     border-radius: 15%;
 }
 
