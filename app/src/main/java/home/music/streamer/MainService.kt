@@ -25,14 +25,14 @@ class MainService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         this.startForeground(
             1, Notification.Builder(applicationContext, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_stat_name)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentText("trtr")
                 .build()
         )
         Thread.sleep(10000)
         notificationManager.notify(
             1, Notification.Builder(applicationContext, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_stat_name)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentText("brbr")
                 .build()
         )
