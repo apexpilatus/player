@@ -40,7 +40,7 @@ int main(int prm_n, char *prm[]) {
       host++;
     }
     while ((end = strchr(host, '\n')) || (end = strchr(host, '\r')) ||
-           (end = strchr(host, ':'))) {
+           (end = strchr(host, ' ')) || (end = strchr(host, ':'))) {
       *end = '\0';
     }
   }
@@ -54,7 +54,11 @@ int main(int prm_n, char *prm[]) {
   else
     return 1;
   if (!strncmp(music_path, url, strlen(music_path))) {
-    execl(data_picture, "data_picture", prm[1], url, NULL);
+    if (strcmp(url + strlen(url) - 5, ".flac")) {
+      execl(data_picture, "data_picture", prm[1], url, NULL);
+    } else {
+      execl(data_flac, "data_flac", prm[1], url, NULL);
+    }
   } else if (!strncmp("/tracks", url, strlen("/tracks"))) {
     execl(html_tracks, "html_tracks", prm[1], url, NULL);
   } else if (!strcmp("/cdcontrol", url)) {

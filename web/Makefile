@@ -10,6 +10,7 @@ PLAYER_DEFINES += -D html_albums=\"$(PLAYER_PATH)/html_albums\"
 PLAYER_DEFINES += -D resp_err=\"$(PLAYER_PATH)/resp_err\"
 PLAYER_DEFINES += -D data_static=\"$(PLAYER_PATH)/data_static\"
 PLAYER_DEFINES += -D data_picture=\"$(PLAYER_PATH)/data_picture\"
+PLAYER_DEFINES += -D data_flac=\"$(PLAYER_PATH)/data_flac\"
 PLAYER_DEFINES += -D system_poweroff=\"$(PLAYER_PATH)/system_poweroff\"
 PLAYER_DEFINES += -D system_play_flac=\"$(PLAYER_PATH)/system_play_flac\"
 PLAYER_DEFINES += -D system_play_cd=\"$(PLAYER_PATH)/system_play_cd\"
@@ -20,7 +21,7 @@ PLAYER_DEFINES += -D PLAYER_AS_INIT
 endif
 CC := gcc -O2
 
-web : Makefile src/web.c web_select html_tracks html_cd_control html_albums resp_err data_static data_picture system_play_flac system_play_cd system_volume system_poweroff system_setdate
+web : Makefile src/web.c web_select html_tracks html_cd_control html_albums resp_err data_static data_picture data_flac system_play_flac system_play_cd system_volume system_poweroff system_setdate
 	$(CC) src/web.c -o web $(PLAYER_DEFINES)
 
 web_select : Makefile src/web_select.c
@@ -67,6 +68,9 @@ data_static : Makefile src/data_static.c static/style_main.css static/script_mai
 
 data_picture : Makefile src/data_picture.c
 	$(CC) src/data_picture.c -o data_picture $(PLAYER_DEFINES) -lFLAC
+
+data_flac : Makefile src/data_flac.c
+	$(CC) src/data_flac.c -o data_flac $(PLAYER_DEFINES)
 
 system_play_flac : Makefile src/system_play_flac.c
 	$(CC) src/system_play_flac.c -o system_play_flac $(PLAYER_DEFINES) -lasound -lFLAC
