@@ -19,59 +19,30 @@ import java.net.URL
 const val CHANNEL_ID = "main"
 const val CHANNEL_NAME = "main"
 
-object StoreStatus {
-    private var connected = false
-    private var started = false
-    private var storeIP = ""
-
-    @Synchronized
-    fun setConnected(connected: Boolean) {
-        this.connected = connected
-    }
-
-    @Synchronized
-    fun getConnected(): Boolean {
-        return this.connected
-    }
-
-    @Synchronized
-    fun setStarted(started: Boolean) {
-        this.started = started
-    }
-
-    @Synchronized
-    fun getStarted(): Boolean {
-        return this.started
-    }
-
-    @Synchronized
-    fun setIP(ip: String) {
-        this.storeIP = ip
-    }
-
-    @Synchronized
-    fun getIP(): String {
-        return storeIP
-    }
-}
-
 class MainService : Service() {
     private val sockServer by lazy { ServerSocket(9696) }
 
+    companion object {
+        @Volatile
+        private var connected = false
+
+        @Volatile
+        var started = false
+    }
+
     private val updateStatus = Runnable {
+        var storeIP = ""
         while (true) {
             try {
                 val sock = sockServer.accept()
-                StoreStatus.setConnected(true)
+                connected = true
                 val msg = BufferedReader(InputStreamReader(sock.getInputStream())).readLine()
                 sock.getOutputStream().write("OK\n".toByteArray())
                 sock.close()
-                if (!msg.equals(StoreStatus.getIP())) {
-                    StoreStatus.setIP(msg)
-                    val intent =
-                        Intent(Intent.ACTION_VIEW, Uri.parse("http://${StoreStatus.getIP()}"))
-                    val stream =
-                        URL("http://${StoreStatus.getIP()}/apple-touch-icon.png").openStream()
+                if (!msg.equals(storeIP)) {
+                    storeIP = msg
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://$storeIP"))
+                    val stream = URL("http://$storeIP/apple-touch-icon.png").openStream()
                     (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).notify(
                         1, Notification.Builder(this, CHANNEL_ID)
                             .setSmallIcon(R.drawable.ic_notification)
@@ -84,7 +55,7 @@ class MainService : Service() {
                                     PendingIntent.FLAG_IMMUTABLE
                                 )
                             )
-                            .setContentText(StoreStatus.getIP())
+                            .setContentText("")
                             .build()
                     )
                     stream.close()
@@ -99,8 +70,8 @@ class MainService : Service() {
     private val checkStop = Runnable {
         while (true) {
             Thread.sleep(20000)
-            if (StoreStatus.getConnected())
-                StoreStatus.setConnected(false)
+            if (connected)
+                connected = false
             else {
                 stopSelf()
                 break
@@ -119,8 +90,7 @@ class MainService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        StoreStatus.setStarted(true)
-        StoreStatus.setIP("")
+        started = true
         this.startForeground(
             1, Notification.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notification)
@@ -138,6 +108,6 @@ class MainService : Service() {
 
     override fun onDestroy() {
         sockServer.close()
-        StoreStatus.setStarted(false)
+        started = false
     }
 }
