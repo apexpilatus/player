@@ -7,6 +7,10 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.media.AudioAttributes
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.IBinder
 import java.io.BufferedReader
@@ -32,35 +36,70 @@ class MainService : Service() {
 
     private val updateStatus = Runnable {
         var storeIP = ""
+        val flacPlayer = MediaPlayer().apply {
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build()
+            )
+        }
+
+        val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+        val devs = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+        var fuck = 2
+        for (dev in devs) {
+            if (dev.type == AudioDeviceInfo.TYPE_USB_HEADSET) {
+                (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).notify(
+                    ++fuck, Notification.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_notification)
+                        .setContentText(dev.id.toString())
+                        .build()
+                )
+            }
+        }
+
         while (true) {
             try {
                 val sock = sockServer.accept()
                 connected = true
                 val msg = BufferedReader(InputStreamReader(sock.getInputStream())).readLine()
-                sock.getOutputStream().write("OK\n".toByteArray())
                 sock.close()
-                if (!msg.equals(storeIP)) {
-                    storeIP = msg
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://$storeIP"))
-                    val stream = URL("http://$storeIP/apple-touch-icon.png").openStream()
-                    (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).notify(
-                        1, Notification.Builder(this, CHANNEL_ID)
-                            .setSmallIcon(R.drawable.ic_notification)
-                            .setLargeIcon(BitmapFactory.decodeStream(stream))
-                            .setContentIntent(
-                                PendingIntent.getActivity(
-                                    this,
-                                    0,
-                                    intent,
-                                    PendingIntent.FLAG_IMMUTABLE
+                if (msg[0] == '/') {
+                    with(flacPlayer) {
+                        reset()
+                        setDataSource("http://$storeIP${msg.split("|")[0]}")
+                        prepare()
+                        start()
+                    }
+                } else {
+                    if (!msg.equals(storeIP)) {
+                        storeIP = msg
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://$storeIP"))
+                        val stream = URL("http://$storeIP/apple-touch-icon.png").openStream()
+                        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).notify(
+                            1, Notification.Builder(this, CHANNEL_ID)
+                                .setSmallIcon(R.drawable.ic_notification)
+                                .setLargeIcon(BitmapFactory.decodeStream(stream))
+                                .setContentIntent(
+                                    PendingIntent.getActivity(
+                                        this,
+                                        0,
+                                        intent,
+                                        PendingIntent.FLAG_IMMUTABLE
+                                    )
                                 )
-                            )
-                            .setContentText("")
-                            .build()
-                    )
-                    stream.close()
+                                .setContentText("")
+                                .build()
+                        )
+                        stream.close()
+                    }
                 }
             } catch (_: SocketException) {
+                with(flacPlayer) {
+                    reset()
+                    release()
+                }
                 break
             } catch (_: SocketTimeoutException) {
             }

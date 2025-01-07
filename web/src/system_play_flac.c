@@ -216,10 +216,24 @@ static int init_alsa(snd_pcm_t **pcm_p, track_list *tracks) {
   return 0;
 }
 
+static void create_cmd(char *cmd, track_list *tracks) {
+  strcpy(cmd, "streamer=$(grep streamer /etc/hosts|awk '{print$2}');");
+  strcat(cmd, "if [ -z \"$streamer\" ];then exit 1;fi;echo \"");
+  while (tracks) {
+    strcat(cmd, "$(pwd)/");
+    strcat(cmd, tracks->file_name);
+    if (tracks->next)
+      strcat(cmd, "|");
+    tracks = tracks->next;
+  }
+  strcat(cmd, "\"|nc -w 1 $streamer 9696");
+}
+
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   ssize_t write_size;
   char *rsp = malloc(getpagesize());
+  char *cmd = malloc(getpagesize());
   snd_pcm_t *pcm_p;
   track_list *tracks;
   int fd;
@@ -232,14 +246,22 @@ int main(int prm_n, char *prm[]) {
     execl(resp_err, "resp_err", prm[1], NULL);
   write_size = write(fd, &pid, sizeof(pid_t));
   close(fd);
-  if (init_alsa(&pcm_p, tracks))
-    execl(resp_err, "resp_err", prm[1], NULL);
-  if (utime(".", NULL))
-    execl(resp_err, "resp_err", prm[1], NULL);
   strcpy(rsp, "HTTP/1.1 200 OK\r\n");
   strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
   strcat(rsp, "Cache-control: no-cache\r\n");
   strcat(rsp, "X-Content-Type-Options: nosniff\r\n\r\n");
+  create_cmd(cmd, tracks);
+  if (!system(cmd)) {
+    write_size = write(sock, rsp, strlen(rsp));
+    if (write_size != strlen(rsp))
+      return 1;
+    else
+      return 0;
+  }
+  if (init_alsa(&pcm_p, tracks))
+    execl(resp_err, "resp_err", prm[1], NULL);
+  if (utime(".", NULL))
+    execl(resp_err, "resp_err", prm[1], NULL);
   write_size = write(sock, rsp, strlen(rsp));
   if (write_size != strlen(rsp))
     return 1;
