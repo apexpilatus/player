@@ -8,8 +8,6 @@ import android.app.Service
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.media.AudioAttributes
-import android.media.AudioDeviceInfo
-import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.IBinder
@@ -36,29 +34,7 @@ class MainService : Service() {
 
     private val updateStatus = Runnable {
         var storeIP = ""
-        val flacPlayer = MediaPlayer().apply {
-            setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .build()
-            )
-        }
-
-        val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
-        val devs = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
-        var fuck = 2
-        for (dev in devs) {
-            if (dev.type == AudioDeviceInfo.TYPE_USB_HEADSET) {
-                (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).notify(
-                    ++fuck, Notification.Builder(this, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_notification)
-                        .setContentText(dev.id.toString())
-                        .build()
-                )
-            }
-        }
-
+        val playList = ArrayList<MediaPlayer>()
         while (true) {
             try {
                 val sock = sockServer.accept()
@@ -66,11 +42,32 @@ class MainService : Service() {
                 val msg = BufferedReader(InputStreamReader(sock.getInputStream())).readLine()
                 sock.close()
                 if (msg[0] == '/') {
-                    with(flacPlayer) {
-                        reset()
-                        setDataSource("http://$storeIP${msg.split("|")[0]}")
-                        prepare()
-                        start()
+                    for (player in playList){
+                        player.reset()
+                        player.release()
+                    }
+                    playList.clear()
+                    for (ref in msg.split("|")) {
+                        playList.add(MediaPlayer().apply {
+                            setAudioAttributes(
+                                AudioAttributes.Builder()
+                                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                                    .build()
+                            )
+                            setDataSource("http://$storeIP$ref")
+                            prepare()
+                        })
+                    }
+                    val playIterator = playList.iterator()
+                    if (playIterator.hasNext()){
+                        var playCurrent = playIterator.next()
+                        while (playIterator.hasNext()){
+                            val playNext = playIterator.next()
+                            playCurrent.setNextMediaPlayer(playNext)
+                            playCurrent = playNext
+                        }
+                        playList[0].start()
                     }
                 } else {
                     if (!msg.equals(storeIP)) {
@@ -96,10 +93,11 @@ class MainService : Service() {
                     }
                 }
             } catch (_: SocketException) {
-                with(flacPlayer) {
-                    reset()
-                    release()
+                for (player in playList){
+                    player.reset()
+                    player.release()
                 }
+                playList.clear()
                 break
             } catch (_: SocketTimeoutException) {
             }

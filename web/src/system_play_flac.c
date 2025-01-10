@@ -252,6 +252,8 @@ int main(int prm_n, char *prm[]) {
   strcat(rsp, "X-Content-Type-Options: nosniff\r\n\r\n");
   create_cmd(cmd, tracks);
   if (!system(cmd)) {
+    if (utime(".", NULL))
+      execl(resp_err, "resp_err", prm[1], NULL);
     write_size = write(sock, rsp, strlen(rsp));
     if (write_size != strlen(rsp))
       return 1;
