@@ -14,14 +14,13 @@ import android.os.IBinder
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.ServerSocket
-import java.net.SocketException
-import java.net.SocketTimeoutException
 import java.net.URL
+import java.util.concurrent.ConcurrentLinkedQueue
 
 const val CHANNEL_ID = "main"
 const val CHANNEL_NAME = "main"
 
-class MainService : Service() {
+class MainService : Service(), MediaPlayer.OnCompletionListener {
     private val sockServer by lazy { ServerSocket(9696) }
 
     companion object {
@@ -30,44 +29,45 @@ class MainService : Service() {
 
         @Volatile
         var started = false
+
+        val refs = ConcurrentLinkedQueue<String>()
+        val players = ConcurrentLinkedQueue<MediaPlayer>()
     }
 
     private val updateStatus = Runnable {
         var storeIP = ""
-        val playList = ArrayList<MediaPlayer>()
         while (true) {
             try {
                 val sock = sockServer.accept()
                 connected = true
                 val msg = BufferedReader(InputStreamReader(sock.getInputStream())).readLine()
                 sock.close()
-                if (msg[0] == '/') {
-                    for (player in playList){
+                if (msg[0] == '/' && storeIP != "") {
+                    refs.clear()
+                    for (player in players){
                         player.reset()
-                        player.release()
                     }
-                    playList.clear()
                     for (ref in msg.split("|")) {
-                        playList.add(MediaPlayer().apply {
-                            setAudioAttributes(
-                                AudioAttributes.Builder()
-                                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                                    .build()
-                            )
-                            setDataSource("http://$storeIP$ref")
-                            prepare()
-                        })
+                        refs.add("http://$storeIP$ref")
                     }
-                    val playIterator = playList.iterator()
-                    if (playIterator.hasNext()){
-                        var playCurrent = playIterator.next()
-                        while (playIterator.hasNext()){
-                            val playNext = playIterator.next()
-                            playCurrent.setNextMediaPlayer(playNext)
-                            playCurrent = playNext
+                    with(players.peek() as MediaPlayer){
+                        try {
+                            setDataSource(refs.poll())
+                            prepare()
+                            start()
+                        }catch (_:Exception){
                         }
-                        playList[0].start()
+                        val ref = refs.poll()
+                        if (ref != null){
+                            try {
+                                with(players.last()){
+                                    setDataSource(ref)
+                                    prepare()
+                                }
+                                setNextMediaPlayer(players.last())
+                            }catch (_:Exception){
+                            }
+                        }
                     }
                 } else {
                     if (!msg.equals(storeIP)) {
@@ -92,14 +92,14 @@ class MainService : Service() {
                         stream.close()
                     }
                 }
-            } catch (_: SocketException) {
-                for (player in playList){
+            } catch (_: Exception) {
+                refs.clear()
+                for (player in players){
                     player.reset()
                     player.release()
                 }
-                playList.clear()
+                players.clear()
                 break
-            } catch (_: SocketTimeoutException) {
             }
         }
     }
@@ -134,6 +134,17 @@ class MainService : Service() {
                 .setContentText("not connected")
                 .build()
         )
+        for (i in 1..2){
+            players.add(MediaPlayer().apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .build()
+                )
+                setOnCompletionListener(this@MainService)
+            })
+        }
         Thread(updateStatus).start()
         Thread(checkStop).start()
         return START_STICKY
@@ -146,5 +157,21 @@ class MainService : Service() {
     override fun onDestroy() {
         sockServer.close()
         started = false
+    }
+
+    override fun onCompletion(mp: MediaPlayer?) {
+        val ref = refs.poll()
+        if (ref != null){
+            with(players.poll() as MediaPlayer){
+                reset()
+                try {
+                    setDataSource(ref)
+                    prepare()
+                    players.last().setNextMediaPlayer(this)
+                } catch (_: Exception){
+                }
+                players.add(this)
+            }
+        }
     }
 }
