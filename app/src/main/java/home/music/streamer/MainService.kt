@@ -42,30 +42,32 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
                 connected = true
                 val msg = BufferedReader(InputStreamReader(sock.getInputStream())).readLine()
                 sock.close()
-                if (msg[0] == '/' && storeIP != "") {
-                    refs.clear()
-                    for (player in players){
-                        player.reset()
-                    }
-                    for (ref in msg.split("|")) {
-                        refs.add("http://$storeIP$ref")
-                    }
-                    with(players.peek() as MediaPlayer){
-                        try {
-                            setDataSource(refs.poll())
-                            prepare()
-                            start()
-                        }catch (_:Exception){
+                if (msg[0] == '/') {
+                    if (storeIP != ""){
+                        refs.clear()
+                        for (player in players){
+                            player.reset()
                         }
-                        val ref = refs.poll()
-                        if (ref != null){
+                        for (ref in msg.split("|")) {
+                            refs.add("http://$storeIP$ref")
+                        }
+                        with(players.peek() as MediaPlayer){
                             try {
-                                with(players.last()){
-                                    setDataSource(ref)
-                                    prepare()
-                                }
-                                setNextMediaPlayer(players.last())
+                                setDataSource(refs.poll())
+                                prepare()
+                                start()
                             }catch (_:Exception){
+                            }
+                            val ref = refs.poll()
+                            if (ref != null){
+                                try {
+                                    with(players.last()){
+                                        setDataSource(ref)
+                                        prepare()
+                                    }
+                                    setNextMediaPlayer(players.last())
+                                }catch (_:Exception){
+                                }
                             }
                         }
                     }
