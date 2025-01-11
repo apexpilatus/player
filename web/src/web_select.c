@@ -72,7 +72,7 @@ int main(int prm_n, char *prm[]) {
     if (stop_playing())
       execl(resp_err, "resp_err", prm[1], NULL);
     if (!strncmp("/playflac", url, strlen("/playflac")))
-      execl(system_play_flac, "system_play_flac", prm[1], url, NULL);
+      execl(system_play_flac, "system_play_flac", prm[1], url, prm[2], NULL);
     else
       execl(system_play_cd, "system_play_cd", prm[1], url, NULL);
   } else if (!strcmp("/poweroff", url)) {
@@ -81,7 +81,8 @@ int main(int prm_n, char *prm[]) {
     else
       execl(system_poweroff, "system_poweroff", prm[1], NULL);
   } else if (!strncmp("/setdate", url, strlen("/setdate"))) {
-    if (host && strcmp(host, "localhost") && strcmp(host, "127.0.0.1"))
+    if (strcmp(prm[2], "127.0.0.1") && host && strcmp(host, "localhost") &&
+        strcmp(host, "127.0.0.1") && strcmp(host, prm[2]))
       execl(system_setdate, "system_setdate", prm[1], url, NULL);
     else
       execl(resp_err, "resp_err", prm[1], NULL);

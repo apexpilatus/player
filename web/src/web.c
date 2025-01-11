@@ -1,3 +1,4 @@
+#include <arpa/inet.h>
 #include <fcntl.h>
 #include <netdb.h>
 #include <stdio.h>
@@ -71,8 +72,11 @@ int main(void) {
     pid = fork();
     if (!pid) {
       char sock_txt[15];
+      char client_address[INET_ADDRSTRLEN];
+      inet_ntop(AF_INET, &(((struct sockaddr_in *)&addr)->sin_addr),
+                client_address, INET_ADDRSTRLEN);
       sprintf(sock_txt, "%d", sock);
-      execl(web_select, "web_select", sock_txt, NULL);
+      execl(web_select, "web_select", sock_txt, client_address, NULL);
     }
     if (pid > 0)
       setpriority(PRIO_PROCESS, pid, PRIO_MIN);

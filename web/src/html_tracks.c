@@ -162,7 +162,7 @@ static void create_html(char *msg) {
 }
 
 static void create_header(char *hdr, unsigned long msg_len) {
-  unsigned long hdr_end;
+  size_t hdr_end;
   strcpy(hdr, "HTTP/1.1 200 OK\r\n");
   strcat(hdr, "Content-Type: text/html; charset=utf-8\r\n");
   strcat(hdr, "Cache-control: no-cache\r\n");

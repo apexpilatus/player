@@ -216,9 +216,9 @@ static int init_alsa(snd_pcm_t **pcm_p, track_list *tracks) {
   return 0;
 }
 
-static void create_cmd(char *cmd, track_list *tracks) {
-  strcpy(cmd, "streamer=$(grep streamer /etc/hosts|awk '{print$2}');");
-  strcat(cmd, "if [ -z \"$streamer\" ];then exit 1;fi;echo \"");
+static void create_cmd(char *cmd, track_list *tracks, char *client_address) {
+  size_t cmd_end;
+  strcat(cmd, "echo \"");
   while (tracks) {
     strcat(cmd, "$(pwd)/");
     strcat(cmd, tracks->file_name);
@@ -226,7 +226,8 @@ static void create_cmd(char *cmd, track_list *tracks) {
       strcat(cmd, "|");
     tracks = tracks->next;
   }
-  strcat(cmd, "\"|nc -w 1 $streamer 9696");
+  cmd_end = strlen(cmd);
+  sprintf(cmd + cmd_end, "\"|nc -w 1 %s 9696", client_address);
 }
 
 int main(int prm_n, char *prm[]) {
@@ -250,7 +251,7 @@ int main(int prm_n, char *prm[]) {
   strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
   strcat(rsp, "Cache-control: no-cache\r\n");
   strcat(rsp, "X-Content-Type-Options: nosniff\r\n\r\n");
-  create_cmd(cmd, tracks);
+  create_cmd(cmd, tracks, prm[3]);
   if (!system(cmd)) {
     if (utime(".", NULL))
       execl(resp_err, "resp_err", prm[1], NULL);

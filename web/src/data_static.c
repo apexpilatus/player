@@ -32,7 +32,7 @@ unsigned char *data;
 unsigned int data_len;
 
 static int select_data(char *url, char *rsp) {
-  unsigned long hdr_end;
+  size_t hdr_end;
   if (!strcmp("/", url)) {
     data = static_index_html;
     data_len = static_index_html_len;
