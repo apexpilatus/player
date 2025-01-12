@@ -57,7 +57,7 @@ int main(void) {
   unlink(play_pid_path);
   unlink(mix_pid_path);
 #ifdef PLAYER_AS_INIT
-  if (system("/init.sh") && system("poweroff -f"))
+  if (system("/root/init.sh") && system("poweroff -f"))
     return 1;
 #endif
   if (init_socket(&sock_listen, &addr, &addr_size))

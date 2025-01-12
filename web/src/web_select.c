@@ -76,7 +76,7 @@ int main(int prm_n, char *prm[]) {
     else
       execl(system_play_cd, "system_play_cd", prm[1], url, NULL);
   } else if (!strcmp("/poweroff", url)) {
-    if (stop_playing() || system("/init.sh finish"))
+    if (stop_playing() || system("/root/init.sh finish"))
       execl(resp_err, "resp_err", prm[1], NULL);
     else
       execl(system_poweroff, "system_poweroff", prm[1], NULL);
