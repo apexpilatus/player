@@ -227,7 +227,8 @@ static void create_cmd(char *cmd, track_list *tracks, char *client_address) {
     tracks = tracks->next;
   }
   cmd_end = strlen(cmd);
-  sprintf(cmd + cmd_end, "\"|nc -w 1 %s 9696 1>/dev/null 2>/dev/null", client_address);
+  sprintf(cmd + cmd_end, "\"|nc -w 1 %s 9696 1>/dev/null 2>/dev/null",
+          client_address);
 }
 
 int main(int prm_n, char *prm[]) {
