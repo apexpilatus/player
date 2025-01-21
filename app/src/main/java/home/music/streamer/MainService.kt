@@ -36,6 +36,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
 
     private val updateStatus = Runnable {
         var storeIP = ""
+        var notifyWhenStopped = false
         while (true) {
             try {
                 val sock = sockServer.accept()
@@ -43,60 +44,72 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
                 val msg = BufferedReader(InputStreamReader(sock.getInputStream())).readLine()
                 sock.close()
                 if (msg[0] == '/') {
-                    if (storeIP != ""){
+                    if (storeIP != "") {
                         refs.clear()
-                        for (player in players){
+                        for (player in players) {
                             player.reset()
                         }
+                        notifyWhenStopped = true
                         for (ref in msg.split("|")) {
                             refs.add("http://$storeIP$ref")
                         }
-                        with(players.peek() as MediaPlayer){
+                        val fileName =
+                            "/" + (refs.peek() as String).split("/")[(refs.peek() as String).split("/").size - 1]
+                        val stream = URL((refs.peek() as String).replace(fileName, "")).openStream()
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://$storeIP"))
+                        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).notify(
+                            1,
+                            Notification.Builder(this, CHANNEL_ID)
+                                .setSmallIcon(R.drawable.ic_notification)
+                                .setLargeIcon(BitmapFactory.decodeStream(stream)).setContentIntent(
+                                    PendingIntent.getActivity(
+                                        this, 0, intent, PendingIntent.FLAG_IMMUTABLE
+                                    )
+                                ).setOnlyAlertOnce(true).setContentText("").build()
+                        )
+                        stream.close()
+                        with(players.peek() as MediaPlayer) {
                             try {
                                 setDataSource(refs.poll())
                                 prepare()
                                 start()
-                            }catch (_:Exception){
+                            } catch (_: Exception) {
                             }
                             val ref = refs.poll()
-                            if (ref != null){
+                            if (ref != null) {
                                 try {
-                                    with(players.last()){
+                                    with(players.last()) {
                                         setDataSource(ref)
                                         prepare()
                                     }
                                     setNextMediaPlayer(players.last())
-                                }catch (_:Exception){
+                                } catch (_: Exception) {
                                 }
                             }
                         }
                     }
                 } else {
-                    if (!msg.equals(storeIP)) {
+                    if (storeIP != msg || (!(players.first().isPlaying || players.last().isPlaying) && notifyWhenStopped)) {
+                        notifyWhenStopped = false
                         storeIP = msg
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://$storeIP"))
                         val stream = URL("http://$storeIP/apple-touch-icon.png").openStream()
                         (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).notify(
-                            1, Notification.Builder(this, CHANNEL_ID)
+                            1,
+                            Notification.Builder(this, CHANNEL_ID)
                                 .setSmallIcon(R.drawable.ic_notification)
-                                .setLargeIcon(BitmapFactory.decodeStream(stream))
-                                .setContentIntent(
+                                .setLargeIcon(BitmapFactory.decodeStream(stream)).setContentIntent(
                                     PendingIntent.getActivity(
-                                        this,
-                                        0,
-                                        intent,
-                                        PendingIntent.FLAG_IMMUTABLE
+                                        this, 0, intent, PendingIntent.FLAG_IMMUTABLE
                                     )
-                                )
-                                .setContentText("")
-                                .build()
+                                ).setOnlyAlertOnce(true).setContentText("").build()
                         )
                         stream.close()
                     }
                 }
             } catch (_: Exception) {
                 refs.clear()
-                for (player in players){
+                for (player in players) {
                     player.reset()
                     player.release()
                 }
@@ -108,9 +121,8 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
 
     private val checkStop = Runnable {
         while (true) {
-            Thread.sleep(20000)
-            if (connected)
-                connected = false
+            Thread.sleep(15000)
+            if (connected) connected = false
             else {
                 stopSelf()
                 break
@@ -121,9 +133,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
     override fun onCreate() {
         (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(
             NotificationChannel(
-                CHANNEL_ID,
-                CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_DEFAULT
+                CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT
             )
         )
     }
@@ -131,18 +141,15 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         started = true
         this.startForeground(
-            1, Notification.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setContentText("not connected")
-                .build()
+            1,
+            Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
+                .setContentText("not connected").build()
         )
-        for (i in 1..2){
+        for (i in 1..2) {
             players.add(MediaPlayer().apply {
                 setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .build()
+                    AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(AudioAttributes.USAGE_MEDIA).build()
                 )
                 setOnCompletionListener(this@MainService)
             })
@@ -163,14 +170,14 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
 
     override fun onCompletion(mp: MediaPlayer?) {
         val ref = refs.poll()
-        if (ref != null){
-            with(players.poll() as MediaPlayer){
+        if (ref != null) {
+            with(players.poll() as MediaPlayer) {
                 reset()
                 try {
                     setDataSource(ref)
                     prepare()
                     players.last().setNextMediaPlayer(this)
-                } catch (_: Exception){
+                } catch (_: Exception) {
                 }
                 players.add(this)
             }
