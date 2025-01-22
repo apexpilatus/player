@@ -65,7 +65,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
                                     PendingIntent.getActivity(
                                         this, 0, intent, PendingIntent.FLAG_IMMUTABLE
                                     )
-                                ).setOnlyAlertOnce(true).setContentText("").build()
+                                ).setOnlyAlertOnce(true).setChronometerCountDown(false).setContentText("").build()
                         )
                         stream.close()
                         with(players.peek() as MediaPlayer) {
@@ -102,7 +102,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
                                     PendingIntent.getActivity(
                                         this, 0, intent, PendingIntent.FLAG_IMMUTABLE
                                     )
-                                ).setOnlyAlertOnce(true).setContentText("").build()
+                                ).setOnlyAlertOnce(true).setChronometerCountDown(false).setContentText("").build()
                         )
                         stream.close()
                     }
@@ -143,7 +143,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
         this.startForeground(
             1,
             Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
-                .setContentText("not connected").build()
+                .setChronometerCountDown(false).setContentText("not connected").build()
         )
         for (i in 1..2) {
             players.add(MediaPlayer().apply {
