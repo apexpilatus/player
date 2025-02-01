@@ -28,7 +28,7 @@ int cd_reader(void *prm) {
       while (cursor <= lastsector) {
         readbuf = paranoia_read_limited(p, callback, 5);
         if (readbuf == NULL) {
-          if (errno == EBADF || errno == ENOMEDIUM) {
+          if (errno == EBADF || errno == ENOMEDIUM || errno == ENODEV) {
             paranoia_free(p);
             cdda_close(d);
             kill(pid, SIGTERM);

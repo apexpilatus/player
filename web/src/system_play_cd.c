@@ -80,6 +80,8 @@ int main(int prm_n, char *prm[]) {
     url_track++;
     first_track = strtol(url_track, NULL, 10);
   }
+  if (!d || cdda_open(d) || first_track > d->tracks)
+    execl(resp_err, "resp_err", prm[1], NULL);
   strcpy(rsp, "HTTP/1.1 200 OK\r\n");
   strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
   strcat(rsp, "Cache-control: no-cache\r\n");
@@ -93,7 +95,7 @@ int main(int prm_n, char *prm[]) {
     else
       return 0;
   }
-  if (!d || cdda_open(d) || init_alsa(&pcm_p))
+  if (init_alsa(&pcm_p))
     execl(resp_err, "resp_err", prm[1], NULL);
   write_size = write(sock, rsp, strlen(rsp));
   if (write_size != strlen(rsp))
