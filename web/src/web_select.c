@@ -68,13 +68,17 @@ int main(int prm_n, char *prm[]) {
   } else if (!(strcmp("/getvolume", url) &&
                strncmp("/setvolume", url, strlen("/setvolume")))) {
     execl(system_volume, "system_volume", prm[1], url, NULL);
+  } else if (!strncmp("/stream_cd/", url, strlen("/stream_cd/"))) {
+    if (stop_playing())
+      execl(resp_err, "resp_err", prm[1], NULL);
+    execl(data_cd, "data_cd", prm[1], url, NULL);
   } else if (!strncmp("/play", url, strlen("/play"))) {
     if (stop_playing())
       execl(resp_err, "resp_err", prm[1], NULL);
     if (!strncmp("/playflac", url, strlen("/playflac")))
       execl(system_play_flac, "system_play_flac", prm[1], url, prm[2], NULL);
     else
-      execl(system_play_cd, "system_play_cd", prm[1], url, NULL);
+      execl(system_play_cd, "system_play_cd", prm[1], url, prm[2], NULL);
   } else if (!strcmp("/poweroff", url)) {
     if (stop_playing() || system("/root/init.sh finish"))
       execl(resp_err, "resp_err", prm[1], NULL);

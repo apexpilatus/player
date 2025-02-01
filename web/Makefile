@@ -10,6 +10,7 @@ PLAYER_DEFINES += -D html_albums=\"$(PLAYER_PATH)/html_albums\"
 PLAYER_DEFINES += -D resp_err=\"$(PLAYER_PATH)/resp_err\"
 PLAYER_DEFINES += -D data_static=\"$(PLAYER_PATH)/data_static\"
 PLAYER_DEFINES += -D data_picture=\"$(PLAYER_PATH)/data_picture\"
+PLAYER_DEFINES += -D data_cd=\"$(PLAYER_PATH)/data_cd\"
 PLAYER_DEFINES += -D data_flac=\"$(PLAYER_PATH)/data_flac\"
 PLAYER_DEFINES += -D system_poweroff=\"$(PLAYER_PATH)/system_poweroff\"
 PLAYER_DEFINES += -D system_play_flac=\"$(PLAYER_PATH)/system_play_flac\"
@@ -21,7 +22,7 @@ PLAYER_DEFINES += -D PLAYER_AS_INIT
 endif
 CC := gcc -O2
 
-web : Makefile src/web.c web_select html_tracks html_cd_control html_albums resp_err data_static data_picture data_flac system_play_flac system_play_cd system_volume system_poweroff system_setdate
+web : Makefile src/web.c web_select html_tracks html_cd_control html_albums resp_err data_static data_picture data_cd data_flac system_play_flac system_play_cd system_volume system_poweroff system_setdate
 	$(CC) src/web.c -o web $(PLAYER_DEFINES)
 
 web_select : Makefile src/web_select.c
@@ -52,7 +53,8 @@ data_static : Makefile src/data_static.c static/style_main.css static/script_mai
 	xxd -i static/favicon.ico favicon.c
 	xxd -i static/favicon152.png favicon152.c
 	xxd -i static/favicon180.png favicon180.c
-	$(CC) src/data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_cd_control_css.c script_cd_control_js.c style_albums_css.c script_albums_js.c index_html.c favicon.c favicon152.c favicon180.c -o data_static $(PLAYER_DEFINES)
+	xxd -i static/cd_icon.png cd_icon.c
+	$(CC) src/data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_cd_control_css.c script_cd_control_js.c style_albums_css.c script_albums_js.c index_html.c favicon.c favicon152.c favicon180.c cd_icon.c -o data_static $(PLAYER_DEFINES)
 	rm style_main_css.c
 	rm script_main_js.c
 	rm style_tracks_css.c
@@ -65,6 +67,7 @@ data_static : Makefile src/data_static.c static/style_main.css static/script_mai
 	rm favicon.c
 	rm favicon152.c
 	rm favicon180.c
+	rm cd_icon.c
 
 data_picture : Makefile src/data_picture.c
 	$(CC) src/data_picture.c -o data_picture $(PLAYER_DEFINES) -lFLAC
@@ -72,11 +75,14 @@ data_picture : Makefile src/data_picture.c
 data_flac : Makefile src/data_flac.c
 	$(CC) src/data_flac.c -o data_flac $(PLAYER_DEFINES)
 
+data_cd : Makefile src/data_cd.c src/lib_read_cd.c
+	$(CC) src/data_cd.c src/lib_read_cd.c -o data_cd $(PLAYER_DEFINES) -lcdda_interface -lcdda_paranoia
+
 system_play_flac : Makefile src/system_play_flac.c
 	$(CC) src/system_play_flac.c -o system_play_flac $(PLAYER_DEFINES) -lasound -lFLAC
 
-system_play_cd : Makefile src/system_play_cd.c
-	$(CC) src/system_play_cd.c -o system_play_cd $(PLAYER_DEFINES) -lasound -lcdda_interface -lcdda_paranoia
+system_play_cd : Makefile src/system_play_cd.c src/lib_read_cd.c
+	$(CC) src/system_play_cd.c src/lib_read_cd.c -o system_play_cd $(PLAYER_DEFINES) -lasound -lcdda_interface -lcdda_paranoia
 
 system_volume : Makefile src/system_volume.c
 	$(CC) src/system_volume.c -o system_volume $(PLAYER_DEFINES) -lasound

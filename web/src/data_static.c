@@ -15,6 +15,7 @@ extern unsigned char static_index_html[];
 extern unsigned char static_favicon_ico[];
 extern unsigned char static_favicon152_png[];
 extern unsigned char static_favicon180_png[];
+extern unsigned char static_cd_icon_png[];
 extern unsigned int static_style_main_css_len;
 extern unsigned int static_script_main_js_len;
 extern unsigned int static_style_tracks_css_len;
@@ -27,6 +28,7 @@ extern unsigned int static_index_html_len;
 extern unsigned int static_favicon_ico_len;
 extern unsigned int static_favicon152_png_len;
 extern unsigned int static_favicon180_png_len;
+extern unsigned int static_cd_icon_png_len;
 
 unsigned char *data;
 unsigned int data_len;
@@ -54,6 +56,12 @@ static int select_data(char *url, char *rsp) {
   } else if (!strcmp("/apple-touch-icon.png", url)) {
     data = static_favicon180_png;
     data_len = static_favicon180_png_len;
+    sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
+            "Content-Type: image/png",
+            "Cache-control: max-age=31536000, immutable");
+  } else if (!strcmp("/stream_cd", url)) {
+    data = static_cd_icon_png;
+    data_len = static_cd_icon_png_len;
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
             "Content-Type: image/png",
             "Cache-control: max-age=31536000, immutable");
