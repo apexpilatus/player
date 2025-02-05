@@ -55,7 +55,7 @@ static int cd_stream(int sock, int data_size) {
   data_list *data_cur = (data_list *)data_first;
   while (in_work && filled_buf_size(data_cur) < 500)
     usleep(10);
-  sprintf(rsp, "%s\r\n%s%ld\r\n%s\r\n\r\n", "HTTP/1.1 200 OK",
+  sprintf(rsp, "%s\r\n%s%d\r\n%s\r\n\r\n", "HTTP/1.1 200 OK",
           "Content-Length: ", data_size + 44, "Content-Type: audio/wav");
   write_size = write(sock, rsp, strlen(rsp));
   if (write_size != strlen(rsp))
