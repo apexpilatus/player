@@ -33,31 +33,23 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
         private var storeIP = ""
 
         @Synchronized
-        fun handleIP(ip: String?): String? {
-            if (ip == null) return storeIP
-            else {
-                storeIP = ip
-                return null
-            }
+        fun remoteIP(ip: String? = null): String {
+            if (ip != null) storeIP = ip
+            return storeIP
         }
-
     }
 
     private val updateStatus = Runnable {
         while (true) {
             try {
                 sockServer.accept().use {
-                    if (handleIP(null) != it.remoteSocketAddress.toString().replace("/", "")
+                    if (remoteIP() != it.remoteSocketAddress.toString().replace("/", "")
                             .split(":")[0]
-                    ) handleIP(it.remoteSocketAddress.toString().replace("/", "").split(":")[0])
+                    ) remoteIP(it.remoteSocketAddress.toString().replace("/", "").split(":")[0])
                     val msg = BufferedReader(InputStreamReader(it.getInputStream())).readLine()
-                    for (player in players) {
-                        player.reset()
-                    }
+                    for (player in players) player.reset()
                     refs.clear()
-                    for (ref in msg.split("|")) {
-                        refs.add("http://${handleIP(null)}$ref")
-                    }
+                    for (ref in msg.split("|")) refs.add("http://${remoteIP()}$ref")
                 }
                 val pictureRef = (refs.peek() as String).replace(
                     "/" + (refs.peek() as String).split("/")[(refs.peek() as String).split("/").size - 1],
@@ -87,9 +79,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
                 }
                 notifyWhenStopped = true
             } catch (_: Exception) {
-                for (player in players) {
-                    player.reset()
-                }
+                for (player in players) player.reset()
                 refs.clear()
             }
         }
@@ -101,7 +91,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
             try {
                 if (notifyWhenStopped && !(players.first().isPlaying || players.last().isPlaying)) {
                     notifyWhenStopped = false
-                    URL("http://${handleIP(null)}/apple-touch-icon.png").openStream().use {
+                    URL("http://${remoteIP()}/apple-touch-icon.png").openStream().use {
                         (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).notify(
                             1,
                             Notification.Builder(this, CHANNEL_ID)
@@ -129,7 +119,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
         this.startForeground(
             1,
             Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
-                .setShowWhen(false).setContentText("waiting").build()
+                .setShowWhen(false).setContentText("waiting...").build()
         )
         for (i in 1..2) {
             players.add(MediaPlayer().apply {
