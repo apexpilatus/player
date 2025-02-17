@@ -40,12 +40,14 @@ static int write_header(int fd, int size) {
 }
 
 static int filled_buf_size(data_list *data) {
-  int ret = 0;
+  int count = 0;
   while (data) {
-    ret++;
+    count++;
+    if (count > 200)
+      return 0;
     data = (data_list *)data->next;
   }
-  return ret;
+  return 1;
 }
 
 static int cd_stream(int sock, int data_size) {
@@ -53,7 +55,7 @@ static int cd_stream(int sock, int data_size) {
   char *rsp = malloc(getpagesize());
   ssize_t write_size;
   data_list *data_cur = (data_list *)data_first;
-  while (in_work && filled_buf_size(data_cur) < 500)
+  while (in_work && filled_buf_size(data_cur))
     usleep(10);
   sprintf(rsp, "%s\r\n%s%d\r\n%s\r\n\r\n", "HTTP/1.1 200 OK",
           "Content-Length: ", data_size + 44, "Content-Type: audio/wav");
@@ -63,7 +65,7 @@ static int cd_stream(int sock, int data_size) {
   if (write_header(sock, data_size))
     return 1;
   while (data_cur) {
-    while (in_work && filled_buf_size(data_cur) < 500)
+    while (in_work && filled_buf_size(data_cur))
       usleep(10);
     write_size = write(sock, (char *)data_cur->buf, CD_FRAMESIZE_RAW);
     if (write_size != CD_FRAMESIZE_RAW)
