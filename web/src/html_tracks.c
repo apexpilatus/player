@@ -100,16 +100,16 @@ static void list_tracks(char *msg) {
       strcat(msg, "<div id=artist>");
       strcat(msg, list_first->artist);
       strcat(msg, "</div>");
-    }
-    if (list_first->album) {
-      strcat(msg, "<div id=album>");
-      strcat(msg, list_first->album);
-      strcat(msg, "</div>");
-    }
-    if (list_first->rate) {
-      strcat(msg, "<div id=rate>");
-      strcat(msg, list_first->rate);
-      strcat(msg, "</div>");
+      if (list_first->album && strcmp(list_first->artist, list_first->album)) {
+        strcat(msg, "<div id=album>");
+        strcat(msg, list_first->album);
+        strcat(msg, "</div>");
+      }
+      if (list_first->rate) {
+        strcat(msg, "<div id=rate>");
+        strcat(msg, list_first->rate);
+        strcat(msg, "</div>");
+      }
     }
   }
   strcat(msg, "</div>");
