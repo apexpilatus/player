@@ -4,10 +4,10 @@ const tracksElem = parent.document.getElementById("tracks");
 const volumeElem = parent.document.getElementById("volume");
 const scrollupElem = parent.document.getElementById("scrollup");
 const scrolldownElem = parent.document.getElementById("scrolldown");
-let current = "empty";
+const currentElem = parent.document.getElementById("current");
 
 function gettracks(album) {
-    if (current == album) {
+    if (currentElem.innerHTML == album) {
         fetch("getvolume").then(resp => {
             if (resp.status == 200) {
                 if (resp.statusText.split("_")[1] == resp.statusText.split("_")[2]) {
@@ -26,8 +26,6 @@ function gettracks(album) {
                 window.location.assign(parent.window.location.href + "albums");
             }
         });
-    } else {
-        current = album.slice();
     }
     tracksElem.hidden = true;
     tracksElem.src = parent.window.location.href + "tracks?" + album;
