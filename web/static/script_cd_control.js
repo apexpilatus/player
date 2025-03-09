@@ -7,5 +7,4 @@ function showtracks() {
 
 function updatecurrent() {
     currentElem.innerHTML="cd";
-    tracksElem.hidden = false;
 }
