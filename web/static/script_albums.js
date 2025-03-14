@@ -34,7 +34,9 @@ function gettracks(album) {
 function showscroll(initscroll) {
     if (initscroll == "down")
         window.scrollTo(0, document.body.scrollHeight);
-    volumeElem.hidden = false;
-    scrollupElem.hidden = false;
-    scrolldownElem.hidden = false;
+    if (controlElem.hidden) {
+        volumeElem.hidden = false;
+        scrollupElem.hidden = false;
+        scrolldownElem.hidden = false;
+    }
 }
