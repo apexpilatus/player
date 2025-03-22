@@ -7,6 +7,7 @@ PLAYER_DEFINES += -D play_pid_path=\"/run/play_pid\"
 PLAYER_DEFINES += -D mix_pid_path=\"/run/mix_pid\"
 PLAYER_DEFINES += -D html_cd_control=\"$(PLAYER_PATH)/html_cd_control\"
 PLAYER_DEFINES += -D html_albums=\"$(PLAYER_PATH)/html_albums\"
+PLAYER_DEFINES += -D html_volume=\"$(PLAYER_PATH)/html_volume\"
 PLAYER_DEFINES += -D resp_err=\"$(PLAYER_PATH)/resp_err\"
 PLAYER_DEFINES += -D data_static=\"$(PLAYER_PATH)/data_static\"
 PLAYER_DEFINES += -D data_picture=\"$(PLAYER_PATH)/data_picture\"
@@ -22,7 +23,7 @@ PLAYER_DEFINES += -D PLAYER_AS_INIT
 endif
 CC := gcc -O2
 
-web : Makefile src/web.c web_select html_tracks html_cd_control html_albums resp_err data_static data_picture data_cd data_flac system_play_flac system_play_cd system_volume system_poweroff system_setdate
+web : Makefile src/web.c web_select html_tracks html_cd_control html_albums html_volume resp_err data_static data_picture data_cd data_flac system_play_flac system_play_cd system_volume system_poweroff system_setdate
 	$(CC) src/web.c -o web $(PLAYER_DEFINES)
 
 web_select : Makefile src/web_select.c
@@ -37,6 +38,9 @@ html_cd_control : Makefile src/html_cd_control.c
 html_albums : Makefile src/html_albums.c
 	$(CC) src/html_albums.c -o html_albums $(PLAYER_DEFINES)
 
+html_volume : Makefile src/html_volume.c
+	$(CC) src/html_volume.c -o html_volume $(PLAYER_DEFINES) -lasound
+
 resp_err : src/resp_err.c
 	$(CC) src/resp_err.c -o resp_err
 
@@ -49,25 +53,15 @@ data_static : Makefile src/data_static.c static/style_main.css static/script_mai
 	xxd -i static/script_cd_control.js script_cd_control_js.c
 	xxd -i static/style_albums.css style_albums_css.c
 	xxd -i static/script_albums.js script_albums_js.c
+	xxd -i static/style_volume.css style_volume_css.c
+	xxd -i static/script_volume.js script_volume_js.c
 	xxd -i static/index.html index_html.c
 	xxd -i static/favicon.ico favicon.c
 	xxd -i static/favicon152.png favicon152.c
 	xxd -i static/favicon180.png favicon180.c
 	xxd -i static/cd_icon.png cd_icon.c
-	$(CC) src/data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_cd_control_css.c script_cd_control_js.c style_albums_css.c script_albums_js.c index_html.c favicon.c favicon152.c favicon180.c cd_icon.c -o data_static $(PLAYER_DEFINES)
-	rm style_main_css.c
-	rm script_main_js.c
-	rm style_tracks_css.c
-	rm script_tracks_js.c
-	rm style_cd_control_css.c
-	rm script_cd_control_js.c
-	rm style_albums_css.c
-	rm script_albums_js.c
-	rm index_html.c
-	rm favicon.c
-	rm favicon152.c
-	rm favicon180.c
-	rm cd_icon.c
+	$(CC) src/data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_cd_control_css.c script_cd_control_js.c style_albums_css.c script_albums_js.c style_volume_css.c script_volume_js.c index_html.c favicon.c favicon152.c favicon180.c cd_icon.c -o data_static $(PLAYER_DEFINES)
+	rm *.c
 
 data_picture : Makefile src/data_picture.c
 	$(CC) src/data_picture.c -o data_picture $(PLAYER_DEFINES) -lFLAC

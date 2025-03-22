@@ -155,10 +155,9 @@ static void create_html(char *msg) {
   strcat(msg, "<script src=script_tracks.js></script>");
   strcat(msg, "</head>");
   strcat(msg, "<body>");
-  strcat(msg,
-         "<script>parent.document.getElementById(\"current\").innerHTML=\"");
+  strcat(msg, "<script>updatecurrent(\"");
   strcat(msg, getcwd(NULL, 0));
-  strcat(msg, "\"</script>");
+  strcat(msg, "\")</script>");
   strcat(msg, "<script>showtracks()</script>");
   list_tracks(msg);
   strcat(msg, "</body>");

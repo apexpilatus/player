@@ -65,8 +65,9 @@ int main(int prm_n, char *prm[]) {
     execl(html_cd_control, "html_cd_control", prm[1], NULL);
   } else if (!strncmp("/albums", url, strlen("/albums"))) {
     execl(html_albums, "html_albums", prm[1], url, NULL);
-  } else if (!(strcmp("/getvolume", url) &&
-               strncmp("/setvolume", url, strlen("/setvolume")))) {
+  } else if (!strcmp("/getvolume", url)) {
+    execl(html_volume, "html_volume", prm[1], url, NULL);
+  } else if (!strncmp("/setvolume", url, strlen("/setvolume"))) {
     execl(system_volume, "system_volume", prm[1], url, NULL);
   } else if (!strncmp("/stream_cd/", url, strlen("/stream_cd/"))) {
     if (stop_playing())

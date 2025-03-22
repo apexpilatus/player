@@ -11,6 +11,8 @@ extern unsigned char static_style_cd_control_css[];
 extern unsigned char static_script_cd_control_js[];
 extern unsigned char static_style_albums_css[];
 extern unsigned char static_script_albums_js[];
+extern unsigned char static_style_volume_css[];
+extern unsigned char static_script_volume_js[];
 extern unsigned char static_index_html[];
 extern unsigned char static_favicon_ico[];
 extern unsigned char static_favicon152_png[];
@@ -24,6 +26,8 @@ extern unsigned int static_style_cd_control_css_len;
 extern unsigned int static_script_cd_control_js_len;
 extern unsigned int static_style_albums_css_len;
 extern unsigned int static_script_albums_js_len;
+extern unsigned int static_style_volume_css_len;
+extern unsigned int static_script_volume_js_len;
 extern unsigned int static_index_html_len;
 extern unsigned int static_favicon_ico_len;
 extern unsigned int static_favicon152_png_len;
@@ -89,6 +93,12 @@ static int select_data(char *url, char *rsp) {
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
             "Content-Type: text/css; charset=utf-8",
             "Cache-control: max-age=31536000, immutable");
+  } else if (!strcmp("/style_volume.css", url)) {
+    data = static_style_volume_css;
+    data_len = static_style_volume_css_len;
+    sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
+            "Content-Type: text/css; charset=utf-8",
+            "Cache-control: max-age=31536000, immutable");
   } else if (!strcmp("/script_main.js", url)) {
     data = static_script_main_js;
     data_len = static_script_main_js_len;
@@ -110,6 +120,12 @@ static int select_data(char *url, char *rsp) {
   } else if (!strcmp("/script_albums.js", url)) {
     data = static_script_albums_js;
     data_len = static_script_albums_js_len;
+    sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
+            "Content-Type: text/javascript; charset=utf-8",
+            "Cache-control: max-age=31536000, immutable");
+  } else if (!strcmp("/script_volume.js", url)) {
+    data = static_script_volume_js;
+    data_len = static_script_volume_js_len;
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
             "Content-Type: text/javascript; charset=utf-8",
             "Cache-control: max-age=31536000, immutable");

@@ -1,0 +1,14 @@
+body {
+    font-size: 20px;
+}
+
+form {
+    position: fixed;
+    bottom: 10%;
+    left: 5%;
+    width: 90%;
+}
+
+input {
+    width: 90%;
+}

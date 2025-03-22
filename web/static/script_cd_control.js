@@ -1,8 +1,8 @@
-const tracksElem = parent.document.getElementById("tracks");
+const controlElem = parent.document.getElementById("control");
 const currentElem = parent.document.getElementById("current");
 
 function showtracks() {
-    tracksElem.hidden = false;
+    controlElem.hidden = false;
 }
 
 function updatecurrent() {

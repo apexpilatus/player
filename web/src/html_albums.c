@@ -78,6 +78,9 @@ static albums_list *get_albums() {
 static void list_albums(char *msg) {
   albums_list *albums = get_albums();
   if (albums && difftime(time(NULL), albums->mtime) >= 0) {
+    strcat(msg, "<script>updatetop(\"");
+    strcat(msg, albums->path);
+    strcat(msg, "\")</script>");
     while (albums) {
       strcat(msg, "<img src=\"");
       strcat(msg, albums->path);

@@ -12,7 +12,7 @@ body {
     border-style: none;
 }
 
-#tracks {
+#control {
     position: fixed;
     top: 15%;
     left: 2%;
@@ -59,18 +59,4 @@ button {
     right: 35%;
     bottom: 5%;
     border-style: none;
-}
-
-#level {
-    position: fixed;
-    left: 5%;
-    top: 5%;
-    width: 50%;
-}
-
-#control {
-    position: fixed;
-    left: 5%;
-    bottom: 10%;
-    width: 85%;
 }
