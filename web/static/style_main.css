@@ -6,7 +6,7 @@ body {
     position: fixed;
     top: 5%;
     right: 2%;
-    width: 30%;
+    width: 25%;
     max-width: 300px;
     height: 75%;
     border-style: none;
@@ -16,7 +16,7 @@ body {
     position: fixed;
     top: 15%;
     left: 2%;
-    width: 65%;
+    width: 70%;
     height: 65%;
     border-style: none;
 }
