@@ -28,6 +28,13 @@ static void list_controls(char *msg) {
   while (!snd_card_next(&card_number) && card_number != -1) {
     sprintf(alsa_name, "hw:%d", card_number);
     if (!(snd_mixer_attach(mxr, alsa_name) || snd_mixer_load(mxr))) {
+      strcat(msg, "<p><label for=");
+      strcat(msg, alsa_name);
+      strcat(msg, ">");
+      snd_card_get_name(card_number, &human_name);
+      strcat(msg, human_name);
+      free(human_name);
+      strcat(msg, "</label><br>");
       melem = snd_mixer_first_elem(mxr);
       for (; melem && !snd_mixer_selem_has_playback_volume_joined(melem);
            melem = snd_mixer_elem_next(melem))
@@ -36,21 +43,15 @@ static void list_controls(char *msg) {
                                                                &max_vol) ||
                      snd_mixer_selem_get_playback_volume(
                          melem, SND_MIXER_SCHN_UNKNOWN, &curr_vol))) {
-        strcat(msg, "<p><label for=");
-        strcat(msg, alsa_name);
-        strcat(msg, ">");
-        snd_card_get_name(card_number, &human_name);
-        strcat(msg, human_name);
-        free(human_name);
-        strcat(msg, "</label><br>");
         strcat(msg, "<input type=range ");
         msg_end = strlen(msg);
         sprintf(
             msg + msg_end,
             "id=%s name=%s min=%ld max=%ld value=%ld oninput=setlevel(\"%s\")",
             alsa_name, alsa_name, min_vol, max_vol, curr_vol, alsa_name);
-        strcat(msg, " title=volume></p>");
+        strcat(msg, " title=volume>");
       }
+      strcat(msg, "</p>");
       snd_mixer_free(mxr);
       snd_mixer_detach(mxr, alsa_name);
     }
