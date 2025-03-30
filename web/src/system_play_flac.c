@@ -201,9 +201,9 @@ static card_list *init_alsa(track_list *tracks) {
     return NULL;
   bytes_per_sample = rate->data.stream_info.bits_per_sample / 8;
   while (!snd_card_next(&card_number) && card_number != -1) {
-    snd_pcm_t *pcm_p = NULL;
     uint32_t off = 0;
-    snd_pcm_hw_params_t *pcm_hw;
+    snd_pcm_t *pcm_p = NULL;
+    snd_pcm_hw_params_t *pcm_hw = NULL;
     snd_pcm_hw_params_malloc(&pcm_hw);
     sprintf(card_name, "hw:%d,0", card_number);
     if (snd_pcm_open(&pcm_p, card_name, SND_PCM_STREAM_PLAYBACK, 0))
