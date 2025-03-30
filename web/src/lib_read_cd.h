@@ -8,3 +8,4 @@ extern int volatile first_track;
 extern char volatile in_work;
 
 int cd_reader(void *prm);
+int filled_buf_check(data_list *data);

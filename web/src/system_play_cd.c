@@ -17,22 +17,42 @@
 // clang-format on
 
 static int cd_player(snd_pcm_t *pcm_p) {
-  long data_size = 0;
   data_list *data_cur;
-  while (in_work && data_size <= CD_FRAMESIZE_RAW) {
-    data_cur = (data_list *)data_first;
-    data_size = 0;
-    while (data_cur) {
-      data_size += CD_FRAMESIZE_RAW / 4;
-      data_cur = (data_list *)data_cur->next;
-    }
-  }
+  snd_pcm_sframes_t avail_frames;
+  char channel;
+  char channels = 2;
+  char *buf_tmp[channels];
+  const snd_pcm_channel_area_t *areas;
+  snd_pcm_uframes_t offset;
+  unsigned int blocksize;
+  while (in_work && filled_buf_check((data_list *)data_first))
+    usleep(10);
   data_cur = (data_list *)data_first;
   while (data_cur) {
-    snd_pcm_mmap_writei(pcm_p, (char *)data_cur->buf, CD_FRAMESIZE_RAW / 4);
+    while ((avail_frames = snd_pcm_avail_update(pcm_p)) < CD_FRAMESIZE_RAW / 4)
+      if (avail_frames < 0)
+        return 1;
+      else
+        usleep(50);
+    for (blocksize = 0; blocksize < CD_FRAMESIZE_RAW / 2; blocksize += 2) {
+      snd_pcm_uframes_t frames = 1;
+      snd_pcm_sframes_t commitres;
+      if (snd_pcm_mmap_begin(pcm_p, &areas, &offset, &frames) < 0)
+        return 1;
+      for (channel = 0; channel < channels; channel++) {
+        buf_tmp[channel] = areas[channel].addr + (areas[channel].first / 8) +
+                           (offset * areas[channel].step / 8);
+        memcpy(buf_tmp[channel], (short *)data_cur->buf + blocksize + channel,
+               2);
+      }
+      commitres = snd_pcm_mmap_commit(pcm_p, offset, frames);
+      if (commitres < 0 || commitres != frames)
+        return 1;
+    }
+    if (snd_pcm_state(pcm_p) == SND_PCM_STATE_PREPARED && snd_pcm_start(pcm_p))
+      return 1;
     data_cur = (data_list *)data_cur->next;
   }
-  snd_pcm_drain(pcm_p);
   return 0;
 }
 
@@ -47,7 +67,11 @@ static int init_alsa(snd_pcm_t **pcm_p) {
     return 1;
   snd_pcm_hw_params_malloc(&pcm_hw);
   snd_pcm_hw_params_any(*pcm_p, pcm_hw);
+  if (snd_pcm_hw_params_test_rate(*pcm_p, pcm_hw, 44100, 0))
+    return 1;
   snd_pcm_hw_params_set_rate(*pcm_p, pcm_hw, 44100, 0);
+  if (snd_pcm_hw_params_test_format(*pcm_p, pcm_hw, SND_PCM_FORMAT_S16))
+    return 1;
   snd_pcm_hw_params_set_format(*pcm_p, pcm_hw, SND_PCM_FORMAT_S16);
   snd_pcm_hw_params_set_access(*pcm_p, pcm_hw, SND_PCM_ACCESS_MMAP_INTERLEAVED);
   snd_pcm_hw_params_set_buffer_size(*pcm_p, pcm_hw,

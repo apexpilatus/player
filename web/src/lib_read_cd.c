@@ -52,3 +52,14 @@ int cd_reader(void *prm) {
   in_work = 0;
   return 0;
 }
+
+int filled_buf_check(data_list *data) {
+  int count = 0;
+  while (data) {
+    count++;
+    if (count > 200)
+      return 0;
+    data = (data_list *)data->next;
+  }
+  return 1;
+}
