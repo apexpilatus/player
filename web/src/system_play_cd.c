@@ -161,9 +161,6 @@ int main(int prm_n, char *prm[]) {
   if (write_size != strlen(rsp))
     return 1;
   close(sock);
-  data_first = malloc(sizeof(data_list));
-  data_first->next = NULL;
-  data_first->buf = malloc(CD_FRAMESIZE_RAW);
   if (thrd_create(&thr, cd_reader, d) != thrd_success ||
       thrd_detach(thr) != thrd_success)
     return 1;

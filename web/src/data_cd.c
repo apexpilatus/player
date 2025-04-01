@@ -43,8 +43,8 @@ static int cd_stream(int sock, int data_size) {
   long start_size = 0;
   char *rsp = malloc(getpagesize());
   ssize_t write_size;
-  data_list *data_cur = (data_list *)data_first;
-  while (in_work && filled_buf_check(data_cur))
+  data_list *data_cur;
+  while (in_work && filled_buf_check((data_list *)data_first))
     usleep(10);
   sprintf(rsp, "%s\r\n%s%d\r\n%s\r\n\r\n", "HTTP/1.1 200 OK",
           "Content-Length: ", data_size + 44, "Content-Type: audio/wav");
@@ -53,6 +53,7 @@ static int cd_stream(int sock, int data_size) {
     return 1;
   if (write_header(sock, data_size))
     return 1;
+  data_cur = (data_list *)data_first;
   while (data_cur) {
     while (in_work && filled_buf_check(data_cur))
       usleep(10);
@@ -84,9 +85,6 @@ int main(int prm_n, char *prm[]) {
       write_size = cdda_track_lastsector(d, i);
   write_size -= cdda_track_firstsector(d, first_track) - 1;
   write_size *= CD_FRAMESIZE_RAW;
-  data_first = malloc(sizeof(data_list));
-  data_first->next = NULL;
-  data_first->buf = malloc(CD_FRAMESIZE_RAW);
   if (thrd_create(&thr, cd_reader, d) != thrd_success ||
       thrd_detach(thr) != thrd_success)
     return 1;
