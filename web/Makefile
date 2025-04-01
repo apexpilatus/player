@@ -44,7 +44,7 @@ html_volume : Makefile src/html_volume.c
 resp_err : src/resp_err.c
 	$(CC) src/resp_err.c -o resp_err
 
-data_static : Makefile src/data_static.c static/style_main.css static/script_main.js static/style_tracks.css static/script_tracks.js static/style_albums.css static/script_albums.js static/index.html static/favicon.ico static/favicon152.png static/favicon180.png
+data_static : Makefile src/data_static.c static/style_main.css static/script_main.js static/style_tracks.css static/script_tracks.js static/style_cd_control.css static/script_cd_control.js static/style_albums.css static/script_albums.js static/style_volume.css static/script_volume.js static/index.html static/favicon.ico static/favicon152.png static/favicon180.png
 	xxd -i static/style_main.css style_main_css.c
 	xxd -i static/script_main.js script_main_js.c
 	xxd -i static/style_tracks.css style_tracks_css.c
@@ -59,8 +59,7 @@ data_static : Makefile src/data_static.c static/style_main.css static/script_mai
 	xxd -i static/favicon.ico favicon.c
 	xxd -i static/favicon152.png favicon152.c
 	xxd -i static/favicon180.png favicon180.c
-	xxd -i static/cd_icon.png cd_icon.c
-	$(CC) src/data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_cd_control_css.c script_cd_control_js.c style_albums_css.c script_albums_js.c style_volume_css.c script_volume_js.c index_html.c favicon.c favicon152.c favicon180.c cd_icon.c -o data_static $(PLAYER_DEFINES)
+	$(CC) src/data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_cd_control_css.c script_cd_control_js.c style_albums_css.c script_albums_js.c style_volume_css.c script_volume_js.c index_html.c favicon.c favicon152.c favicon180.c -o data_static $(PLAYER_DEFINES)
 	rm *.c
 
 data_picture : Makefile src/data_picture.c
