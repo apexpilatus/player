@@ -20,11 +20,9 @@ const val CHANNEL_NAME = "main"
 
 class MainService : Service(), MediaPlayer.OnCompletionListener {
     private val sockServer by lazy { ServerSocket(9696) }
+    private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
 
     companion object {
-        @Volatile
-        private var notifyWhenStopped = false
-
         @Volatile
         var started = false
 
@@ -59,7 +57,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
                     }
                 }
                 URL("http://$remoteIP/apple-touch-icon.png").openStream().use {
-                    (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).notify(
+                    notificationManager.notify(
                         1,
                         Notification.Builder(this, CHANNEL_ID)
                             .setSmallIcon(R.drawable.ic_notification)
@@ -67,7 +65,6 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
                             .setShowWhen(false).setContentText("").build()
                     )
                 }
-                notifyWhenStopped = true
             } catch (_: Exception) {
                 for (player in players) player.reset()
                 refs.clear()
@@ -75,26 +72,8 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
         }
     }
 
-    private val checkStop = Runnable {
-        while (true) {
-            Thread.sleep(5000)
-            try {
-                if (notifyWhenStopped && !(players.first().isPlaying || players.last().isPlaying)) {
-                    notifyWhenStopped = false
-                    (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).notify(
-                        1,
-                        Notification.Builder(this, CHANNEL_ID)
-                            .setSmallIcon(R.drawable.ic_notification).setOnlyAlertOnce(true)
-                            .setShowWhen(false).setContentText("waiting").build()
-                    )
-                }
-            } catch (_: Exception) {
-            }
-        }
-    }
-
     override fun onCreate() {
-        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(
+        notificationManager.createNotificationChannel(
             NotificationChannel(
                 CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT
             )
@@ -106,19 +85,16 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
         this.startForeground(
             1,
             Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
-                .setShowWhen(false).setContentText("waiting").build()
+                .setShowWhen(false).setContentText("").build()
         )
-        for (i in 1..2) {
-            players.add(MediaPlayer().apply {
-                setAudioAttributes(
-                    AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .setUsage(AudioAttributes.USAGE_MEDIA).build()
-                )
-                setOnCompletionListener(this@MainService)
-            })
-        }
+        for (i in 1..2) players.add(MediaPlayer().apply {
+            setAudioAttributes(
+                AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_MEDIA).build()
+            )
+            setOnCompletionListener(this@MainService)
+        })
         Thread(updateStatus).start()
-        Thread(checkStop).start()
         return START_STICKY
     }
 
@@ -133,17 +109,20 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
 
     override fun onCompletion(mp: MediaPlayer?) {
         val ref = refs.poll()
-        if (ref != null) {
-            with(players.poll() as MediaPlayer) {
-                reset()
-                try {
-                    setDataSource(ref)
-                    prepare()
-                    players.last().setNextMediaPlayer(this)
-                } catch (_: Exception) {
-                }
-                players.add(this)
+        if (ref != null) with(players.poll() as MediaPlayer) {
+            reset()
+            try {
+                setDataSource(ref)
+                prepare()
+                players.last().setNextMediaPlayer(this)
+            } catch (_: Exception) {
             }
+            players.add(this)
         }
+        else notificationManager.notify(
+            1,
+            Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
+                .setOnlyAlertOnce(true).setShowWhen(false).setContentText("").build()
+        )
     }
 }
