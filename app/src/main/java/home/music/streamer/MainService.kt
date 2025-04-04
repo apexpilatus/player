@@ -54,6 +54,9 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
                             prepare()
                         }
                         setNextMediaPlayer(players.last())
+                    } else {
+                        players.poll()
+                        players.add(this)
                     }
                 }
                 URL("http://$remoteIP/apple-touch-icon.png").openStream().use {
@@ -108,21 +111,22 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
     }
 
     override fun onCompletion(mp: MediaPlayer?) {
-        val ref = refs.poll()
-        if (ref != null) with(players.poll() as MediaPlayer) {
-            reset()
-            try {
-                setDataSource(ref)
-                prepare()
-                players.last().setNextMediaPlayer(this)
-            } catch (_: Exception) {
-            }
-            players.add(this)
-        }
-        else notificationManager.notify(
+        if (mp === players.last()) notificationManager.notify(
             1,
             Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
                 .setOnlyAlertOnce(true).setShowWhen(false).setContentText("").build()
-        )
+        ) else {
+            val ref = refs.poll()
+            if (ref != null) with(players.poll() as MediaPlayer) {
+                reset()
+                try {
+                    setDataSource(ref)
+                    prepare()
+                    players.last().setNextMediaPlayer(this)
+                } catch (_: Exception) {
+                }
+                players.add(this)
+            }
+        }
     }
 }
