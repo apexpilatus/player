@@ -54,11 +54,9 @@ int main(int prm_n, char *prm[]) {
   else
     return 1;
   if (!strncmp(music_path, url, strlen(music_path))) {
-    if (strcmp(url + strlen(url) - 5, ".flac")) {
+    if (strcmp(url + strlen(url) - 5, ".flac"))
       execl(data_picture, "data_picture", prm[1], url, NULL);
-    } else {
-      execl(data_flac, "data_flac", prm[1], url, NULL);
-    }
+    execl(data_flac, "data_flac", prm[1], url, NULL);
   } else if (!strncmp("/tracks", url, strlen("/tracks"))) {
     execl(html_tracks, "html_tracks", prm[1], url, NULL);
   } else if (!strcmp("/cdcontrol", url)) {
@@ -78,19 +76,16 @@ int main(int prm_n, char *prm[]) {
       execl(resp_err, "resp_err", prm[1], NULL);
     if (!strncmp("/playflac", url, strlen("/playflac")))
       execl(system_play_flac, "system_play_flac", prm[1], url, prm[2], NULL);
-    else
-      execl(system_play_cd, "system_play_cd", prm[1], url, prm[2], NULL);
+    execl(system_play_cd, "system_play_cd", prm[1], url, prm[2], NULL);
   } else if (!strcmp("/poweroff", url)) {
     if (stop_playing() || system("/root/init.sh finish"))
       execl(resp_err, "resp_err", prm[1], NULL);
-    else
-      execl(system_poweroff, "system_poweroff", prm[1], NULL);
+    execl(system_poweroff, "system_poweroff", prm[1], NULL);
   } else if (!strncmp("/setdate", url, strlen("/setdate"))) {
     if (strcmp(prm[2], "127.0.0.1") && host && strcmp(host, "localhost") &&
         strcmp(host, "127.0.0.1") && strcmp(host, prm[2]))
       execl(system_setdate, "system_setdate", prm[1], url, NULL);
-    else
-      execl(resp_err, "resp_err", prm[1], NULL);
+    execl(resp_err, "resp_err", prm[1], NULL);
   } else if (!strcmp("/cdcontrol", url)) {
     execl(html_cd_control, "html_cd_control", prm[1], NULL);
   } else {
