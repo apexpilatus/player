@@ -120,6 +120,7 @@ int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   ssize_t write_size;
   char *url_track;
+  int first_track;
   char *rsp = malloc(getpagesize());
   char *cmd = malloc(getpagesize());
   card_list *cards;
@@ -141,11 +142,15 @@ int main(int prm_n, char *prm[]) {
   }
   if (!d || cdda_open(d) || first_track > d->tracks)
     execl(resp_err, "resp_err", prm[1], NULL);
+  for (int i = first_track; i <= d->tracks; i++)
+    if (cdda_track_audiop(d, i))
+      last_sector = cdda_track_lastsector(d, i);
+  first_sector = cdda_track_firstsector(d, first_track);
   strcpy(rsp, "HTTP/1.1 200 OK\r\n");
   strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
   strcat(rsp, "Cache-control: no-cache\r\n");
   strcat(rsp, "X-Content-Type-Options: nosniff\r\n\r\n");
-  sprintf(cmd, "echo /stream_cd/%d.wav|nc -w 1 %s 9696 1>/dev/null 2>/dev/null",
+  sprintf(cmd, "echo /stream_cd?%d|nc -w 1 %s 9696 1>/dev/null 2>/dev/null",
           first_track, prm[3]);
   if (!system(cmd)) {
     write_size = write(sock, rsp, strlen(rsp));

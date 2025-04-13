@@ -29,11 +29,23 @@ int main(int prm_n, char *prm[]) {
   ssize_t msg_size = getpagesize() * 100;
   char *end;
   char *host;
+  char *range;
   char *url = malloc(msg_size);
   read_size = read(sock, url, msg_size);
   if (read_size < 5 || strncmp(url, "GET", 3))
     return 1;
   url[read_size] = '\0';
+  if ((range = strstr(url, "Range:"))) {
+    range += 6;
+    while (*range == ' ') {
+      range++;
+    }
+    range += 6;
+    while ((end = strchr(range, '\n')) || (end = strchr(range, '\r')) ||
+           (end = strchr(range, ' ')) || (end = strchr(range, ':'))) {
+      *end = '\0';
+    }
+  }
   if ((host = strstr(url, "Host:"))) {
     host += 5;
     while (*host == ' ') {
@@ -67,10 +79,10 @@ int main(int prm_n, char *prm[]) {
     execl(html_volume, "html_volume", prm[1], url, NULL);
   } else if (!strncmp("/setvolume", url, strlen("/setvolume"))) {
     execl(system_volume, "system_volume", prm[1], url, NULL);
-  } else if (!strncmp("/stream_cd/", url, strlen("/stream_cd/"))) {
+  } else if (!strncmp("/stream_cd", url, strlen("/stream_cd"))) {
     if (stop_playing())
       execl(resp_err, "resp_err", prm[1], NULL);
-    execl(data_cd, "data_cd", prm[1], url, NULL);
+    execl(data_cd, "data_cd", prm[1], url, range ? range : "", NULL);
   } else if (!strncmp("/play", url, strlen("/play"))) {
     if (stop_playing())
       execl(resp_err, "resp_err", prm[1], NULL);

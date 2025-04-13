@@ -4,7 +4,8 @@ typedef struct data_list_t {
 } data_list;
 
 extern data_list volatile *volatile data_first;
-extern int volatile first_track;
+extern long volatile first_sector;
+extern long volatile last_sector;
 extern char volatile in_work;
 
 int cd_reader(void *prm);
