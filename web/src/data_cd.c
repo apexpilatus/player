@@ -45,7 +45,6 @@ static int write_header(int fd, int size) {
 }
 
 static int cd_stream(int sock) {
-  long start_size = 0;
   char *rsp = malloc(getpagesize());
   ssize_t write_size;
   data_list *data_cur;
