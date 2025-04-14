@@ -14,7 +14,7 @@ static void create_html(char *msg) {
   strcat(
       msg,
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
-  strcat(msg, "<title>cdcontrol</title>");
+  strcat(msg, "<title>cd</title>");
   strcat(msg, "<link rel=stylesheet href=style_cd_control.css>");
   strcat(msg, "<script src=script_cd_control.js></script>");
   strcat(msg, "</head>");
