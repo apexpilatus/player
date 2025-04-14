@@ -1,9 +1,15 @@
-div {
+audio {
+    position: sticky;
+    top: 0;
+    width: 80%;
+    padding-bottom: 10%;
+}
+
+b {
     position: relative;
-    right: 25%;
+    right: 10%;
 }
 
 p {
     text-align: right;
-    font-size: 20px;
 }
