@@ -74,9 +74,9 @@ static int cd_stream(int sock) {
       usleep(10);
     write_size =
         write(sock, (char *)data_cur->buf + first_shift,
-              bytes_left < CD_FRAMESIZE_RAW ? bytes_left
+              bytes_left < CD_FRAMESIZE_RAW - first_shift ? bytes_left
                                             : CD_FRAMESIZE_RAW - first_shift);
-    if (write_size != (bytes_left < CD_FRAMESIZE_RAW
+    if (write_size != (bytes_left < CD_FRAMESIZE_RAW - first_shift
                            ? bytes_left
                            : CD_FRAMESIZE_RAW - first_shift))
       return 1;
