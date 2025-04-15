@@ -1,15 +1,14 @@
-audio {
-    position: sticky;
-    top: 0;
-    width: 80%;
-    padding-bottom: 10%;
+audio{
+    position: fixed;
+    left: 0;
+    bottom: 20%;
+    width: 100%;
+}
+
+div {
+    display: flex;
 }
 
 b {
-    position: relative;
-    right: 10%;
-}
-
-p {
-    text-align: right;
+    padding: 20px;
 }

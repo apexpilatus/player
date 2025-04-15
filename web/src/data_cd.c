@@ -72,10 +72,10 @@ static int cd_stream(int sock) {
   while (data_cur && bytes_left) {
     while (in_work && filled_buf_check(data_cur))
       usleep(10);
-    write_size =
-        write(sock, (char *)data_cur->buf + first_shift,
-              bytes_left < CD_FRAMESIZE_RAW - first_shift ? bytes_left
-                                            : CD_FRAMESIZE_RAW - first_shift);
+    write_size = write(sock, (char *)data_cur->buf + first_shift,
+                       bytes_left < CD_FRAMESIZE_RAW - first_shift
+                           ? bytes_left
+                           : CD_FRAMESIZE_RAW - first_shift);
     if (write_size != (bytes_left < CD_FRAMESIZE_RAW - first_shift
                            ? bytes_left
                            : CD_FRAMESIZE_RAW - first_shift))
