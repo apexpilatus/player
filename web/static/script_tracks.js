@@ -11,10 +11,16 @@ function updatecurrent(album) {
     currentElem.innerHTML = album;
 }
 
+function updatetop(dir) {
+    if (topElem.innerHTML != dir) {
+        albumsElem.src = parent.window.location.href + "albums";
+    }
+}
+
 function playflac(dirtrack) {
     fetch("playflac?" + dirtrack).then(resp => {
-        if (resp.status == 200 && topElem.innerHTML != dirtrack.split("&")[0]) {
-            albumsElem.src = parent.window.location.href + "albums";
+        if (resp.status == 200) {
+            updatetop(dirtrack.split("&")[0]);
         }
     });
 }

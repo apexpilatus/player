@@ -52,7 +52,6 @@ int main(int prm_n, char *prm[]) {
     while ((end = strstr(host, "\r\n")) || (end = strchr(host, ':')))
       *end = '\0';
   }
-  printf("range - %s; host - %s\n", range ? range : "", host);
   url += 3;
   while (*url == ' ') {
     url++;
@@ -80,6 +79,11 @@ int main(int prm_n, char *prm[]) {
     if (stop_playing())
       execl(resp_err, "resp_err", prm[1], NULL);
     execl(data_cd, "data_cd", prm[1], url, range ? range : "", NULL);
+  } else if (!strncmp("/stream_album", url, strlen("/stream_album"))) {
+    if (stop_playing())
+      execl(resp_err, "resp_err", prm[1], NULL);
+    execl(data_flac_extracted, "data_flac_extracted", prm[1], url,
+          range ? range : "", NULL);
   } else if (!strncmp("/play", url, strlen("/play"))) {
     if (stop_playing())
       execl(resp_err, "resp_err", prm[1], NULL);

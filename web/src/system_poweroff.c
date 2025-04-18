@@ -14,9 +14,7 @@ int main(int prm_n, char *prm[]) {
   write_size = write(sock, rsp, strlen(rsp));
   close(sock);
   if (write_size == strlen(rsp)) {
-#ifdef PLAYER_AS_INIT
     if (!system("poweroff"))
-#endif
       return 0;
   } else
     return 1;

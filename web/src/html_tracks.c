@@ -96,6 +96,11 @@ static void list_tracks(char *msg) {
   }
   strcat(msg, "<div id=albumtitle>");
   if (list_first) {
+    strcat(msg, "<audio controls src=/stream_album?");
+    strcat(msg, album_dir);
+    strcat(msg, " preload=none onplaying=updatetop(\"");
+    strcat(msg, album_dir);
+    strcat(msg, "\")></audio>");
     if (list_first->artist) {
       strcat(msg, "<div id=artist>");
       strcat(msg, list_first->artist);

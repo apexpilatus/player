@@ -11,6 +11,10 @@ body {
     padding-bottom: 6px;
 }
 
+audio {
+    width: 100%;
+}
+
 #artist {
     padding-top: 0;
     padding-left: 2px;

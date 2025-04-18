@@ -13,6 +13,7 @@ PLAYER_DEFINES += -D data_static=\"$(PLAYER_PATH)/data_static\"
 PLAYER_DEFINES += -D data_picture=\"$(PLAYER_PATH)/data_picture\"
 PLAYER_DEFINES += -D data_cd=\"$(PLAYER_PATH)/data_cd\"
 PLAYER_DEFINES += -D data_flac=\"$(PLAYER_PATH)/data_flac\"
+PLAYER_DEFINES += -D data_flac_extracted=\"$(PLAYER_PATH)/data_flac_extracted\"
 PLAYER_DEFINES += -D system_poweroff=\"$(PLAYER_PATH)/system_poweroff\"
 PLAYER_DEFINES += -D system_play_flac=\"$(PLAYER_PATH)/system_play_flac\"
 PLAYER_DEFINES += -D system_play_cd=\"$(PLAYER_PATH)/system_play_cd\"
@@ -23,7 +24,7 @@ PLAYER_DEFINES += -D PLAYER_AS_INIT
 endif
 CC := gcc -O2
 
-web : Makefile src/web.c web_select html_tracks html_cd_control html_albums html_volume resp_err data_static data_picture data_cd data_flac system_play_flac system_play_cd system_volume system_poweroff system_setdate
+web : Makefile src/web.c web_select html_tracks html_cd_control html_albums html_volume resp_err data_static data_picture data_cd data_flac data_flac_extracted system_play_flac system_play_cd system_volume system_poweroff system_setdate
 	$(CC) src/web.c -o web $(PLAYER_DEFINES)
 
 web_select : Makefile src/web_select.c
@@ -68,20 +69,23 @@ data_picture : Makefile src/data_picture.c
 data_flac : Makefile src/data_flac.c
 	$(CC) src/data_flac.c -o data_flac $(PLAYER_DEFINES)
 
-data_cd : Makefile src/data_cd.c src/lib_read_cd.c
+data_flac_extracted : Makefile src/data_flac_extracted.c src/lib_flac_tracks.c src/lib_flac_tracks.h
+	$(CC) src/data_flac_extracted.c src/lib_flac_tracks.c -o data_flac_extracted $(PLAYER_DEFINES) -lFLAC
+
+data_cd : Makefile src/data_cd.c src/lib_read_cd.c src/lib_read_cd.h
 	$(CC) src/data_cd.c src/lib_read_cd.c -o data_cd $(PLAYER_DEFINES) -lcdda_interface -lcdda_paranoia
 
-system_play_flac : Makefile src/system_play_flac.c
-	$(CC) src/system_play_flac.c -o system_play_flac $(PLAYER_DEFINES) -lasound -lFLAC
+system_play_flac : Makefile src/system_play_flac.c src/lib_flac_tracks.c src/lib_flac_tracks.h
+	$(CC) src/system_play_flac.c src/lib_flac_tracks.c -o system_play_flac $(PLAYER_DEFINES) -lasound -lFLAC
 
-system_play_cd : Makefile src/system_play_cd.c src/lib_read_cd.c
+system_play_cd : Makefile src/system_play_cd.c src/lib_read_cd.c src/lib_read_cd.h
 	$(CC) src/system_play_cd.c src/lib_read_cd.c -o system_play_cd $(PLAYER_DEFINES) -lasound -lcdda_interface -lcdda_paranoia
 
 system_volume : Makefile src/system_volume.c
 	$(CC) src/system_volume.c -o system_volume $(PLAYER_DEFINES) -lasound
 
 system_poweroff : Makefile src/system_poweroff.c
-	$(CC) src/system_poweroff.c -o system_poweroff $(PLAYER_DEFINES)
+	$(CC) src/system_poweroff.c -o system_poweroff
 
 system_setdate : Makefile src/system_setdate.c
 	$(CC) src/system_setdate.c -o system_setdate $(PLAYER_DEFINES)

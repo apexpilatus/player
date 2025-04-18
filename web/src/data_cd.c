@@ -49,25 +49,29 @@ static int cd_stream(int sock) {
   ssize_t write_size;
   data_list *data_cur;
   int bytes_left = max_range - min_range + 1;
-  while (in_work && filled_buf_check((data_list *)data_first))
-    usleep(10);
+  if (min_range == 0 && max_range < 43) {
+    char buf[bytes_left];
+    sprintf(rsp, "%s\r\n%s%d\r\nContent-Range: bytes %d-%d/%d\r\n%s\r\n\r\n",
+            "HTTP/1.1 200 OK", "Content-Length: ", bytes_left, min_range,
+            max_range, data_size + 44, "Content-Type: audio/wav");
+    write_size = write(sock, rsp, strlen(rsp));
+    write_size = write(sock, buf, bytes_left);
+    return 1;
+  }
   sprintf(rsp, "%s\r\n%s%d\r\nContent-Range: bytes %d-%d/%d\r\n%s\r\n\r\n",
           "HTTP/1.1 200 OK", "Content-Length: ", bytes_left, min_range,
-          max_range, data_size + 44, "Content-Type: audio/wav");
+          max_range, 0, "Content-Type: audio/wav");
   write_size = write(sock, rsp, strlen(rsp));
   if (write_size != strlen(rsp))
     return 1;
-  if (min_range == 0 && max_range < 43) {
-    write_size =
-        write(sock, (data_list *)data_first->buf, max_range - min_range + 1);
-    return 1;
-  }
   if (min_range == 0) {
     if (write_header(sock, data_size))
       return 1;
     else
       bytes_left -= 44;
   }
+  while (in_work && filled_buf_check((data_list *)data_first))
+    usleep(10);
   data_cur = (data_list *)data_first;
   while (data_cur && bytes_left) {
     while (in_work && filled_buf_check(data_cur))
