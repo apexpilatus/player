@@ -161,6 +161,8 @@ int main(int prm_n, char *prm[]) {
     if (!flac_blocks_size)
       if (extract_tracks(tracks, get_size_callback, &flac_blocks_size))
         execl(resp_err, "resp_err", prm[1], NULL);
+    if (utime(".", NULL))
+      execl(resp_err, "resp_err", prm[1], NULL);
     sprintf(rsp, "%s\r\n%s%d\r\nContent-Range: bytes %d-%d/%d\r\n%s\r\n\r\n",
             "HTTP/1.1 200 OK", "Content-Length: ", bytes_left, min_range,
             max_range, (flac_blocks_size * 2 * bytes_per_sample) + header_size,
@@ -169,8 +171,6 @@ int main(int prm_n, char *prm[]) {
     write_size = write(sock, buf, bytes_left);
     return 1;
   }
-  if (utime(".", NULL))
-    execl(resp_err, "resp_err", prm[1], NULL);
   sprintf(rsp, "%s\r\n%s%d\r\nContent-Range: bytes %d-%d/%d\r\n%s\r\n\r\n",
           "HTTP/1.1 200 OK", "Content-Length: ", bytes_left, min_range,
           max_range, 0, "Content-Type: audio/wav");
