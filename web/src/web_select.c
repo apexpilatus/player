@@ -71,10 +71,10 @@ int main(int prm_n, char *prm[]) {
     execl(data_flac, "data_flac", prm[1], url, NULL);
   } else if (!strncmp("/tracks", url, strlen("/tracks"))) {
     execl(html_tracks, "html_tracks", prm[1], url,
-          agent && strstr(agent, "iPad") ? "yes" : "no", NULL);
+          agent && strstr(agent, "Mac OS") ? "yes" : "no", NULL);
   } else if (!strcmp("/cdcontrol", url)) {
     execl(html_cd_control, "html_cd_control", prm[1],
-          agent && strstr(agent, "iPad") ? "yes" : "no", NULL);
+          agent && strstr(agent, "Mac OS") ? "yes" : "no", NULL);
   } else if (!strncmp("/albums", url, strlen("/albums"))) {
     execl(html_albums, "html_albums", prm[1], url, NULL);
   } else if (!strcmp("/getvolume", url)) {
