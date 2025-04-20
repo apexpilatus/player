@@ -4,7 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 
-static void create_html(char *msg) {
+static void create_html(char *msg, char *show_audio) {
   cdrom_drive *d;
   size_t msg_end;
   strcpy(msg, "<!DOCTYPE html>");
@@ -23,7 +23,8 @@ static void create_html(char *msg) {
   strcat(msg, "<script>showtracks()</script>");
   d = cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL);
   if (d && !cdda_open(d)) {
-    strcat(msg, "<audio controls src=/stream_cd?1 preload=none></audio>");
+    if (strcmp(show_audio, "no"))
+      strcat(msg, "<audio controls src=/stream_cd?1 preload=none></audio>");
     strcat(msg, "<div>");
     for (int i = 1; i <= d->tracks; i++)
       if (cdda_track_audiop(d, i)) {
@@ -59,7 +60,7 @@ int main(int prm_n, char *prm[]) {
   sock = strtol(prm[1], NULL, 10);
   hdr = malloc(getpagesize());
   msg = malloc(getpagesize() * 10000);
-  create_html(msg);
+  create_html(msg, prm[2]);
   create_header(hdr, strlen(msg));
   write_size = write(sock, hdr, strlen(hdr));
   write_size += write(sock, msg, strlen(msg));

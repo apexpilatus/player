@@ -59,7 +59,7 @@ static void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
     }
 }
 
-static void list_tracks(char *msg) {
+static void list_tracks(char *msg, char *show_audio) {
   DIR *dp;
   struct dirent *ep;
   meta_list *list_first = NULL;
@@ -96,11 +96,13 @@ static void list_tracks(char *msg) {
   }
   strcat(msg, "<div id=albumtitle>");
   if (list_first) {
-    strcat(msg, "<audio controls src=/stream_album?");
-    strcat(msg, album_dir);
-    strcat(msg, " preload=none onplaying=updatetop(\"");
-    strcat(msg, album_dir);
-    strcat(msg, "\")></audio>");
+    if (strcmp(show_audio, "no")) {
+      strcat(msg, "<audio controls src=/stream_album?");
+      strcat(msg, album_dir);
+      strcat(msg, " preload=none onplaying=updatetop(\"");
+      strcat(msg, album_dir);
+      strcat(msg, "\")></audio>");
+    }
     if (list_first->artist) {
       strcat(msg, "<div id=artist>");
       strcat(msg, list_first->artist);
@@ -147,7 +149,7 @@ static void list_tracks(char *msg) {
   strcat(msg, "</table>");
 }
 
-static void create_html(char *msg) {
+static void create_html(char *msg, char *show_audio) {
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -164,7 +166,7 @@ static void create_html(char *msg) {
   strcat(msg, getcwd(NULL, 0));
   strcat(msg, "\")</script>");
   strcat(msg, "<script>showtracks()</script>");
-  list_tracks(msg);
+  list_tracks(msg, show_audio);
   strcat(msg, "</body>");
   strcat(msg, "</html>");
 }
@@ -191,7 +193,7 @@ int main(int prm_n, char *prm[]) {
   sock = strtol(prm[1], NULL, 10);
   hdr = malloc(getpagesize());
   msg = malloc(getpagesize() * 10000);
-  create_html(msg);
+  create_html(msg, prm[3]);
   create_header(hdr, strlen(msg));
   write_size = write(sock, hdr, strlen(hdr));
   write_size += write(sock, msg, strlen(msg));

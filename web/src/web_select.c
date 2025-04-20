@@ -30,14 +30,16 @@ int main(int prm_n, char *prm[]) {
   char *end;
   char *host;
   char *range;
+  char *agent;
   char *url = malloc(msg_size);
   read_size = read(sock, url, msg_size);
   if (read_size < 5 || strncmp(url, "GET", 3))
     return 1;
   url[read_size] = '\0';
+  agent = strstr(url, "User-Agent:");
   range = strstr(url, "Range:");
   host = strstr(url, "Host:");
-  if ((range)) {
+  if (range) {
     range += 6;
     while (*range == ' ')
       range++;
@@ -45,13 +47,15 @@ int main(int prm_n, char *prm[]) {
     end = strstr(range, "\r\n");
     *end = '\0';
   }
-  if ((host)) {
+  if (host) {
     host += 5;
     while (*host == ' ')
       host++;
     while ((end = strstr(host, "\r\n")) || (end = strchr(host, ':')))
       *end = '\0';
   }
+  if (agent)
+    end = strstr(agent, "\r\n");
   url += 3;
   while (*url == ' ') {
     url++;
@@ -66,9 +70,11 @@ int main(int prm_n, char *prm[]) {
       execl(data_picture, "data_picture", prm[1], url, NULL);
     execl(data_flac, "data_flac", prm[1], url, NULL);
   } else if (!strncmp("/tracks", url, strlen("/tracks"))) {
-    execl(html_tracks, "html_tracks", prm[1], url, NULL);
+    execl(html_tracks, "html_tracks", prm[1], url,
+          agent && strstr(agent, "iPad") ? "yes" : "no", NULL);
   } else if (!strcmp("/cdcontrol", url)) {
-    execl(html_cd_control, "html_cd_control", prm[1], NULL);
+    execl(html_cd_control, "html_cd_control", prm[1],
+          agent && strstr(agent, "iPad") ? "yes" : "no", NULL);
   } else if (!strncmp("/albums", url, strlen("/albums"))) {
     execl(html_albums, "html_albums", prm[1], url, NULL);
   } else if (!strcmp("/getvolume", url)) {
