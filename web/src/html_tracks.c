@@ -6,6 +6,7 @@
 
 typedef struct meta_list_t {
   struct meta_list_t *next;
+  FLAC__uint64 size;
   char *artist;
   char *album;
   char *title;
@@ -59,6 +60,17 @@ static void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
     }
 }
 
+static int size_is_ok(meta_list *list_first) {
+  FLAC__uint64 sum = 0;
+  while (list_first) {
+    sum += list_first->size;
+    if (sum > 0x7fffffff)
+      return 0;
+    list_first = list_first->next;
+  }
+  return 1;
+}
+
 static void list_tracks(char *msg, char *show_audio) {
   DIR *dp;
   struct dirent *ep;
@@ -81,6 +93,8 @@ static void list_tracks(char *msg, char *show_audio) {
           sprintf(list_first->rate, "%u/%g",
                   rate->data.stream_info.bits_per_sample,
                   rate->data.stream_info.sample_rate / 1000.0);
+          list_first->size = rate->data.stream_info.total_samples * 2 *
+                             (rate->data.stream_info.bits_per_sample / 8);
         }
         break;
       }
@@ -91,12 +105,16 @@ static void list_tracks(char *msg, char *show_audio) {
         memset(list_tmp->next, 0, sizeof(meta_list));
         list_tmp = list_tmp->next;
         cpy_tags(list_tmp, tags);
+        if (FLAC__metadata_get_streaminfo(ep->d_name, rate)) {
+          list_tmp->size = rate->data.stream_info.total_samples * 2 *
+                           (rate->data.stream_info.bits_per_sample / 8);
+        }
       }
     closedir(dp);
   }
   strcat(msg, "<div id=albumtitle>");
   if (list_first) {
-    if (strcmp(show_audio, "no")) {
+    if (strcmp(show_audio, "no") && size_is_ok(list_first)) {
       strcat(msg, "<audio controls src=/stream_album?");
       strcat(msg, album_dir);
       strcat(msg, " preload=none onplaying=updatetop(\"");
