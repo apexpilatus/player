@@ -78,6 +78,11 @@ get_size_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
 FLAC__StreamDecoderWriteStatus
 write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
                const FLAC__int32 *const buffer[], void *client_data) {
+  if ((frame->header.blocksize * 2 * bytes_per_sample) + skip_count <
+      min_range) {
+    skip_count += frame->header.blocksize * 2 * bytes_per_sample;
+    return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
+  }
   for (int i = 0; i < frame->header.blocksize; i++) {
     int j;
     for (j = 0; j < bytes_per_sample; j++)
