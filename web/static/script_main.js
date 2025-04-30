@@ -17,7 +17,7 @@ function scrolldown() {
 
 function getvolume() {
     controlElem.hidden = true;
-    controlElem.src = parent.window.location.href + "getvolume";
+    controlElem.src = window.location.href + "getvolume";
 }
 
 function setdate() {
@@ -26,7 +26,7 @@ function setdate() {
 
 function getcd() {
     controlElem.hidden = true;
-    controlElem.src = parent.window.location.href + "cdcontrol";
+    controlElem.src = window.location.href + "cdcontrol";
 }
 
 function poweroff() {
