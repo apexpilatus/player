@@ -18,13 +18,12 @@ PLAYER_DEFINES += -D system_poweroff=\"$(PLAYER_PATH)/system_poweroff\"
 PLAYER_DEFINES += -D system_play_flac=\"$(PLAYER_PATH)/system_play_flac\"
 PLAYER_DEFINES += -D system_play_cd=\"$(PLAYER_PATH)/system_play_cd\"
 PLAYER_DEFINES += -D system_volume=\"$(PLAYER_PATH)/system_volume\"
-PLAYER_DEFINES += -D system_setdate=\"$(PLAYER_PATH)/system_setdate\"
 ifdef init
 PLAYER_DEFINES += -D PLAYER_AS_INIT
 endif
 CC := gcc -O2
 
-web : Makefile src/web.c web_select html_tracks html_cd_control html_albums html_volume resp_err data_static data_picture data_cd data_flac data_flac_extracted system_play_flac system_play_cd system_volume system_poweroff system_setdate
+web : Makefile src/web.c web_select html_tracks html_cd_control html_albums html_volume resp_err data_static data_picture data_cd data_flac data_flac_extracted system_play_flac system_play_cd system_volume system_poweroff
 	$(CC) src/web.c -o web $(PLAYER_DEFINES)
 
 web_select : Makefile src/web_select.c
@@ -86,9 +85,6 @@ system_volume : Makefile src/system_volume.c
 
 system_poweroff : Makefile src/system_poweroff.c
 	$(CC) src/system_poweroff.c -o system_poweroff
-
-system_setdate : Makefile src/system_setdate.c
-	$(CC) src/system_setdate.c -o system_setdate $(PLAYER_DEFINES)
 
 .PHONY: clean
 clean:

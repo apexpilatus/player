@@ -20,10 +20,6 @@ function getvolume() {
     controlElem.src = window.location.href + "getvolume";
 }
 
-function setdate() {
-    fetch("setdate?" + new Date().getTime());
-}
-
 function getcd() {
     controlElem.hidden = true;
     controlElem.src = window.location.href + "cdcontrol";

@@ -28,7 +28,6 @@ int main(int prm_n, char *prm[]) {
   ssize_t read_size;
   ssize_t msg_size = getpagesize() * 100;
   char *end;
-  char *host;
   char *range;
   char *agent;
   char *url = malloc(msg_size);
@@ -38,7 +37,6 @@ int main(int prm_n, char *prm[]) {
   url[read_size] = '\0';
   agent = strstr(url, "User-Agent:");
   range = strstr(url, "Range:");
-  host = strstr(url, "Host:");
   if (range) {
     range += 6;
     while (*range == ' ')
@@ -46,13 +44,6 @@ int main(int prm_n, char *prm[]) {
     range += 6;
     end = strstr(range, "\r\n");
     *end = '\0';
-  }
-  if (host) {
-    host += 5;
-    while (*host == ' ')
-      host++;
-    while ((end = strstr(host, "\r\n")) || (end = strchr(host, ':')))
-      *end = '\0';
   }
   if (agent)
     end = strstr(agent, "\r\n");
@@ -100,11 +91,6 @@ int main(int prm_n, char *prm[]) {
     if (stop_playing() || system("/root/init.sh finish"))
       execl(resp_err, "resp_err", prm[1], NULL);
     execl(system_poweroff, "system_poweroff", prm[1], NULL);
-  } else if (!strncmp("/setdate", url, strlen("/setdate"))) {
-    if (strcmp(prm[2], "127.0.0.1") && host && strcmp(host, "localhost") &&
-        strcmp(host, "127.0.0.1") && strcmp(host, prm[2]))
-      execl(system_setdate, "system_setdate", prm[1], url, NULL);
-    execl(resp_err, "resp_err", prm[1], NULL);
   } else if (!strcmp("/cdcontrol", url)) {
     execl(html_cd_control, "html_cd_control", prm[1], NULL);
   } else {
