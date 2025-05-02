@@ -34,24 +34,15 @@ static int init_mixer(char *card_name, snd_mixer_elem_t **melem, long *min_vol,
 
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
-  ssize_t rsp_size = getpagesize();
   ssize_t write_size;
-  char *rsp = malloc(rsp_size);
-  char *url = prm[2];
+  char *rsp = malloc(getpagesize());
   char *url_vol;
   char *url_card_name;
   long min_vol;
   long max_vol;
   long curr_vol;
-  int fd;
-  pid_t pid = getpid();
   snd_mixer_elem_t *melem;
-  while ((fd = open(mix_pid_path, O_WRONLY | O_CREAT | O_EXCL,
-                    S_IRUSR | S_IWUSR)) < 0)
-    ;
-  write_size = write(fd, &pid, sizeof(pid_t));
-  close(fd);
-  if (!((url_card_name = strchr(url, '?')) &&
+  if (!((url_card_name = strchr(prm[2], '?')) &&
         (url_vol = strchr(++url_card_name, '&'))))
     execl(resp_err, "resp_err", prm[1], NULL);
   *url_vol = '\0';

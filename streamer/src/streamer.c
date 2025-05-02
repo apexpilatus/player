@@ -1,0 +1,123 @@
+#include <netdb.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/resource.h>
+#include <sys/wait.h>
+#include <threads.h>
+#include <unistd.h>
+
+#define listen_port 8888
+
+static ssize_t msg_size;
+static char *req;
+static volatile pid_t player_pid = -1;
+static volatile pid_t mixer_pid = -1;
+
+static void kill_zombies(int signum) {
+  pid_t pid;
+  while ((pid = waitpid(WAIT_ANY, NULL, WNOHANG)) > 0) {
+    if (pid == mixer_pid)
+      mixer_pid = -1;
+    else if (pid == player_pid)
+      player_pid = -1;
+  }
+}
+
+static inline void selector(int sock) {
+  ssize_t read_size;
+  pid_t pid;
+  char sock_txt[15];
+  char *url;
+  char *end;
+  sprintf(sock_txt, "%d", sock);
+  read_size = read(sock, req, msg_size);
+  if (read_size < 5 || strncmp(req, "GET ", 4))
+    goto exit;
+  url = req + 4;
+  end = strchr(url, ' ');
+  if (end)
+    *end = '\0';
+  else
+    goto exit;
+  if (!strcmp("/getvolume", url)) {
+    while (mixer_pid > 0)
+      ;
+    mixer_pid = fork();
+    if (!mixer_pid)
+      execl(html_volume, "html_volume", sock_txt, url, NULL);
+  } else if (!strncmp("/setvolume", url, strlen("/setvolume"))) {
+    while (mixer_pid > 0)
+      ;
+    mixer_pid = fork();
+    if (!mixer_pid)
+      execl(system_volume, "system_volume", sock_txt, url, NULL);
+  } else if (!strncmp("/playflac", url, strlen("/playflac"))) {
+    if (player_pid > 0) {
+      kill(player_pid, SIGTERM);
+      while (player_pid > 0)
+        ;
+    }
+    player_pid = fork();
+    if (!player_pid)
+      execl(system_play, "system_play", sock_txt, url, NULL);
+  } else if (!strcmp("/poweroff", url)) {
+    if (player_pid > 0) {
+      kill(player_pid, SIGTERM);
+      while (player_pid > 0)
+        ;
+    }
+    pid = fork();
+    if (!pid) {
+      if (system("/init.sh finish"))
+        execl(resp_err, "resp_err", sock_txt, NULL);
+      else
+        execl(system_poweroff, "system_poweroff", sock_txt, NULL);
+    }
+  } else {
+    pid = fork();
+    if (!pid)
+      execl(data_static, "data_static", sock_txt, url, NULL);
+  }
+exit:
+  close(sock);
+}
+
+static inline int init_socket(int *sock_listen, struct sockaddr_in *addr,
+                              socklen_t *addr_size) {
+  *sock_listen = socket(PF_INET, SOCK_STREAM, 0);
+  addr->sin_family = AF_INET;
+  addr->sin_port = htons(listen_port);
+  addr->sin_addr.s_addr = htonl(INADDR_ANY);
+  *addr_size = sizeof(struct sockaddr_in);
+  if (bind(*sock_listen, (struct sockaddr *)addr, *addr_size) < 0 ||
+      listen(*sock_listen, 20) < 0)
+    return 1;
+  return 0;
+}
+
+int main(void) {
+  int sock_listen;
+  int sock;
+  struct sockaddr_in addr;
+  socklen_t addr_size;
+  signal(SIGCHLD, kill_zombies);
+  msg_size = getpagesize();
+  req = malloc(msg_size);
+#ifdef PLAYER_AS_INIT
+  if (system("/init.sh") && system("poweroff"))
+    return 1;
+#endif
+  if (init_socket(&sock_listen, &addr, &addr_size))
+#ifdef PLAYER_AS_INIT
+    if (system("poweroff"))
+#endif
+      return 1;
+  setpriority(PRIO_PROCESS, getpid(), PRIO_MIN);
+  while (1) {
+    sock = accept(sock_listen, (struct sockaddr *)&addr, &addr_size);
+    if (sock < 0)
+      continue;
+    selector(sock);
+  }
+}

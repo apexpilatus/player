@@ -5,9 +5,8 @@
 
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
-  ssize_t rsp_size = getpagesize();
   ssize_t write_size;
-  char *rsp = malloc(rsp_size);
+  char *rsp = malloc(getpagesize());
   sprintf(rsp, "%s\r\n%s\r\n%s\r\n%s\r\n\r\n", "HTTP/1.1 200 OK",
           "Content-Type: text/html; charset=utf-8", "Cache-control: no-cache",
           "X-Content-Type-Options: nosniff");
