@@ -24,13 +24,6 @@ static void kill_zombie(int signum) {
         continue;
       }
     }
-    fd = open(mix_pid_path, O_RDONLY);
-    if (fd >= 0) {
-      read_size = read(fd, &run_pid, sizeof(pid_t));
-      close(fd);
-      if (run_pid == pid)
-        unlink(mix_pid_path);
-    }
   }
 }
 
