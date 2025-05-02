@@ -63,6 +63,8 @@ int main(int prm_n, char *prm[]) {
   } else if (!strncmp("/tracks", url, strlen("/tracks"))) {
     execl(html_tracks, "html_tracks", prm[1], url,
           agent && strstr(agent, "Mac OS") ? "yes" : "no", NULL);
+  } else if (!strcmp("/", url)) {
+    execl(html_main, "html_main", prm[1], NULL);
   } else if (!strcmp("/cdcontrol", url)) {
     execl(html_cd_control, "html_cd_control", prm[1],
           agent && strstr(agent, "Mac OS") ? "yes" : "no", NULL);

@@ -11,7 +11,6 @@ extern unsigned char static_style_cd_control_css[];
 extern unsigned char static_script_cd_control_js[];
 extern unsigned char static_style_albums_css[];
 extern unsigned char static_script_albums_js[];
-extern unsigned char static_index_html[];
 extern unsigned char static_favicon_ico[];
 extern unsigned char static_favicon152_png[];
 extern unsigned char static_favicon180_png[];
@@ -23,7 +22,6 @@ extern unsigned int static_style_cd_control_css_len;
 extern unsigned int static_script_cd_control_js_len;
 extern unsigned int static_style_albums_css_len;
 extern unsigned int static_script_albums_js_len;
-extern unsigned int static_index_html_len;
 extern unsigned int static_favicon_ico_len;
 extern unsigned int static_favicon152_png_len;
 extern unsigned int static_favicon180_png_len;
@@ -33,13 +31,7 @@ unsigned int data_len;
 
 static int select_data(char *url, char *rsp) {
   size_t hdr_end;
-  if (!strcmp("/", url)) {
-    data = static_index_html;
-    data_len = static_index_html_len;
-    sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
-            "Content-Type: text/html; charset=utf-8",
-            "Cache-control: no-cache");
-  } else if (!strcmp("/favicon.ico", url)) {
+  if (!strcmp("/favicon.ico", url)) {
     data = static_favicon_ico;
     data_len = static_favicon_ico_len;
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",

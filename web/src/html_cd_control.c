@@ -19,7 +19,6 @@ static void create_html(char *msg, char *show_audio) {
   strcat(msg, "<script src=script_cd_control.js></script>");
   strcat(msg, "</head>");
   strcat(msg, "<body>");
-  strcat(msg, "<script>updatecurrent()</script>");
   strcat(msg, "<script>showtracks()</script>");
   d = cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL);
   if (d && !cdda_open(d)) {

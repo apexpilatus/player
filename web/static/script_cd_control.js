@@ -4,7 +4,3 @@ const currentElem = parent.document.getElementById("current");
 function showtracks() {
     controlElem.hidden = false;
 }
-
-function updatecurrent() {
-    currentElem.innerHTML="cd";
-}

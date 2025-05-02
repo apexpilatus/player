@@ -1,7 +1,12 @@
 WEB_PATH := /home/web
 MUSIC_PATH := /home/music
 PLAYER_DEFINES := -D music_path=\"$(MUSIC_PATH)\"
+PLAYER_DEFINES += -D play_pid_path=\"/run/play_pid\"
+PLAYER_DEFINES += -D mix_pid_path=\"/run/mix_pid\"
+PLAYER_DEFINES += -D streamer_port=\"8888\"
+PLAYER_DEFINES += -D streamer_host=\"streamer\"
 PLAYER_DEFINES += -D web_select=\"$(WEB_PATH)/web_select\"
+PLAYER_DEFINES += -D html_main=\"$(WEB_PATH)/html_main\"
 PLAYER_DEFINES += -D html_tracks=\"$(WEB_PATH)/html_tracks\"
 PLAYER_DEFINES += -D html_cd_control=\"$(WEB_PATH)/html_cd_control\"
 PLAYER_DEFINES += -D html_albums=\"$(WEB_PATH)/html_albums\"
@@ -14,18 +19,19 @@ PLAYER_DEFINES += -D data_flac_extracted=\"$(WEB_PATH)/data_flac_extracted\"
 PLAYER_DEFINES += -D system_poweroff=\"$(WEB_PATH)/system_poweroff\"
 PLAYER_DEFINES += -D system_play_flac=\"$(WEB_PATH)/system_play_flac\"
 PLAYER_DEFINES += -D system_play_cd=\"$(WEB_PATH)/system_play_cd\"
-PLAYER_DEFINES += -D play_pid_path=\"/run/play_pid\"
-PLAYER_DEFINES += -D mix_pid_path=\"/run/mix_pid\"
 ifdef init
 PLAYER_DEFINES += -D PLAYER_AS_INIT
 endif
 CC := gcc -O2
 
-web : Makefile src/web.c web_select html_tracks html_cd_control html_albums resp_err data_static data_picture data_cd data_flac data_flac_extracted system_play_flac system_play_cd system_poweroff
+web : Makefile src/web.c web_select html_main html_tracks html_cd_control html_albums resp_err data_static data_picture data_cd data_flac data_flac_extracted system_play_flac system_play_cd system_poweroff
 	$(CC) src/web.c -o web $(PLAYER_DEFINES)
 
 web_select : Makefile src/web_select.c
 	$(CC) src/web_select.c -o web_select $(PLAYER_DEFINES)
+
+html_main : Makefile src/html_main.c
+	$(CC) src/html_main.c -o html_main $(PLAYER_DEFINES)
 
 html_tracks : Makefile src/html_tracks.c
 	$(CC) src/html_tracks.c -o html_tracks $(PLAYER_DEFINES) -lFLAC
@@ -39,7 +45,7 @@ html_albums : Makefile src/html_albums.c
 resp_err : src/resp_err.c
 	$(CC) src/resp_err.c -o resp_err
 
-data_static : Makefile src/data_static.c static/style_main.css static/script_main.js static/style_tracks.css static/script_tracks.js static/style_cd_control.css static/script_cd_control.js static/style_albums.css static/script_albums.js static/index.html static/favicon.ico static/favicon152.png static/favicon180.png
+data_static : Makefile src/data_static.c static/style_main.css static/script_main.js static/style_tracks.css static/script_tracks.js static/style_cd_control.css static/script_cd_control.js static/style_albums.css static/script_albums.js static/favicon.ico static/favicon152.png static/favicon180.png
 	xxd -i static/style_main.css style_main_css.c
 	xxd -i static/script_main.js script_main_js.c
 	xxd -i static/style_tracks.css style_tracks_css.c
@@ -48,11 +54,10 @@ data_static : Makefile src/data_static.c static/style_main.css static/script_mai
 	xxd -i static/script_cd_control.js script_cd_control_js.c
 	xxd -i static/style_albums.css style_albums_css.c
 	xxd -i static/script_albums.js script_albums_js.c
-	xxd -i static/index.html index_html.c
 	xxd -i static/favicon.ico favicon.c
 	xxd -i static/favicon152.png favicon152.c
 	xxd -i static/favicon180.png favicon180.c
-	$(CC) src/data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_cd_control_css.c script_cd_control_js.c style_albums_css.c script_albums_js.c index_html.c favicon.c favicon152.c favicon180.c -o data_static $(PLAYER_DEFINES)
+	$(CC) src/data_static.c style_main_css.c script_main_js.c style_tracks_css.c script_tracks_js.c style_cd_control_css.c script_cd_control_js.c style_albums_css.c script_albums_js.c favicon.c favicon152.c favicon180.c -o data_static $(PLAYER_DEFINES)
 	rm *.c
 
 data_picture : Makefile src/data_picture.c

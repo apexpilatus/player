@@ -71,8 +71,6 @@ static void create_html(char *msg) {
   strcat(msg, "<script src=script_volume.js></script>");
   strcat(msg, "</head>");
   strcat(msg, "<body>");
-  strcat(msg, "<script>updatecurrent()</script>");
-  strcat(msg, "<script>showcontrol()</script>");
   strcat(msg, "<form>");
   list_controls(msg);
   strcat(msg, "</form>");
