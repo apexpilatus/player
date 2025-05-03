@@ -1,6 +1,8 @@
 #include "lib_read_cd.h"
+#include <arpa/inet.h>
 #include <cdda_interface.h>
 #include <fcntl.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -126,13 +128,9 @@ int main(int prm_n, char *prm[]) {
   card_list *cards;
   cdrom_drive *d = cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL);
   thrd_t thr;
-  int fd;
-  pid_t pid = getpid();
-  fd = open(play_pid_path, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
-  if (fd < 0)
-    execl(resp_err, "resp_err", prm[1], NULL);
-  write_size = write(fd, &pid, sizeof(pid_t));
-  close(fd);
+  struct hostent *host;
+  char streamer_address[INET_ADDRSTRLEN];
+
   url_track = strchr(prm[2], '?');
   if (!url_track)
     first_track = 1;
@@ -140,6 +138,20 @@ int main(int prm_n, char *prm[]) {
     url_track++;
     first_track = strtol(url_track, NULL, 10);
   }
+  sprintf(cmd, "echo /stream_cd?%d|nc -w 1 %s %s 1>/dev/null 2>/dev/null",
+          first_track, prm[3], android_client_port);
+  if (!system(cmd))
+    goto ok;
+  if ((host = gethostbyname(streamer_host))) {
+    inet_ntop(AF_INET, (struct in_addr *)host->h_addr, streamer_address,
+              INET_ADDRSTRLEN);
+    sprintf(cmd, "echo /stream_cd?%d|nc -w 1 %s %s 1>/dev/null 2>/dev/null",
+            first_track, streamer_address, streamer_port);
+    if (!system(cmd))
+      goto ok;
+  }
+  execl(resp_err, "resp_err", prm[1], NULL);
+
   if (!d || cdda_open(d) || first_track > d->tracks)
     execl(resp_err, "resp_err", prm[1], NULL);
   for (int i = first_track; i <= d->tracks; i++)
@@ -150,15 +162,6 @@ int main(int prm_n, char *prm[]) {
   strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
   strcat(rsp, "Cache-control: no-cache\r\n");
   strcat(rsp, "X-Content-Type-Options: nosniff\r\n\r\n");
-  sprintf(cmd, "echo /stream_cd?%d|nc -w 1 %s 9696 1>/dev/null 2>/dev/null",
-          first_track, prm[3]);
-  if (!system(cmd)) {
-    write_size = write(sock, rsp, strlen(rsp));
-    if (write_size != strlen(rsp))
-      return 1;
-    else
-      return 0;
-  }
   cards = init_alsa();
   if (!cards)
     execl(resp_err, "resp_err", prm[1], NULL);
@@ -170,4 +173,15 @@ int main(int prm_n, char *prm[]) {
       thrd_detach(thr) != thrd_success)
     return 1;
   return cd_player(cards);
+
+ok:
+  strcpy(rsp, "HTTP/1.1 200 OK\r\n");
+  strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
+  strcat(rsp, "Cache-control: no-cache\r\n");
+  strcat(rsp, "X-Content-Type-Options: nosniff\r\n\r\n");
+  write_size = write(sock, rsp, strlen(rsp));
+  if (write_size != strlen(rsp))
+    return 1;
+  else
+    return 0;
 }

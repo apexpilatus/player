@@ -1,10 +1,9 @@
-#include <netdb.h>
+#include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
-#include <threads.h>
 #include <unistd.h>
 
 #define listen_port 8888
@@ -24,60 +23,63 @@ static void kill_zombies(int signum) {
   }
 }
 
-static inline void selector(int sock) {
-  ssize_t read_size;
+static inline void selector(int sock, struct sockaddr_in *addr) {
+  ssize_t read_size = 0;
   pid_t pid;
   char sock_txt[15];
-  char *url;
   char *end;
   sprintf(sock_txt, "%d", sock);
-  read_size = read(sock, req, msg_size);
-  if (read_size < 5 || strncmp(req, "GET ", 4))
+  while (read_size < msg_size && read(sock, req + read_size, 1) == 1) {
+    read_size++;
+    req[read_size] = '\0';
+    if (read_size > 3 && !strcmp(req + read_size - 4, "\r\n\r\n")) {
+      break;
+    }
+  }
+  if (read_size == msg_size - 1 || read_size < 5)
     goto exit;
-  url = req + 4;
-  end = strchr(url, ' ');
-  if (end)
+  if (!strncmp(req, "GET ", 4))
+    req += 4;
+  if ((end = strchr(req, ' ')) || (end = strchr(req, '\n')))
     *end = '\0';
-  else
-    goto exit;
-  if (!strcmp("/getvolume", url)) {
+  if (!strcmp("/getvolume", req)) {
     while (mixer_pid > 0)
       ;
     mixer_pid = fork();
     if (!mixer_pid)
-      execl(html_volume, "html_volume", sock_txt, url, NULL);
-  } else if (!strncmp("/setvolume", url, strlen("/setvolume"))) {
+      execl(html_volume, "html_volume", sock_txt, req, NULL);
+  } else if (!strncmp("/setvolume", req, strlen("/setvolume"))) {
     while (mixer_pid > 0)
       ;
     mixer_pid = fork();
     if (!mixer_pid)
-      execl(system_volume, "system_volume", sock_txt, url, NULL);
-  } else if (!strncmp("/playflac", url, strlen("/playflac"))) {
+      execl(system_volume, "system_volume", sock_txt, req, NULL);
+  } else if (!strncmp("/stream", req, strlen("/stream"))) {
     if (player_pid > 0) {
       kill(player_pid, SIGTERM);
       while (player_pid > 0)
         ;
     }
     player_pid = fork();
-    if (!player_pid)
-      execl(system_play, "system_play", sock_txt, url, NULL);
-  } else if (!strcmp("/poweroff", url)) {
+    if (!player_pid) {
+      char client_address[INET_ADDRSTRLEN];
+      inet_ntop(AF_INET, &addr->sin_addr, client_address, INET_ADDRSTRLEN);
+      execl(system_play, "system_play", sock_txt, req, client_address, NULL);
+    }
+  } else if (!strcmp("/poweroff", req)) {
     if (player_pid > 0) {
       kill(player_pid, SIGTERM);
       while (player_pid > 0)
         ;
-    }
-    pid = fork();
-    if (!pid) {
-      if (system("/init.sh finish"))
-        execl(resp_err, "resp_err", sock_txt, NULL);
-      else
+    } else if (!system("/root/init.sh finish")) {
+      pid = fork();
+      if (!pid)
         execl(system_poweroff, "system_poweroff", sock_txt, NULL);
     }
   } else {
     pid = fork();
     if (!pid)
-      execl(data_static, "data_static", sock_txt, url, NULL);
+      execl(data_static, "data_static", sock_txt, req, NULL);
   }
 exit:
   close(sock);
@@ -102,7 +104,7 @@ int main(void) {
   struct sockaddr_in addr;
   socklen_t addr_size;
   signal(SIGCHLD, kill_zombies);
-  msg_size = getpagesize();
+  msg_size = getpagesize() * 100;
   req = malloc(msg_size);
 #ifdef PLAYER_AS_INIT
   if (system("/init.sh") && system("poweroff"))
@@ -118,6 +120,6 @@ int main(void) {
     sock = accept(sock_listen, (struct sockaddr *)&addr, &addr_size);
     if (sock < 0)
       continue;
-    selector(sock);
+    selector(sock, &addr);
   }
 }

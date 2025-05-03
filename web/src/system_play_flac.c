@@ -1,5 +1,7 @@
 #include "lib_flac_tracks.h"
+#include <arpa/inet.h>
 #include <fcntl.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -179,8 +181,8 @@ static void create_cmd(char *cmd, track_list *tracks, char *client_address) {
     tracks = tracks->next;
   }
   cmd_end = strlen(cmd);
-  sprintf(cmd + cmd_end, "\"|nc -w 1 %s 9696 1>/dev/null 2>/dev/null",
-          client_address);
+  sprintf(cmd + cmd_end, "\"|nc -w 1 %s %s 1>/dev/null 2>/dev/null",
+          client_address, android_client_port);
 }
 
 int main(int prm_n, char *prm[]) {
@@ -188,32 +190,32 @@ int main(int prm_n, char *prm[]) {
   ssize_t write_size;
   char *rsp = malloc(getpagesize());
   char *cmd = malloc(getpagesize());
+  char *url = malloc(getpagesize());
+  struct hostent *host;
+  char streamer_address[INET_ADDRSTRLEN];
   card_list *cards;
   track_list *tracks;
-  int fd;
-  pid_t pid = getpid();
-  tracks = get_tracks_in_dir(prm[2]);
+  strcpy(url, prm[2]);
+  tracks = get_tracks_in_dir(url);
   if (!tracks)
     execl(resp_err, "resp_err", prm[1], NULL);
-  fd = open(play_pid_path, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
-  if (fd < 0)
-    execl(resp_err, "resp_err", prm[1], NULL);
-  write_size = write(fd, &pid, sizeof(pid_t));
-  close(fd);
-  strcpy(rsp, "HTTP/1.1 200 OK\r\n");
-  strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
-  strcat(rsp, "Cache-control: no-cache\r\n");
-  strcat(rsp, "X-Content-Type-Options: nosniff\r\n\r\n");
   create_cmd(cmd, tracks, prm[3]);
   if (!system(cmd)) {
     if (utime(".", NULL))
       execl(resp_err, "resp_err", prm[1], NULL);
-    write_size = write(sock, rsp, strlen(rsp));
-    if (write_size != strlen(rsp))
-      return 1;
-    else
-      return 0;
+    goto ok;
   }
+  if ((host = gethostbyname(streamer_host))) {
+    inet_ntop(AF_INET, (struct in_addr *)host->h_addr, streamer_address,
+              INET_ADDRSTRLEN);
+    sprintf(cmd,
+            "echo \"/stream_album%s\"|nc -w 1 %s %s 1>/dev/null 2>/dev/null",
+            strchr(prm[2], '?'), streamer_address, streamer_port);
+    if (!system(cmd))
+      goto ok;
+  }
+  execl(resp_err, "resp_err", prm[1], NULL);
+
   cards = init_alsa(tracks);
   if (!cards)
     execl(resp_err, "resp_err", prm[1], NULL);
@@ -224,4 +226,15 @@ int main(int prm_n, char *prm[]) {
     return 1;
   close(sock);
   return play_album(tracks, cards);
+
+ok:
+  strcpy(rsp, "HTTP/1.1 200 OK\r\n");
+  strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
+  strcat(rsp, "Cache-control: no-cache\r\n");
+  strcat(rsp, "X-Content-Type-Options: nosniff\r\n\r\n");
+  write_size = write(sock, rsp, strlen(rsp));
+  if (write_size != strlen(rsp))
+    return 1;
+  else
+    return 0;
 }

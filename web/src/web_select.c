@@ -25,16 +25,21 @@ static int stop_playing() {
 
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
-  ssize_t read_size;
+  ssize_t read_size = 0;
   ssize_t msg_size = getpagesize() * 100;
   char *end;
   char *range;
   char *agent;
   char *url = malloc(msg_size);
-  read_size = read(sock, url, msg_size);
-  if (read_size < 5 || strncmp(url, "GET", 3))
+  while (read_size < msg_size && read(sock, url + read_size, 1) == 1) {
+    read_size++;
+    url[read_size] = '\0';
+    if (read_size > 3 && !strcmp(url + read_size - 4, "\r\n\r\n")) {
+      break;
+    }
+  }
+  if (read_size == msg_size - 1 || read_size < 5 || strncmp(url, "GET", 3))
     return 1;
-  url[read_size] = '\0';
   agent = strstr(url, "User-Agent:");
   range = strstr(url, "Range:");
   if (range) {
