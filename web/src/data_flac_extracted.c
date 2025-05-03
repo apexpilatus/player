@@ -137,7 +137,7 @@ int main(int prm_n, char *prm[]) {
   int flac_blocks_size = 0;
   char *end;
   ssize_t write_size;
-  char *rsp = malloc(getpagesize());
+  char rsp[getpagesize()];
   FLAC__StreamMetadata *stream_inf =
       FLAC__metadata_object_new(FLAC__METADATA_TYPE_STREAMINFO);
   track_list *tracks = get_tracks_in_dir(prm[2]);
@@ -173,14 +173,16 @@ int main(int prm_n, char *prm[]) {
             max_range, (flac_blocks_size * 2 * bytes_per_sample) + header_size,
             "Content-Type: audio/wav");
     write_size = write(sock, rsp, strlen(rsp));
-    write_size = write(sock, buf, bytes_left);
-    return 1;
+    write_size += write(sock, buf, bytes_left);
+    if (write_size == strlen(rsp) + bytes_left)
+      return 0;
+    else
+      return 1;
   }
   sprintf(rsp, "%s\r\n%s%d\r\nContent-Range: bytes %d-%d/%d\r\n%s\r\n\r\n",
           "HTTP/1.1 200 OK", "Content-Length: ", bytes_left, min_range,
           max_range, 0, "Content-Type: audio/wav");
-  write_size = write(sock, rsp, strlen(rsp));
-  if (write_size != strlen(rsp))
+  if (write(sock, rsp, strlen(rsp)) != strlen(rsp))
     return 1;
   if (min_range == 0) {
     if (!flac_blocks_size)

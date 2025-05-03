@@ -12,7 +12,7 @@ int main(int prm_n, char *prm[]) {
   char *data;
   ssize_t read_size;
   ssize_t write_size;
-  char *rsp = malloc(getpagesize());
+  char rsp[getpagesize()];
   if (stat(prm[2], &stat_buf))
     execl(resp_err, "resp_err", prm[1], NULL);
   data = malloc(stat_buf.st_size);

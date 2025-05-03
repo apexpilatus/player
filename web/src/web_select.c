@@ -10,6 +10,8 @@ static int stop_playing() {
   int fd = open(play_pid_path, O_RDONLY);
   if (fd >= 0) {
     read_size = read(fd, &pid, sizeof(pid_t));
+    if (read_size != sizeof(pid_t))
+      return 1;
     kill(pid, SIGTERM);
     close(fd);
   }
@@ -17,7 +19,7 @@ static int stop_playing() {
     pid_t pid_check;
     read_size = read(fd, &pid_check, sizeof(pid_t));
     close(fd);
-    if (pid_check != pid)
+    if (pid_check != pid || read_size != sizeof(pid_t))
       return 1;
   }
   return 0;
@@ -33,12 +35,12 @@ int main(int prm_n, char *prm[]) {
   char *url = malloc(msg_size);
   while (read_size < msg_size && read(sock, url + read_size, 1) == 1) {
     read_size++;
-    url[read_size] = '\0';
-    if (read_size > 3 && !strcmp(url + read_size - 4, "\r\n\r\n")) {
+    if (read_size < msg_size)
+      url[read_size] = '\0';
+    if (read_size > 3 && !strcmp(url + read_size - 4, "\r\n\r\n"))
       break;
-    }
   }
-  if (read_size == msg_size - 1 || read_size < 5 || strncmp(url, "GET", 3))
+  if (read_size == msg_size || read_size < 5 || strncmp(url, "GET", 3))
     return 1;
   agent = strstr(url, "User-Agent:");
   range = strstr(url, "Range:");
@@ -80,16 +82,11 @@ int main(int prm_n, char *prm[]) {
       execl(resp_err, "resp_err", prm[1], NULL);
     execl(data_cd, "data_cd", prm[1], url, range ? range : "", NULL);
   } else if (!strncmp("/stream_album", url, strlen("/stream_album"))) {
-    if (stop_playing())
-      execl(resp_err, "resp_err", prm[1], NULL);
     execl(data_flac_extracted, "data_flac_extracted", prm[1], url,
           range ? range : "", NULL);
   } else if (!strncmp("/play", url, strlen("/play"))) {
-    if (stop_playing())
-      execl(resp_err, "resp_err", prm[1], NULL);
-    if (!strncmp("/playflac", url, strlen("/playflac")))
-      execl(system_play_flac, "system_play_flac", prm[1], url, prm[2], NULL);
-    execl(system_play_cd, "system_play_cd", prm[1], url, prm[2], NULL);
+    execl(forward_play_request, "forward_play_request", prm[1], url, prm[2],
+          NULL);
   } else if (!strcmp("/poweroff", url)) {
     if (stop_playing() || system("/root/init.sh finish"))
       execl(resp_err, "resp_err", prm[1], NULL);

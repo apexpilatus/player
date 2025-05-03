@@ -202,14 +202,13 @@ static void create_header(char *hdr, unsigned long msg_len) {
 int main(int prm_n, char *prm[]) {
   int sock;
   ssize_t write_size;
-  char *hdr;
+  char hdr[getpagesize()];
   char *msg;
   char *album_dir;
   album_dir = strchr(prm[2], '?');
   if (!album_dir || chdir(++album_dir))
     execl(resp_err, "resp_err", prm[1], NULL);
   sock = strtol(prm[1], NULL, 10);
-  hdr = malloc(getpagesize());
   msg = malloc(getpagesize() * 10000);
   create_html(msg, prm[3]);
   create_header(hdr, strlen(msg));

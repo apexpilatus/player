@@ -29,7 +29,7 @@ int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   ssize_t rsp_size = getpagesize();
   ssize_t write_size;
-  char *rsp = malloc(rsp_size);
+  char rsp[rsp_size];
   if (chdir(prm[2]))
     execl(resp_err, "resp_err", prm[1], NULL);
   if (get_picture(&picture))

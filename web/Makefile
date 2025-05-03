@@ -2,7 +2,6 @@ WEB_PATH := /home/web
 MUSIC_PATH := /home/music
 PLAYER_DEFINES := -D music_path=\"$(MUSIC_PATH)\"
 PLAYER_DEFINES += -D play_pid_path=\"/run/play_pid\"
-PLAYER_DEFINES += -D mix_pid_path=\"/run/mix_pid\"
 PLAYER_DEFINES += -D streamer_port=\"8888\"
 PLAYER_DEFINES += -D android_client_port=\"9696\"
 PLAYER_DEFINES += -D streamer_host=\"streamer\"
@@ -18,14 +17,13 @@ PLAYER_DEFINES += -D data_cd=\"$(WEB_PATH)/data_cd\"
 PLAYER_DEFINES += -D data_flac=\"$(WEB_PATH)/data_flac\"
 PLAYER_DEFINES += -D data_flac_extracted=\"$(WEB_PATH)/data_flac_extracted\"
 PLAYER_DEFINES += -D system_poweroff=\"$(WEB_PATH)/system_poweroff\"
-PLAYER_DEFINES += -D system_play_flac=\"$(WEB_PATH)/system_play_flac\"
-PLAYER_DEFINES += -D system_play_cd=\"$(WEB_PATH)/system_play_cd\"
+PLAYER_DEFINES += -D forward_play_request=\"$(WEB_PATH)/forward_play_request\"
 ifdef init
 PLAYER_DEFINES += -D PLAYER_AS_INIT
 endif
 CC := gcc -O2
 
-web : Makefile src/web.c web_select html_main html_tracks html_cd_control html_albums resp_err data_static data_picture data_cd data_flac data_flac_extracted system_play_flac system_play_cd system_poweroff
+web : Makefile src/web.c web_select html_main html_tracks html_cd_control html_albums resp_err data_static data_picture data_cd data_flac data_flac_extracted forward_play_request system_poweroff
 	$(CC) src/web.c -o web $(PLAYER_DEFINES)
 
 web_select : Makefile src/web_select.c
@@ -73,14 +71,11 @@ data_flac_extracted : Makefile src/data_flac_extracted.c src/lib_flac_tracks.c s
 data_cd : Makefile src/data_cd.c src/lib_read_cd.c src/lib_read_cd.h
 	$(CC) src/data_cd.c src/lib_read_cd.c -o data_cd $(PLAYER_DEFINES) -lcdda_interface -lcdda_paranoia
 
-system_play_flac : Makefile src/system_play_flac.c src/lib_flac_tracks.c src/lib_flac_tracks.h
-	$(CC) src/system_play_flac.c src/lib_flac_tracks.c -o system_play_flac $(PLAYER_DEFINES) -lasound -lFLAC
-
-system_play_cd : Makefile src/system_play_cd.c src/lib_read_cd.c src/lib_read_cd.h
-	$(CC) src/system_play_cd.c src/lib_read_cd.c -o system_play_cd $(PLAYER_DEFINES) -lasound -lcdda_interface -lcdda_paranoia
+forward_play_request : Makefile src/forward_play_request.c src/lib_flac_tracks.c src/lib_flac_tracks.h
+	$(CC) src/forward_play_request.c src/lib_flac_tracks.c -o forward_play_request $(PLAYER_DEFINES) -lFLAC
 
 system_poweroff : Makefile src/system_poweroff.c
-	$(CC) src/system_poweroff.c -o system_poweroff
+	$(CC) src/system_poweroff.c -o system_poweroff $(PLAYER_DEFINES)
 
 .PHONY: clean
 clean:

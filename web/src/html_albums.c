@@ -31,7 +31,7 @@ static void sort_albums(albums_list *album_first) {
 }
 
 static albums_list *get_albums() {
-  char *src_path = malloc(getpagesize());
+  char src_path[getpagesize()];
   albums_list *album_first = NULL;
   albums_list *album_tmp = NULL;
   DIR *dp_music;
@@ -123,9 +123,8 @@ static void create_header(char *hdr, unsigned long msg_len) {
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   ssize_t write_size;
-  char *hdr;
+  char hdr[getpagesize()];
   char *msg;
-  hdr = malloc(getpagesize());
   msg = malloc(getpagesize() * 10000);
   create_html(msg, strchr(prm[2], '?'));
   create_header(hdr, strlen(msg));

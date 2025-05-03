@@ -54,10 +54,9 @@ static void create_header(char *hdr, unsigned long msg_len) {
 int main(int prm_n, char *prm[]) {
   int sock;
   ssize_t write_size;
-  char *hdr;
+  char hdr[getpagesize()];
   char *msg;
   sock = strtol(prm[1], NULL, 10);
-  hdr = malloc(getpagesize());
   msg = malloc(getpagesize() * 10000);
   create_html(msg, prm[2]);
   create_header(hdr, strlen(msg));

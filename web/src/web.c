@@ -19,7 +19,7 @@ static void kill_zombie(int signum) {
     if (fd >= 0) {
       read_size = read(fd, &run_pid, sizeof(pid_t));
       close(fd);
-      if (run_pid == pid) {
+      if (read_size != sizeof(pid_t) || run_pid == pid) {
         unlink(play_pid_path);
         continue;
       }
@@ -48,7 +48,6 @@ int main(void) {
   socklen_t addr_size;
   signal(SIGCHLD, kill_zombie);
   unlink(play_pid_path);
-  unlink(mix_pid_path);
 #ifdef PLAYER_AS_INIT
   if (system("/root/init.sh") && system("poweroff"))
     return 1;

@@ -31,12 +31,12 @@ static inline void selector(int sock, struct sockaddr_in *addr) {
   sprintf(sock_txt, "%d", sock);
   while (read_size < msg_size && read(sock, req + read_size, 1) == 1) {
     read_size++;
-    req[read_size] = '\0';
-    if (read_size > 3 && !strcmp(req + read_size - 4, "\r\n\r\n")) {
+    if (read_size < msg_size)
+      req[read_size] = '\0';
+    if (read_size > 3 && !strcmp(req + read_size - 4, "\r\n\r\n"))
       break;
-    }
   }
-  if (read_size == msg_size - 1 || read_size < 5)
+  if (read_size == msg_size || read_size < 5)
     goto exit;
   if (!strncmp(req, "GET ", 4))
     req += 4;
@@ -66,7 +66,7 @@ static inline void selector(int sock, struct sockaddr_in *addr) {
       inet_ntop(AF_INET, &addr->sin_addr, client_address, INET_ADDRSTRLEN);
       execl(system_play, "system_play", sock_txt, req, client_address, NULL);
     }
-  } else if (!strcmp("/poweroff", req)) {
+  } else if (!strncmp("/poweroff", req, strlen("/poweroff"))) {
     if (player_pid > 0) {
       kill(player_pid, SIGTERM);
       while (player_pid > 0)

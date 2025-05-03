@@ -108,7 +108,7 @@ static int select_data(char *url, char *rsp) {
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   ssize_t write_size;
-  char *rsp = malloc(getpagesize());
+  char rsp[getpagesize()];
   if (select_data(prm[2], rsp))
     execl(resp_err, "resp_err", prm[1], NULL);
   write_size = write(sock, rsp, strlen(rsp));

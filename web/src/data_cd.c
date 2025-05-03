@@ -45,15 +45,14 @@ static int write_header(int fd, int size) {
 }
 
 static int cd_stream(int sock) {
-  char *rsp = malloc(getpagesize());
+  char rsp[getpagesize()];
   ssize_t write_size;
   data_list *data_cur;
   int bytes_left = max_range - min_range + 1;
   sprintf(rsp, "%s\r\n%s%d\r\nContent-Range: bytes %d-%d/%d\r\n%s\r\n\r\n",
           "HTTP/1.1 200 OK", "Content-Length: ", bytes_left, min_range,
           max_range, data_size + 44, "Content-Type: audio/wav");
-  write_size = write(sock, rsp, strlen(rsp));
-  if (write_size != strlen(rsp))
+  if (write(sock, rsp, strlen(rsp)) != strlen(rsp))
     return 1;
   if (min_range == 0 && max_range < 43) {
     char buf[bytes_left];
@@ -100,6 +99,10 @@ int main(int prm_n, char *prm[]) {
     execl(resp_err, "resp_err", prm[1], NULL);
   write_size = write(fd, &pid, sizeof(pid_t));
   close(fd);
+  if (write_size != sizeof(pid_t)) {
+    unlink(play_pid_path);
+    execl(resp_err, "resp_err", prm[1], NULL);
+  }
   if (!d || cdda_open(d))
     execl(resp_err, "resp_err", prm[1], NULL);
   first_track = strtol(strchr(prm[2], '?') + 1, NULL, 10);

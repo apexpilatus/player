@@ -9,12 +9,10 @@ int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   struct hostent *host;
   char streamer_address[INET_ADDRSTRLEN];
-  char *cmd = malloc(getpagesize());
+  char cmd[getpagesize()];
   ssize_t write_size;
-  char *hdr;
-  char *msg;
-  hdr = malloc(getpagesize());
-  msg = malloc(getpagesize() * 1000);
+  char hdr[getpagesize()];
+  char msg[getpagesize() * 1000];
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -35,7 +33,7 @@ int main(int prm_n, char *prm[]) {
   if ((host = gethostbyname(streamer_host))) {
     inet_ntop(AF_INET, (struct in_addr *)host->h_addr, streamer_address,
               INET_ADDRSTRLEN);
-    sprintf(cmd, "echo hi|nc -w 1 %s %s 1>/dev/null 2>/dev/null",
+    sprintf(cmd, "echo \"\r\n\r\"|nc -w 1 %s %s 1>/dev/null 2>/dev/null",
             streamer_address, streamer_port);
     if (!system(cmd)) {
       strcat(msg, "<button type=button id=volume onclick=getvolume(\"");
