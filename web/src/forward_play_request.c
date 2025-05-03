@@ -45,7 +45,7 @@ int main(int prm_n, char *prm[]) {
       inet_ntop(AF_INET, (struct in_addr *)host->h_addr, streamer_address,
                 INET_ADDRSTRLEN);
       sprintf(cmd,
-              "echo \"/stream_album%s\r\n\r\"|nc -w 1 %s %s 1>/dev/null "
+              "echo \"/stream_album%s \r\n\r\"|nc -w 1 %s %s 1>/dev/null "
               "2>/dev/null",
               strchr(prm[2], '?'), streamer_address, streamer_port);
       if (!system(cmd)) {
@@ -66,7 +66,7 @@ int main(int prm_n, char *prm[]) {
                 INET_ADDRSTRLEN);
       sprintf(
           cmd,
-          "echo \"/stream_cd?%s\r\n\r\"|nc -w 1 %s %s 1>/dev/null 2>/dev/null",
+          "echo \"/stream_cd?%s \r\n\r\"|nc -w 1 %s %s 1>/dev/null 2>/dev/null",
           url_track ? url_track + 1 : "1", streamer_address, streamer_port);
       if (!system(cmd))
         goto ok;
