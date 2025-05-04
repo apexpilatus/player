@@ -199,5 +199,17 @@ int main(int prm_n, char *prm[]) {
     }
   }
   skip_count += header_size;
+  while (tracks) {
+    if (!FLAC__metadata_get_streaminfo(tracks->file_name, stream_inf))
+      execl(resp_err, "resp_err", prm[1], NULL);
+    if (skip_count + (stream_inf->data.stream_info.total_samples * 2 *
+                      bytes_per_sample) <=
+        min_range) {
+      skip_count +=
+          stream_inf->data.stream_info.total_samples * 2 * bytes_per_sample;
+      tracks = tracks->next;
+    } else
+      break;
+  }
   return extract_tracks(tracks, &sock);
 }
