@@ -69,13 +69,6 @@ void error_callback(const FLAC__StreamDecoder *decoder,
                     FLAC__StreamDecoderErrorStatus status, void *client_data) {}
 
 FLAC__StreamDecoderWriteStatus
-get_size_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
-                  const FLAC__int32 *const buffer[], void *client_data) {
-  *((int *)client_data) += frame->header.blocksize;
-  return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
-}
-
-FLAC__StreamDecoderWriteStatus
 write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
                const FLAC__int32 *const buffer[], void *client_data) {
   if ((frame->header.blocksize * 2 * bytes_per_sample) + skip_count <=
@@ -107,9 +100,19 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
   return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
-static int extract_tracks(track_list *tracks,
-                          FLAC__StreamDecoderWriteCallback write_callback,
-                          void *client_data) {
+static int get_album_size(track_list *tracks,
+                          FLAC__StreamMetadata *stream_inf) {
+  int ret = 0;
+  while (tracks) {
+    if (!FLAC__metadata_get_streaminfo(tracks->file_name, stream_inf))
+      return 0;
+    ret += stream_inf->data.stream_info.total_samples;
+    tracks = tracks->next;
+  }
+  return ret;
+}
+
+static int extract_tracks(track_list *tracks, void *client_data) {
   FLAC__StreamDecoder *decoder = NULL;
   FLAC__StreamDecoderInitStatus init_status;
   decoder = FLAC__stream_decoder_new();
@@ -150,7 +153,7 @@ int main(int prm_n, char *prm[]) {
   if ((end = strchr(prm[3], '-')) && strlen(++end) > 0)
     max_range = strtol(end, NULL, 10);
   else {
-    if (extract_tracks(tracks, get_size_callback, &flac_blocks_size))
+    if ((flac_blocks_size = get_album_size(tracks, stream_inf)) == 0)
       execl(resp_err, "resp_err", prm[1], NULL);
     max_range = (flac_blocks_size * 2 * bytes_per_sample) - 1;
   }
@@ -164,7 +167,7 @@ int main(int prm_n, char *prm[]) {
   if (min_range == 0 && max_range < header_size - 1) {
     char buf[bytes_left];
     if (!flac_blocks_size)
-      if (extract_tracks(tracks, get_size_callback, &flac_blocks_size))
+      if ((flac_blocks_size = get_album_size(tracks, stream_inf)) == 0)
         execl(resp_err, "resp_err", prm[1], NULL);
     if (utime(".", NULL))
       execl(resp_err, "resp_err", prm[1], NULL);
@@ -186,7 +189,7 @@ int main(int prm_n, char *prm[]) {
     return 1;
   if (min_range == 0) {
     if (!flac_blocks_size)
-      if (extract_tracks(tracks, get_size_callback, &flac_blocks_size))
+      if ((flac_blocks_size = get_album_size(tracks, stream_inf)) == 0)
         execl(resp_err, "resp_err", prm[1], NULL);
     if (write_header(sock, flac_blocks_size * 2 * bytes_per_sample, stream_inf))
       return 1;
@@ -196,5 +199,5 @@ int main(int prm_n, char *prm[]) {
     }
   }
   skip_count += header_size;
-  return extract_tracks(tracks, write_callback, &sock);
+  return extract_tracks(tracks, &sock);
 }
