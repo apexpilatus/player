@@ -146,7 +146,7 @@ static int read_headers(int sock, unsigned int *rate,
   while (read_size < msg_size && read(sock, msg + read_size, 1) == 1) {
     read_size++;
     if (read_size < msg_size)
-    msg[read_size] = '\0';
+      msg[read_size] = '\0';
     if (read_size > 3 && !strcmp(msg + read_size - 4, "\r\n\r\n")) {
       break;
     }
