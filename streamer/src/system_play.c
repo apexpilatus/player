@@ -141,7 +141,7 @@ static int play(int sock, card_list *cards_first, size_t bytes_per_sample,
 static int read_headers(int sock, unsigned int *rate,
                         unsigned short *bits_per_sample, int *bytes_left) {
   ssize_t read_size = 0;
-  ssize_t msg_size = getpagesize();
+  ssize_t msg_size = getpagesize() * 100;
   char msg[msg_size];
   while (read_size < msg_size && read(sock, msg + read_size, 1) == 1) {
     read_size++;
@@ -219,7 +219,8 @@ int main(int prm_n, char *prm[]) {
   sock = socket(PF_INET, SOCK_STREAM, 0);
   if (send_request(sock, prm))
     return 1;
-  read_headers(sock, &rate, &bits_per_sample, &bytes_left);
+  if (read_headers(sock, &rate, &bits_per_sample, &bytes_left))
+    return 1;
   cards = init_alsa(rate, bits_per_sample);
   if (!cards)
     return 1;
