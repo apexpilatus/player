@@ -145,12 +145,13 @@ static int read_headers(int sock, unsigned int *rate,
   char msg[msg_size];
   while (read_size < msg_size && read(sock, msg + read_size, 1) == 1) {
     read_size++;
+    if (read_size < msg_size)
     msg[read_size] = '\0';
     if (read_size > 3 && !strcmp(msg + read_size - 4, "\r\n\r\n")) {
       break;
     }
   }
-  if (read_size == msg_size - 1 ||
+  if (read_size == msg_size ||
       strncmp(msg, "HTTP/1.1 200 OK", strlen("HTTP/1.1 200 OK")))
     return 1;
   for (read_size = 0; read(sock, msg + read_size, 1) == 1;) {
