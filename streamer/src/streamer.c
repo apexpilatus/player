@@ -23,7 +23,7 @@ static void kill_zombies(int signum) {
   }
 }
 
-static inline void selector(int sock, struct sockaddr_in *addr) {
+static void selector(int sock, struct sockaddr_in *addr) {
   ssize_t read_size = 0;
   pid_t pid;
   char sock_txt[15];
@@ -85,7 +85,7 @@ exit:
   close(sock);
 }
 
-static inline int init_socket(int *sock_listen, struct sockaddr_in *addr,
+static int init_socket(int *sock_listen, struct sockaddr_in *addr,
                               socklen_t *addr_size) {
   *sock_listen = socket(PF_INET, SOCK_STREAM, 0);
   addr->sin_family = AF_INET;
