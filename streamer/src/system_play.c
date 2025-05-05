@@ -202,7 +202,7 @@ static int send_request(int sock, char *prm[]) {
     return 1;
   strcpy(msg, "GET ");
   strcat(msg, prm[2]);
-  strcat(msg, " HTTP/1.1\r\n\r\n");
+  strcat(msg, " \r\n\r\n");
   if (write(sock, msg, strlen(msg)) != strlen(msg))
     return 1;
 }
