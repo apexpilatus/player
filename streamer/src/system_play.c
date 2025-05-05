@@ -205,6 +205,7 @@ static int send_request(int sock, char *prm[]) {
   strcat(msg, " \r\n\r\n");
   if (write(sock, msg, strlen(msg)) != strlen(msg))
     return 1;
+  return 0;
 }
 
 int main(int prm_n, char *prm[]) {
@@ -215,7 +216,8 @@ int main(int prm_n, char *prm[]) {
   card_list *cards;
   close(sock);
   sock = socket(PF_INET, SOCK_STREAM, 0);
-  send_request(sock, prm);
+  if (send_request(sock, prm))
+    return 1;
   read_headers(sock, &rate, &bits_per_sample, &bytes_left);
   cards = init_alsa(rate, bits_per_sample);
   if (!cards)
