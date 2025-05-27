@@ -18,6 +18,7 @@
 typedef struct card_list_t {
   struct card_list_t *next;
   snd_pcm_t *pcm;
+  long buf_size;
   uint32_t off;
 } card_list;
 
@@ -68,6 +69,8 @@ static card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
     memset(card_tmp, 0, sizeof(card_list));
     card_tmp->pcm = pcm_p;
     card_tmp->off = off;
+    snd_pcm_hw_params_get_buffer_size(pcm_hw,
+                                      (snd_pcm_uframes_t *)&card_tmp->buf_size);
   next:
     snd_pcm_hw_params_free(pcm_hw);
   }
@@ -100,18 +103,19 @@ static int play(int sock, card_list *cards_first, size_t bytes_per_sample,
     }
     cards_tmp = cards_first;
     while (cards_tmp) {
-      while ((avail_frames = snd_pcm_avail_update(cards_tmp->pcm)) < blocksize)
+      while ((avail_frames = snd_pcm_avail(cards_tmp->pcm)) < blocksize)
         if (avail_frames < 0)
           return 1;
         else
-          usleep(50);
+          usleep(5000);
       cards_tmp = cards_tmp->next;
     }
     cursor = 0;
     while (cursor < blocksize) {
       cards_tmp = cards_first;
       while (cards_tmp) {
-        if (snd_pcm_mmap_begin(cards_tmp->pcm, &areas, &offset, &frames) < 0)
+        if (snd_pcm_avail_update(cards_tmp->pcm) < 0 ||
+            snd_pcm_mmap_begin(cards_tmp->pcm, &areas, &offset, &frames) < 0)
           return 1;
         for (channel = 0; channel < channels; channel++) {
           buf_tmp[channel] = areas[channel].addr + (areas[channel].first / 8) +
@@ -134,6 +138,18 @@ static int play(int sock, card_list *cards_first, size_t bytes_per_sample,
         return 1;
       cards_tmp = cards_tmp->next;
     }
+  }
+  while ((avail_frames = snd_pcm_avail(cards_first->pcm)) <
+         cards_first->buf_size) {
+    if (avail_frames < 0)
+      break;
+    else
+      usleep(5000);
+  }
+  cards_tmp = cards_first;
+  while (cards_tmp) {
+    snd_pcm_drop(cards_tmp->pcm);
+    cards_tmp = cards_tmp->next;
   }
   return 0;
 }

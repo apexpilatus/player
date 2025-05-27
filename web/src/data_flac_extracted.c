@@ -8,12 +8,10 @@
 #include <FLAC/stream_decoder.h>
 // clang-format on
 
-static int min_range;
-static int max_range;
 static int bytes_left;
 static int bytes_per_sample;
 static int header_size;
-static int skip_count;
+static int bytes_skip;
 
 static int write_header(int fd, int size, FLAC__StreamMetadata *stream_inf) {
   int int_var;
@@ -71,31 +69,30 @@ void error_callback(const FLAC__StreamDecoder *decoder,
 FLAC__StreamDecoderWriteStatus
 write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
                const FLAC__int32 *const buffer[], void *client_data) {
-  if ((frame->header.blocksize * 2 * bytes_per_sample) + skip_count <=
-      min_range) {
-    skip_count += frame->header.blocksize * 2 * bytes_per_sample;
+  if (frame->header.blocksize * 2 * bytes_per_sample <= bytes_skip) {
+    bytes_skip -= frame->header.blocksize * 2 * bytes_per_sample;
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
   }
   for (int i = 0; i < frame->header.blocksize; i++) {
     int j;
     for (j = 0; j < bytes_per_sample; j++)
-      if (skip_count == min_range) {
+      if (!bytes_skip) {
         if (write(*((int *)client_data), (char *)(buffer[0] + i) + j, 1) != 1)
           return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
         bytes_left -= 1;
         if (bytes_left == 0)
           return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
       } else
-        skip_count++;
+        bytes_skip--;
     for (j = 0; j < bytes_per_sample; j++)
-      if (skip_count == min_range) {
+      if (!bytes_skip) {
         if (write(*((int *)client_data), (char *)(buffer[1] + i) + j, 1) != 1)
           return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
         bytes_left -= 1;
         if (bytes_left == 0)
           return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
       } else
-        skip_count++;
+        bytes_skip--;
   }
   return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
@@ -141,6 +138,8 @@ int main(int prm_n, char *prm[]) {
   char *end;
   ssize_t write_size;
   char rsp[getpagesize()];
+  static int min_range = 0;
+  static int max_range;
   FLAC__StreamMetadata *stream_inf =
       FLAC__metadata_object_new(FLAC__METADATA_TYPE_STREAMINFO);
   track_list *tracks = get_tracks_in_dir(prm[2]);
@@ -155,7 +154,7 @@ int main(int prm_n, char *prm[]) {
   else {
     if ((flac_blocks_size = get_album_size(tracks, stream_inf)) == 0)
       execl(resp_err, "resp_err", prm[1], NULL);
-    max_range = (flac_blocks_size * 2 * bytes_per_sample) - 1;
+    max_range = (flac_blocks_size * 2 * bytes_per_sample) - 1 + header_size;
   }
   if (end = strchr(prm[3], '-')) {
     *end = '\0';
@@ -194,18 +193,17 @@ int main(int prm_n, char *prm[]) {
     if (write_header(sock, flac_blocks_size * 2 * bytes_per_sample, stream_inf))
       return 1;
     else {
+      bytes_skip = 0;
       bytes_left -= header_size;
-      min_range += header_size;
     }
-  }
-  skip_count += header_size;
+  } else
+    bytes_skip = min_range - header_size;
   while (tracks) {
     if (!FLAC__metadata_get_streaminfo(tracks->file_name, stream_inf))
       execl(resp_err, "resp_err", prm[1], NULL);
-    if (skip_count + (stream_inf->data.stream_info.total_samples * 2 *
-                      bytes_per_sample) <=
-        min_range) {
-      skip_count +=
+    if (bytes_skip >=
+        stream_inf->data.stream_info.total_samples * 2 * bytes_per_sample) {
+      bytes_skip -=
           stream_inf->data.stream_info.total_samples * 2 * bytes_per_sample;
       tracks = tracks->next;
     } else
