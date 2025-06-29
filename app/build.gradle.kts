@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "home.music.streamer"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "home.music.streamer"
-        minSdk = 35
-        targetSdk = 35
+        minSdk = 36
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 

@@ -26,6 +26,6 @@
         <service
             android:name=".MainService"
             android:exported="false"
-            android:foregroundServiceType="mediaPlayback"></service>
+            android:foregroundServiceType="mediaPlayback" />
     </application>
 </manifest>
