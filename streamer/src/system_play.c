@@ -22,7 +22,7 @@ typedef struct card_list_t {
   uint32_t off;
 } card_list;
 
-static card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
+card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
   int card_number = -1;
   char card_name[10];
   card_list *card_first = NULL;
@@ -77,7 +77,7 @@ static card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
   return card_first;
 }
 
-static int play(int sock, card_list *cards_first, size_t bytes_per_sample,
+int play(int sock, card_list *cards_first, size_t bytes_per_sample,
                 int bytes_left) {
   card_list *cards_tmp;
   char channel;
@@ -154,7 +154,7 @@ static int play(int sock, card_list *cards_first, size_t bytes_per_sample,
   return 0;
 }
 
-static int read_headers(int sock, unsigned int *rate,
+int read_headers(int sock, unsigned int *rate,
                         unsigned short *bits_per_sample, int *bytes_left) {
   ssize_t read_size = 0;
   ssize_t msg_size = getpagesize() * 100;
@@ -208,7 +208,7 @@ static int read_headers(int sock, unsigned int *rate,
   return 0;
 }
 
-static int send_request(int sock, char *prm[]) {
+int send_request(int sock, char *prm[]) {
   char msg[getpagesize()];
   struct sockaddr_in addr;
   if (!inet_aton(prm[3], &addr.sin_addr))

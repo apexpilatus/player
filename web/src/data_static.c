@@ -29,7 +29,7 @@ extern unsigned int static_favicon180_png_len;
 unsigned char *data;
 unsigned int data_len;
 
-static int select_data(char *url, char *rsp) {
+int select_data(char *url, char *rsp) {
   size_t hdr_end;
   if (!strcmp("/favicon.ico", url)) {
     data = static_favicon_ico;

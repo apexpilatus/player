@@ -10,7 +10,7 @@ extern unsigned int static_script_volume_js_len;
 unsigned char *data;
 unsigned int data_len;
 
-static int select_data(char *url, char *rsp) {
+int select_data(char *url, char *rsp) {
   size_t hdr_end;
   if (!strcmp("/style_volume.css", url)) {
     data = static_style_volume_css;

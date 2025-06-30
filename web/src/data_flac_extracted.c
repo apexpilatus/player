@@ -1,4 +1,4 @@
-#include "lib_flac_tracks.h"
+#include <dirent.h>
 #include <string.h>
 #include <unistd.h>
 #include <utime.h>
@@ -8,12 +8,92 @@
 #include <FLAC/stream_decoder.h>
 // clang-format on
 
-static int bytes_left;
-static int bytes_per_sample;
-static int header_size;
-static int bytes_skip;
+typedef struct track_list_t {
+  struct track_list_t *next;
+  char *file_name;
+  char *track_number;
+} track_list;
 
-static int write_header(int fd, int size, FLAC__StreamMetadata *stream_inf) {
+int bytes_left;
+int bytes_per_sample;
+int header_size;
+int bytes_skip;
+
+void sort_tracks(track_list *track_first) {
+  char *file_name_tmp;
+  char *track_number_tmp;
+  for (track_list *go_slow = track_first; go_slow && go_slow->next;
+       go_slow = go_slow->next)
+    for (track_list *go_fast = go_slow->next; go_fast; go_fast = go_fast->next)
+      if (strtol(go_slow->track_number, NULL, 10) >
+          strtol(go_fast->track_number, NULL, 10)) {
+        file_name_tmp = go_fast->file_name;
+        track_number_tmp = go_fast->track_number;
+        go_fast->file_name = go_slow->file_name;
+        go_fast->track_number = go_slow->track_number;
+        go_slow->file_name = file_name_tmp;
+        go_slow->track_number = track_number_tmp;
+      }
+}
+
+track_list *get_tracks_in_dir(char *url) {
+  char *album_dir;
+  char *start_track;
+  DIR *dp;
+  struct dirent *ep;
+  track_list *track_first = NULL;
+  track_list *track_tmp = NULL;
+  FLAC__StreamMetadata *tags =
+      FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT);
+  album_dir = strchr(url, '?');
+  if (!album_dir)
+    goto exit;
+  start_track = strchr(++album_dir, '&');
+  if (start_track) {
+    *start_track = '\0';
+    start_track++;
+  }
+  if (chdir(album_dir))
+    goto exit;
+  dp = opendir(".");
+  if (dp) {
+    while ((ep = readdir(dp)))
+      if (ep->d_type == DT_REG && FLAC__metadata_get_tags(ep->d_name, &tags)) {
+        for (int i = 0; i < tags->data.vorbis_comment.num_comments; i++)
+          if (!strncmp("TRACKNUMBER=",
+                       (char *)tags->data.vorbis_comment.comments[i].entry,
+                       strlen("TRACKNUMBER="))) {
+            if (!start_track ||
+                strtol((char *)(tags->data.vorbis_comment.comments[i].entry +
+                                strlen("TRACKNUMBER=")),
+                       NULL, 10) >= strtol(start_track, NULL, 10)) {
+              if (!track_first) {
+                track_tmp = malloc(sizeof(track_list));
+                track_first = track_tmp;
+              } else {
+                track_tmp->next = malloc(sizeof(track_list));
+                track_tmp = track_tmp->next;
+              }
+              memset(track_tmp, 0, sizeof(track_list));
+              track_tmp->track_number =
+                  malloc(tags->data.vorbis_comment.comments[i].length + 1);
+              strcpy(track_tmp->track_number,
+                     (char *)(tags->data.vorbis_comment.comments[i].entry +
+                              strlen("TRACKNUMBER=")));
+              track_tmp->file_name = malloc(strlen(ep->d_name) + 1);
+              strcpy(track_tmp->file_name, ep->d_name);
+            }
+            break;
+          }
+      }
+    closedir(dp);
+  }
+  sort_tracks(track_first);
+exit:
+  return track_first;
+}
+
+int write_header(int fd, int size, FLAC__StreamMetadata *stream_inf) {
   int int_var;
   short short_var;
   ssize_t write_size = 0;
@@ -97,7 +177,7 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
   return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
-static int get_album_size(track_list *tracks,
+int get_album_size(track_list *tracks,
                           FLAC__StreamMetadata *stream_inf) {
   int ret = 0;
   while (tracks) {
@@ -109,7 +189,7 @@ static int get_album_size(track_list *tracks,
   return ret;
 }
 
-static int extract_tracks(track_list *tracks, void *client_data) {
+int extract_tracks(track_list *tracks, void *client_data) {
   FLAC__StreamDecoder *decoder = NULL;
   FLAC__StreamDecoderInitStatus init_status;
   decoder = FLAC__stream_decoder_new();
@@ -138,8 +218,8 @@ int main(int prm_n, char *prm[]) {
   char *end;
   ssize_t write_size;
   char rsp[getpagesize()];
-  static int min_range = 0;
-  static int max_range;
+  int min_range = 0;
+  int max_range;
   FLAC__StreamMetadata *stream_inf =
       FLAC__metadata_object_new(FLAC__METADATA_TYPE_STREAMINFO);
   track_list *tracks = get_tracks_in_dir(prm[2]);

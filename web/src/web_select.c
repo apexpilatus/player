@@ -4,7 +4,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-static int stop_playing() {
+int stop_playing() {
   pid_t pid = -1;
   ssize_t read_size;
   int fd = open(play_pid_path, O_RDONLY);
@@ -64,9 +64,7 @@ int main(int prm_n, char *prm[]) {
   else
     return 1;
   if (!strncmp(music_path, url, strlen(music_path))) {
-    if (strcmp(url + strlen(url) - 5, ".flac"))
-      execl(data_picture, "data_picture", prm[1], url, NULL);
-    execl(data_flac, "data_flac", prm[1], url, NULL);
+    execl(data_picture, "data_picture", prm[1], url, NULL);
   } else if (!strncmp("/tracks", url, strlen("/tracks"))) {
     execl(html_tracks, "html_tracks", prm[1], url,
           agent && strstr(agent, "Android") ? "no" : "yes", NULL);

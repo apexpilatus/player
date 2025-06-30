@@ -14,7 +14,7 @@ typedef struct meta_list_t {
   char *rate;
 } meta_list;
 
-static void sort_tracks(meta_list *list_first) {
+void sort_tracks(meta_list *list_first) {
   char *title_tmp;
   char *track_tmp;
   for (meta_list *go_slow = list_first; go_slow && go_slow->next;
@@ -31,7 +31,7 @@ static void sort_tracks(meta_list *list_first) {
       }
 }
 
-static void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
+void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
   for (int i = 0; i < tags->data.vorbis_comment.num_comments; i++)
     if (!strncmp("ARTIST=", (char *)tags->data.vorbis_comment.comments[i].entry,
                  strlen("ARTIST="))) {
@@ -60,7 +60,7 @@ static void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
     }
 }
 
-static int size_is_ok(meta_list *list_first) {
+int size_is_ok(meta_list *list_first) {
   FLAC__uint64 sum = 0;
   while (list_first) {
     sum += list_first->size;
@@ -71,7 +71,7 @@ static int size_is_ok(meta_list *list_first) {
   return 1;
 }
 
-static void list_tracks(char *msg, char *show_audio) {
+void list_tracks(char *msg, char *show_audio) {
   DIR *dp;
   struct dirent *ep;
   meta_list *list_first = NULL;
@@ -167,7 +167,7 @@ static void list_tracks(char *msg, char *show_audio) {
   strcat(msg, "</table>");
 }
 
-static void create_html(char *msg, char *show_audio) {
+void create_html(char *msg, char *show_audio) {
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -189,7 +189,7 @@ static void create_html(char *msg, char *show_audio) {
   strcat(msg, "</html>");
 }
 
-static void create_header(char *hdr, unsigned long msg_len) {
+void create_header(char *hdr, unsigned long msg_len) {
   size_t hdr_end;
   strcpy(hdr, "HTTP/1.1 200 OK\r\n");
   strcat(hdr, "Content-Type: text/html; charset=utf-8\r\n");

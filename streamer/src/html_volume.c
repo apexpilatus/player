@@ -13,7 +13,7 @@
 #include <alsa/mixer.h>
 // clang-format on
 
-static void list_controls(char *msg) {
+void list_controls(char *msg) {
   int card_number = -1;
   char alsa_name[10];
   snd_mixer_t *mxr;
@@ -58,7 +58,7 @@ static void list_controls(char *msg) {
   }
 }
 
-static void create_html(char *msg) {
+void create_html(char *msg) {
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -78,7 +78,7 @@ static void create_html(char *msg) {
   strcat(msg, "</html>");
 }
 
-static void create_header(char *hdr, unsigned long msg_len) {
+void create_header(char *hdr, unsigned long msg_len) {
   size_t hdr_end;
   strcpy(hdr, "HTTP/1.1 200 OK\r\n");
   strcat(hdr, "Content-Type: text/html; charset=utf-8\r\n");

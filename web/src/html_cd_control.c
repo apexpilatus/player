@@ -4,7 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 
-static void create_html(char *msg, char *show_audio) {
+void create_html(char *msg, char *show_audio) {
   cdrom_drive *d;
   size_t msg_end;
   strcpy(msg, "<!DOCTYPE html>");
@@ -41,7 +41,7 @@ static void create_html(char *msg, char *show_audio) {
   strcat(msg, "</html>");
 }
 
-static void create_header(char *hdr, unsigned long msg_len) {
+void create_header(char *hdr, unsigned long msg_len) {
   size_t hdr_end;
   strcpy(hdr, "HTTP/1.1 200 OK\r\n");
   strcat(hdr, "Content-Type: text/html; charset=utf-8\r\n");

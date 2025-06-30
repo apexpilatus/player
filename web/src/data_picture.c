@@ -4,7 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 
-static int get_picture(FLAC__StreamMetadata **picture) {
+int get_picture(FLAC__StreamMetadata **picture) {
   DIR *dp;
   struct dirent *ep;
   dp = opendir(".");

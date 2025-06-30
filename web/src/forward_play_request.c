@@ -1,4 +1,3 @@
-#include "lib_flac_tracks.h"
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <stdio.h>
@@ -7,49 +6,36 @@
 #include <unistd.h>
 #include <utime.h>
 
-static void android_cmd(char *cmd, track_list *tracks, char *client_address) {
-  size_t cmd_end;
-  strcat(cmd, "echo \"");
-  while (tracks) {
-    strcat(cmd, "$(pwd)/");
-    strcat(cmd, tracks->file_name);
-    if (tracks->next)
-      strcat(cmd, "|");
-    tracks = tracks->next;
-  }
-  cmd_end = strlen(cmd);
-  sprintf(cmd + cmd_end, "\"|nc -w 1 %s %s 1>/dev/null 2>/dev/null",
-          client_address, android_client_port);
-}
-
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   char rsp[getpagesize()];
   char cmd[getpagesize()];
   struct hostent *host;
   char streamer_address[INET_ADDRSTRLEN];
+  char *path_track = strchr(prm[2], '?') + 1;
   if (!strncmp("/playflac", prm[2], strlen("/playflac"))) {
-    char url[getpagesize()];
-    track_list *tracks;
-    strcpy(url, prm[2]);
-    tracks = get_tracks_in_dir(url);
-    if (!tracks)
-      execl(resp_err, "resp_err", prm[1], NULL);
-    android_cmd(cmd, tracks, prm[3]);
+    sprintf(cmd,
+            "echo \"/stream_album?%s\"|nc -w 1 %s %s 1>/dev/null 2>/dev/null",
+            path_track, prm[3], android_client_port);
     if (!system(cmd)) {
-      if (utime(".", NULL))
+      char *end = strchr(path_track, '&');
+      if (end)
+        *end = '\0';
+      if (utime(path_track, NULL))
         execl(resp_err, "resp_err", prm[1], NULL);
       goto ok;
     }
     if ((host = gethostbyname(streamer_host))) {
       inet_ntop(AF_INET, (struct in_addr *)host->h_addr, streamer_address,
                 INET_ADDRSTRLEN);
-      sprintf(cmd,
-              "echo \"/stream_album%s \r\n\r\"|nc -w 1 %s %s 1>/dev/null "
-              "2>/dev/null",
-              strchr(prm[2], '?'), streamer_address, streamer_port);
+      sprintf(cmd, "echo \"/stream_album?%s \r\n\r\"|nc -w 1 %s %s %s",
+              path_track, streamer_address, streamer_port,
+              "1>/dev/null 2>/dev/null");
       if (!system(cmd)) {
-        if (utime(".", NULL))
+        char *end = strchr(path_track, '&');
+        if (end)
+          *end = '\0';
+        if (utime(path_track, NULL))
           execl(resp_err, "resp_err", prm[1], NULL);
         goto ok;
       }

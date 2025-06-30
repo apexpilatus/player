@@ -8,12 +8,12 @@
 
 #define listen_port 8888
 
-static ssize_t msg_size;
-static char *req;
-static volatile pid_t player_pid = -1;
-static volatile pid_t mixer_pid = -1;
+ssize_t msg_size;
+char *req;
+volatile pid_t player_pid = -1;
+volatile pid_t mixer_pid = -1;
 
-static void kill_zombies(int signum) {
+void kill_zombies(int signum) {
   pid_t pid;
   while ((pid = waitpid(WAIT_ANY, NULL, WNOHANG)) > 0) {
     if (pid == mixer_pid)
@@ -23,7 +23,7 @@ static void kill_zombies(int signum) {
   }
 }
 
-static void selector(int sock, struct sockaddr_in *addr) {
+void selector(int sock, struct sockaddr_in *addr) {
   ssize_t read_size = 0;
   pid_t pid;
   char sock_txt[15];
@@ -85,7 +85,7 @@ exit:
   close(sock);
 }
 
-static int init_socket(int *sock_listen, struct sockaddr_in *addr,
+int init_socket(int *sock_listen, struct sockaddr_in *addr,
                        socklen_t *addr_size) {
   *sock_listen = socket(PF_INET, SOCK_STREAM, 0);
   addr->sin_family = AF_INET;

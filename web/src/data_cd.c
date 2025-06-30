@@ -8,12 +8,12 @@
 #include <threads.h>
 #include <unistd.h>
 
-static int data_size;
-static int min_range;
-static int max_range;
-static int first_shift;
+int data_size;
+int min_range;
+int max_range;
+int first_shift;
 
-static int write_header(int fd, int size) {
+int write_header(int fd, int size) {
   int int_var;
   short short_var;
   ssize_t write_size = 0;
@@ -44,7 +44,7 @@ static int write_header(int fd, int size) {
     return 0;
 }
 
-static int cd_stream(int sock) {
+int cd_stream(int sock) {
   char rsp[getpagesize()];
   ssize_t write_size;
   data_list *data_cur;

@@ -13,7 +13,7 @@
 #include <alsa/mixer.h>
 // clang-format on
 
-static int init_mixer(char *card_name, snd_mixer_elem_t **melem, long *min_vol,
+int init_mixer(char *card_name, snd_mixer_elem_t **melem, long *min_vol,
                       long *max_vol) {
   snd_mixer_t *mxr;
   if (snd_mixer_open(&mxr, 0) || snd_mixer_selem_register(mxr, NULL, NULL))

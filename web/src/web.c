@@ -9,7 +9,7 @@
 
 #define listen_port 80
 
-static void kill_zombie(int signum) {
+void kill_zombie(int signum) {
   pid_t pid;
   pid_t run_pid;
   int fd;
@@ -27,7 +27,7 @@ static void kill_zombie(int signum) {
   }
 }
 
-static int init_socket(int *sock_listen, struct sockaddr_in *addr,
+int init_socket(int *sock_listen, struct sockaddr_in *addr,
                        socklen_t *addr_size) {
   *sock_listen = socket(PF_INET, SOCK_STREAM, 0);
   addr->sin_family = AF_INET;

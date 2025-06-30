@@ -11,7 +11,7 @@ long volatile first_sector;
 long volatile last_sector;
 char volatile in_work = 1;
 
-static void callback(long inpos, int function) {}
+void callback(long inpos, int function) {}
 
 int cd_reader(void *prm) {
   cdrom_drive *d = prm;
