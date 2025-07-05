@@ -213,7 +213,6 @@ int extract_tracks(track_list *tracks, void *client_data) {
 
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
-  int flac_blocks_size = 0;
   char *end;
   ssize_t write_size;
   char rsp[getpagesize()];
@@ -222,17 +221,14 @@ int main(int prm_n, char *prm[]) {
   FLAC__StreamMetadata *stream_inf =
       FLAC__metadata_object_new(FLAC__METADATA_TYPE_STREAMINFO);
   track_list *tracks = get_tracks_in_dir(prm[2]);
-  if (!tracks)
-    execl(resp_err, "resp_err", prm[1], NULL);
-  if (!FLAC__metadata_get_streaminfo(tracks->file_name, stream_inf))
+  int flac_blocks_size;
+  if (!(tracks && (flac_blocks_size = get_album_size(tracks, stream_inf))))
     execl(resp_err, "resp_err", prm[1], NULL);
   bytes_per_sample = stream_inf->data.stream_info.bits_per_sample / 8;
   header_size = stream_inf->data.stream_info.bits_per_sample == 16 ? 44 : 68;
   if ((end = strchr(prm[3], '-')) && strlen(++end) > 0)
     max_range = strtol(end, NULL, 10);
   else {
-    if ((flac_blocks_size = get_album_size(tracks, stream_inf)) == 0)
-      execl(resp_err, "resp_err", prm[1], NULL);
     max_range = (flac_blocks_size * 2 * bytes_per_sample) - 1 + header_size;
   }
   if (end = strchr(prm[3], '-')) {
@@ -244,9 +240,6 @@ int main(int prm_n, char *prm[]) {
   bytes_left = max_range - min_range + 1;
   if (min_range == 0 && max_range < header_size - 1) {
     char buf[bytes_left];
-    if (!flac_blocks_size)
-      if ((flac_blocks_size = get_album_size(tracks, stream_inf)) == 0)
-        execl(resp_err, "resp_err", prm[1], NULL);
     if (utime(".", NULL))
       execl(resp_err, "resp_err", prm[1], NULL);
     sprintf(rsp, "%s\r\n%s%d\r\nContent-Range: bytes %d-%d/%d\r\n%s\r\n\r\n",
@@ -267,9 +260,6 @@ int main(int prm_n, char *prm[]) {
   if (write(sock, rsp, strlen(rsp)) != strlen(rsp))
     return 1;
   if (min_range == 0) {
-    if (!flac_blocks_size)
-      if ((flac_blocks_size = get_album_size(tracks, stream_inf)) == 0)
-        execl(resp_err, "resp_err", prm[1], NULL);
     if (write_header(sock, flac_blocks_size * 2 * bytes_per_sample, stream_inf))
       return 1;
     else {
