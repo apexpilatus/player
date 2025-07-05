@@ -177,8 +177,7 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
   return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
-int get_album_size(track_list *tracks,
-                          FLAC__StreamMetadata *stream_inf) {
+int get_album_size(track_list *tracks, FLAC__StreamMetadata *stream_inf) {
   int ret = 0;
   while (tracks) {
     if (!FLAC__metadata_get_streaminfo(tracks->file_name, stream_inf))
@@ -263,7 +262,8 @@ int main(int prm_n, char *prm[]) {
   }
   sprintf(rsp, "%s\r\n%s%d\r\nContent-Range: bytes %d-%d/%d\r\n%s\r\n\r\n",
           "HTTP/1.1 200 OK", "Content-Length: ", bytes_left, min_range,
-          max_range, 0, "Content-Type: audio/wav");
+          max_range, (flac_blocks_size * 2 * bytes_per_sample) + header_size,
+          "Content-Type: audio/wav");
   if (write(sock, rsp, strlen(rsp)) != strlen(rsp))
     return 1;
   if (min_range == 0) {

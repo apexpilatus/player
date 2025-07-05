@@ -28,7 +28,7 @@ void kill_zombie(int signum) {
 }
 
 int init_socket(int *sock_listen, struct sockaddr_in *addr,
-                       socklen_t *addr_size) {
+                socklen_t *addr_size) {
   *sock_listen = socket(PF_INET, SOCK_STREAM, 0);
   addr->sin_family = AF_INET;
   addr->sin_port = htons(listen_port);
