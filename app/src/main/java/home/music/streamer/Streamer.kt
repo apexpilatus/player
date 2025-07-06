@@ -60,7 +60,6 @@ class Streamer(private val reader: InputStream) {
                     }
                     write(ByteBuffer.wrap(arr), arr.size, AudioTrack.WRITE_BLOCKING)
                     if (playState != AudioTrack.PLAYSTATE_PLAYING) play()
-                    setVolume(1f)
                     bytesLeft -= arr.size
                     if (bytesLeft == 0) break
                 }
