@@ -6,19 +6,21 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.media.AudioAttributes
-import android.media.MediaPlayer
 import android.os.IBinder
 import java.io.BufferedReader
+import java.io.BufferedWriter
+import java.io.InputStream
 import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 import java.net.ServerSocket
+import java.net.Socket
 import java.net.URL
-import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.Arrays
 
 const val CHANNEL_ID = "main"
 const val CHANNEL_NAME = "main"
 
-class MainService : Service(), MediaPlayer.OnCompletionListener {
+class MainService : Service() {
     private val sockServer by lazy { ServerSocket(9696) }
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
 
@@ -26,51 +28,94 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
         @Volatile
         var started = false
 
-        private val refs = ConcurrentLinkedQueue<String>()
-        private val players = ConcurrentLinkedQueue<MediaPlayer>()
+        @Volatile
+        var stopPlaying = false
     }
 
-    private val updateStatus = Runnable {
-        var remoteIP = ""
+    private fun checkHeader(reader: InputStream): Boolean {
+        val hdr: MutableList<Byte> = mutableListOf()
+        hdr.addAll(reader.readNBytes(1).asList())
+        if (hdr.isNotEmpty()) {
+            var hdrSize = hdr.size
+            val maxSize = 1000
+            while (hdrSize < maxSize) {
+                hdr.addAll(reader.readNBytes(1).asList())
+                if (hdr.size == hdrSize) {
+                    return false
+                }
+                if (hdr.size > 3 && Arrays.compare(
+                        hdr.toByteArray(),
+                        hdr.size - 4,
+                        hdr.size - 1,
+                        "\r\n\r\n".toByteArray(),
+                        0,
+                        3
+                    ) == 0
+                ) break
+                hdrSize = hdr.size
+            }
+            if (hdrSize == maxSize) return false
+            if (String(hdr.toByteArray()).contains("HTTP/1.1 200 OK")) return true
+        }
+        return false
+    }
+
+    private val listen = Thread {
+        var remoteIP: String
+        var url: String
+        var play = Thread {
+            notificationManager.notify(
+                1,
+                Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
+                    .setShowWhen(false).setOnlyAlertOnce(true).setContentText("waiting").build()
+            )
+        }
+        play.start()
         while (true) {
             try {
                 sockServer.accept().use {
-                    if (remoteIP != it.remoteSocketAddress.toString().replace("/", "")
-                            .split(":")[0]
-                    ) remoteIP = it.remoteSocketAddress.toString().replace("/", "").split(":")[0]
-                    val msg = BufferedReader(InputStreamReader(it.getInputStream())).readLine()
-                    for (player in players) player.reset()
-                    refs.clear()
-                    for (ref in msg.split("|")) refs.add("http://$remoteIP$ref")
-                }
-                with(players.peek() as MediaPlayer) {
-                    setDataSource(refs.poll())
-                    prepare()
-                    start()
-                    val ref = refs.poll()
-                    if (ref != null) {
-                        with(players.last()) {
-                            setDataSource(ref)
-                            prepare()
+                    stopPlaying = true
+                    play.join()
+                    stopPlaying = false
+                    remoteIP = it.remoteSocketAddress.toString().replace("/", "").split(":")[0]
+                    url = BufferedReader(InputStreamReader(it.getInputStream())).readLine()
+                    play = Thread {
+                        try {
+                            Socket(remoteIP, 80).use { socket ->
+                                val writer =
+                                    BufferedWriter(OutputStreamWriter(socket.getOutputStream()))
+                                writer.write("GET $url \r\n\r\n")
+                                writer.flush()
+                                val reader = socket.getInputStream()
+                                if (checkHeader(reader)) {
+                                    URL(
+                                        "http://$remoteIP/apple-touch-icon.png"
+                                    ).openStream().use { streamPicture ->
+                                        notificationManager.notify(
+                                            1,
+                                            Notification.Builder(this, CHANNEL_ID)
+                                                .setSmallIcon(R.drawable.ic_notification)
+                                                .setLargeIcon(BitmapFactory.decodeStream(streamPicture))
+                                                .setOnlyAlertOnce(true).setShowWhen(false)
+                                                .setContentText("").build()
+                                        )
+                                    }
+                                    Streamer(reader).play()
+                                    notificationManager.notify(
+                                        1,
+                                        Notification.Builder(this, CHANNEL_ID)
+                                            .setSmallIcon(R.drawable.ic_notification)
+                                            .setOnlyAlertOnce(true).setShowWhen(false)
+                                            .setContentText("").build()
+                                    )
+                                }
+                            }
+                        } catch (_: Exception) {
                         }
-                        setNextMediaPlayer(players.last())
-                    } else {
-                        players.poll()
-                        players.add(this)
                     }
-                }
-                URL("http://$remoteIP/apple-touch-icon.png").openStream().use {
-                    notificationManager.notify(
-                        1,
-                        Notification.Builder(this, CHANNEL_ID)
-                            .setSmallIcon(R.drawable.ic_notification)
-                            .setLargeIcon(BitmapFactory.decodeStream(it)).setOnlyAlertOnce(true)
-                            .setShowWhen(false).setContentText("").build()
-                    )
+                    play.start()
                 }
             } catch (_: Exception) {
-                for (player in players) player.reset()
-                refs.clear()
             }
         }
     }
@@ -90,14 +135,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
             Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
                 .setShowWhen(false).setContentText("").build()
         )
-        for (i in 1..2) players.add(MediaPlayer().apply {
-            setAudioAttributes(
-                AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .setUsage(AudioAttributes.USAGE_MEDIA).build()
-            )
-            setOnCompletionListener(this@MainService)
-        })
-        Thread(updateStatus).start()
+        listen.start()
         return START_STICKY
     }
 
@@ -108,25 +146,5 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
     override fun onDestroy() {
         sockServer.close()
         started = false
-    }
-
-    override fun onCompletion(mp: MediaPlayer?) {
-        if (mp === players.last()) notificationManager.notify(
-            1,
-            Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
-                .setOnlyAlertOnce(true).setShowWhen(false).setContentText("").build()
-        ) else {
-            val ref = refs.poll()
-            if (ref != null) with(players.poll() as MediaPlayer) {
-                reset()
-                try {
-                    setDataSource(ref)
-                    prepare()
-                    players.last().setNextMediaPlayer(this)
-                } catch (_: Exception) {
-                }
-                players.add(this)
-            }
-        }
     }
 }
