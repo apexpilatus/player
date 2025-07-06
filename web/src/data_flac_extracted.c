@@ -101,7 +101,7 @@ int write_header(int fd, int size, FLAC__StreamMetadata *stream_inf) {
   int_var =
       size + (stream_inf->data.stream_info.bits_per_sample == 16 ? 36 : 72);
   write_size += write(fd, &int_var, 4);
-  write_size += write_size = write(fd, "WAVEfmt ", 8);
+  write_size += write(fd, "WAVEfmt ", 8);
   int_var = (stream_inf->data.stream_info.bits_per_sample == 16 ? 16 : 40);
   write_size += write(fd, &int_var, 4);
   short_var =
