@@ -50,17 +50,18 @@ class Streamer(private val reader: InputStream) {
                 AudioTrack.Builder().setAudioAttributes(audioAttributes).setAudioFormat(format)
                     .build()
             val channels = 2
-            val msgSize = (bits / 8) * channels * 1000
-            var arr: ByteArray
+            val bufSize = (bits / 8) * channels * 1000
+            val arr = ByteArray(bufSize)
+            var readSize: Int
             with(player) {
                 while (!stopPlaying) {
-                    arr = reader.readNBytes(msgSize)
-                    if (arr.size < msgSize && arr.size < bytesLeft) {
+                    readSize = reader.readNBytes(arr, 0, bufSize)
+                    if (readSize < bufSize && readSize < bytesLeft) {
                         break
                     }
-                    write(ByteBuffer.wrap(arr), arr.size, AudioTrack.WRITE_BLOCKING)
+                    write(ByteBuffer.wrap(arr), readSize, AudioTrack.WRITE_BLOCKING)
                     if (playState != AudioTrack.PLAYSTATE_PLAYING) play()
-                    bytesLeft -= arr.size
+                    bytesLeft -= readSize
                     if (bytesLeft == 0) break
                 }
                 stop()
