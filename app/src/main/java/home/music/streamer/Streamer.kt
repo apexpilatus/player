@@ -41,6 +41,10 @@ class Streamer(private val reader: InputStream) {
 
     fun play() {
         if (readHeader()) {
+            val channels = 2
+            val bufSize = (bits / 8) * channels * 10000
+            var readSize: Int
+            val arr = ByteArray(bufSize)
             val format = AudioFormat.Builder()
                 .setEncoding(if (bits == 16.toShort()) AudioFormat.ENCODING_PCM_16BIT else AudioFormat.ENCODING_PCM_24BIT_PACKED)
                 .setSampleRate(rate).setChannelMask(AudioFormat.CHANNEL_OUT_STEREO).build()
@@ -48,11 +52,7 @@ class Streamer(private val reader: InputStream) {
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()
             val player =
                 AudioTrack.Builder().setAudioAttributes(audioAttributes).setAudioFormat(format)
-                    .build()
-            val channels = 2
-            val bufSize = (bits / 8) * channels * 1000
-            val arr = ByteArray(bufSize)
-            var readSize: Int
+                    .setBufferSizeInBytes(bufSize).build()
             with(player) {
                 while (!stopPlaying) {
                     readSize = reader.readNBytes(arr, 0, bufSize)
