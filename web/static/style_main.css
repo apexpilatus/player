@@ -26,12 +26,9 @@ button {
     color: black;
     background-color: #cec5b7;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 30px;
     text-align: center;
-    width: 60px;
-    border-color: white;
-    border-style: solid;
-    border-radius: 15%;
+    border-style: none;
 }
 
 #poweroff {
@@ -52,11 +49,11 @@ button {
 #scrollup {
     right: 35%;
     top: 5%;
-    border-style: none;
+    font-size: 20px;
 }
 
 #scrolldown {
     right: 35%;
     bottom: 5%;
-    border-style: none;
+    font-size: 20px;
 }
