@@ -44,11 +44,11 @@ int main(int prm_n, char *prm[]) {
     }
   }
   strcat(msg, "<button type=button id=getcd onclick=getcd()>"
-              "&#9740</button>");
+              "&#9737</button>");
   strcat(msg, "<button hidden type=button id=scrollup "
-              "onclick=getalbums()>&#8657</button>");
+              "onclick=getalbums()>&#8648</button>");
   strcat(msg, "<button hidden type=button id=scrolldown "
-              "onclick=scrolldown()>&#8659</button>");
+              "onclick=scrolldown()>&#8650</button>");
   strcat(msg, "<script src=script_main.js></script>");
   strcat(msg, "<script>getalbums()</script>");
   strcat(msg, "</body>");
