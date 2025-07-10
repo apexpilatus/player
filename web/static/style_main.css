@@ -25,7 +25,6 @@ button {
     position: fixed;
     color: black;
     background-color: #cec5b7;
-    font-weight: bold;
     font-size: 25px;
     text-align: center;
     border-style: none;
@@ -34,26 +33,27 @@ button {
 #poweroff {
     left: 5%;
     top: 5%;
+    font-weight: bold;
 }
 
 #volume {
     left: 5%;
     bottom: 5%;
+    font-weight: bold;
 }
 
 #getcd {
     right: 5%;
     bottom: 5%;
+    font-weight: bold;
 }
 
 #scrollup {
     right: 35%;
     top: 5%;
-    color: white;
 }
 
 #scrolldown {
     right: 35%;
     bottom: 5%;
-    color: white;
 }
