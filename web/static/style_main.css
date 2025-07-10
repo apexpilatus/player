@@ -49,9 +49,11 @@ button {
 #scrollup {
     right: 35%;
     top: 5%;
+    color: white;
 }
 
 #scrolldown {
     right: 35%;
     bottom: 5%;
+    color: white;
 }
