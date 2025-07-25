@@ -1,4 +1,5 @@
 #include <arpa/inet.h>
+#include <cdda_interface.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,8 +44,9 @@ int main(int prm_n, char *prm[]) {
       strcat(msg, "\")>&#9738</button>");
     }
   }
-  strcat(msg, "<button type=button id=getcd onclick=getcd()>"
-              "&#9737</button>");
+  if (cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL))
+    strcat(msg, "<button type=button id=getcd onclick=getcd()>"
+                "&#9737</button>");
   strcat(msg, "<button hidden type=button id=scrollup "
               "onclick=getalbums()>&#8648</button>");
   strcat(msg, "<button hidden type=button id=scrolldown "

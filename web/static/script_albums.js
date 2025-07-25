@@ -3,6 +3,7 @@ const scrollupElem = parent.document.getElementById("scrollup");
 const scrolldownElem = parent.document.getElementById("scrolldown");
 const currentElem = parent.document.getElementById("current");
 const topElem = parent.document.getElementById("top");
+let empty = false;
 
 function updatetop(album) {
     topElem.innerHTML = album;
@@ -21,9 +22,17 @@ function gettracks(album) {
     }
 }
 
+function hidescroll() {
+    empty = true;
+    scrollupElem.hidden = true;
+    scrolldownElem.hidden = true;
+}
+
 function showscroll(initscroll) {
-    if (initscroll == "down")
-        window.scrollTo(0, document.body.scrollHeight);
-    scrollupElem.hidden = false;
-    scrolldownElem.hidden = false;
+    if (!empty) {
+        if (initscroll == "down")
+            window.scrollTo(0, document.body.scrollHeight);
+        scrollupElem.hidden = false;
+        scrolldownElem.hidden = false;
+    }
 }

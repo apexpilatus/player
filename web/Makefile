@@ -29,7 +29,7 @@ web_select : Makefile src/web_select.c
 	$(CC) src/web_select.c -o web_select $(PLAYER_DEFINES)
 
 html_main : Makefile src/html_main.c
-	$(CC) src/html_main.c -o html_main $(PLAYER_DEFINES)
+	$(CC) src/html_main.c -o html_main $(PLAYER_DEFINES) -lcdda_interface
 
 html_tracks : Makefile src/html_tracks.c
 	$(CC) src/html_tracks.c -o html_tracks $(PLAYER_DEFINES) -lFLAC

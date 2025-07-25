@@ -89,7 +89,8 @@ void list_albums(char *msg) {
       strcat(msg, "\") alt=picture>");
       albums = albums->next;
     }
-  }
+  } else
+    strcat(msg, "<script>hidescroll()</script>");
 }
 
 void create_html(char *msg, char *bottom) {
