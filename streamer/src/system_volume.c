@@ -1,20 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
-// clang-format off
-#include <alsa/global.h>
-#include <alsa/input.h>
-#include <alsa/output.h>
 #include <alsa/conf.h>
-#include <alsa/control.h>
-#include <alsa/pcm.h>
-#include <alsa/mixer.h>
-// clang-format on
 
 int init_mixer(char *card_name, snd_mixer_elem_t **melem, long *min_vol,
-                      long *max_vol) {
+               long *max_vol) {
   snd_mixer_t *mxr;
   if (snd_mixer_open(&mxr, 0) || snd_mixer_selem_register(mxr, NULL, NULL))
     return 1;

@@ -1,17 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
-// clang-format off
-#include <alsa/global.h>
-#include <alsa/input.h>
-#include <alsa/output.h>
 #include <alsa/conf.h>
-#include <alsa/control.h>
-#include <alsa/pcm.h>
-#include <alsa/mixer.h>
-// clang-format on
 
 void list_controls(char *msg) {
   int card_number = -1;

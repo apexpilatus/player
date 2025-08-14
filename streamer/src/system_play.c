@@ -1,17 +1,5 @@
-#include <arpa/inet.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
-// clang-format off
-#include <alsa/global.h>
-#include <alsa/input.h>
-#include <alsa/output.h>
 #include <alsa/conf.h>
-#include <alsa/control.h>
-#include <alsa/pcm.h>
-// clang-format on
+#include <arpa/inet.h>
 
 #define store_port 80
 
@@ -78,7 +66,7 @@ card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
 }
 
 int play(int sock, card_list *cards_first, size_t bytes_per_sample,
-                int bytes_left) {
+         int bytes_left) {
   card_list *cards_tmp;
   char channel;
   char channels = 2;
@@ -154,8 +142,8 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample,
   return 0;
 }
 
-int read_headers(int sock, unsigned int *rate,
-                        unsigned short *bits_per_sample, int *bytes_left) {
+int read_headers(int sock, unsigned int *rate, unsigned short *bits_per_sample,
+                 int *bytes_left) {
   ssize_t read_size = 0;
   ssize_t msg_size = getpagesize() * 100;
   char msg[msg_size];
