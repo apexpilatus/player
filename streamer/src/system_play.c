@@ -1,5 +1,7 @@
 #include <alsa/conf.h>
 #include <arpa/inet.h>
+#include <signal.h>
+#include <threads.h>
 
 #define store_port 80
 
@@ -10,7 +12,59 @@ typedef struct card_list_t {
   uint32_t off;
 } card_list;
 
-snd_pcm_uframes_t bfsz = 12000;
+typedef struct data_list_t {
+  struct data_list_t volatile *next;
+  char volatile *buf;
+  int data_size;
+} data_list;
+
+data_list volatile *volatile data_first;
+const unsigned int alsa_buf_size = 12000;
+const unsigned int data_buf_size = alsa_buf_size / 2;
+unsigned int volatile bytes_left;
+char volatile in_work = 1;
+
+int data_reader(void *prm) {
+  int sock = *((int *)prm);
+  ssize_t read_size;
+  data_list volatile *data_new = NULL;
+  while (bytes_left) {
+    if (!data_new) {
+      data_first = malloc(sizeof(data_list));
+      data_first->next = NULL;
+      data_first->buf = malloc(data_buf_size);
+      data_new = data_first;
+    } else {
+      data_new->next = malloc(sizeof(data_list));
+      data_new->next->next = NULL;
+      data_new = data_new->next;
+      data_new->buf = malloc(data_buf_size);
+    }
+    for (data_new->data_size = 0;
+         (read_size = read(sock, (char *)data_new->buf + data_new->data_size,
+                           1)) == 1;) {
+      if (read_size < 0)
+        kill(getpid(), SIGTERM);
+      data_new->data_size++;
+      bytes_left--;
+      if (data_new->data_size == data_buf_size || bytes_left == 0)
+        break;
+    }
+  }
+  in_work = 0;
+  return 0;
+}
+
+int filled_buf_check(data_list volatile *data) {
+  int count = 0;
+  while (data) {
+    count++;
+    if (count > 200)
+      return 0;
+    data = (data_list *)data->next;
+  }
+  return 1;
+}
 
 card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
   int card_number = -1;
@@ -29,9 +83,9 @@ card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
     if (snd_pcm_hw_params_test_rate(pcm_p, pcm_hw, rate, 0))
       goto next;
     snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, rate, 0);
-    if (snd_pcm_hw_params_test_buffer_size(pcm_p, pcm_hw, bfsz))
+    if (snd_pcm_hw_params_test_buffer_size(pcm_p, pcm_hw, alsa_buf_size))
       goto next;
-    snd_pcm_hw_params_set_buffer_size(pcm_p, pcm_hw, bfsz);
+    snd_pcm_hw_params_set_buffer_size(pcm_p, pcm_hw, alsa_buf_size);
     if (bits_per_sample == 16) {
       if (snd_pcm_hw_params_test_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S16))
         goto next;
@@ -70,42 +124,34 @@ card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
   return card_first;
 }
 
-int play(int sock, card_list *cards_first, size_t bytes_per_sample,
-         int bytes_left) {
+int play(int sock, card_list *cards_first, size_t bytes_per_sample) {
+  data_list volatile *data_cur;
   card_list *cards_tmp;
-  char channel;
-  char channels = 2;
-  int blocksize;
-  int cursor;
-  ssize_t msg_size = bfsz / 2;
-  char msg[msg_size];
-  char *buf_tmp[channels];
   snd_pcm_sframes_t avail_frames;
+  int cursor;
   const snd_pcm_channel_area_t *areas;
   snd_pcm_uframes_t offset;
   snd_pcm_uframes_t frames = 1;
+  char channel;
+  char channels = 2;
+  char *buf_tmp[channels];
   snd_pcm_sframes_t commitres;
-  while (bytes_left) {
-    for (blocksize = 0; (cursor = read(sock, msg + blocksize, 1)) == 1;) {
-      if (cursor < 0)
-        return 1;
-      blocksize++;
-      bytes_left--;
-      if (blocksize == msg_size || bytes_left == 0)
-        break;
-    }
+  while (in_work && filled_buf_check(data_first))
+    usleep(1000);
+  data_cur = data_first;
+  while (data_cur) {
     cards_tmp = cards_first;
     while (cards_tmp) {
-      while ((avail_frames = snd_pcm_avail(cards_tmp->pcm)) < blocksize)
+      while ((avail_frames = snd_pcm_avail(cards_tmp->pcm)) <
+             data_cur->data_size)
         if (avail_frames < 0)
           return 1;
         else
           usleep(5000);
       cards_tmp = cards_tmp->next;
     }
-    printf("%d\n", bytes_left);
     cursor = 0;
-    while (cursor < blocksize) {
+    while (cursor < data_cur->data_size) {
       cards_tmp = cards_first;
       while (cards_tmp) {
         if (snd_pcm_avail_update(cards_tmp->pcm) < 0 ||
@@ -115,7 +161,8 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample,
           buf_tmp[channel] = areas[channel].addr + (areas[channel].first / 8) +
                              (offset * areas[channel].step / 8) +
                              cards_tmp->off;
-          memcpy(buf_tmp[channel], msg + (channel * bytes_per_sample) + cursor,
+          memcpy(buf_tmp[channel],
+                 (char *)data_cur->buf + (channel * bytes_per_sample) + cursor,
                  bytes_per_sample);
         }
         commitres = snd_pcm_mmap_commit(cards_tmp->pcm, offset, frames);
@@ -132,26 +179,15 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample,
         return 1;
       cards_tmp = cards_tmp->next;
     }
-  }
-  while ((avail_frames = snd_pcm_avail(cards_first->pcm)) <
-         cards_first->buf_size) {
-    if (avail_frames < 0)
-      break;
-    else
-      usleep(5000);
-  }
-  cards_tmp = cards_first;
-  while (cards_tmp) {
-    snd_pcm_drop(cards_tmp->pcm);
-    cards_tmp = cards_tmp->next;
+    data_cur = data_cur->next;
   }
   return 0;
 }
 
-int read_headers(int sock, unsigned int *rate, unsigned short *bits_per_sample,
-                 int *bytes_left) {
-  ssize_t read_size = 0;
-  ssize_t msg_size = getpagesize() * 100;
+int read_headers(int sock, unsigned int *rate,
+                 unsigned short *bits_per_sample) {
+  int read_size = 0;
+  int msg_size = getpagesize() * 100;
   char msg[msg_size];
   while (read_size < msg_size && read(sock, msg + read_size, 1) == 1) {
     read_size++;
@@ -188,7 +224,7 @@ int read_headers(int sock, unsigned int *rate, unsigned short *bits_per_sample,
     }
     if (read_size < 8)
       return 1;
-    *bytes_left = *((int *)(msg + 4));
+    bytes_left = *((int *)(msg + 4));
   } else {
     for (read_size = 0; read(sock, msg + read_size, 1) == 1;) {
       read_size++;
@@ -197,7 +233,7 @@ int read_headers(int sock, unsigned int *rate, unsigned short *bits_per_sample,
     }
     if (read_size < 32)
       return 1;
-    *bytes_left = *((int *)(msg + 28));
+    bytes_left = *((int *)(msg + 28));
   }
   return 0;
 }
@@ -223,16 +259,19 @@ int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   unsigned int rate;
   unsigned short bits_per_sample;
-  int bytes_left;
+  thrd_t thr;
   card_list *cards;
   close(sock);
   sock = socket(PF_INET, SOCK_STREAM, 0);
   if (send_request(sock, prm))
     return 1;
-  if (read_headers(sock, &rate, &bits_per_sample, &bytes_left))
+  if (read_headers(sock, &rate, &bits_per_sample))
     return 1;
   cards = init_alsa(rate, bits_per_sample);
   if (!cards)
     return 1;
-  return play(sock, cards, bits_per_sample / 8, bytes_left);
+  if (thrd_create(&thr, data_reader, &sock) != thrd_success ||
+      thrd_detach(thr) != thrd_success)
+    return 1;
+  return play(sock, cards, bits_per_sample / 8);
 }

@@ -47,7 +47,7 @@ int write_header(int fd, int size) {
 int cd_stream(int sock) {
   char rsp[getpagesize()];
   ssize_t write_size;
-  data_list *data_cur;
+  data_list volatile *data_cur;
   int bytes_left = max_range - min_range + 1;
   sprintf(rsp, "%s\r\n%s%d\r\nContent-Range: bytes %d-%d/%d\r\n%s\r\n\r\n",
           "HTTP/1.1 200 OK", "Content-Length: ", bytes_left, min_range,
@@ -65,9 +65,9 @@ int cd_stream(int sock) {
     else
       bytes_left -= 44;
   }
-  while (in_work && filled_buf_check((data_list *)data_first))
+  while (in_work && filled_buf_check(data_first))
     usleep(1000);
-  data_cur = (data_list *)data_first;
+  data_cur = data_first;
   while (data_cur && bytes_left) {
     while (in_work && filled_buf_check(data_cur))
       usleep(1000);
@@ -81,7 +81,7 @@ int cd_stream(int sock) {
       return 1;
     bytes_left -= write_size;
     first_shift = 0;
-    data_cur = (data_list *)data_cur->next;
+    data_cur = data_cur->next;
   }
   return 0;
 }

@@ -18,7 +18,6 @@ int cd_reader(void *prm) {
   data_list volatile *data_new = NULL;
   long cursor;
   cdrom_paranoia *p = paranoia_init(d);
-  pid_t pid = getpid();
   paranoia_modeset(p, PARANOIA_MODE_FULL ^ PARANOIA_MODE_NEVERSKIP);
   paranoia_seek(p, cursor = first_sector, SEEK_SET);
   while (cursor <= last_sector) {
@@ -26,7 +25,7 @@ int cd_reader(void *prm) {
     if (readbuf == NULL) {
       paranoia_free(p);
       cdda_close(d);
-      kill(pid, SIGTERM);
+      kill(getpid(), SIGTERM);
     } else {
       if (!data_new) {
         data_first = malloc(sizeof(data_list));
@@ -49,7 +48,7 @@ int cd_reader(void *prm) {
   return 0;
 }
 
-int filled_buf_check(data_list *data) {
+int filled_buf_check(data_list volatile *data) {
   int count = 0;
   while (data) {
     count++;

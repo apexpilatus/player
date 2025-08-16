@@ -9,4 +9,4 @@ extern long volatile last_sector;
 extern char volatile in_work;
 
 int cd_reader(void *prm);
-int filled_buf_check(data_list *data);
+int filled_buf_check(data_list volatile *data);

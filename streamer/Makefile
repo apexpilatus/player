@@ -40,7 +40,7 @@ clean:
 
 .PHONY: format
 format:
-	clang-format -i src/*.c
+	clang-format -i src/*
 
 .PHONY: install
 install:
