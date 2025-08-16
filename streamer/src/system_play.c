@@ -10,6 +10,8 @@ typedef struct card_list_t {
   uint32_t off;
 } card_list;
 
+snd_pcm_uframes_t bfsz = 12000;
+
 card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
   int card_number = -1;
   char card_name[10];
@@ -27,6 +29,9 @@ card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
     if (snd_pcm_hw_params_test_rate(pcm_p, pcm_hw, rate, 0))
       goto next;
     snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, rate, 0);
+    if (snd_pcm_hw_params_test_buffer_size(pcm_p, pcm_hw, bfsz))
+      goto next;
+    snd_pcm_hw_params_set_buffer_size(pcm_p, pcm_hw, bfsz);
     if (bits_per_sample == 16) {
       if (snd_pcm_hw_params_test_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S16))
         goto next;
@@ -72,7 +77,7 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample,
   char channels = 2;
   int blocksize;
   int cursor;
-  ssize_t msg_size = bytes_per_sample * channels * 1000;
+  ssize_t msg_size = bfsz / 2;
   char msg[msg_size];
   char *buf_tmp[channels];
   snd_pcm_sframes_t avail_frames;
@@ -98,6 +103,7 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample,
           usleep(5000);
       cards_tmp = cards_tmp->next;
     }
+    printf("%d\n", bytes_left);
     cursor = 0;
     while (cursor < blocksize) {
       cards_tmp = cards_first;
