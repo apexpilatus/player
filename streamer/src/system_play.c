@@ -42,12 +42,13 @@ int data_reader(void *prm) {
       data_new->buf = malloc(data_buf_size);
       data_new->data_size = 0;
     }
-    while (data_new->data_size != data_buf_size && bytes_left != 0){
-      read_size = read(sock, (char *)data_new->buf + data_new->data_size, data_buf_size);
+    while (data_new->data_size != data_buf_size && bytes_left != 0) {
+      read_size = read(sock, (char *)data_new->buf + data_new->data_size,
+                       data_buf_size - data_new->data_size);
       if (read_size < 0)
         kill(getpid(), SIGTERM);
-      data_new->data_size+=read_size;
-      bytes_left-=read_size;
+      data_new->data_size += read_size;
+      bytes_left -= read_size;
     }
   }
   in_work = 0;
