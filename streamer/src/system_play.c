@@ -31,17 +31,14 @@ int data_reader(void *prm) {
   while (bytes_left) {
     if (!data_new) {
       data_first = malloc(sizeof(data_list));
-      data_first->next = NULL;
-      data_first->buf = malloc(data_buf_size);
-      data_first->data_size = 0;
       data_new = data_first;
     } else {
       data_new->next = malloc(sizeof(data_list));
-      data_new->next->next = NULL;
       data_new = data_new->next;
-      data_new->buf = malloc(data_buf_size);
-      data_new->data_size = 0;
     }
+    data_new->next = NULL;
+    data_new->buf = malloc(data_buf_size);
+    data_new->data_size = 0;
     while (data_new->data_size != data_buf_size && bytes_left != 0) {
       read_size = read(sock, (char *)data_new->buf + data_new->data_size,
                        data_buf_size - data_new->data_size);
