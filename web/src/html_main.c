@@ -6,6 +6,17 @@
 #include <string.h>
 #include <unistd.h>
 
+#define str(x) #x
+#define xstr(x) str(x)
+
+int try_client(struct sockaddr_in *addr, char *msg) {
+  int sock = socket(PF_INET, SOCK_STREAM, 0);
+  if (!connect(sock, (struct sockaddr *)addr, sizeof(struct sockaddr_in)) &&
+      write(sock, msg, strlen(msg)) == strlen(msg))
+    return 1;
+  return 0;
+}
+
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   struct hostent *host;
@@ -32,15 +43,17 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<button type=button id=poweroff onclick=poweroff()>"
               "&#9769;</button>");
   if ((host = gethostbyname(streamer_host))) {
-    inet_ntop(AF_INET, (struct in_addr *)host->h_addr, streamer_address,
-              INET_ADDRSTRLEN);
-    sprintf(cmd, "echo \"\r\n\r\"|nc -w 1 %s %s 1>/dev/null 2>/dev/null",
-            streamer_address, streamer_port);
-    if (!system(cmd)) {
+    struct sockaddr_in addr;
+    addr.sin_addr = *(struct in_addr *)host->h_addr;
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(streamer_port);
+    if (try_client(&addr, "\r\n")) {
+      inet_ntop(AF_INET, (struct in_addr *)host->h_addr, streamer_address,
+                INET_ADDRSTRLEN);
       strcat(msg, "<button type=button id=volume onclick=getvolume(\"");
       strcat(msg, streamer_address);
       strcat(msg, ":");
-      strcat(msg, streamer_port);
+      strcat(msg, xstr(streamer_port));
       strcat(msg, "\")>&#9738</button>");
     }
   }
