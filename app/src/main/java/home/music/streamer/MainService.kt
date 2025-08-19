@@ -42,7 +42,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
             try {
                 sockServer.accept().use {
                     remoteIP = it.remoteSocketAddress.toString().replace("/", "").split(":")[0]
-                    url = BufferedReader(InputStreamReader(it.getInputStream())).readLine()
+                    url = BufferedReader(InputStreamReader(it.getInputStream())).readText()
                     with(player) {
                         reset()
                         setDataSource("http://$remoteIP$url")

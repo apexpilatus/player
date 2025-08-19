@@ -6,60 +6,47 @@
 #include <unistd.h>
 #include <utime.h>
 
+int forward_request(struct sockaddr_in *addr, char *msg) {
+  int sock = socket(PF_INET, SOCK_STREAM, 0);
+  if (!connect(sock, (struct sockaddr *)addr, sizeof(struct sockaddr_in)) &&
+      write(sock, msg, strlen(msg)) == strlen(msg))
+    return 1;
+  return 0;
+}
+
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   char rsp[getpagesize()];
-  char cmd[getpagesize()];
+  char msg[getpagesize()];
   struct hostent *host;
   char streamer_address[INET_ADDRSTRLEN];
   char *path_track = strchr(prm[2], '?') + 1;
-  if (!strncmp("/playflac", prm[2], strlen("/playflac"))) {
-    sprintf(cmd,
-            "echo \"/stream_album?%s\"|nc -w 1 %s %s 1>/dev/null 2>/dev/null",
-            path_track, prm[3], android_client_port);
-    if (!system(cmd)) {
-      char *end = strchr(path_track, '&');
-      if (end)
-        *end = '\0';
-      if (utime(path_track, NULL))
-        execl(resp_err, "resp_err", prm[1], NULL);
+  char *end = strchr(path_track, '&');
+  struct sockaddr_in addr;
+  addr.sin_family = AF_INET;
+  if (!strncmp("/playflac", prm[2], strlen("/playflac")))
+    sprintf(msg, "/stream_album?%s", path_track);
+  else
+    sprintf(msg, "/stream_cd?%s", path_track);
+  if (inet_aton(prm[3], &addr.sin_addr)) {
+    addr.sin_port = htons(android_client_port);
+    if (forward_request(&addr, msg))
       goto ok;
-    }
-    if ((host = gethostbyname(streamer_host))) {
-      inet_ntop(AF_INET, (struct in_addr *)host->h_addr, streamer_address,
-                INET_ADDRSTRLEN);
-      sprintf(cmd, "echo \"/stream_album?%s \r\n\r\"|nc -w 1 %s %s %s",
-              path_track, streamer_address, streamer_port,
-              "1>/dev/null 2>/dev/null");
-      if (!system(cmd)) {
-        char *end = strchr(path_track, '&');
-        if (end)
-          *end = '\0';
-        if (utime(path_track, NULL))
-          execl(resp_err, "resp_err", prm[1], NULL);
-        goto ok;
-      }
-    }
   }
-  if (!strncmp("/playcd", prm[2], strlen("/playcd"))) {
-    char *url_track = strchr(prm[2], '?');
-    sprintf(cmd, "echo \"/stream_cd?%s\"|nc -w 1 %s %s 1>/dev/null 2>/dev/null",
-            url_track ? url_track + 1 : "1", prm[3], android_client_port);
-    if (!system(cmd))
+  if ((host = gethostbyname(streamer_host))) {
+    addr.sin_addr = *(struct in_addr *)host->h_addr;
+    addr.sin_port = htons(streamer_port);
+    strcat(msg, " \r\n\r\n");
+    if (forward_request(&addr, msg))
       goto ok;
-    if ((host = gethostbyname(streamer_host))) {
-      inet_ntop(AF_INET, (struct in_addr *)host->h_addr, streamer_address,
-                INET_ADDRSTRLEN);
-      sprintf(
-          cmd,
-          "echo \"/stream_cd?%s \r\n\r\"|nc -w 1 %s %s 1>/dev/null 2>/dev/null",
-          url_track ? url_track + 1 : "1", streamer_address, streamer_port);
-      if (!system(cmd))
-        goto ok;
-    }
   }
   execl(resp_err, "resp_err", prm[1], NULL);
 ok:
+  if (end) {
+    *end = '\0';
+    if (utime(path_track, NULL))
+      execl(resp_err, "resp_err", prm[1], NULL);
+  }
   strcpy(rsp, "HTTP/1.1 200 OK\r\n");
   strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
   strcat(rsp, "Cache-control: no-cache\r\n");
