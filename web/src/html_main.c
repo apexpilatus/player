@@ -9,7 +9,7 @@
 #define str(x) #x
 #define xstr(x) str(x)
 
-int try_client(struct sockaddr_in *addr, char *msg) {
+int check_streamer(struct sockaddr_in *addr, char *msg) {
   int sock = socket(PF_INET, SOCK_STREAM, 0);
   if (!connect(sock, (struct sockaddr *)addr, sizeof(struct sockaddr_in)) &&
       write(sock, msg, strlen(msg)) == strlen(msg))
@@ -47,7 +47,7 @@ int main(int prm_n, char *prm[]) {
     addr.sin_addr = *(struct in_addr *)host->h_addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(streamer_port);
-    if (try_client(&addr, "\r\n")) {
+    if (check_streamer(&addr, "\r\n")) {
       inet_ntop(AF_INET, (struct in_addr *)host->h_addr, streamer_address,
                 INET_ADDRSTRLEN);
       strcat(msg, "<button type=button id=volume onclick=getvolume(\"");

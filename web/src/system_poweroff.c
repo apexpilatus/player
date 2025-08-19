@@ -1,4 +1,3 @@
-#include <arpa/inet.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,12 +18,14 @@ int main(int prm_n, char *prm[]) {
   close(sock);
   if (write_size == strlen(rsp)) {
     if ((host = gethostbyname(streamer_host))) {
-      inet_ntop(AF_INET, (struct in_addr *)host->h_addr, streamer_address,
-                INET_ADDRSTRLEN);
-      sprintf(cmd,
-              "echo \"/poweroff\r\n\r\"|nc -w 1 %s %s 1>/dev/null 2>/dev/null",
-              streamer_address, streamer_port);
-      if (!system(cmd))
+      struct sockaddr_in addr;
+      addr.sin_addr = *(struct in_addr *)host->h_addr;
+      addr.sin_family = AF_INET;
+      addr.sin_port = htons(streamer_port);
+      sock = socket(PF_INET, SOCK_STREAM, 0);
+      if (!connect(sock, (struct sockaddr *)&addr,
+                   sizeof(struct sockaddr_in)) &&
+          write(sock, prm[2], strlen(prm[2])) == strlen(prm[2]))
         return 0;
     }
     if (!system("poweroff"))

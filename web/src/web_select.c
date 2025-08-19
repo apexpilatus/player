@@ -88,7 +88,7 @@ int main(int prm_n, char *prm[]) {
   } else if (!strcmp("/poweroff", url)) {
     if (stop_playing() || system("/root/init.sh finish"))
       execl(resp_err, "resp_err", prm[1], NULL);
-    execl(system_poweroff, "system_poweroff", prm[1], NULL);
+    execl(system_poweroff, "system_poweroff", prm[1], url, NULL);
   } else if (!strcmp("/cdcontrol", url)) {
     execl(html_cd_control, "html_cd_control", prm[1], NULL);
   } else {
