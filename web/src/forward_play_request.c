@@ -18,6 +18,7 @@ int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   char rsp[getpagesize()];
   char msg[getpagesize()];
+  char hostname[getpagesize()];
   struct hostent *host;
   char streamer_address[INET_ADDRSTRLEN];
   char *path_track = strchr(prm[2], '?') + 1;
@@ -34,6 +35,14 @@ int main(int prm_n, char *prm[]) {
       goto ok;
   }
   if ((host = gethostbyname(streamer_host))) {
+    addr.sin_addr = *(struct in_addr *)host->h_addr;
+    addr.sin_port = htons(streamer_port);
+    strcat(msg, " \r\n\r\n");
+    if (forward_request(&addr, msg))
+      goto ok;
+  }
+  if (!gethostname(hostname, getpagesize()) &&
+      (host = gethostbyname(hostname))) {
     addr.sin_addr = *(struct in_addr *)host->h_addr;
     addr.sin_port = htons(streamer_port);
     strcat(msg, " \r\n\r\n");

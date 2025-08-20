@@ -16,9 +16,8 @@ function scrolldown() {
     albumsElem.src = window.location.href + "albums?down";
 }
 
-function getvolume(addr) {
-    currentElem.innerHTML = "volume";
-    controlElem.src = "http://" + addr + "/getvolume";
+function getvolume() {
+    window.location.assign(window.location.href);
 }
 
 function getcd() {

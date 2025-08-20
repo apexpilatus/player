@@ -21,10 +21,11 @@ int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   struct hostent *host;
   char streamer_address[INET_ADDRSTRLEN];
-  char cmd[getpagesize()];
+  char hostname[getpagesize()];
   ssize_t write_size;
   char hdr[getpagesize()];
   char msg[getpagesize() * 1000];
+  struct sockaddr_in addr;
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -37,26 +38,44 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "</head>");
   strcat(msg, "<body>");
   strcat(msg, "<p hidden id=top></p>");
-  strcat(msg, "<p hidden id=current></p>");
+  strcat(msg, "<p hidden id=current>volume</p>");
   strcat(msg, "<iframe id=albums title=albums></iframe>");
-  strcat(msg, "<iframe id=control title=control></iframe>");
-  strcat(msg, "<button type=button id=poweroff onclick=poweroff()>"
-              "&#9769;</button>");
+  strcat(msg, "<iframe id=control title=control");
+  addr.sin_family = AF_INET;
   if ((host = gethostbyname(streamer_host))) {
-    struct sockaddr_in addr;
     addr.sin_addr = *(struct in_addr *)host->h_addr;
-    addr.sin_family = AF_INET;
     addr.sin_port = htons(streamer_port);
     if (check_streamer(&addr, "\r\n")) {
       inet_ntop(AF_INET, (struct in_addr *)host->h_addr, streamer_address,
                 INET_ADDRSTRLEN);
-      strcat(msg, "<button type=button id=volume onclick=getvolume(\"");
+      strcat(msg, " src=\"http://");
       strcat(msg, streamer_address);
       strcat(msg, ":");
       strcat(msg, xstr(streamer_port));
-      strcat(msg, "\")>&#9738</button>");
+      strcat(msg, "/getvolume\"");
+      goto next;
     }
   }
+  if (!gethostname(hostname, getpagesize()) &&
+      (host = gethostbyname(hostname))) {
+    addr.sin_addr = *(struct in_addr *)host->h_addr;
+    addr.sin_port = htons(streamer_port);
+    if (check_streamer(&addr, "\r\n")) {
+      inet_ntop(AF_INET, (struct in_addr *)host->h_addr, streamer_address,
+                INET_ADDRSTRLEN);
+      strcat(msg, " src=\"http://");
+      strcat(msg, streamer_address);
+      strcat(msg, ":");
+      strcat(msg, xstr(streamer_port));
+      strcat(msg, "/getvolume\"");
+    }
+  }
+next:
+  strcat(msg, "></iframe>");
+  strcat(msg, "<button type=button id=poweroff onclick=poweroff()>"
+              "&#9769;</button>");
+  strcat(msg,
+         "<button type=button id=volume onclick=getvolume()>&#9738</button>");
   if (cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL))
     strcat(msg, "<button type=button id=getcd onclick=getcd()>"
                 "&#9737</button>");
