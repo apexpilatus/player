@@ -53,7 +53,7 @@ int main(int prm_n, char *prm[]) {
       strcat(msg, ":");
       strcat(msg, xstr(streamer_port));
       strcat(msg, "/getvolume\"");
-      goto next;
+      goto close;
     }
   }
   if (!gethostname(hostname, getpagesize()) &&
@@ -70,7 +70,7 @@ int main(int prm_n, char *prm[]) {
       strcat(msg, "/getvolume\"");
     }
   }
-next:
+close:
   strcat(msg, "></iframe>");
   strcat(msg, "<button type=button id=poweroff onclick=poweroff()>"
               "&#9769;</button>");
