@@ -37,7 +37,6 @@ int main(int prm_n, char *prm[]) {
   if ((host = gethostbyname(streamer_host))) {
     addr.sin_addr = *(struct in_addr *)host->h_addr;
     addr.sin_port = htons(streamer_port);
-    strcat(msg, " \r\n\r\n");
     if (forward_request(&addr, msg))
       goto ok;
   }
@@ -45,17 +44,15 @@ int main(int prm_n, char *prm[]) {
       (host = gethostbyname(hostname))) {
     addr.sin_addr = *(struct in_addr *)host->h_addr;
     addr.sin_port = htons(streamer_port);
-    strcat(msg, " \r\n\r\n");
     if (forward_request(&addr, msg))
       goto ok;
   }
   execl(resp_err, "resp_err", prm[1], NULL);
 ok:
-  if (end) {
+  if (end)
     *end = '\0';
-    if (utime(path_track, NULL))
-      execl(resp_err, "resp_err", prm[1], NULL);
-  }
+  if (utime(path_track, NULL))
+    execl(resp_err, "resp_err", prm[1], NULL);
   strcpy(rsp, "HTTP/1.1 200 OK\r\n");
   strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
   strcat(rsp, "Cache-control: no-cache\r\n");
