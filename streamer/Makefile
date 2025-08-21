@@ -1,4 +1,8 @@
 STREAMER_PATH := /home/streamer
+STREAMER_DEFINES := -D play_pid_path=\"/run/streamer_play_pid\"
+STREAMER_DEFINES += -D mix_pid_path=\"/run/streamer_mixer_pid\"
+STREAMER_DEFINES += -D listen_port=8888
+STREAMER_DEFINES += -D web_select=\"$(STREAMER_PATH)/streamer_select\"
 STREAMER_DEFINES += -D html_volume=\"$(STREAMER_PATH)/html_volume\"
 STREAMER_DEFINES += -D resp_err=\"$(STREAMER_PATH)/resp_err\"
 STREAMER_DEFINES += -D data_static=\"$(STREAMER_PATH)/data_static\"
@@ -10,8 +14,11 @@ STREAMER_DEFINES += -D PLAYER_AS_INIT
 endif
 CC := gcc -O2
 
-streamer : Makefile src/streamer.c html_volume resp_err data_static system_play system_volume system_poweroff
-	$(CC) src/streamer.c -o streamer $(STREAMER_DEFINES)
+streamer : Makefile src/web.c streamer_select html_volume resp_err data_static system_play system_volume system_poweroff
+	$(CC) src/web.c -o streamer $(STREAMER_DEFINES)
+
+streamer_select : Makefile src/streamer_select.c
+	$(CC) src/streamer_select.c -o streamer_select $(STREAMER_DEFINES)
 
 html_volume : Makefile src/html_volume.c
 	$(CC) src/html_volume.c -o html_volume $(STREAMER_DEFINES) -lasound

@@ -7,8 +7,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define listen_port 80
-
 void kill_zombie(int signum) {
   pid_t pid;
   pid_t run_pid;
@@ -24,6 +22,15 @@ void kill_zombie(int signum) {
         continue;
       }
     }
+#ifdef mix_pid_path
+    fd = open(mix_pid_path, O_RDONLY);
+    if (fd >= 0) {
+      read_size = read(fd, &run_pid, sizeof(pid_t));
+      close(fd);
+      if (run_pid == pid)
+        unlink(mix_pid_path);
+    }
+#endif
   }
 }
 

@@ -258,6 +258,17 @@ int main(int prm_n, char *prm[]) {
   unsigned short bits_per_sample;
   thrd_t thr;
   card_list *cards;
+  ssize_t write_size;
+  pid_t pid = getpid();
+  int fd = open(play_pid_path, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+  if (fd < 0)
+    return 1;
+  write_size = write(fd, &pid, sizeof(pid_t));
+  close(fd);
+  if (write_size != sizeof(pid_t)) {
+    unlink(play_pid_path);
+    return 1;
+  }
   close(sock);
   sock = socket(PF_INET, SOCK_STREAM, 0);
   if (send_request(sock, prm))

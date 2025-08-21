@@ -28,6 +28,16 @@ int main(int prm_n, char *prm[]) {
   long max_vol;
   long curr_vol;
   snd_mixer_elem_t *melem;
+  pid_t pid = getpid();
+  int fd = open(mix_pid_path, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+  if (fd < 0)
+    return 1;
+  write_size = write(fd, &pid, sizeof(pid_t));
+  close(fd);
+  if (write_size != sizeof(pid_t)) {
+    unlink(mix_pid_path);
+    return 1;
+  }
   if (!((url_card_name = strchr(prm[2], '?')) &&
         (url_vol = strchr(++url_card_name, '&'))))
     execl(resp_err, "resp_err", prm[1], NULL);
