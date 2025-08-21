@@ -74,8 +74,6 @@ close:
   strcat(msg, "></iframe>");
   strcat(msg, "<button type=button id=poweroff onclick=poweroff()>"
               "&#9769;</button>");
-  strcat(msg,
-         "<button type=button id=volume onclick=getvolume()>&#9738</button>");
   if (cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL))
     strcat(msg, "<button type=button id=getcd onclick=getcd()>"
                 "&#9737</button>");

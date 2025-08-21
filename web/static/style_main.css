@@ -36,14 +36,8 @@ button {
     font-weight: bold;
 }
 
-#volume {
-    left: 5%;
-    bottom: 5%;
-    font-weight: bold;
-}
-
 #getcd {
-    right: 5%;
+    left: 5%;
     bottom: 5%;
     font-weight: bold;
 }
