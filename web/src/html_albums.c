@@ -31,27 +31,16 @@ void sort_albums(albums_list *album_first) {
 }
 
 albums_list *get_albums() {
-  char src_path[getpagesize()];
   albums_list *album_first = NULL;
   albums_list *album_tmp = NULL;
   DIR *dp_music;
-  struct dirent *src_ep;
+  struct dirent *albm_ep;
   struct stat stat_buf;
   dp_music = opendir(music_path);
   if (dp_music) {
-    while ((src_ep = readdir(dp_music)))
-      if (src_ep->d_type == DT_DIR && strcmp(src_ep->d_name, ".") &&
-          strcmp(src_ep->d_name, "..") &&
-          strcmp(src_ep->d_name, "lost+found")) {
-        DIR *dp_src;
-        struct dirent *albm_ep;
-        sprintf(src_path, "%s/%s", music_path, src_ep->d_name);
-        dp_src = opendir(src_path);
-        if (dp_src) {
-          while ((albm_ep = readdir(dp_src)))
+    while ((albm_ep = readdir(dp_music)))
             if (albm_ep->d_type == DT_DIR && strcmp(albm_ep->d_name, ".") &&
-                strcmp(albm_ep->d_name, "..") &&
-                strcmp(albm_ep->d_name, "lost+found")) {
+                strcmp(albm_ep->d_name, "..")) {
               if (!album_first) {
                 album_tmp = malloc(sizeof(albums_list));
                 album_first = album_tmp;
@@ -61,13 +50,10 @@ albums_list *get_albums() {
               }
               memset(album_tmp, 0, sizeof(albums_list));
               album_tmp->path =
-                  malloc(strlen(src_path) + strlen(albm_ep->d_name) + 2);
-              sprintf(album_tmp->path, "%s/%s", src_path, albm_ep->d_name);
+                  malloc(strlen(music_path) + strlen(albm_ep->d_name) + 2);
+              sprintf(album_tmp->path, "%s/%s", music_path, albm_ep->d_name);
               if (!stat(album_tmp->path, &stat_buf))
                 album_tmp->mtime = stat_buf.st_mtime;
-            }
-          closedir(dp_src);
-        }
       }
     closedir(dp_music);
   }

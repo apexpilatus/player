@@ -1,5 +1,5 @@
 WEB_PATH := /home/web
-MUSIC_PATH := /home/music
+MUSIC_PATH := /home/inventory/music
 PLAYER_DEFINES := -D music_path=\"$(MUSIC_PATH)\"
 PLAYER_DEFINES += -D play_pid_path=\"/run/web_play_pid\"
 PLAYER_DEFINES += -D listen_port=80
