@@ -39,21 +39,21 @@ albums_list *get_albums() {
   dp_music = opendir(music_path);
   if (dp_music) {
     while ((albm_ep = readdir(dp_music)))
-            if (albm_ep->d_type == DT_DIR && strcmp(albm_ep->d_name, ".") &&
-                strcmp(albm_ep->d_name, "..")) {
-              if (!album_first) {
-                album_tmp = malloc(sizeof(albums_list));
-                album_first = album_tmp;
-              } else {
-                album_tmp->next = malloc(sizeof(albums_list));
-                album_tmp = album_tmp->next;
-              }
-              memset(album_tmp, 0, sizeof(albums_list));
-              album_tmp->path =
-                  malloc(strlen(music_path) + strlen(albm_ep->d_name) + 2);
-              sprintf(album_tmp->path, "%s/%s", music_path, albm_ep->d_name);
-              if (!stat(album_tmp->path, &stat_buf))
-                album_tmp->mtime = stat_buf.st_mtime;
+      if (albm_ep->d_type == DT_DIR && strcmp(albm_ep->d_name, ".") &&
+          strcmp(albm_ep->d_name, "..")) {
+        if (!album_first) {
+          album_tmp = malloc(sizeof(albums_list));
+          album_first = album_tmp;
+        } else {
+          album_tmp->next = malloc(sizeof(albums_list));
+          album_tmp = album_tmp->next;
+        }
+        memset(album_tmp, 0, sizeof(albums_list));
+        album_tmp->path =
+            malloc(strlen(music_path) + strlen(albm_ep->d_name) + 2);
+        sprintf(album_tmp->path, "%s/%s", music_path, albm_ep->d_name);
+        if (!stat(album_tmp->path, &stat_buf))
+          album_tmp->mtime = stat_buf.st_mtime;
       }
     closedir(dp_music);
   }
