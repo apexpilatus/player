@@ -53,7 +53,7 @@ void create_html(char *msg) {
   strcat(
       msg,
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
-  strcat(msg, "<title>tracks</title>");
+  strcat(msg, "<title>volume</title>");
   strcat(msg, "<link rel=stylesheet href=style_volume.css>");
   strcat(msg, "<script src=script_volume.js></script>");
   strcat(msg, "</head>");
