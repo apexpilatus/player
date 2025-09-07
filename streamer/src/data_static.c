@@ -5,14 +5,22 @@
 
 extern unsigned char static_style_volume_css[];
 extern unsigned char static_script_volume_js[];
+extern unsigned char static_favicon_ico[];
 extern unsigned int static_style_volume_css_len;
 extern unsigned int static_script_volume_js_len;
+extern unsigned int static_favicon_ico_len;
 unsigned char *data;
 unsigned int data_len;
 
 int select_data(char *url, char *rsp) {
   size_t hdr_end;
-  if (!strcmp("/style_volume.css", url)) {
+  if (!strcmp("/favicon.ico", url)) {
+    data = static_favicon_ico;
+    data_len = static_favicon_ico_len;
+    sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
+            "Content-Type: image/x-icon",
+            "Cache-control: max-age=31536000, immutable");
+  } else if (!strcmp("/style_volume.css", url)) {
     data = static_style_volume_css;
     data_len = static_style_volume_css_len;
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
