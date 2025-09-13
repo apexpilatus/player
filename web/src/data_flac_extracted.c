@@ -14,10 +14,10 @@ typedef struct track_list_t {
   char *track_number;
 } track_list;
 
-int bytes_left;
-int bytes_per_sample;
-int header_size;
-int bytes_skip;
+unsigned int bytes_left;
+unsigned int bytes_per_sample;
+unsigned int header_size;
+unsigned int bytes_skip;
 
 void sort_tracks(track_list *track_first) {
   char *file_name_tmp;
@@ -93,8 +93,8 @@ exit:
   return track_first;
 }
 
-int write_header(int fd, int size, FLAC__StreamMetadata *stream_inf) {
-  int int_var;
+int write_header(int fd, unsigned int size, FLAC__StreamMetadata *stream_inf) {
+  unsigned int int_var;
   short short_var;
   ssize_t write_size = 0;
   write_size = write(fd, "RIFF", 4);
@@ -177,8 +177,9 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
   return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
-int get_album_size(track_list *tracks, FLAC__StreamMetadata *stream_inf) {
-  int ret = 0;
+unsigned int get_album_size(track_list *tracks,
+                            FLAC__StreamMetadata *stream_inf) {
+  unsigned int ret = 0;
   while (tracks) {
     if (!FLAC__metadata_get_streaminfo(tracks->file_name, stream_inf))
       return 0;
@@ -216,12 +217,12 @@ int main(int prm_n, char *prm[]) {
   char *end;
   ssize_t write_size;
   char rsp[getpagesize()];
-  int min_range = 0;
-  int max_range;
+  unsigned int min_range = 0;
+  unsigned int max_range;
   FLAC__StreamMetadata *stream_inf =
       FLAC__metadata_object_new(FLAC__METADATA_TYPE_STREAMINFO);
   track_list *tracks = get_tracks_in_dir(prm[2]);
-  int flac_blocks_size;
+  unsigned int flac_blocks_size;
   if (!(tracks && (flac_blocks_size = get_album_size(tracks, stream_inf))))
     execl(resp_err, "resp_err", prm[1], NULL);
   bytes_per_sample = stream_inf->data.stream_info.bits_per_sample / 8;
@@ -242,7 +243,7 @@ int main(int prm_n, char *prm[]) {
     char buf[bytes_left];
     if (utime(".", NULL))
       execl(resp_err, "resp_err", prm[1], NULL);
-    sprintf(rsp, "%s\r\n%s%d\r\nContent-Range: bytes %d-%d/%d\r\n%s\r\n\r\n",
+    sprintf(rsp, "%s\r\n%s%u\r\nContent-Range: bytes %u-%u/%u\r\n%s\r\n\r\n",
             "HTTP/1.1 200 OK", "Content-Length: ", bytes_left, min_range,
             max_range, (flac_blocks_size * 2 * bytes_per_sample) + header_size,
             "Content-Type: audio/wav");
@@ -253,7 +254,7 @@ int main(int prm_n, char *prm[]) {
     else
       return 1;
   }
-  sprintf(rsp, "%s\r\n%s%d\r\nContent-Range: bytes %d-%d/%d\r\n%s\r\n\r\n",
+  sprintf(rsp, "%s\r\n%s%u\r\nContent-Range: bytes %u-%u/%u\r\n%s\r\n\r\n",
           "HTTP/1.1 200 OK", "Content-Length: ", bytes_left, min_range,
           max_range, (flac_blocks_size * 2 * bytes_per_sample) + header_size,
           "Content-Type: audio/wav");

@@ -221,7 +221,7 @@ int read_headers(int sock, unsigned int *rate,
     }
     if (read_size < 8)
       return 1;
-    bytes_left = *((int *)(msg + 4));
+    bytes_left = *((unsigned int *)(msg + 4));
   } else {
     for (read_size = 0; read(sock, msg + read_size, 1) == 1;) {
       read_size++;
@@ -230,7 +230,7 @@ int read_headers(int sock, unsigned int *rate,
     }
     if (read_size < 32)
       return 1;
-    bytes_left = *((int *)(msg + 28));
+    bytes_left = *((unsigned int *)(msg + 28));
   }
   return 0;
 }

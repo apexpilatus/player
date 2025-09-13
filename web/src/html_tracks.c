@@ -64,7 +64,7 @@ int size_is_ok(meta_list *list_first) {
   FLAC__uint64 sum = 0;
   while (list_first) {
     sum += list_first->size;
-    if (sum > 0x7fffffff)
+    if (sum > 0xffffffa0)
       return 0;
     list_first = list_first->next;
   }
