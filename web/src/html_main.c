@@ -78,7 +78,7 @@ close:
     strcat(msg, "<button type=button id=getcd onclick=getcd()>"
                 "&#9737</button>");
   strcat(msg, "<button hidden type=button id=scrollup "
-              "onclick=getalbums()>&#8648</button>");
+              "onclick=scrollup()>&#8648</button>");
   strcat(msg, "<button hidden type=button id=scrolldown "
               "onclick=scrolldown()>&#8650</button>");
   strcat(msg, "<script src=script_main.js></script>");
