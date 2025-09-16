@@ -1,12 +1,40 @@
+@media (prefers-color-scheme: light) {
+    #albumtitle {
+        background-color: black;
+    }
+
+    #album {
+        color: white;
+    }
+
+    .tracktitle {
+        color: white;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    #albumtitle {
+        background-color: white;
+    }
+
+    #album {
+        color: black;
+    }
+
+    .tracktitle {
+        color: black;
+    }
+}
+
 body {
     font-size: 20px;
 }
 
 #albumtitle {
     position: sticky;
+    color: gray;
     top: 0;
     width: 100%;
-    background-color: #cec5b7;
     font-weight: bold;
     padding-bottom: 6px;
 }
@@ -22,7 +50,6 @@ audio {
 }
 
 #album {
-    color: white;
     padding-top: 0;
     padding-left: 4px;
 }
@@ -39,7 +66,7 @@ tr {
 }
 
 .tracknumber {
-    color: white;
+    color: gray;
     width: 6%;
     padding-top: 2px;
     padding-left: 2px;

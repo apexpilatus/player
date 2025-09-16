@@ -1,3 +1,15 @@
+@media (prefers-color-scheme: light) {
+    b {
+        color: white;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    b {
+        color: black;
+    }
+}
+
 audio {
     position: fixed;
     bottom: 20%;
@@ -9,7 +21,7 @@ div {
 }
 
 b {
-    padding-top: 100px;
+    padding-top: 20px;
     padding-left: 20px;
     padding-right: 20px;
 }

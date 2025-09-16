@@ -1,5 +1,23 @@
-body {
-    background-color: #cec5b7;
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: black;
+    }
+
+    button {
+        color: white;
+        background-color: black;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: white;
+    }
+
+    button {
+        color: black;
+        background-color: white;
+    }
 }
 
 #albums {
@@ -23,8 +41,6 @@ body {
 
 button {
     position: fixed;
-    color: black;
-    background-color: #cec5b7;
     font-size: 25px;
     text-align: center;
     border-style: none;
