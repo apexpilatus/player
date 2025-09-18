@@ -76,11 +76,11 @@ close:
               "&#9769;</button>");
   if (cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL))
     strcat(msg, "<button type=button id=getcd onclick=getcd()>"
-                "&#9881</button>");
+                "&#9096</button>");
   strcat(msg, "<button hidden type=button id=scrollup "
-              "onclick=scrollup()>&#9739</button>");
+              "onclick=scrollup()>&#9738</button>");
   strcat(msg, "<button hidden type=button id=scrolldown "
-              "onclick=scrolldown()>&#9738</button>");
+              "onclick=scrolldown()>&#8609</button>");
   strcat(msg, "<script src=script_main.js></script>");
   strcat(msg, "<script>getalbums()</script>");
   strcat(msg, "</body>");
