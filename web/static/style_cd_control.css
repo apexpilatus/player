@@ -12,8 +12,9 @@
 
 audio {
     position: fixed;
-    bottom: 20%;
-    width: 80%;
+    left: 0;
+    top: 40%;
+    width: 100%;
 }
 
 div {
