@@ -20,7 +20,7 @@ int write_header(int fd, int size) {
   int_var = size + 44 - 8;
   write_size = write(fd, "RIFF", 4);
   write_size += write(fd, &int_var, 4);
-  write_size += write_size = write(fd, "WAVEfmt ", 8);
+  write_size += write(fd, "WAVEfmt ", 8);
   int_var = 16;
   write_size += write(fd, &int_var, 4);
   short_var = 1;
@@ -116,7 +116,7 @@ int main(int prm_n, char *prm[]) {
     max_range = strtol(end, NULL, 10);
   else
     max_range = data_size + 43;
-  if (end = strchr(prm[3], '-')) {
+  if ((end = strchr(prm[3], '-'))) {
     *end = '\0';
     min_range = strtol(prm[3], NULL, 10);
   }

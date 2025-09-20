@@ -232,7 +232,7 @@ int main(int prm_n, char *prm[]) {
   else {
     max_range = (flac_blocks_size * 2 * bytes_per_sample) - 1 + header_size;
   }
-  if (end = strchr(prm[3], '-')) {
+  if ((end = strchr(prm[3], '-'))) {
     *end = '\0';
     min_range = strtol(prm[3], NULL, 10);
   }

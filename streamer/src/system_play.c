@@ -129,10 +129,10 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample) {
   const snd_pcm_channel_area_t *areas;
   snd_pcm_uframes_t offset;
   snd_pcm_uframes_t frames = 1;
-  char channel;
-  char channels = 2;
+  unsigned char channel;
+  unsigned char channels = 2;
   char *buf_tmp[channels];
-  snd_pcm_sframes_t commitres;
+  snd_pcm_sframes_t commitres = 0;
   while (in_work && filled_buf_check(data_first))
     usleep(1000);
   data_cur = data_first;

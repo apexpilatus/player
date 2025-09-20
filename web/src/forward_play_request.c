@@ -20,7 +20,6 @@ int main(int prm_n, char *prm[]) {
   char msg[getpagesize()];
   char hostname[getpagesize()];
   struct hostent *host;
-  char streamer_address[INET_ADDRSTRLEN];
   char *path_track = strchr(prm[2], '?') + 1;
   char *end = strchr(path_track, '&');
   struct sockaddr_in addr;

@@ -8,9 +8,7 @@ int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   ssize_t write_size;
   char rsp[getpagesize()];
-  char cmd[getpagesize()];
   struct hostent *host;
-  char streamer_address[INET_ADDRSTRLEN];
   char hostname[getpagesize()];
   sprintf(rsp, "%s\r\n%s\r\n%s\r\n%s\r\n\r\n", "HTTP/1.1 200 OK",
           "Content-Type: text/html; charset=utf-8", "Cache-control: no-cache",

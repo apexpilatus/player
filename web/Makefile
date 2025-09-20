@@ -21,7 +21,7 @@ PLAYER_DEFINES += -D forward_play_request=\"$(WEB_PATH)/forward_play_request\"
 ifdef init
 PLAYER_DEFINES += -D PLAYER_AS_INIT
 endif
-CC := gcc -O2
+CC := gcc -O2 -Wall
 
 web : Makefile src/web.c web_select html_main html_tracks html_cd_control html_albums resp_err data_static data_picture data_cd data_flac_extracted forward_play_request system_poweroff
 	$(CC) src/web.c -o web $(PLAYER_DEFINES)

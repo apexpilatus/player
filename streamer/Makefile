@@ -12,7 +12,7 @@ STREAMER_DEFINES += -D system_volume=\"$(STREAMER_PATH)/system_volume\"
 ifdef init
 STREAMER_DEFINES += -D PLAYER_AS_INIT
 endif
-CC := gcc -O2
+CC := gcc -O2 -Wall
 
 streamer : Makefile src/web.c streamer_select html_volume resp_err data_static system_play system_volume system_poweroff
 	$(CC) src/web.c -o streamer $(STREAMER_DEFINES)
