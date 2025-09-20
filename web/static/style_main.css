@@ -22,20 +22,20 @@
 
 #albums {
     position: fixed;
-    top: 5%;
+    top: 0;
     right: 2%;
     width: 25%;
     max-width: 300px;
-    height: 90%;
+    height: 95%;
     border-style: none;
 }
 
 #control {
     position: fixed;
-    top: 5%;
+    top: 0;
     left: 2%;
     width: 70%;
-    height: 80%;
+    height: 87%;
     border-style: none;
 }
 
