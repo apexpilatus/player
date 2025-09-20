@@ -1,5 +1,6 @@
 @media (prefers-color-scheme: light) {
     #albumtitle {
+        color: lightcyan;
         background-color: black;
     }
 
@@ -10,10 +11,15 @@
     .tracktitle {
         color: white;
     }
+
+    #rate {
+        color: lightcyan;
+    }
 }
 
 @media (prefers-color-scheme: dark) {
     #albumtitle {
+        color:indigo;
         background-color: white;
     }
 
@@ -24,6 +30,10 @@
     .tracktitle {
         color: black;
     }
+
+    #rate {
+        color: indigo;
+    }
 }
 
 body {
@@ -32,7 +42,6 @@ body {
 
 #albumtitle {
     position: sticky;
-    color: gray;
     top: 0;
     width: 100%;
     font-weight: bold;
@@ -51,7 +60,6 @@ body {
 }
 
 #rate {
-    color: gray;
     padding-top: 0;
     padding-left: 6px;
     font-size: 80%;
