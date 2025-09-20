@@ -1,4 +1,4 @@
-@media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: dark) {
     #albumtitle {
         color: lightcyan;
         background-color: black;
@@ -17,7 +17,7 @@
     }
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
     #albumtitle {
         color:indigo;
         background-color: white;
