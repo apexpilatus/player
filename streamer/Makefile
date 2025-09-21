@@ -26,11 +26,13 @@ html_volume : Makefile src/html_volume.c
 resp_err : src/resp_err.c
 	$(CC) src/resp_err.c -o resp_err
 
-data_static : Makefile src/data_static.c static/style_volume.css static/script_volume.js static/favicon.ico
+data_static : Makefile src/data_static.c static/style_volume.css static/script_volume.js static/favicon.ico static/favicon152.png static/favicon180.png
 	xxd -i static/style_volume.css style_volume_css.c
 	xxd -i static/script_volume.js script_volume_js.c
 	xxd -i static/favicon.ico favicon.c
-	$(CC) src/data_static.c style_volume_css.c script_volume_js.c favicon.c -o data_static $(STREAMER_DEFINES)
+	xxd -i static/favicon152.png favicon152.c
+	xxd -i static/favicon180.png favicon180.c
+	$(CC) src/data_static.c style_volume_css.c script_volume_js.c favicon.c favicon152.c favicon180.c -o data_static $(STREAMER_DEFINES)
 	rm *.c
 
 system_play : Makefile src/system_play.c

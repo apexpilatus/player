@@ -6,9 +6,13 @@
 extern unsigned char static_style_volume_css[];
 extern unsigned char static_script_volume_js[];
 extern unsigned char static_favicon_ico[];
+extern unsigned char static_favicon152_png[];
+extern unsigned char static_favicon180_png[];
 extern unsigned int static_style_volume_css_len;
 extern unsigned int static_script_volume_js_len;
 extern unsigned int static_favicon_ico_len;
+extern unsigned int static_favicon152_png_len;
+extern unsigned int static_favicon180_png_len;
 unsigned char *data;
 unsigned int data_len;
 
@@ -19,6 +23,18 @@ int select_data(char *url, char *rsp) {
     data_len = static_favicon_ico_len;
     sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
             "Content-Type: image/x-icon",
+            "Cache-control: max-age=31536000, immutable");
+  } else if (!strcmp("/apple-touch-icon-precomposed.png", url)) {
+    data = static_favicon152_png;
+    data_len = static_favicon152_png_len;
+    sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
+            "Content-Type: image/png",
+            "Cache-control: max-age=31536000, immutable");
+  } else if (!strcmp("/apple-touch-icon.png", url)) {
+    data = static_favicon180_png;
+    data_len = static_favicon180_png_len;
+    sprintf(rsp, "%s\r\n%s\r\n%s\r\n", "HTTP/1.1 200 OK",
+            "Content-Type: image/png",
             "Cache-control: max-age=31536000, immutable");
   } else if (!strcmp("/style_volume.css", url)) {
     data = static_style_volume_css;
