@@ -21,10 +21,11 @@ int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   struct hostent *host;
   char streamer_address[INET_ADDRSTRLEN];
-  char hostname[getpagesize()];
   ssize_t write_size;
   char hdr[getpagesize()];
   char msg[getpagesize() * 1000];
+  char streamer_N[strlen(streamer_host) + 11];
+  int streamer_index = 0;
   struct sockaddr_in addr;
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
@@ -42,7 +43,8 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<iframe id=albums title=albums></iframe>");
   strcat(msg, "<iframe id=control title=control");
   addr.sin_family = AF_INET;
-  if ((host = gethostbyname(streamer_host))) {
+  strcpy(streamer_N, streamer_host);
+  while ((host = gethostbyname(streamer_N))) {
     addr.sin_addr = *(struct in_addr *)host->h_addr;
     addr.sin_port = htons(streamer_port);
     if (check_streamer(&addr, "\r\n")) {
@@ -55,20 +57,7 @@ int main(int prm_n, char *prm[]) {
       strcat(msg, "/getvolume\"");
       goto close;
     }
-  }
-  if (!gethostname(hostname, getpagesize()) &&
-      (host = gethostbyname(hostname))) {
-    addr.sin_addr = *(struct in_addr *)host->h_addr;
-    addr.sin_port = htons(streamer_port);
-    if (check_streamer(&addr, "\r\n")) {
-      inet_ntop(AF_INET, (struct in_addr *)host->h_addr, streamer_address,
-                INET_ADDRSTRLEN);
-      strcat(msg, " src=\"http://");
-      strcat(msg, streamer_address);
-      strcat(msg, ":");
-      strcat(msg, xstr(streamer_port));
-      strcat(msg, "/getvolume\"");
-    }
+    sprintf(streamer_N, "%s%d", streamer_host, ++streamer_index);
   }
 close:
   strcat(msg, "></iframe>");

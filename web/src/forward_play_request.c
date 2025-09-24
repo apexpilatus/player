@@ -18,11 +18,12 @@ int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   char rsp[getpagesize()];
   char msg[getpagesize()];
-  char hostname[getpagesize()];
   struct hostent *host;
   char *path_track = strchr(prm[2], '?') + 1;
   char *end = strchr(path_track, '&');
   struct sockaddr_in addr;
+  char streamer_N[strlen(streamer_host) + 11];
+  int streamer_index = 0;
   addr.sin_family = AF_INET;
   if (!strncmp("/playflac", prm[2], strlen("/playflac")))
     sprintf(msg, "/stream_album?%s", path_track);
@@ -33,18 +34,13 @@ int main(int prm_n, char *prm[]) {
     if (forward_request(&addr, msg))
       goto ok;
   }
-  if ((host = gethostbyname(streamer_host))) {
+  strcpy(streamer_N, streamer_host);
+  while ((host = gethostbyname(streamer_N))) {
     addr.sin_addr = *(struct in_addr *)host->h_addr;
     addr.sin_port = htons(streamer_port);
     if (forward_request(&addr, msg))
       goto ok;
-  }
-  if (!gethostname(hostname, getpagesize()) &&
-      (host = gethostbyname(hostname))) {
-    addr.sin_addr = *(struct in_addr *)host->h_addr;
-    addr.sin_port = htons(streamer_port);
-    if (forward_request(&addr, msg))
-      goto ok;
+    sprintf(streamer_N, "%s%d", streamer_host, ++streamer_index);
   }
   execl(resp_err, "resp_err", prm[1], NULL);
 ok:
