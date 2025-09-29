@@ -1,8 +1,17 @@
-WEB_PATH := /home/web
-MUSIC_PATH := /home/inventory/music
-PLAYER_DEFINES := -D music_path=\"$(MUSIC_PATH)\"
+ifdef WEB_PATH
+
+ifndef MUSIC_PATH
+$(error "MUSIC_PATH")
+endif
+
+ifndef LISTEN_PORT
+$(error "LISTEN_PORT")
+endif
+
+PLAYER_DEFINES := ${NO_INIT}
+PLAYER_DEFINES += -D music_path=\"${MUSIC_PATH}\"
 PLAYER_DEFINES += -D play_pid_path=\"/run/web_play_pid\"
-PLAYER_DEFINES += -D listen_port=80
+PLAYER_DEFINES += -D listen_port=${LISTEN_PORT}
 PLAYER_DEFINES += -D streamer_port=8888
 PLAYER_DEFINES += -D android_client_port=9696
 PLAYER_DEFINES += -D streamer_host=\"streamer\"
@@ -18,10 +27,11 @@ PLAYER_DEFINES += -D data_cd=\"$(WEB_PATH)/data_cd\"
 PLAYER_DEFINES += -D data_flac_extracted=\"$(WEB_PATH)/data_flac_extracted\"
 PLAYER_DEFINES += -D system_poweroff=\"$(WEB_PATH)/system_poweroff\"
 PLAYER_DEFINES += -D forward_play_request=\"$(WEB_PATH)/forward_play_request\"
-ifdef init
-PLAYER_DEFINES += -D PLAYER_AS_INIT
-endif
 CC := gcc -O2 -Wall
+
+install: web
+	rm -f $(WEB_PATH)/*
+	mv $(shell find . -maxdepth 1 -type f -not -name Makefile) $(WEB_PATH)
 
 web : Makefile src/web.c web_select html_main html_tracks html_cd_control html_albums resp_err data_static data_picture data_cd data_flac_extracted forward_play_request system_poweroff
 	$(CC) src/web.c -o web $(PLAYER_DEFINES)
@@ -74,6 +84,8 @@ forward_play_request : Makefile src/forward_play_request.c
 system_poweroff : Makefile src/system_poweroff.c
 	$(CC) src/system_poweroff.c -o system_poweroff $(PLAYER_DEFINES)
 
+endif
+
 .PHONY: clean
 clean:
 	rm $(shell find . -maxdepth 1 -type f -not -name Makefile)
@@ -81,8 +93,3 @@ clean:
 .PHONY: format
 format:
 	clang-format -i src/*
-
-.PHONY: install
-install:
-	rm -f $(WEB_PATH)/*
-	mv $(shell find . -maxdepth 1 -type f -not -name Makefile) $(WEB_PATH)
