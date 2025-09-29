@@ -9,10 +9,11 @@ STREAMER_DEFINES += -D data_static=\"$(STREAMER_PATH)/data_static\"
 STREAMER_DEFINES += -D system_poweroff=\"$(STREAMER_PATH)/system_poweroff\"
 STREAMER_DEFINES += -D system_play=\"$(STREAMER_PATH)/system_play\"
 STREAMER_DEFINES += -D system_volume=\"$(STREAMER_PATH)/system_volume\"
-ifdef init
-STREAMER_DEFINES += -D PLAYER_AS_INIT
-endif
 CC := gcc -O2 -Wall
+
+install: streamer
+	rm -f $(STREAMER_PATH)/*
+	mv $(shell find . -maxdepth 1 -type f -not -name Makefile) $(STREAMER_PATH)
 
 streamer : Makefile src/web.c streamer_select html_volume resp_err data_static system_play system_volume system_poweroff
 	$(CC) src/web.c -o streamer $(STREAMER_DEFINES)
@@ -51,8 +52,3 @@ clean:
 .PHONY: format
 format:
 	clang-format -i src/*
-
-.PHONY: install
-install:
-	rm -f $(STREAMER_PATH)/*
-	mv $(shell find . -maxdepth 1 -type f -not -name Makefile) $(STREAMER_PATH)

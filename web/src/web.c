@@ -55,15 +55,11 @@ int main(void) {
   socklen_t addr_size;
   signal(SIGCHLD, kill_zombie);
   unlink(play_pid_path);
-#ifdef NO_INIT
-  if (system("/root/init.sh") && system("poweroff"))
-    return 1;
-#endif
+  if (system("/root/init.sh"))
+    while (1)
+      ;
   if (init_socket(&sock_listen, &addr, &addr_size))
-#ifdef NO_INIT
-    if (system("poweroff"))
-#endif
-      return 1;
+    return 1;
   while (1) {
     sock = accept(sock_listen, (struct sockaddr *)&addr, &addr_size);
     if (sock < 0)
