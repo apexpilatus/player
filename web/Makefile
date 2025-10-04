@@ -5,7 +5,7 @@ $(error "MUSIC_PATH")
 endif
 
 ifndef LISTEN_PORT
-$(error "LISTEN_PORT")
+LISTEN_PORT := 80
 endif
 
 PLAYER_DEFINES := -D music_path=\"${MUSIC_PATH}\"
