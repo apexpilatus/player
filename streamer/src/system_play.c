@@ -19,6 +19,7 @@ typedef struct data_list_t {
 } data_list;
 
 data_list volatile *volatile data_first;
+unsigned char volatile pause_download;
 const unsigned int alsa_buf_size = 12000;
 const unsigned int data_buf_size = alsa_buf_size / 2;
 unsigned int volatile bytes_left;
@@ -29,6 +30,10 @@ int data_reader(void *prm) {
   ssize_t read_size;
   data_list volatile *data_new = NULL;
   while (bytes_left) {
+    if (pause_download) {
+      usleep(5000);
+      continue;
+    }
     if (!data_new) {
       data_first = malloc(sizeof(data_list));
       data_new = data_first;
@@ -52,13 +57,13 @@ int data_reader(void *prm) {
   return 0;
 }
 
-int filled_buf_check(data_list volatile *data) {
+int filled_buf_check(data_list volatile *data, int limit) {
   int count = 0;
   while (data) {
     count++;
-    if (count > 200)
+    if (count > limit)
       return 0;
-    data = (data_list *)data->next;
+    data = data->next;
   }
   return 1;
 }
@@ -123,6 +128,8 @@ card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
 
 int play(int sock, card_list *cards_first, size_t bytes_per_sample) {
   data_list volatile *data_cur;
+  data_list volatile *data_free;
+  unsigned char written = 0;
   card_list *cards_tmp;
   snd_pcm_sframes_t avail_frames;
   int cursor;
@@ -133,9 +140,10 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample) {
   unsigned char channels = 2;
   char *buf_tmp[channels];
   snd_pcm_sframes_t commitres = 0;
-  while (in_work && filled_buf_check(data_first))
+  while (in_work && filled_buf_check(data_first, 200))
     usleep(1000);
   data_cur = data_first;
+  data_free = data_first;
   while (data_cur) {
     cards_tmp = cards_first;
     while (cards_tmp) {
@@ -177,6 +185,18 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample) {
       cards_tmp = cards_tmp->next;
     }
     data_cur = data_cur->next;
+    if (written < 200)
+      written++;
+    else {
+      data_free = data_first;
+      data_first = data_first->next;
+      free((char *)data_free->buf);
+      free((data_list *)data_free);
+      if (filled_buf_check(data_first, 1000))
+        pause_download = 0;
+      else
+        pause_download = 1;
+    }
   }
   return 0;
 }
