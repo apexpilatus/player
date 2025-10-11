@@ -34,13 +34,15 @@ void kill_zombie(int signum) {
   }
 }
 
-int init_socket(int *sock_listen, struct sockaddr_in *addr,
+int init_socket(int *sock_listen, struct sockaddr_in6 *addr,
                 socklen_t *addr_size) {
-  *sock_listen = socket(PF_INET, SOCK_STREAM, 0);
-  addr->sin_family = AF_INET;
-  addr->sin_port = htons(listen_port);
-  addr->sin_addr.s_addr = htonl(INADDR_ANY);
-  *addr_size = sizeof(struct sockaddr_in);
+  *sock_listen = socket(PF_INET6, SOCK_STREAM, 0);
+  addr->sin6_family = AF_INET6;
+  addr->sin6_addr = in6addr_any;
+  addr->sin6_flowinfo = 0;
+  addr->sin6_scope_id = 0;
+  addr->sin6_port = htons(listen_port);
+  *addr_size = sizeof(struct sockaddr_in6);
   if (bind(*sock_listen, (struct sockaddr *)addr, *addr_size) < 0 ||
       listen(*sock_listen, 20) < 0)
     return 1;
@@ -51,7 +53,7 @@ int main(void) {
   pid_t pid;
   int sock_listen;
   int sock;
-  struct sockaddr_in addr;
+  struct sockaddr_in6 addr;
   socklen_t addr_size;
   signal(SIGCHLD, kill_zombie);
   unlink(play_pid_path);
@@ -67,8 +69,8 @@ int main(void) {
     pid = fork();
     if (!pid) {
       char sock_txt[15];
-      char client_address[INET_ADDRSTRLEN];
-      inet_ntop(AF_INET, &addr.sin_addr, client_address, INET_ADDRSTRLEN);
+      char client_address[INET6_ADDRSTRLEN];
+      inet_ntop(AF_INET6, &addr.sin6_addr, client_address, INET6_ADDRSTRLEN);
       sprintf(sock_txt, "%d", sock);
       execl(web_select, "web_select", sock_txt, client_address, NULL);
     }

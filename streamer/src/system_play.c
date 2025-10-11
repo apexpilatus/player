@@ -254,11 +254,13 @@ int read_headers(int sock, unsigned int *rate,
 
 int send_request(int sock, char *prm[]) {
   char msg[getpagesize()];
-  struct sockaddr_in addr;
-  if (!inet_aton(prm[3], &addr.sin_addr))
+  struct sockaddr_in6 addr;
+  addr.sin6_family = AF_INET6;
+  if (!inet_pton(AF_INET6, prm[3], &addr.sin6_addr))
     return 1;
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons(store_port);
+  addr.sin6_flowinfo = 0;
+  addr.sin6_scope_id = 0;
+  addr.sin6_port = htons(store_port);
   if (0 > connect(sock, (struct sockaddr *)&addr, sizeof(addr)))
     return 1;
   strcpy(msg, "GET ");
@@ -287,7 +289,7 @@ int main(int prm_n, char *prm[]) {
     return 1;
   }
   close(sock);
-  sock = socket(PF_INET, SOCK_STREAM, 0);
+  sock = socket(PF_INET6, SOCK_STREAM, 0);
   if (send_request(sock, prm))
     return 1;
   if (read_headers(sock, &rate, &bits_per_sample))
