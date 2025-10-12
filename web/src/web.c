@@ -3,7 +3,6 @@
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -70,11 +69,8 @@ int main(void) {
     pid = fork();
     if (!pid) {
       char sock_txt[15];
-      char *client_address = malloc(INET6_ADDRSTRLEN);
-      char *addr_v4;
+      char client_address[INET6_ADDRSTRLEN];
       inet_ntop(AF_INET6, &addr.sin6_addr, client_address, INET6_ADDRSTRLEN);
-      while ((addr_v4 = strchr(client_address, ':')))
-        client_address = ++addr_v4;
       sprintf(sock_txt, "%d", sock);
       execl(web_select, "web_select", sock_txt, client_address, NULL);
     }
