@@ -36,20 +36,22 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
     }
 
     private val listen = Thread {
-        var remoteIP: String
         var url: String
+        var picture: String
         while (true) {
             try {
                 sockServer.accept().use {
-                    remoteIP = it.remoteSocketAddress.toString().replace("/", "").split(":")[0]
                     url = BufferedReader(InputStreamReader(it.getInputStream())).readText()
+                    picture =
+                        if (url.contains("stream_cd")) url.split("stream_cd")[0] + "apple-touch-icon.png"
+                        else url.split("stream_album?")[0] + url.split("?/")[1].split("&")[0]
                     with(player) {
                         reset()
-                        setDataSource("http://$remoteIP$url")
+                        setDataSource(url)
                         prepare()
                         start()
                     }
-                    URL("http://$remoteIP/apple-touch-icon.png").openStream().use { picture ->
+                    URL(picture).openStream().use { picture ->
                         notificationManager.notify(
                             1,
                             Notification.Builder(this, CHANNEL_ID)
