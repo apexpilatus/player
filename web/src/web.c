@@ -69,10 +69,13 @@ int main(void) {
     pid = fork();
     if (!pid) {
       char sock_txt[15];
+      char scope_txt[15];
       char client_address[INET6_ADDRSTRLEN];
       inet_ntop(AF_INET6, &addr.sin6_addr, client_address, INET6_ADDRSTRLEN);
       sprintf(sock_txt, "%d", sock);
-      execl(web_select, "web_select", sock_txt, client_address, NULL);
+      sprintf(scope_txt, "%d", addr.sin6_scope_id);
+      execl(web_select, "web_select", sock_txt, client_address, scope_txt,
+            NULL);
     }
     if (pid > 0)
       setpriority(PRIO_PROCESS, pid, PRIO_MIN);

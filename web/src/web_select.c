@@ -69,7 +69,7 @@ int main(int prm_n, char *prm[]) {
     execl(html_tracks, "html_tracks", prm[1], url,
           agent && strstr(agent, "Android") ? "no" : "yes", NULL);
   } else if (!strcmp("/", url)) {
-    execl(html_main, "html_main", prm[1], NULL);
+    execl(html_main, "html_main", prm[1], prm[3], NULL);
   } else if (!strcmp("/cdcontrol", url)) {
     execl(html_cd_control, "html_cd_control", prm[1],
           agent && strstr(agent, "Android") ? "no" : "yes", NULL);
@@ -83,16 +83,12 @@ int main(int prm_n, char *prm[]) {
     execl(data_flac_extracted, "data_flac_extracted", prm[1], url,
           range ? range : "", NULL);
   } else if (!strncmp("/play", url, strlen("/play"))) {
-    char *addr_v6 = prm[2];
-    char *addr_v4 = addr_v6;
-    while ((addr_v6 = strchr(addr_v4, ':')))
-      addr_v4 = ++addr_v6;
-    execl(forward_play_request, "forward_play_request", prm[1], url, addr_v4,
-          NULL);
+    execl(forward_play_request, "forward_play_request", prm[1], url, prm[2],
+          prm[3], NULL);
   } else if (!strcmp("/poweroff", url)) {
     if (stop_playing() || system("/root/init.sh finish"))
       execl(resp_err, "resp_err", prm[1], NULL);
-    execl(system_poweroff, "system_poweroff", prm[1], url, NULL);
+    execl(system_poweroff, "system_poweroff", prm[1], url, prm[3], NULL);
   } else if (!strcmp("/cdcontrol", url)) {
     execl(html_cd_control, "html_cd_control", prm[1], NULL);
   } else {

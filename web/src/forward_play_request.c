@@ -6,9 +6,12 @@
 #include <unistd.h>
 #include <utime.h>
 
-int forward_request(struct sockaddr_in *addr, char *msg) {
-  int sock = socket(PF_INET, SOCK_STREAM, 0);
-  if (!connect(sock, (struct sockaddr *)addr, sizeof(struct sockaddr_in)) &&
+#define str(x) #x
+#define xstr(x) str(x)
+
+int forward_request(struct sockaddr_in6 *addr, char *msg) {
+  int sock = socket(PF_INET6, SOCK_STREAM, 0);
+  if (!connect(sock, (struct sockaddr *)addr, sizeof(struct sockaddr_in6)) &&
       write(sock, msg, strlen(msg)) == strlen(msg))
     return 1;
   return 0;
@@ -21,23 +24,32 @@ int main(int prm_n, char *prm[]) {
   struct hostent *host;
   char *path_track = strchr(prm[2], '?') + 1;
   char *end = strchr(path_track, '&');
-  struct sockaddr_in addr;
+  struct sockaddr_in6 addr;
   char streamer_N[strlen(streamer_host) + 11];
   int streamer_index = 0;
-  addr.sin_family = AF_INET;
+  addr.sin6_family = AF_INET6;
+  addr.sin6_flowinfo = 0;
+  addr.sin6_scope_id = strtol(prm[4], NULL, 10);
   if (!strncmp("/playflac", prm[2], strlen("/playflac")))
     sprintf(msg, "/stream_album?%s", path_track);
   else
     sprintf(msg, "/stream_cd?%s", path_track);
-  if (inet_aton(prm[3], &addr.sin_addr)) {
-    addr.sin_port = htons(android_client_port);
-    if (forward_request(&addr, msg))
+  if (inet_pton(AF_INET6, prm[3], &addr.sin6_addr) &&
+      !gethostname(rsp, getpagesize())) {
+    host = gethostbyname2(rsp, AF_INET6);
+    strcpy(rsp, "http://[");
+    inet_ntop(AF_INET6, host->h_addr, rsp + 8, INET6_ADDRSTRLEN);
+    strcat(rsp, "]:");
+    strcat(rsp, xstr(listen_port));
+    strcat(rsp, msg);
+    addr.sin6_port = htons(android_client_port);
+    if (forward_request(&addr, rsp))
       goto ok;
   }
   strcpy(streamer_N, streamer_host);
-  while ((host = gethostbyname(streamer_N))) {
-    addr.sin_addr = *(struct in_addr *)host->h_addr;
-    addr.sin_port = htons(streamer_port);
+  while ((host = gethostbyname2(streamer_N, AF_INET6))) {
+    addr.sin6_addr = *(struct in6_addr *)host->h_addr;
+    addr.sin6_port = htons(streamer_port);
     if (forward_request(&addr, msg))
       goto ok;
     sprintf(streamer_N, "%s%d", streamer_host, ++streamer_index);

@@ -59,7 +59,7 @@ int main(int prm_n, char *prm[]) {
   } else if (!strncmp("/stream", req, strlen("/stream"))) {
     if (stop_playing())
       return 1;
-    execl(system_play, "system_play", prm[1], req, prm[2], NULL);
+    execl(system_play, "system_play", prm[1], req, prm[2], prm[3], NULL);
   } else if (!strncmp("/poweroff", req, strlen("/poweroff"))) {
     struct stat stat_buf;
     if (!stat(play_pid_path, &stat_buf)) {
