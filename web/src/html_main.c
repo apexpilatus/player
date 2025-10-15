@@ -30,9 +30,9 @@ int main(int prm_n, char *prm[]) {
     strcat(msg, "<button type=button id=getcd onclick=getcd()>"
                 "&#9096</button>");
   strcat(msg, "<button hidden type=button id=scrollup "
-              "onclick=scrollup()>&#8607</button>");
+              "onclick=scrollup()>&#9651</button>");
   strcat(msg, "<button hidden type=button id=scrolldown "
-              "onclick=scrolldown()>&#8609</button>");
+              "onclick=scrolldown()>&#9661</button>");
   strcat(msg, "<script src=script_main.js></script>");
   strcat(msg, "<script>getalbums()</script>");
   strcat(msg, "</body>");
