@@ -61,12 +61,17 @@ albums_list *get_albums() {
   return album_first;
 }
 
-void list_albums(char *msg) {
+void list_albums(char *msg, char *scroll) {
   albums_list *albums = get_albums();
   if (albums && difftime(time(NULL), albums->mtime) >= 0) {
     strcat(msg, "<script>updatetop(\"");
     strcat(msg, albums->path);
     strcat(msg, "\")</script>");
+    if (!scroll) {
+      strcat(msg, "<script>gettracks(\"");
+      strcat(msg, albums->path);
+      strcat(msg, "\")</script>");
+    }
     while (albums) {
       strcat(msg, "<img src=\"");
       strcat(msg, albums->path);
@@ -79,7 +84,7 @@ void list_albums(char *msg) {
     strcat(msg, "<script>hidescroll()</script>");
 }
 
-void create_html(char *msg, char *bottom) {
+void create_html(char *msg, char *scroll) {
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -90,9 +95,10 @@ void create_html(char *msg, char *bottom) {
   strcat(msg, "<link rel=stylesheet href=style_albums.css>");
   strcat(msg, "<script src=script_albums.js></script>");
   strcat(msg, "</head>");
-  strcat(msg, bottom ? "<body onload=showscroll(\"down\")>"
-                     : "<body onload=showscroll(\"up\")>");
-  list_albums(msg);
+  strcat(msg, scroll && !strcmp(scroll + 1, "down")
+                  ? "<body onload=showscroll(\"down\")>"
+                  : "<body onload=showscroll(\"up\")>");
+  list_albums(msg, scroll);
   strcat(msg, "</body>");
   strcat(msg, "</html>");
 }

@@ -6,9 +6,6 @@
 #include <unistd.h>
 #include <utime.h>
 
-#define str(x) #x
-#define xstr(x) str(x)
-
 int forward_request(struct sockaddr_in6 *addr, char *msg) {
   int sock = socket(PF_INET6, SOCK_STREAM, 0);
   if (!connect(sock, (struct sockaddr *)addr, sizeof(struct sockaddr_in6)) &&
@@ -35,12 +32,10 @@ int main(int prm_n, char *prm[]) {
   else
     sprintf(msg, "/stream_cd?%s", path_track);
   if (inet_pton(AF_INET6, prm[3], &addr.sin6_addr) &&
-      !gethostname(rsp, getpagesize())) {
-    host = gethostbyname2(rsp, AF_INET6);
-    strcpy(rsp, "http://[");
-    inet_ntop(AF_INET6, host->h_addr, rsp + 8, INET6_ADDRSTRLEN);
-    strcat(rsp, "]:");
-    strcat(rsp, xstr(listen_port));
+      !gethostname(rsp, getpagesize()) &&
+      (host = gethostbyname2(rsp, AF_INET))) {
+    strcpy(rsp, "http://");
+    inet_ntop(AF_INET, host->h_addr, rsp + 7, INET_ADDRSTRLEN);
     strcat(rsp, msg);
     addr.sin6_port = htons(android_client_port);
     if (forward_request(&addr, rsp))
