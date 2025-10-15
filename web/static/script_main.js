@@ -11,10 +11,9 @@ function getalbums() {
 }
 
 function scrollup() {
-    if (currentElem.innerHTML == "volume")
-        getalbums();
-    else
-        window.location.assign(window.location.href);
+    scrollupElem.hidden = true;
+    scrolldownElem.hidden = true;
+    albumsElem.src = window.location.href + "albums?up";
 }
 
 function scrolldown() {
