@@ -1,32 +1,14 @@
-#include <arpa/inet.h>
 #include <cdda_interface.h>
-#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#define str(x) #x
-#define xstr(x) str(x)
-
-int check_streamer(struct sockaddr_in6 *addr, char *msg) {
-  int sock = socket(PF_INET6, SOCK_STREAM, 0);
-  if (!connect(sock, (struct sockaddr *)addr, sizeof(struct sockaddr_in6)) &&
-      write(sock, msg, strlen(msg)) == strlen(msg))
-    return 1;
-  return 0;
-}
-
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
-  struct hostent *host;
-  char streamer_address[INET6_ADDRSTRLEN];
   ssize_t write_size;
   char hdr[getpagesize()];
   char msg[getpagesize() * 1000];
-  char streamer_N[strlen(streamer_host) + 11];
-  int streamer_index = 0;
-  struct sockaddr_in6 addr;
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -41,28 +23,7 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<p hidden id=top></p>");
   strcat(msg, "<p hidden id=current>volume</p>");
   strcat(msg, "<iframe id=albums title=albums></iframe>");
-  strcat(msg, "<iframe id=control title=control");
-  addr.sin6_family = AF_INET6;
-  addr.sin6_flowinfo = 0;
-  addr.sin6_scope_id = strtol(prm[2], NULL, 10);
-  strcpy(streamer_N, streamer_host);
-  while ((host = gethostbyname2(streamer_N, AF_INET6))) {
-    addr.sin6_addr = *(struct in6_addr *)host->h_addr;
-    addr.sin6_port = htons(streamer_port);
-    if (check_streamer(&addr, "\r\n")) {
-      inet_ntop(AF_INET6, (struct in6_addr *)host->h_addr, streamer_address,
-                INET6_ADDRSTRLEN);
-      strcat(msg, " src=\"http://[");
-      strcat(msg, streamer_address);
-      strcat(msg, "]:");
-      strcat(msg, xstr(streamer_port));
-      strcat(msg, "/getvolume\"");
-      goto close;
-    }
-    sprintf(streamer_N, "%s%d", streamer_host, ++streamer_index);
-  }
-close:
-  strcat(msg, "></iframe>");
+  strcat(msg, "<iframe id=control title=control></iframe>");
   strcat(msg, "<button type=button id=poweroff onclick=poweroff()>"
               "&#9769;</button>");
   if (cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL))
