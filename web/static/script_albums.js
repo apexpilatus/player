@@ -13,7 +13,7 @@ function gettracks(album) {
     if (currentElem.innerHTML == album) {
         fetch("playflac?" + album).then(resp => {
             if (resp.status == 200 && topElem.innerHTML != album) {
-                window.location.assign(parent.window.location.href + "albums");
+                window.location.assign(parent.window.location.href + "albums?up");
             }
         });
     } else {

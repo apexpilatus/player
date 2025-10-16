@@ -13,7 +13,7 @@ function updatecurrent(album) {
 
 function updatetop(dir) {
     if (topElem.innerHTML != dir) {
-        albumsElem.src = parent.window.location.href + "albums";
+        albumsElem.src = parent.window.location.href + "albums?up";
     }
 }
 
