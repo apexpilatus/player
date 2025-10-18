@@ -1,7 +1,11 @@
+ifndef LISTEN_PORT
+LISTEN_PORT := 80
+endif
+
 STREAMER_PATH := /home/streamer
 STREAMER_DEFINES := -D play_pid_path=\"/run/streamer_play_pid\"
 STREAMER_DEFINES += -D mix_pid_path=\"/run/streamer_mixer_pid\"
-STREAMER_DEFINES += -D listen_port=8888
+STREAMER_DEFINES += -D listen_port=${LISTEN_PORT}
 STREAMER_DEFINES += -D web_select=\"$(STREAMER_PATH)/streamer_select\"
 STREAMER_DEFINES += -D html_volume=\"$(STREAMER_PATH)/html_volume\"
 STREAMER_DEFINES += -D resp_err=\"$(STREAMER_PATH)/resp_err\"

@@ -46,7 +46,7 @@ int main(int prm_n, char *prm[]) {
   if ((end = strchr(req, ' ')) || (end = strchr(req, '\r')) ||
       (end = strchr(req, '\n')))
     *end = '\0';
-  if (!strcmp("/getvolume", req)) {
+  if (!strcmp("/", req)) {
     struct stat stat_buf;
     while (!stat(mix_pid_path, &stat_buf))
       ;
