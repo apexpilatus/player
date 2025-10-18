@@ -6,6 +6,11 @@
     form {
         color: white;
     }
+
+    button {
+        color: white;
+        background-color: black;
+    }
 }
 
 @media (prefers-color-scheme: light) {
@@ -16,10 +21,25 @@
     form {
         color: black;
     }
+
+    button {
+        color: black;
+        background-color: white;
+    }
 }
 
 body {
     font-size: 20px;
+}
+
+button {
+    position: fixed;
+    left: 5%;
+    top: 5%;
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+    border-style: none;
 }
 
 form {

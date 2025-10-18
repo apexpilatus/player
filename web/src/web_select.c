@@ -86,9 +86,9 @@ int main(int prm_n, char *prm[]) {
     execl(forward_play_request, "forward_play_request", prm[1], url, prm[2],
           prm[3], NULL);
   } else if (!strcmp("/poweroff", url)) {
-    if (stop_playing() || system("/root/init.sh finish"))
+    if (system("/root/init.sh finish"))
       execl(resp_err, "resp_err", prm[1], NULL);
-    execl(system_poweroff, "system_poweroff", prm[1], url, prm[3], NULL);
+    execl(system_poweroff, "system_poweroff", prm[1], NULL);
   } else if (!strcmp("/cdcontrol", url)) {
     execl(html_cd_control, "html_cd_control", prm[1], NULL);
   } else {

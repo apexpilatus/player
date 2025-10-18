@@ -4,13 +4,9 @@ ifndef MUSIC_PATH
 $(error "MUSIC_PATH")
 endif
 
-ifndef LISTEN_PORT
-LISTEN_PORT := 80
-endif
-
 PLAYER_DEFINES := -D music_path=\"${MUSIC_PATH}\"
 PLAYER_DEFINES += -D play_pid_path=\"/run/web_play_pid\"
-PLAYER_DEFINES += -D listen_port=${LISTEN_PORT}
+PLAYER_DEFINES += -D listen_port=80
 PLAYER_DEFINES += -D streamer_port=8888
 PLAYER_DEFINES += -D android_client_port=9696
 PLAYER_DEFINES += -D streamer_host=\"streamer\"
@@ -84,6 +80,10 @@ system_poweroff : Makefile src/system_poweroff.c
 	$(CC) src/system_poweroff.c -o system_poweroff $(PLAYER_DEFINES)
 
 endif
+
+.PHONY: err
+err:
+	$(error "WEB_PATH")
 
 .PHONY: clean
 clean:

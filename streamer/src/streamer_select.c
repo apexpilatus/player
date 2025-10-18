@@ -60,17 +60,15 @@ int main(int prm_n, char *prm[]) {
     if (stop_playing())
       return 1;
     execl(system_play, "system_play", prm[1], req, prm[2], prm[3], NULL);
-  } else if (!strncmp("/poweroff", req, strlen("/poweroff"))) {
+  } else if (!strcmp("/poweroff", req)) {
     struct stat stat_buf;
     if (!stat(play_pid_path, &stat_buf)) {
-      if (stop_playing())
-        return 1;
-      else
-        return 0;
+      stop_playing();
+      execl(resp_err, "resp_err", prm[1], NULL);
     }
-    if (!system("/root/init.sh finish")) {
-      execl(system_poweroff, "system_poweroff", prm[1], NULL);
-    }
+    if (system("/root/init.sh finish"))
+      execl(resp_err, "resp_err", prm[1], NULL);
+    execl(system_poweroff, "system_poweroff", prm[1], NULL);
   } else {
     execl(data_static, "data_static", prm[1], req, NULL);
   }

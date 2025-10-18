@@ -17,3 +17,7 @@ function setlevel(volumeid) {
         volumeTimeId = setTimeout(function () { canSetVol = true }, volumeTimeout);
     }
 }
+
+function poweroff() {
+    fetch("poweroff");
+}
