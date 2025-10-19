@@ -7,6 +7,7 @@ const scrolldownElem = document.getElementById("scrolldown");
 function getalbums() {
     scrollupElem.hidden = true;
     scrolldownElem.hidden = true;
+    currentElem.innerHTML = "albums";
     albumsElem.src = window.location.href + "albums";
 }
 
