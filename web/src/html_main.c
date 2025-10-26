@@ -25,14 +25,14 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<iframe id=albums title=albums></iframe>");
   strcat(msg, "<iframe id=control title=control></iframe>");
   strcat(msg, "<button type=button id=poweroff onclick=poweroff()>"
-              "&#9769;</button>");
+              "&#9635;</button>");
   if (cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL))
     strcat(msg, "<button type=button id=getcd onclick=getcd()>"
-                "&#9096</button>");
+                "&#9673</button>");
   strcat(msg, "<button hidden type=button id=scrollup "
-              "onclick=scrollup()>&#9651</button>");
+              "onclick=scrollup()>&#9650</button>");
   strcat(msg, "<button hidden type=button id=scrolldown "
-              "onclick=scrolldown()>&#9661</button>");
+              "onclick=scrolldown()>&#9660</button>");
   strcat(msg, "<script src=script_main.js></script>");
   strcat(msg, "<script>getalbums()</script>");
   strcat(msg, "</body>");
