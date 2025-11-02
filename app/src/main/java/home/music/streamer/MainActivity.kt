@@ -13,8 +13,10 @@ class MainActivity : Activity() {
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
     private val audioManager by lazy { getSystemService(AUDIO_SERVICE) as AudioManager }
     private fun exit(ok: Boolean) {
-        if (ok && !started) startForegroundService(Intent(this, MainService::class.java))
-        audioManager.ringerMode = AudioManager.RINGER_MODE_SILENT
+        if (ok) {
+            if (!started) startForegroundService(Intent(this, MainService::class.java))
+            audioManager.ringerMode = AudioManager.RINGER_MODE_SILENT
+        }
         finishAndRemoveTask()
     }
 
