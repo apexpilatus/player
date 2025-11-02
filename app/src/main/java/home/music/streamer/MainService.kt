@@ -7,6 +7,7 @@ import android.app.Service
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.IBinder
 import java.io.BufferedReader
@@ -20,6 +21,7 @@ const val CHANNEL_NAME = "main"
 class MainService : Service(), MediaPlayer.OnCompletionListener {
     private val sockServer by lazy { ServerSocket(9696) }
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
+    private val audioManager by lazy { getSystemService(AUDIO_SERVICE) as AudioManager }
     private val player by lazy {
         MediaPlayer().apply {
             setAudioAttributes(
@@ -41,10 +43,12 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
         while (true) {
             try {
                 sockServer.accept().use {
+                    audioManager.mode = AudioManager.MODE_RINGTONE
                     url = BufferedReader(InputStreamReader(it.getInputStream())).readText()
                     picture =
                         if (url.contains("stream_cd")) url.split("stream_cd")[0] + "apple-touch-icon.png"
                         else url.split("stream_album?")[0] + url.split("?/")[1].split("&")[0]
+                    audioManager.mode = AudioManager.MODE_NORMAL
                     with(player) {
                         reset()
                         setDataSource(url)
