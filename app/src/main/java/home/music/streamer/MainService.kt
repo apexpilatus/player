@@ -43,12 +43,12 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
         while (true) {
             try {
                 sockServer.accept().use {
-                    audioManager.mode = AudioManager.MODE_RINGTONE
+                    audioManager.mode = AudioManager.MODE_NORMAL
                     url = BufferedReader(InputStreamReader(it.getInputStream())).readText()
                     picture =
                         if (url.contains("stream_cd")) url.split("stream_cd")[0] + "apple-touch-icon.png"
                         else url.split("stream_album?")[0] + url.split("?/")[1].split("&")[0]
-                    audioManager.mode = AudioManager.MODE_NORMAL
+                    audioManager.mode = AudioManager.MODE_RINGTONE
                     with(player) {
                         reset()
                         setDataSource(url)
