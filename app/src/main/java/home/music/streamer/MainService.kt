@@ -86,6 +86,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
             Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
                 .setShowWhen(false).setContentText("").build()
         )
+        audioManager.allowedCapturePolicy = AudioAttributes.ALLOW_CAPTURE_BY_NONE
         listen.start()
         return START_STICKY
     }
