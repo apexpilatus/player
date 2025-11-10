@@ -31,7 +31,6 @@ int main(int prm_n, char *prm[]) {
   ssize_t msg_size = getpagesize() * 100;
   char *end;
   char *range;
-  char *agent;
   char *url = malloc(msg_size);
   while (read_size < msg_size && read(sock, url + read_size, 1) == 1) {
     read_size++;
@@ -42,7 +41,6 @@ int main(int prm_n, char *prm[]) {
   }
   if (read_size == msg_size || read_size < 5 || strncmp(url, "GET", 3))
     return 1;
-  agent = strstr(url, "User-Agent:");
   range = strstr(url, "Range:");
   if (range) {
     range += 6;
@@ -52,8 +50,6 @@ int main(int prm_n, char *prm[]) {
     end = strstr(range, "\r\n");
     *end = '\0';
   }
-  if (agent)
-    end = strstr(agent, "\r\n");
   url += 3;
   while (*url == ' ') {
     url++;
@@ -66,10 +62,9 @@ int main(int prm_n, char *prm[]) {
   if (!strncmp(music_path, url, strlen(music_path))) {
     execl(data_picture, "data_picture", prm[1], url, NULL);
   } else if (!strncmp("/tracks", url, strlen("/tracks"))) {
-    execl(html_tracks, "html_tracks", prm[1], url,
-          agent && strstr(agent, "Android") ? "no" : "yes", NULL);
+    execl(html_tracks, "html_tracks", prm[1], url, NULL);
   } else if (!strcmp("/", url)) {
-    execl(html_main, "html_main", prm[1], prm[2], NULL);
+    execl(html_main, "html_main", prm[1], prm[3], NULL);
   } else if (!strcmp("/cdcontrol", url)) {
     execl(html_cd_control, "html_cd_control", prm[1], NULL);
   } else if (!strncmp("/albums", url, strlen("/albums"))) {
