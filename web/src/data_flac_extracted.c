@@ -241,8 +241,6 @@ int main(int prm_n, char *prm[]) {
   bytes_left = max_range - min_range + 1;
   if (min_range == 0 && max_range < header_size - 1) {
     char buf[bytes_left];
-    if (utime(".", NULL))
-      execl(resp_err, "resp_err", prm[1], NULL);
     sprintf(rsp, "%s\r\n%s%u\r\nContent-Range: bytes %u-%u/%u\r\n%s\r\n\r\n",
             "HTTP/1.1 200 OK", "Content-Length: ", bytes_left, min_range,
             max_range, (flac_blocks_size * 2 * bytes_per_sample) + header_size,
@@ -254,6 +252,8 @@ int main(int prm_n, char *prm[]) {
     else
       return 1;
   }
+  if (min_range == 0 && utime(".", NULL))
+    execl(resp_err, "resp_err", prm[1], NULL);
   sprintf(rsp, "%s\r\n%s%u\r\nContent-Range: bytes %u-%u/%u\r\n%s\r\n\r\n",
           "HTTP/1.1 200 OK", "Content-Length: ", bytes_left, min_range,
           max_range, (flac_blocks_size * 2 * bytes_per_sample) + header_size,
