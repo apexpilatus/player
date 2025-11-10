@@ -69,10 +69,9 @@ int main(int prm_n, char *prm[]) {
     execl(html_tracks, "html_tracks", prm[1], url,
           agent && strstr(agent, "Android") ? "no" : "yes", NULL);
   } else if (!strcmp("/", url)) {
-    execl(html_main, "html_main", prm[1], prm[3], NULL);
+    execl(html_main, "html_main", prm[1], prm[2], NULL);
   } else if (!strcmp("/cdcontrol", url)) {
-    execl(html_cd_control, "html_cd_control", prm[1],
-          agent && strstr(agent, "Android") ? "no" : "yes", NULL);
+    execl(html_cd_control, "html_cd_control", prm[1], NULL);
   } else if (!strncmp("/albums", url, strlen("/albums"))) {
     execl(html_albums, "html_albums", prm[1], url, NULL);
   } else if (!strncmp("/stream_cd", url, strlen("/stream_cd"))) {
@@ -84,7 +83,7 @@ int main(int prm_n, char *prm[]) {
           range ? range : "", NULL);
   } else if (!strncmp("/play", url, strlen("/play"))) {
     execl(forward_play_request, "forward_play_request", prm[1], url, prm[2],
-          prm[3], NULL);
+          NULL);
   } else if (!strcmp("/poweroff", url)) {
     if (system("/root/init.sh finish"))
       execl(resp_err, "resp_err", prm[1], NULL);

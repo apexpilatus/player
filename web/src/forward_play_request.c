@@ -26,21 +26,11 @@ int main(int prm_n, char *prm[]) {
   int streamer_index = 0;
   addr.sin6_family = AF_INET6;
   addr.sin6_flowinfo = 0;
-  addr.sin6_scope_id = strtol(prm[4], NULL, 10);
+  addr.sin6_scope_id = strtol(prm[3], NULL, 10);
   if (!strncmp("/playflac", prm[2], strlen("/playflac")))
     sprintf(msg, "/stream_album?%s", path_track);
   else
     sprintf(msg, "/stream_cd?%s", path_track);
-  if (inet_pton(AF_INET6, prm[3], &addr.sin6_addr) &&
-      !gethostname(rsp, getpagesize()) &&
-      (host = gethostbyname2(rsp, AF_INET))) {
-    strcpy(rsp, "http://");
-    inet_ntop(AF_INET, host->h_addr, rsp + 7, INET_ADDRSTRLEN);
-    strcat(rsp, msg);
-    addr.sin6_port = htons(android_client_port);
-    if (forward_request(&addr, rsp))
-      goto ok;
-  }
   strcpy(streamer_N, streamer_host);
   while ((host = gethostbyname2(streamer_N, AF_INET6))) {
     addr.sin6_addr = *(struct in6_addr *)host->h_addr;

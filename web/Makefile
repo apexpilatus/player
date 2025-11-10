@@ -12,7 +12,6 @@ PLAYER_DEFINES := -D music_path=\"${MUSIC_PATH}\"
 PLAYER_DEFINES += -D play_pid_path=\"/run/web_play_pid\"
 PLAYER_DEFINES += -D listen_port=80
 PLAYER_DEFINES += -D streamer_port=${STREAMER_PORT}
-PLAYER_DEFINES += -D android_client_port=9696
 PLAYER_DEFINES += -D streamer_host=\"streamer\"
 PLAYER_DEFINES += -D web_select=\"$(WEB_PATH)/web_select\"
 PLAYER_DEFINES += -D html_main=\"$(WEB_PATH)/html_main\"

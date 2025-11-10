@@ -60,18 +60,7 @@ void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
     }
 }
 
-int size_is_ok(meta_list *list_first) {
-  FLAC__uint64 sum = 0;
-  while (list_first) {
-    sum += list_first->size;
-    if (sum > 0xffffffa0)
-      return 0;
-    list_first = list_first->next;
-  }
-  return 1;
-}
-
-void list_tracks(char *msg, char *show_audio) {
+void list_tracks(char *msg) {
   DIR *dp;
   struct dirent *ep;
   meta_list *list_first = NULL;
@@ -114,13 +103,11 @@ void list_tracks(char *msg, char *show_audio) {
   }
   strcat(msg, "<div id=albumtitle>");
   if (list_first) {
-    if (strcmp(show_audio, "no") && size_is_ok(list_first)) {
-      strcat(msg, "<audio controls src=/stream_album?");
-      strcat(msg, album_dir);
-      strcat(msg, " preload=none onplaying=updatetop(\"");
-      strcat(msg, album_dir);
-      strcat(msg, "\")></audio>");
-    }
+    strcat(msg, "<audio controls src=/stream_album?");
+    strcat(msg, album_dir);
+    strcat(msg, " preload=none onplaying=updatetop(\"");
+    strcat(msg, album_dir);
+    strcat(msg, "\")></audio>");
     if (list_first->artist) {
       strcat(msg, "<div id=artist>");
       strcat(msg, list_first->artist);
@@ -167,7 +154,7 @@ void list_tracks(char *msg, char *show_audio) {
   strcat(msg, "</table>");
 }
 
-void create_html(char *msg, char *show_audio) {
+void create_html(char *msg) {
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -184,7 +171,7 @@ void create_html(char *msg, char *show_audio) {
   strcat(msg, getcwd(NULL, 0));
   strcat(msg, "\")</script>");
   strcat(msg, "<script>showtracks()</script>");
-  list_tracks(msg, show_audio);
+  list_tracks(msg);
   strcat(msg, "</body>");
   strcat(msg, "</html>");
 }
@@ -210,7 +197,7 @@ int main(int prm_n, char *prm[]) {
     execl(resp_err, "resp_err", prm[1], NULL);
   sock = strtol(prm[1], NULL, 10);
   msg = malloc(getpagesize() * 10000);
-  create_html(msg, prm[3]);
+  create_html(msg);
   create_header(hdr, strlen(msg));
   write_size = write(sock, hdr, strlen(hdr));
   write_size += write(sock, msg, strlen(msg));
