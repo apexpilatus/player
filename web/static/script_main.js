@@ -3,6 +3,13 @@ const currentElem = document.getElementById("current");
 const albumsElem = document.getElementById("albums");
 const scrollupElem = document.getElementById("scrollup");
 const scrolldownElem = document.getElementById("scrolldown");
+const playerElem = document.getElementById("player");
+const topElem = document.getElementById("top");
+
+function updatetop(){
+if (playerElem.src.split("?")[1] != topElem.innerHTML)
+    albumsElem.src = window.location.href + "albums";
+}
 
 function getalbums() {
     scrollupElem.hidden = true;

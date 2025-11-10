@@ -13,15 +13,9 @@ function updatetop(album) {
 function gettracks(album) {
     if (currentElem.innerHTML == album) {
         fetch("playflac?" + album).then(resp => {
-            if (resp.status != 200) {
-                parent.document.querySelectorAll("link[rel*='icon']").forEach(icon => icon.parentNode.removeChild(icon));
-                link = parent.document.createElement('link');
-                link.rel = 'icon';
-                link.href = album;
-                parent.document.head.appendChild(link);
+            if (resp.status != 200)
                 playerElem.src = "stream_album?" + album;
-            }
-            if (topElem.innerHTML != album)
+	else if (topElem.innerHTML != album)
                 window.location.assign(parent.window.location.href + "albums?up");
         });
     } else {

@@ -21,7 +21,7 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<link rel=icon href=favicon.ico>");
   strcat(msg, "</head>");
   strcat(msg, "<body>");
-  strcat(msg, "<audio id=player autoplay></audio>");
+  strcat(msg, "<audio id=player autoplay onplaying=updatetop()></audio>");
   strcat(msg, "<p hidden id=top></p>");
   strcat(msg, "<p hidden id=current>volume</p>");
   strcat(msg, "<iframe id=albums title=albums></iframe>");
