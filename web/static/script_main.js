@@ -6,9 +6,9 @@ const scrolldownElem = document.getElementById("scrolldown");
 const playerElem = document.getElementById("player");
 const topElem = document.getElementById("top");
 
-function updatetop(){
-if (playerElem.src.split("?")[1] != topElem.innerHTML)
-    albumsElem.src = window.location.href + "albums";
+function updatetop() {
+    if (playerElem.src.split("?")[1] != topElem.innerHTML)
+        albumsElem.src = window.location.href + "albums";
 }
 
 function getalbums() {

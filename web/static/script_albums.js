@@ -15,7 +15,7 @@ function gettracks(album) {
         fetch("playflac?" + album).then(resp => {
             if (resp.status != 200)
                 playerElem.src = "stream_album?" + album;
-	else if (topElem.innerHTML != album)
+            else if (topElem.innerHTML != album)
                 window.location.assign(parent.window.location.href + "albums?up");
         });
     } else {
