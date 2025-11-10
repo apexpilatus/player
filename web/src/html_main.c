@@ -18,8 +18,10 @@ int main(int prm_n, char *prm[]) {
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
   strcat(msg, "<title>player</title>");
   strcat(msg, "<link rel=stylesheet href=style_main.css>");
+  strcat(msg, "<link rel=icon href=/home/inventory/music/Aerosmith>");
   strcat(msg, "</head>");
   strcat(msg, "<body>");
+  strcat(msg, "<audio src=/stream_album?/home/inventory/music/Aerosmith></audio>");
   strcat(msg, "<p hidden id=top></p>");
   strcat(msg, "<p hidden id=current>volume</p>");
   strcat(msg, "<iframe id=albums title=albums></iframe>");

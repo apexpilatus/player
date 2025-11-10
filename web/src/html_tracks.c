@@ -164,7 +164,6 @@ void create_html(char *msg) {
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
   strcat(msg, "<title>tracks</title>");
   strcat(msg, "<link rel=stylesheet href=style_tracks.css>");
-  strcat(msg, "<link rel=icon href=favicon.ico type=image/x-icon>");
   strcat(msg, "<script src=script_tracks.js></script>");
   strcat(msg, "</head>");
   strcat(msg, "<body>");
