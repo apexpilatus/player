@@ -25,7 +25,8 @@ int main(int prm_n, char *prm[]) {
     strcat(msg, ">");
     strcat(msg, "</head>");
     strcat(msg, "<body>");
-    strcat(msg, "<audio id=player autoplay onplaying=updatetop() src=stream_album?");
+    strcat(msg,
+           "<audio id=player autoplay onplaying=updatetop() src=stream_album?");
     strcat(msg, album + 1);
     strcat(msg, "></audio>");
   } else {
