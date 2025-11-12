@@ -35,7 +35,7 @@ int main(int prm_n, char *prm[]) {
     strcat(msg, "<audio id=player autoplay onplaying=updatetop()></audio>");
   }
   strcat(msg, "<p hidden id=top></p>");
-  strcat(msg, "<p hidden id=current>volume</p>");
+  strcat(msg, "<p hidden id=current></p>");
   strcat(msg, "<iframe id=albums title=albums></iframe>");
   strcat(msg, "<iframe id=control title=control></iframe>");
   strcat(msg, "<button type=button id=poweroff onclick=poweroff()>"
