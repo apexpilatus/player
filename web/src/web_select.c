@@ -63,8 +63,8 @@ int main(int prm_n, char *prm[]) {
     execl(data_picture, "data_picture", prm[1], url, NULL);
   } else if (!strncmp("/tracks", url, strlen("/tracks"))) {
     execl(html_tracks, "html_tracks", prm[1], url, NULL);
-  } else if (!strcmp("/", url)) {
-    execl(html_main, "html_main", prm[1], prm[3], NULL);
+  } else if (!(strcmp("/", url) && strncmp("/?", url, strlen("/&")))) {
+    execl(html_main, "html_main", prm[1], url, NULL);
   } else if (!strcmp("/cdcontrol", url)) {
     execl(html_cd_control, "html_cd_control", prm[1], NULL);
   } else if (!strncmp("/albums", url, strlen("/albums"))) {
@@ -77,7 +77,7 @@ int main(int prm_n, char *prm[]) {
     execl(data_flac_extracted, "data_flac_extracted", prm[1], url,
           range ? range : "", NULL);
   } else if (!strncmp("/play", url, strlen("/play"))) {
-    execl(forward_play_request, "forward_play_request", prm[1], url, prm[2],
+    execl(forward_play_request, "forward_play_request", prm[1], url, prm[3],
           NULL);
   } else if (!strcmp("/poweroff", url)) {
     if (system("/root/init.sh finish"))

@@ -14,7 +14,8 @@ function gettracks(album) {
     if (currentElem.innerHTML == album) {
         fetch("playflac?" + album).then(resp => {
             if (resp.status != 200)
-                playerElem.src = "stream_album?" + album;
+                //playerElem.src = "stream_album?" + album;
+                parent.window.location.assign("/?" + album);
             else if (topElem.innerHTML != album)
                 window.location.assign("albums?up");
         });

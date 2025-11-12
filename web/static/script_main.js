@@ -8,32 +8,32 @@ const topElem = document.getElementById("top");
 
 function updatetop() {
     if (playerElem.src.split("?")[1] != topElem.innerHTML)
-        albumsElem.src = window.location.href + "albums";
+        albumsElem.src = "albums";
 }
 
 function getalbums() {
     scrollupElem.hidden = true;
     scrolldownElem.hidden = true;
     currentElem.innerHTML = "albums";
-    albumsElem.src = window.location.href + "albums";
+    albumsElem.src = "albums";
 }
 
 function scrollup() {
     scrollupElem.hidden = true;
     scrolldownElem.hidden = true;
-    albumsElem.src = window.location.href + "albums?up";
+    albumsElem.src = "albums?up";
 }
 
 function scrolldown() {
     scrollupElem.hidden = true;
     scrolldownElem.hidden = true;
-    albumsElem.src = window.location.href + "albums?down";
+    albumsElem.src = "albums?down";
 }
 
 function getcd() {
     currentElem.innerHTML = "cd";
     controlElem.hidden = true;
-    controlElem.src = window.location.href + "cdcontrol";
+    controlElem.src = "cdcontrol";
 }
 
 function poweroff() {
