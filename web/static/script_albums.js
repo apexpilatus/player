@@ -16,11 +16,11 @@ function gettracks(album) {
             if (resp.status != 200)
                 playerElem.src = "stream_album?" + album;
             else if (topElem.innerHTML != album)
-                window.location.assign(parent.window.location.href + "albums?up");
+                window.location.assign("albums?up");
         });
     } else {
         controlElem.hidden = true;
-        controlElem.src = parent.window.location.href + "tracks?" + album;
+        controlElem.src = "tracks?" + album;
     }
 }
 
