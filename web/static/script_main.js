@@ -1,41 +1,41 @@
 const controlElem = document.getElementById("control");
-const currentElem = document.getElementById("current");
 const albumsElem = document.getElementById("albums");
 const scrollupElem = document.getElementById("scrollup");
 const scrolldownElem = document.getElementById("scrolldown");
 const playerElem = document.getElementById("player");
-const topElem = document.getElementById("top");
+const topalbumElem = document.getElementById("topalbum");
+const selectedalbumElem = document.getElementById("selectedalbum");
 
 function updatetop() {
-    if (playerElem.src.split("?")[1] != topElem.innerHTML)
-        albumsElem.src = "albums";
+    if (playerElem.src.split("?")[1] != topalbumElem.innerHTML)
+        albumsElem.src = window.location.href + "albums?up";
 }
 
 function getalbums() {
     scrollupElem.hidden = true;
     scrolldownElem.hidden = true;
-    currentElem.innerHTML = "albums";
-    albumsElem.src = "albums";
+    selectedalbumElem.innerHTML = "albums";
+    albumsElem.src = window.location.href + "albums";
 }
 
 function scrollup() {
     scrollupElem.hidden = true;
     scrolldownElem.hidden = true;
-    albumsElem.src = "albums?up";
+    albumsElem.src = window.location.href + "albums?up";
 }
 
 function scrolldown() {
     scrollupElem.hidden = true;
     scrolldownElem.hidden = true;
-    albumsElem.src = "albums?down";
+    albumsElem.src = window.location.href + "albums?down";
 }
 
 function getcd() {
-    currentElem.innerHTML = "cd";
+    selectedalbumElem.innerHTML = "cd";
     controlElem.hidden = true;
-    controlElem.src = "cdcontrol";
+    controlElem.src = window.location.href + "cdcontrol";
 }
 
 function poweroff() {
-    fetch("poweroff");
+    fetch(window.location.href + "poweroff");
 }

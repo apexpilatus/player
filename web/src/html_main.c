@@ -9,7 +9,7 @@ int main(int prm_n, char *prm[]) {
   ssize_t write_size;
   char hdr[getpagesize()];
   char msg[getpagesize() * 1000];
-  char *album = strchr(prm[2], '?');
+  char *album = NULL;
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -20,23 +20,16 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<title>player</title>");
   strcat(msg, "<link rel=stylesheet href=style_main.css>");
   if (album) {
-    strcat(msg, "<link id=icon rel=icon href=");
+    strcat(msg, "<link id=albumicon rel=icon href=");
     strcat(msg, album + 1);
     strcat(msg, ">");
-    strcat(msg, "</head>");
-    strcat(msg, "<body>");
-    strcat(msg,
-           "<audio id=player autoplay onplaying=updatetop() src=stream_album?");
-    strcat(msg, album + 1);
-    strcat(msg, "></audio>");
-  } else {
-    strcat(msg, "<link id=icon rel=icon href=favicon.ico>");
-    strcat(msg, "</head>");
-    strcat(msg, "<body>");
-    strcat(msg, "<audio id=player autoplay onplaying=updatetop()></audio>");
-  }
-  strcat(msg, "<p hidden id=top></p>");
-  strcat(msg, "<p hidden id=current></p>");
+  } else
+    strcat(msg, "<link id=albumicon rel=icon href=favicon.ico>");
+  strcat(msg, "</head>");
+  strcat(msg, "<body>");
+  strcat(msg, "<audio id=player autoplay onplaying=updatetop()></audio>");
+  strcat(msg, "<p hidden id=topalbum></p>");
+  strcat(msg, "<p hidden id=selectedalbum></p>");
   strcat(msg, "<iframe id=albums title=albums></iframe>");
   strcat(msg, "<iframe id=control title=control></iframe>");
   strcat(msg, "<button type=button id=poweroff onclick=poweroff()>"

@@ -22,14 +22,13 @@ void create_html(char *msg) {
   strcat(msg, "<script>showtracks()</script>");
   d = cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL);
   if (d && !cdda_open(d)) {
-    strcat(msg, "<audio controls src=/stream_cd?1 preload=none></audio>");
     strcat(msg, "<div>");
     for (int i = 1; i <= d->tracks; i++)
       if (cdda_track_audiop(d, i)) {
-        strcat(msg, "<b onclick=fetch(\"playcd?");
+        strcat(msg, "<b onclick=playcd(");
         msg_end = strlen(msg);
         sprintf(msg + msg_end, "%d", i);
-        strcat(msg, "\")>");
+        strcat(msg, ")>");
         msg_end = strlen(msg);
         sprintf(msg + msg_end, "%d", i);
         strcat(msg, "</b>");

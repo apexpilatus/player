@@ -1,8 +1,6 @@
 #include <dirent.h>
 #include <string.h>
 #include <unistd.h>
-#include <utime.h>
-
 // clang-format off
 #include <FLAC/metadata.h>
 #include <FLAC/stream_decoder.h>
@@ -252,8 +250,6 @@ int main(int prm_n, char *prm[]) {
     else
       return 1;
   }
-  if (min_range == 0 && utime(".", NULL))
-    execl(resp_err, "resp_err", prm[1], NULL);
   sprintf(rsp, "%s\r\n%s%u\r\nContent-Range: bytes %u-%u/%u\r\n%s\r\n\r\n",
           "HTTP/1.1 200 OK", "Content-Length: ", bytes_left, min_range,
           max_range, (flac_blocks_size * 2 * bytes_per_sample) + header_size,

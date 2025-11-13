@@ -73,8 +73,8 @@ data_picture : Makefile src/data_picture.c
 data_flac_extracted : Makefile src/data_flac_extracted.c
 	$(CC) src/data_flac_extracted.c -o data_flac_extracted $(PLAYER_DEFINES) -lFLAC
 
-data_cd : Makefile src/data_cd.c src/lib_read_cd.c src/lib_read_cd.h
-	$(CC) src/data_cd.c src/lib_read_cd.c -o data_cd $(PLAYER_DEFINES) -lcdda_interface -lcdda_paranoia
+data_cd : Makefile src/data_cd.c
+	$(CC) src/data_cd.c -o data_cd $(PLAYER_DEFINES) -lcdda_interface -lcdda_paranoia
 
 forward_play_request : Makefile src/forward_play_request.c
 	$(CC) src/forward_play_request.c -o forward_play_request $(PLAYER_DEFINES) -lFLAC

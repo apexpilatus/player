@@ -19,18 +19,23 @@ int main(int prm_n, char *prm[]) {
   char rsp[getpagesize()];
   char msg[getpagesize()];
   struct hostent *host;
-  char *path_track = strchr(prm[2], '?') + 1;
-  char *end = strchr(path_track, '&');
+  char *path = strchr(prm[2], '?') + 1;
   struct sockaddr_in6 addr;
   char streamer_N[strlen(streamer_host) + 11];
   int streamer_index = 0;
   addr.sin6_family = AF_INET6;
   addr.sin6_flowinfo = 0;
   addr.sin6_scope_id = strtol(prm[3], NULL, 10);
-  if (!strncmp("/playflac", prm[2], strlen("/playflac")))
-    sprintf(msg, "/stream_album?%s", path_track);
-  else
-    sprintf(msg, "/stream_cd?%s", path_track);
+  if (!strncmp("/playflac", prm[2], strlen("/playflac"))) {
+    char *end = strchr(path, '&');
+    sprintf(msg, "/stream_album?%s", path);
+    if (end) {
+      *end = '\0';
+    }
+    if (utime(path, NULL))
+      execl(resp_err, "resp_err", prm[1], NULL);
+  } else
+    sprintf(msg, "/stream_cd?%s", path);
   strcpy(streamer_N, streamer_host);
   while ((host = gethostbyname2(streamer_N, AF_INET6))) {
     addr.sin6_addr = *(struct in6_addr *)host->h_addr;
@@ -41,10 +46,6 @@ int main(int prm_n, char *prm[]) {
   }
   execl(resp_err, "resp_err", prm[1], NULL);
 ok:
-  if (end)
-    *end = '\0';
-  if (utime(path_track, NULL))
-    execl(resp_err, "resp_err", prm[1], NULL);
   strcpy(rsp, "HTTP/1.1 200 OK\r\n");
   strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
   strcat(rsp, "Cache-control: no-cache\r\n");

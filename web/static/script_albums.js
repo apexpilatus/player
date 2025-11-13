@@ -1,27 +1,26 @@
 const controlElem = parent.document.getElementById("control");
 const scrollupElem = parent.document.getElementById("scrollup");
 const scrolldownElem = parent.document.getElementById("scrolldown");
-const currentElem = parent.document.getElementById("current");
-const topElem = parent.document.getElementById("top");
+const selectedalbumElem = parent.document.getElementById("selectedalbum");
+const topalbumElem = parent.document.getElementById("topalbum");
 const playerElem = parent.document.getElementById("player");
 let empty = false;
 
 function updatetop(album) {
-    topElem.innerHTML = album;
+    topalbumElem.innerHTML = album;
 }
 
 function gettracks(album) {
-    if (currentElem.innerHTML == album) {
-        fetch("playflac?" + album).then(resp => {
+    if (selectedalbumElem.innerHTML == album) {
+        fetch(parent.window.location.href + "playflac?" + album).then(resp => {
             if (resp.status != 200)
-                //playerElem.src = "stream_album?" + album;
-                parent.window.location.assign("/?" + album);
-            else if (topElem.innerHTML != album)
-                window.location.assign("albums?up");
+                playerElem.src = parent.window.location.href + "stream_album?" + album;
+            else if (topalbumElem.innerHTML != album)
+                window.location.assign(parent.window.location.href + "albums?up");
         });
     } else {
         controlElem.hidden = true;
-        controlElem.src = "tracks?" + album;
+        controlElem.src = parent.window.location.href + "tracks?" + album;
     }
 }
 
