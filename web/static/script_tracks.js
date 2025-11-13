@@ -5,7 +5,7 @@ const topalbumElem = parent.document.getElementById("topalbum");
 const playerElem = parent.document.getElementById("player");
 
 function showtracks() {
-    controlElem.className = "cdcontrol";
+    controlElem.className = "tracks";
     controlElem.hidden = false;
 }
 

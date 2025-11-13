@@ -2,6 +2,7 @@ const controlElem = parent.document.getElementById("control");
 const playerElem = parent.document.getElementById("player");
 
 function showtracks() {
+    controlElem.className = "cdcontrol";
     controlElem.hidden = false;
 }
 
