@@ -30,12 +30,21 @@
     border-style: none;
 }
 
-#control {
+.tracks {
     position: fixed;
     top: 0;
     left: 2%;
     width: 70%;
     height: 87%;
+    border-style: none;
+}
+
+.cdcontrol {
+    position: fixed;
+    top: 40%;
+    left: 2%;
+    width: 70%;
+    height: 47%;
     border-style: none;
 }
 
