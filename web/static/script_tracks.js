@@ -20,9 +20,9 @@ function updatetop(dir) {
 
 function playflac(dirtrack) {
     fetch(parent.window.location.href + "playflac?" + dirtrack).then(resp => {
-        if (resp.status != 200) 
-		playerElem.src = parent.window.location.href + "stream_album?" + dirtrack;
-	    else
+        if (resp.status != 200)
+            playerElem.src = parent.window.location.href + "stream_album?" + dirtrack;
+        else
             updatetop(dirtrack.split("&")[0]);
     });
 }
