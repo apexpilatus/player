@@ -55,6 +55,7 @@ void create_html(char *msg) {
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
   strcat(msg, "<title>volume</title>");
   strcat(msg, "<link rel=stylesheet href=style_volume.css>");
+  strcat(msg, "<link rel=icon href=apple-touch-icon.png>");
   strcat(msg, "<script src=script_volume.js></script>");
   strcat(msg, "</head>");
   strcat(msg, "<body>");
