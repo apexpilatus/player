@@ -7,7 +7,7 @@ const topalbumElem = document.getElementById("topalbum");
 const selectedalbumElem = document.getElementById("selectedalbum");
 
 function updatetop() {
-    if (playerElem.src.split("?")[1].split("&")[0] != topalbumElem.innerHTML)
+    if (!playerElem.src.contains("stream_cd") && playerElem.src.split("?")[1].split("&")[0] != topalbumElem.innerHTML)
         albumsElem.src = window.location.href + "albums?up";
 }
 
