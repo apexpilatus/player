@@ -51,17 +51,16 @@ int main(int prm_n, char *prm[]) {
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
   strcat(msg, "<title>player</title>");
   strcat(msg, "<link rel=stylesheet href=style_main.css>");
-  if (album) {
-    strcat(msg, "<link rel=icon href=");
-    strcat(msg, album);
-    strcat(msg, ">");
-  } else
-    strcat(msg, "<link rel=icon href=apple-touch-icon.png>");
+  strcat(msg, "<link rel=icon href=");
+  strcat(msg, album ? album : "apple-touch-icon.png");
+  strcat(msg, ">");
   strcat(msg, "</head>");
   strcat(msg, "<body>");
   strcat(msg, "<audio id=player autoplay onplaying=updatetop()></audio>");
   strcat(msg, "<p hidden id=topalbum></p>");
-  strcat(msg, "<p hidden id=selectedalbum></p>");
+  strcat(msg, "<p hidden id=selectedalbum>");
+  strcat(msg, album ? album : "");
+  strcat(msg, "</p>");
   strcat(msg, "<iframe id=albums title=albums></iframe>");
   strcat(msg, "<iframe id=control title=control></iframe>");
   strcat(msg, "<button type=button id=poweroff onclick=poweroff()>"
