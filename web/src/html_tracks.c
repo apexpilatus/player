@@ -191,7 +191,7 @@ int main(int prm_n, char *prm[]) {
   char *full = NULL;
   album_dir = strchr(prm[2], '?');
   if (album_dir && (full = strchr(album_dir, '&'))) {
-    full = '\0';
+    *full = '\0';
     full++;
   }
   if (!album_dir || chdir(++album_dir))
