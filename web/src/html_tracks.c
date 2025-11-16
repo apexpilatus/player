@@ -119,34 +119,35 @@ void list_tracks(char *msg, char *full) {
       }
     }
   strcat(msg, "</div>");
-    if (full){
-  sort_tracks(list_first);
-  strcat(msg, "<table>");
-  list_tmp = list_first;
-  while (list_tmp) {
-    strcat(msg, "<tr onclick=playflac(\"");
-    strcat(msg, album_dir);
-    if (list_tmp->track) {
-      strcat(msg, "&");
-      strcat(msg, list_tmp->track);
+  if (full) {
+    sort_tracks(list_first);
+    strcat(msg, "<table>");
+    list_tmp = list_first;
+    while (list_tmp) {
+      strcat(msg, "<tr onclick=playflac(\"");
+      strcat(msg, album_dir);
+      if (list_tmp->track) {
+        strcat(msg, "&");
+        strcat(msg, list_tmp->track);
+      }
+      strcat(msg, "\")>");
+      strcat(msg, "<td class=tracknumber>");
+      if (list_tmp->track) {
+        if (strlen(list_tmp->track) == 1)
+          strcat(msg, "&nbsp;&nbsp;");
+        strcat(msg, list_tmp->track);
+      } else
+        strcat(msg, "!!!!!!!! NO TRACK !!!!!!!!!");
+      strcat(msg, "</td>");
+      strcat(msg, "<td class=tracktitle>");
+      if (list_tmp->title)
+        strcat(msg, list_tmp->title);
+      strcat(msg, "</td>");
+      strcat(msg, "</tr>");
+      list_tmp = list_tmp->next;
     }
-    strcat(msg, "\")>");
-    strcat(msg, "<td class=tracknumber>");
-    if (list_tmp->track) {
-      if (strlen(list_tmp->track) == 1)
-        strcat(msg, "&nbsp;&nbsp;");
-      strcat(msg, list_tmp->track);
-    } else
-      strcat(msg, "!!!!!!!! NO TRACK !!!!!!!!!");
-    strcat(msg, "</td>");
-    strcat(msg, "<td class=tracktitle>");
-    if (list_tmp->title)
-      strcat(msg, list_tmp->title);
-    strcat(msg, "</td>");
-    strcat(msg, "</tr>");
-    list_tmp = list_tmp->next;
+    strcat(msg, "</table>");
   }
-  strcat(msg, "</table>");}
 }
 
 void create_html(char *msg, char *full) {
@@ -187,12 +188,12 @@ int main(int prm_n, char *prm[]) {
   char hdr[getpagesize()];
   char *msg;
   char *album_dir;
-  char *full;
+  char *full = NULL;
   album_dir = strchr(prm[2], '?');
-  if ((full = strchr(album_dir, '&'))){
-  full = '\0';
-full++;
-}
+  if (album_dir && (full = strchr(album_dir, '&'))) {
+    full = '\0';
+    full++;
+  }
   if (!album_dir || chdir(++album_dir))
     execl(resp_err, "resp_err", prm[1], NULL);
   sock = strtol(prm[1], NULL, 10);
