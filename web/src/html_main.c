@@ -31,7 +31,7 @@ char *to_play(void) {
     closedir(dp_music);
   } else
     return NULL;
-  if (difftime(time(NULL), mtime) < 3.0)
+  if (difftime(time(NULL), mtime) < 5.0)
     return ret;
   return NULL;
 }
@@ -51,7 +51,7 @@ int main(int prm_n, char *prm[]) {
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
   strcat(msg, "<title>player</title>");
   strcat(msg, "<link rel=stylesheet href=style_main.css>");
-  strcat(msg, "<link rel=icon href=");
+  strcat(msg, "<link id=icon rel=icon href=");
   strcat(msg, album ? album : "apple-touch-icon.png");
   strcat(msg, ">");
   strcat(msg, "</head>");
