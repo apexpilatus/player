@@ -53,6 +53,8 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<link rel=stylesheet href=style_main.css>");
   strcat(msg, "<link id=icon rel=icon href=");
   strcat(msg, album ? album : "apple-touch-icon.png");
+  strcat(msg, " title=");
+  strcat(msg, album ? album : "apple-touch-icon");
   strcat(msg, ">");
   strcat(msg, "</head>");
   strcat(msg, "<body>");
