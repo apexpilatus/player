@@ -14,7 +14,6 @@ function updatetop() {
 function getalbums() {
     scrollupElem.hidden = true;
     scrolldownElem.hidden = true;
-    selectedalbumElem.innerHTML = "albums";
     albumsElem.src = window.location.href + "albums";
 }
 
