@@ -12,8 +12,10 @@ function updatetop(album) {
 }
 
 function gettracks(album) {
-    if (iconElem.title == album && playerElem.src == "")
+    if (iconElem.title == album && playerElem.src == "") {
         playerElem.src = parent.window.location.href + "stream_album?" + album;
+        controlElem.src = parent.window.location.href + "tracks?" + album + "&full";
+    }
     else if (selectedalbumElem.innerHTML == album)
         fetch(parent.window.location.href + "playflac?" + album).then(resp => {
             if (resp.status != 200) {
