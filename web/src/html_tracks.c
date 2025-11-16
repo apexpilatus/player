@@ -60,7 +60,7 @@ void cpy_tags(meta_list *list, FLAC__StreamMetadata *tags) {
     }
 }
 
-void list_tracks(char *msg) {
+void list_tracks(char *msg, char *full) {
   DIR *dp;
   struct dirent *ep;
   meta_list *list_first = NULL;
@@ -119,6 +119,7 @@ void list_tracks(char *msg) {
       }
     }
   strcat(msg, "</div>");
+    if (full){
   sort_tracks(list_first);
   strcat(msg, "<table>");
   list_tmp = list_first;
@@ -145,10 +146,10 @@ void list_tracks(char *msg) {
     strcat(msg, "</tr>");
     list_tmp = list_tmp->next;
   }
-  strcat(msg, "</table>");
+  strcat(msg, "</table>");}
 }
 
-void create_html(char *msg) {
+void create_html(char *msg, char *full) {
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -165,7 +166,7 @@ void create_html(char *msg) {
   strcat(msg, getcwd(NULL, 0));
   strcat(msg, "\")</script>");
   strcat(msg, "<script>showtracks()</script>");
-  list_tracks(msg);
+  list_tracks(msg, full);
   strcat(msg, "</body>");
   strcat(msg, "</html>");
 }
@@ -186,12 +187,17 @@ int main(int prm_n, char *prm[]) {
   char hdr[getpagesize()];
   char *msg;
   char *album_dir;
+  char *full;
   album_dir = strchr(prm[2], '?');
+  if ((full = strchr(album_dir, '&'))){
+  full = '\0';
+full++;
+}
   if (!album_dir || chdir(++album_dir))
     execl(resp_err, "resp_err", prm[1], NULL);
   sock = strtol(prm[1], NULL, 10);
   msg = malloc(getpagesize() * 10000);
-  create_html(msg);
+  create_html(msg, full);
   create_header(hdr, strlen(msg));
   write_size = write(sock, hdr, strlen(hdr));
   write_size += write(sock, msg, strlen(msg));
