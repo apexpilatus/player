@@ -11,6 +11,7 @@ function updatetop(album) {
 }
 
 function gettracks(album) {
+    alert(location.href + " - " + location.origin)
     if (selectedalbumElem.innerHTML == album) {
         fetch(parent.window.location.href + "playflac?" + album).then(resp => {
             if (resp.status != 200)
