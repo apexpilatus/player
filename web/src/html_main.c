@@ -63,9 +63,9 @@ int main(int prm_n, char *prm[]) {
               "onclick=scrollup()>&#9650</button>");
   strcat(msg, "<button hidden type=button id=scrolldown "
               "onclick=scrolldown()>&#9660</button>");
-  strcat(msg, "<script src=script_main.js></script>");
   strcat(msg, "<audio id=player autoplay onended=loaddefault() "
               "onplaying=updatetop()></audio>");
+  strcat(msg, "<script src=script_main.js></script>");
   if (strncmp("/inbrowser", url, strlen("/inbrowser")) ||
       (album && *(album + 1) == '/'))
     strcat(msg, "<script>getalbums()</script>");
