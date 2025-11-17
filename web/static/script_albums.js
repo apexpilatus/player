@@ -4,7 +4,6 @@ const scrolldownElem = parent.document.getElementById("scrolldown");
 const selectedalbumElem = parent.document.getElementById("selectedalbum");
 const topalbumElem = parent.document.getElementById("topalbum");
 const playerElem = parent.document.getElementById("player");
-const iconElem = parent.document.getElementById("icon");
 let empty = false;
 
 function updatetop(album) {
@@ -12,22 +11,14 @@ function updatetop(album) {
 }
 
 function gettracks(album) {
-    if (iconElem.title == album && playerElem.src == "") {
-        playerElem.src = parent.window.location.href + "stream_album?" + album;
-        controlElem.src = parent.window.location.href + "tracks?" + album + "&full";
-    }
-    else if (selectedalbumElem.innerHTML == album)
+    if (selectedalbumElem.innerHTML == album) {
         fetch(parent.window.location.href + "playflac?" + album).then(resp => {
-            if (resp.status != 200) {
-                if (iconElem.title == album)
-                    playerElem.src = parent.window.location.href + "stream_album?" + album;
-                else
-                    parent.window.location.assign(parent.window.location.href)
-            }
+            if (resp.status != 200)
+                playerElem.src = parent.window.location.href + "stream_album?" + album;
             else if (topalbumElem.innerHTML != album)
                 window.location.assign(parent.window.location.href + "albums?up");
         });
-    else {
+    } else {
         controlElem.hidden = true;
         controlElem.src = parent.window.location.href + "tracks?" + album;
     }
