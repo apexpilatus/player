@@ -12,15 +12,15 @@ function updatetop(album) {
 
 function gettracks(album) {
     if (selectedalbumElem.innerHTML == album) {
-        fetch(parent.window.location.href + "playflac?" + album).then(resp => {
+        fetch(location.origin + "/playflac?" + album).then(resp => {
             if (resp.status != 200)
-                playerElem.src = parent.window.location.href + "stream_album?" + album;
+                playerElem.src = location.origin + "/stream_album?" + album;
             else if (topalbumElem.innerHTML != album)
-                window.location.assign(parent.window.location.href + "albums?up");
+                location.assign(location.origin + "/albums?up");
         });
     } else {
         controlElem.hidden = true;
-        controlElem.src = parent.window.location.href + "tracks?" + album;
+        controlElem.src = location.origin + "/tracks?" + album;
     }
 }
 
