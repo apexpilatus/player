@@ -15,14 +15,14 @@ function updateselected(album) {
 
 function updatetop(dir) {
     if (topalbumElem.innerHTML != dir) {
-        albumsElem.src = parent.window.location.href + "albums?up";
+        albumsElem.src = location.origin + "/albums?up";
     }
 }
 
 function playflac(dirtrack) {
-    fetch(parent.window.location.href + "playflac?" + dirtrack).then(resp => {
+    fetch(location.origin + "/playflac?" + dirtrack).then(resp => {
         if (resp.status != 200)
-            playerElem.src = parent.window.location.href + "stream_album?" + dirtrack;
+            playerElem.src = location.origin + "/stream_album?" + dirtrack;
         else
             updatetop(dirtrack.split("&")[0]);
     });

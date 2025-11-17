@@ -7,8 +7,8 @@ function showtracks() {
 }
 
 function playcd(track) {
-    fetch(parent.window.location.href + "playcd?" + track).then(resp => {
+    fetch(location.origin + "/playcd?" + track).then(resp => {
         if (resp.status != 200)
-            playerElem.src = parent.window.location.href + "stream_cd?" + track;
+            playerElem.src = location.origin + "/stream_cd?" + track;
     });
 }

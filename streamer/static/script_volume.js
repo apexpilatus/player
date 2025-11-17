@@ -9,10 +9,10 @@ function setlevel(volumeid) {
         inputElem = document.getElementById(volumeid);
         fetch("setvolume?" + volumeid + "&" + inputElem.value).then(resp => {
             if (resp.status != 200) {
-                window.location.assign(window.location.href);
+                location.assign(location.href);
             }
         }).catch(error => {
-            window.location.assign(window.location.href);
+            location.assign(location.href);
         });
         volumeTimeId = setTimeout(function () { canSetVol = true }, volumeTimeout);
     }

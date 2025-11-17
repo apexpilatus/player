@@ -8,7 +8,7 @@ const selectedalbumElem = document.getElementById("selectedalbum");
 
 function updatetop() {
     if (playerElem.src.indexOf("stream_cd") < 0 && playerElem.src.split("?")[1].split("&")[0] != topalbumElem.innerHTML)
-        albumsElem.src = window.location.href + "albums?up";
+        albumsElem.src = location.origin + "/albums?up";
 }
 
 function getalbums() {
@@ -20,21 +20,21 @@ function getalbums() {
 function scrollup() {
     scrollupElem.hidden = true;
     scrolldownElem.hidden = true;
-    albumsElem.src = window.location.href + "albums?up";
+    albumsElem.src = location.origin + "/albums?up";
 }
 
 function scrolldown() {
     scrollupElem.hidden = true;
     scrolldownElem.hidden = true;
-    albumsElem.src = window.location.href + "albums?down";
+    albumsElem.src = location.origin + "/albums?down";
 }
 
 function getcd() {
     selectedalbumElem.innerHTML = "cd";
     controlElem.hidden = true;
-    controlElem.src = window.location.href + "cdcontrol";
+    controlElem.src = location.origin + "/cdcontrol";
 }
 
 function poweroff() {
-    fetch(window.location.href + "poweroff");
+    fetch(location.origin + "/poweroff");
 }
