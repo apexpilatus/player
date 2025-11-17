@@ -15,10 +15,11 @@ function gettracks(album) {
     if (selectedalbumElem.innerHTML == album) {
         fetch(location.origin + "/playflac?" + album).then(resp => {
             if (resp.status != 200) {
-                if (iconElem.title == "default")
-                    parent.location = location.origin
+                alert(iconElem.origin)
                 playerElem.src = location.origin + "/stream_album?" + album;
             } else {
+                if (iconElem.title != "default")
+                    parent.location = location.origin
                 if (topalbumElem.innerHTML != album)
                     location.assign(location.origin + "/albums?up");
             }
