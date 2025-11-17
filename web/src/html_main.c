@@ -6,6 +6,8 @@
 
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
+  char *url = prm[2];
+  char *end = strchr(url, '&');
   ssize_t write_size;
   char hdr[getpagesize()];
   char msg[getpagesize() * 1000];
@@ -18,7 +20,17 @@ int main(int prm_n, char *prm[]) {
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
   strcat(msg, "<title>player</title>");
   strcat(msg, "<link rel=stylesheet href=style_main.css>");
+  if (strncmp("/inbrowser", url, strlen("/inbrowser"))
   strcat(msg, "<link id=icon rel=icon title=default href=apple-touch-icon.png>");
+else{
+  if(end)
+  *end = '\0';
+  strcat(msg, "<link id=icon rel=icon title=album href=");
+  strcat(msg, url + strlen("/inbrowser"));
+  strcat(msg, ">");
+  if(end)
+  *end = '&';
+}
   strcat(msg, "</head>");
   strcat(msg, "<body>");
   strcat(msg, "<audio id=player autoplay onplaying=updatetop()></audio>");
