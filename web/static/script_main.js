@@ -5,10 +5,16 @@ const scrolldownElem = document.getElementById("scrolldown");
 const playerElem = document.getElementById("player");
 const topalbumElem = document.getElementById("topalbum");
 const selectedalbumElem = document.getElementById("selectedalbum");
+const iconElem = document.getElementById("icon");
 
 function updatetop() {
     if (playerElem.src.indexOf("stream_cd") < 0 && playerElem.src.split("?")[1].split("&")[0] != topalbumElem.innerHTML)
         albumsElem.src = location.origin + "/albums?up";
+}
+
+function loaddefault() {
+    if (iconElem.title != "default")
+        location = location.origin
 }
 
 function getalbums() {
