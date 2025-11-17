@@ -7,6 +7,7 @@
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   char *url = prm[2];
+    char *album = strchr(url, '?');
   ssize_t write_size;
   char hdr[getpagesize()];
   char msg[getpagesize() * 1000];
@@ -23,7 +24,6 @@ int main(int prm_n, char *prm[]) {
     strcat(msg,
            "<link id=icon rel=icon title=default href=apple-touch-icon.png>");
   else {
-    char *album = strchr(url, '?');
     if (album) {
       char *end = strchr(album, '&');
       if (end)
@@ -39,7 +39,13 @@ int main(int prm_n, char *prm[]) {
   }
   strcat(msg, "</head>");
   strcat(msg, "<body>");
+  if (strncmp("/inbrowser", url, strlen("/inbrowser")))
   strcat(msg, "<audio id=player autoplay onplaying=updatetop()></audio>");
+else{
+  strcat(msg, "<audio id=player autoplay onplaying=updatetop() src=stream_album?");
+  strcat(msg, album);
+  strcat(msg, "></audio>");
+}
   strcat(msg, "<p hidden id=topalbum></p>");
   strcat(msg, "<p hidden id=selectedalbum></p>");
   strcat(msg, "<iframe id=albums title=albums></iframe>");
