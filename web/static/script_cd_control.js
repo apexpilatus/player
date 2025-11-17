@@ -8,7 +8,11 @@ function showtracks() {
 
 function playcd(track) {
     fetch(location.origin + "/playcd?" + track).then(resp => {
-        if (resp.status != 200)
+        if (resp.status != 200) {
+            if (iconElem.title != "cd")
+                parent.location = location.origin + "/inbrowser?" + track
             playerElem.src = location.origin + "/stream_cd?" + track;
+        } else if (iconElem.title != "default")
+            parent.location = location.origin
     });
 }
