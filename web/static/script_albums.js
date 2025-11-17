@@ -15,8 +15,8 @@ function gettracks(album) {
     if (selectedalbumElem.innerHTML == album) {
         fetch(location.origin + "/playflac?" + album).then(resp => {
             if (resp.status != 200) {
-                alert(iconElem.href + " - " + location.origin + "/" + album)
-                if (iconElem.href != location.origin + "/" + album)
+                alert(iconElem.href + " - " + location.origin + album)
+                if (iconElem.href != location.origin + album)
                     parent.location = location.origin + "/inbrowser?" + album
                 playerElem.src = location.origin + "/stream_album?" + album;
             } else {
