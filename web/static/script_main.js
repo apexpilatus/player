@@ -14,7 +14,7 @@ function updatetop() {
 function getalbums() {
     scrollupElem.hidden = true;
     scrolldownElem.hidden = true;
-    albumsElem.src = location.origin + "albums";
+    albumsElem.src = location.origin + "/albums";
 }
 
 function scrollup() {
