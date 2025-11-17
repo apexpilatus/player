@@ -1,10 +1,10 @@
-const controlElem = document.getElementById("control");
-const albumsElem = document.getElementById("albums");
-const scrollupElem = document.getElementById("scrollup");
-const scrolldownElem = document.getElementById("scrolldown");
-const playerElem = document.getElementById("player");
-const topalbumElem = document.getElementById("topalbum");
-const selectedalbumElem = document.getElementById("selectedalbum");
+const controlElem = getElementById("control");
+const albumsElem = getElementById("albums");
+const scrollupElem = getElementById("scrollup");
+const scrolldownElem = getElementById("scrolldown");
+const playerElem = getElementById("player");
+const topalbumElem = getElementById("topalbum");
+const selectedalbumElem = getElementById("selectedalbum");
 
 function updatetop() {
     if (playerElem.src.indexOf("stream_cd") < 0 && playerElem.src.split("?")[1].split("&")[0] != topalbumElem.innerHTML)
