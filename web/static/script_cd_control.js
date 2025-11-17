@@ -1,5 +1,6 @@
 const controlElem = parent.document.getElementById("control");
 const playerElem = parent.document.getElementById("player");
+const iconElem = parent.document.getElementById("icon");
 
 function showtracks() {
     controlElem.className = "cdcontrol";
