@@ -17,8 +17,12 @@ function loaddefault() {
         location = location.origin
 }
 
-function play(album){
-playerElem.src = location.origin + "/stream_album?/home/inventory/music/U2"
+function play(album) {
+    if (album[1] == '/')
+        playerElem.src = location.origin + "/stream_album" + album
+    else
+        playerElem.src = location.origin + "/stream_cd" + album
+
 }
 
 function getalbums() {
