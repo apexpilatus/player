@@ -50,7 +50,11 @@ int main(int prm_n, char *prm[]) {
   else {
     if (album) {
       strcat(msg, "<audio id=player autoplay onended=loaddefault() "
-                  "onplaying=updatetop() src=stream_album");
+                  "onplaying=updatetop() src=stream_");
+      if (*(album + 1) != '/')
+        strcat(msg, "cd");
+      else
+        strcat(msg, "album");
       strcat(msg, album);
       strcat(msg, "></audio>");
     } else
@@ -60,7 +64,7 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<p hidden id=topalbum></p>");
   strcat(msg, "<p hidden id=selectedalbum></p>");
   strcat(msg, "<iframe id=albums title=albums></iframe>");
-  strcat(msg, "<iframe id=control title=control></iframe>");
+  strcat(msg, "<iframe id=control title=control class=tracks></iframe>");
   strcat(msg, "<button type=button id=poweroff onclick=poweroff()>"
               "&#9635;</button>");
   if (cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL))
