@@ -63,7 +63,8 @@ int main(int prm_n, char *prm[]) {
     execl(data_picture, "data_picture", prm[1], url, NULL);
   } else if (!strncmp("/tracks", url, strlen("/tracks"))) {
     execl(html_tracks, "html_tracks", prm[1], url, NULL);
-  } else if (!(strcmp("/", url) && strncmp("/inbrowser", url, strlen("/inbrowser"))) {
+  } else if (!(strcmp("/", url) &&
+               strncmp("/inbrowser", url, strlen("/inbrowser")))) {
     execl(html_main, "html_main", prm[1], url, NULL);
   } else if (!strcmp("/cdcontrol", url)) {
     execl(html_cd_control, "html_cd_control", prm[1], NULL);
