@@ -20,7 +20,7 @@ int main(int prm_n, char *prm[]) {
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
   strcat(msg, "<title>player</title>");
   strcat(msg, "<link rel=stylesheet href=style_main.css>");
-  if (strncmp("/inbrowser", url, strlen("/inbrowser")))
+  if (strncmp("/inbrowser", url, strlen("/inbrowser")) || (album && *(album+1) != '/'))
     strcat(msg,
            "<link id=icon rel=icon title=default href=apple-touch-icon.png>");
   else {
@@ -29,7 +29,7 @@ int main(int prm_n, char *prm[]) {
       if (end)
         *end = '\0';
       strcat(msg, "<link id=icon rel=icon title=album href=");
-      strcat(msg, ++album);
+      strcat(msg, album + 1);
       strcat(msg, ">");
       if (end)
         *end = '&';
@@ -43,10 +43,14 @@ int main(int prm_n, char *prm[]) {
     strcat(msg, "<audio id=player autoplay onended=loaddefault() "
                 "onplaying=updatetop()></audio>");
   else {
+    if (album) {
     strcat(msg, "<audio id=player autoplay onended=loaddefault() "
-                "onplaying=updatetop() src=stream_album?");
+                "onplaying=updatetop() src=stream_album");
     strcat(msg, album);
     strcat(msg, "></audio>");
+    } else
+    strcat(msg, "<audio id=player autoplay onended=loaddefault() "
+                "onplaying=updatetop()></audio>");
   }
   strcat(msg, "<p hidden id=topalbum></p>");
   strcat(msg, "<p hidden id=selectedalbum></p>");
