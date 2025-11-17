@@ -64,7 +64,13 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<p hidden id=topalbum></p>");
   strcat(msg, "<p hidden id=selectedalbum></p>");
   strcat(msg, "<iframe id=albums title=albums></iframe>");
-  strcat(msg, "<iframe id=control title=control class=tracks></iframe>");
+  strcat(msg, "<iframe id=control title=control class=");
+  if (strncmp("/inbrowser", url, strlen("/inbrowser")) ||
+      (album && *(album + 1) == '/'))
+    strcat(msg, "tracks");
+  else
+    strcat(msg, "cd src=cdcontrol");
+  strcat(msg, "></iframe>");
   strcat(msg, "<button type=button id=poweroff onclick=poweroff()>"
               "&#9635;</button>");
   if (cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL))
@@ -75,7 +81,11 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<button hidden type=button id=scrolldown "
               "onclick=scrolldown()>&#9660</button>");
   strcat(msg, "<script src=script_main.js></script>");
-  strcat(msg, "<script>getalbums()</script>");
+  if (strncmp("/inbrowser", url, strlen("/inbrowser")) ||
+      (album && *(album + 1) == '/'))
+    strcat(msg, "<script>getalbums()</script>");
+  else
+    strcat(msg, "<script>scrollup()</script>");
   strcat(msg, "</body>");
   strcat(msg, "</html>");
   strcpy(hdr, "HTTP/1.1 200 OK\r\n");
