@@ -12,7 +12,7 @@ function updatetop() {
 }
 
 function getalbums() {
-    alert(location.origin)
+    alert(window.location.origin)
     /*scrollupElem.hidden = true;
     scrolldownElem.hidden = true;
     albumsElem.src = window.location.href + "albums";*/
