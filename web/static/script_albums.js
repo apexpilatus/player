@@ -4,6 +4,7 @@ const scrolldownElem = parent.document.getElementById("scrolldown");
 const selectedalbumElem = parent.document.getElementById("selectedalbum");
 const topalbumElem = parent.document.getElementById("topalbum");
 const playerElem = parent.document.getElementById("player");
+const iconElem = parent.document.getElementById("icon");
 let empty = false;
 
 function updatetop(album) {
@@ -13,10 +14,13 @@ function updatetop(album) {
 function gettracks(album) {
     if (selectedalbumElem.innerHTML == album) {
         fetch(location.origin + "/playflac?" + album).then(resp => {
-            if (resp.status != 200)
+            if (resp.status != 200) {
+                alert(iconElem.title)
                 playerElem.src = location.origin + "/stream_album?" + album;
-            else if (topalbumElem.innerHTML != album)
-                location.assign(location.origin + "/albums?up");
+            } else {
+                if (topalbumElem.innerHTML != album)
+                    location.assign(location.origin + "/albums?up");
+            }
         });
     } else {
         controlElem.hidden = true;
