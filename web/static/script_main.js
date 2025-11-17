@@ -17,6 +17,10 @@ function loaddefault() {
         location = location.origin
 }
 
+function play(album){
+playerElem.src = location.origin + "/stream_album?/home/inventory/music/U2"
+}
+
 function getalbums() {
     scrollupElem.hidden = true;
     scrolldownElem.hidden = true;
