@@ -12,10 +12,9 @@ function updatetop() {
 }
 
 function getalbums() {
-    alert(window.location.origin)
-    /*scrollupElem.hidden = true;
+    scrollupElem.hidden = true;
     scrolldownElem.hidden = true;
-    albumsElem.src = window.location.href + "albums";*/
+    albumsElem.src = location.origin + "albums";
 }
 
 function scrollup() {
