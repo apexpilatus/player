@@ -69,7 +69,7 @@ int main(int prm_n, char *prm[]) {
       (album && *(album + 1) == '/'))
     strcat(msg, "tracks");
   else
-    strcat(msg, "cd src=cdcontrol");
+    strcat(msg, "cdcontrol src=cdcontrol");
   strcat(msg, "></iframe>");
   strcat(msg, "<button type=button id=poweroff onclick=poweroff()>"
               "&#9635;</button>");
