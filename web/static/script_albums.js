@@ -5,10 +5,16 @@ const selectedalbumElem = parent.document.getElementById("selectedalbum");
 const topalbumElem = parent.document.getElementById("topalbum");
 const playerElem = parent.document.getElementById("player");
 const iconElem = parent.document.getElementById("icon");
+const bodyElem = parent.document.getElementsByTagName("body")[0];
 let empty = false;
+let position = 0;
 
 function updatetop(album) {
     topalbumElem.innerHTML = album;
+}
+
+function updateposition(album) {
+    position = bodyElem.scrollTop;
 }
 
 function gettracks(album) {
@@ -31,7 +37,7 @@ function gettracks(album) {
             playerElem.play();
             playerElem.title = "manual"
         }
-        alert(body.scrollTop);
+        alert(position);
         controlElem.hidden = true;
         controlElem.src = location.origin + "/tracks?" + album;
     }

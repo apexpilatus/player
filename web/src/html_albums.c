@@ -97,7 +97,7 @@ void create_html(char *msg, char *scroll) {
   strcat(msg, "</head>");
   strcat(msg, scroll && !strcmp(scroll + 1, "down")
                   ? "<body onload=showscroll(\"down\")>"
-                  : "<body onload=showscroll(\"up\")>");
+                  : "<body onscroll=updateposition() onload=showscroll(\"up\")>");
   list_albums(msg, scroll);
   strcat(msg, "</body>");
   strcat(msg, "</html>");
