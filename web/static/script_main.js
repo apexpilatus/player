@@ -4,6 +4,11 @@ const scrollupElem = document.getElementById("scrollup");
 const scrolldownElem = document.getElementById("scrolldown");
 const selectedalbumElem = document.getElementById("selectedalbum");
 const iconElem = document.getElementById("icon");
+const positionElem = document.getElementById("position");
+
+function updateposition() {
+    positionElem.innerHTML = albumsElem.scrollTop;
+}
 
 function loaddefault() {
     if (iconElem.title != "default")
