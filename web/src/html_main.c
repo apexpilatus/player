@@ -45,13 +45,10 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "</head>");
   strcat(msg, "<body>");
   if (strncmp("/inbrowser", url, strlen("/inbrowser")))
-    strcat(msg,
-           "<audio id=player autoplay muted onended=loaddefault()></audio>");
+    strcat(msg, "<audio id=player onended=loaddefault()></audio>");
   else {
     if (album) {
-      strcat(
-          msg,
-          "<audio id=player autoplay muted onended=loaddefault() src=stream_");
+      strcat(msg, "<audio id=player onended=loaddefault() src=stream_");
       if (*(album + 1) != '/')
         strcat(msg, "cd");
       else
@@ -59,8 +56,7 @@ int main(int prm_n, char *prm[]) {
       strcat(msg, album);
       strcat(msg, "></audio>");
     } else
-      strcat(msg,
-             "<audio id=player autoplay muted onended=loaddefault()></audio>");
+      strcat(msg, "<audio id=player onended=loaddefault()></audio>");
   }
   strcat(msg, "<p hidden id=topalbum></p>");
   strcat(msg, "<p hidden id=selectedalbum></p>");
@@ -87,6 +83,8 @@ int main(int prm_n, char *prm[]) {
     strcat(msg, "<script>getalbums()</script>");
   else
     strcat(msg, "<script>scrollup()</script>");
+  if (album)
+    strcat(msg, "<script>startplaying()</script>");
   strcat(msg, "</body>");
   strcat(msg, "</html>");
   strcpy(hdr, "HTTP/1.1 200 OK\r\n");

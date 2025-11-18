@@ -18,6 +18,7 @@ function gettracks(album) {
                 if (iconElem.href != location.origin + album)
                     parent.location = location.origin + "/inbrowser?" + album
                 playerElem.src = location.origin + "/stream_album?" + album;
+		    playerElem.play();
             } else {
                 if (iconElem.title != "default")
                     parent.location = location.origin
