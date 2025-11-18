@@ -2,7 +2,6 @@ const controlElem = document.getElementById("control");
 const albumsElem = document.getElementById("albums");
 const scrollupElem = document.getElementById("scrollup");
 const scrolldownElem = document.getElementById("scrolldown");
-const topalbumElem = document.getElementById("topalbum");
 const selectedalbumElem = document.getElementById("selectedalbum");
 const iconElem = document.getElementById("icon");
 
