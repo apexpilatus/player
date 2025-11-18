@@ -44,6 +44,23 @@ int main(int prm_n, char *prm[]) {
   }
   strcat(msg, "</head>");
   strcat(msg, "<body>");
+  if (strncmp("/inbrowser", url, strlen("/inbrowser")))
+    strcat(msg, "<audio id=player autoplay onended=loaddefault() "
+                "onplaying=updatetop()></audio>");
+  else {
+    if (album) {
+      strcat(msg, "<audio id=player autoplay onended=loaddefault() "
+                  "onplaying=updatetop() src=stream_");
+      if (*(album + 1) != '/')
+        strcat(msg, "cd");
+      else
+        strcat(msg, "album");
+      strcat(msg, album);
+      strcat(msg, "></audio>");
+    } else
+      strcat(msg, "<audio id=player autoplay onended=loaddefault() "
+                  "onplaying=updatetop()></audio>");
+  }
   strcat(msg, "<p hidden id=topalbum></p>");
   strcat(msg, "<p hidden id=selectedalbum></p>");
   strcat(msg, "<iframe id=albums title=albums></iframe>");
@@ -63,19 +80,12 @@ int main(int prm_n, char *prm[]) {
               "onclick=scrollup()>&#9650</button>");
   strcat(msg, "<button hidden type=button id=scrolldown "
               "onclick=scrolldown()>&#9660</button>");
-  strcat(msg, "<audio id=player autoplay onended=loaddefault() "
-              "onplaying=updatetop()></audio>");
   strcat(msg, "<script src=script_main.js></script>");
   if (strncmp("/inbrowser", url, strlen("/inbrowser")) ||
       (album && *(album + 1) == '/'))
     strcat(msg, "<script>getalbums()</script>");
   else
     strcat(msg, "<script>scrollup()</script>");
-  if (album) {
-    strcat(msg, "<script>play(\"");
-    strcat(msg, album);
-    strcat(msg, "\")</script>");
-  }
   strcat(msg, "</body>");
   strcat(msg, "</html>");
   strcpy(hdr, "HTTP/1.1 200 OK\r\n");
