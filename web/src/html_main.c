@@ -63,7 +63,7 @@ int main(int prm_n, char *prm[]) {
   }
   strcat(msg, "<p hidden id=topalbum></p>");
   strcat(msg, "<p hidden id=selectedalbum></p>");
-  strcat(msg, "<p id=position>0</p>");
+  strcat(msg, "<p id=position onclick=updateposition()>0</p>");
   strcat(msg, "<iframe id=albums title=albums onscroll=updateposition()></iframe>");
   strcat(msg, "<iframe id=control title=control class=");
   if (strncmp("/inbrowser", url, strlen("/inbrowser")) ||
