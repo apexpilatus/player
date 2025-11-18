@@ -33,10 +33,6 @@ function gettracks(album) {
             }
         });
     } else {
-        if (playerElem.title == "autoplay") {
-            playerElem.play();
-            playerElem.title = "manual"
-        }
         alert(position);
         controlElem.hidden = true;
         controlElem.src = location.origin + "/tracks?" + album;
