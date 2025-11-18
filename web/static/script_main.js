@@ -11,8 +11,8 @@ function loaddefault() {
         location = location.origin
 }
 
-function startplaying(){
-	playerElem.play();
+function startplaying() {
+    playerElem.play();
 }
 
 function getalbums() {

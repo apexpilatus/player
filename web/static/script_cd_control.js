@@ -13,7 +13,7 @@ function playcd(track) {
             if (iconElem.title != "cd")
                 parent.location = location.origin + "/inbrowser?" + track
             playerElem.src = location.origin + "/stream_cd?" + track;
-		playerElem.play();
+            playerElem.play();
         } else if (iconElem.title != "default" && iconElem.title != "null")
             parent.location = location.origin + "/inbrowser"
     });

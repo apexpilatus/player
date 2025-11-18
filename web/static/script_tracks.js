@@ -26,7 +26,7 @@ function playflac(dirtrack) {
             if (iconElem.href != location.origin + dirtrack.split("&")[0])
                 parent.location = location.origin + "/inbrowser?" + dirtrack
             playerElem.src = location.origin + "/stream_album?" + dirtrack;
-		playerElem.play();
+            playerElem.play();
         } else {
             if (iconElem.title != "default")
                 parent.location = location.origin
