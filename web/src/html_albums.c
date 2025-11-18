@@ -72,6 +72,7 @@ void list_albums(char *msg, char *scroll) {
       strcat(msg, albums->path);
       strcat(msg, "\")</script>");
     }
+      strcat(msg, "<div>");
     while (albums) {
       strcat(msg, "<img src=\"");
       strcat(msg, albums->path);
@@ -80,6 +81,7 @@ void list_albums(char *msg, char *scroll) {
       strcat(msg, "\") alt=picture>");
       albums = albums->next;
     }
+      strcat(msg, "</div>");
   } else
     strcat(msg, "<script>hidescroll()</script>");
 }

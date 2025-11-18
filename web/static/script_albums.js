@@ -35,7 +35,7 @@ function gettracks(album) {
     } else {
         alert(position);
         controlElem.hidden = true;
-        controlElem.src = location.origin + "/tracks?" + album;
+        //controlElem.src = location.origin + "/tracks?" + album;
     }
 }
 
