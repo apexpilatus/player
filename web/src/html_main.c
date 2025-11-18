@@ -48,7 +48,9 @@ int main(int prm_n, char *prm[]) {
     strcat(msg, "<audio id=player title=manual onended=loaddefault()></audio>");
   else {
     if (album) {
-      strcat(msg, "<audio id=player title=autoplay onended=loaddefault() src=stream_");
+      strcat(
+          msg,
+          "<audio id=player title=autoplay onended=loaddefault() src=stream_");
       if (*(album + 1) != '/')
         strcat(msg, "cd");
       else
@@ -56,7 +58,8 @@ int main(int prm_n, char *prm[]) {
       strcat(msg, album);
       strcat(msg, "></audio>");
     } else
-      strcat(msg, "<audio id=player title=manual onended=loaddefault()></audio>");
+      strcat(msg,
+             "<audio id=player title=manual onended=loaddefault()></audio>");
   }
   strcat(msg, "<p hidden id=topalbum></p>");
   strcat(msg, "<p hidden id=selectedalbum></p>");
