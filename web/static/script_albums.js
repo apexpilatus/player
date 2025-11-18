@@ -5,7 +5,6 @@ const selectedalbumElem = parent.document.getElementById("selectedalbum");
 const topalbumElem = parent.document.getElementById("topalbum");
 const playerElem = parent.document.getElementById("player");
 const iconElem = parent.document.getElementById("icon");
-const bodyElem = parent.document.getElementsByTagName("body")[0];
 let empty = false;
 let position = 0;
 
@@ -14,7 +13,7 @@ function updatetop(album) {
 }
 
 function updateposition(album) {
-    position = bodyElem.scrollTop;
+    position = pageYOffset;
 }
 
 function gettracks(album) {
