@@ -4,15 +4,10 @@ const scrollupElem = document.getElementById("scrollup");
 const scrolldownElem = document.getElementById("scrolldown");
 const selectedalbumElem = document.getElementById("selectedalbum");
 const iconElem = document.getElementById("icon");
-const playerElem = document.getElementById("player");
 
 function loaddefault() {
     if (iconElem.title != "default")
         location = location.origin
-}
-
-function startplaying() {
-    playerElem.play();
 }
 
 function getalbums() {
