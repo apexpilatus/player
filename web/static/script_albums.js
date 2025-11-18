@@ -31,6 +31,7 @@ function gettracks(album) {
             playerElem.play();
             playerElem.title = "manual"
         }
+        alert(body.scrollTop);
         controlElem.hidden = true;
         controlElem.src = location.origin + "/tracks?" + album;
     }
