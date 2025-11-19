@@ -64,22 +64,22 @@ albums_list *get_albums() {
 void list_albums(char *msg, char *scroll) {
   albums_list *albums = get_albums();
   if (albums && difftime(time(NULL), albums->mtime) >= 0) {
-    strcat(msg, "<script>updatetop(\"");
+    /*strcat(msg, "<script>updatetop(\"");
     strcat(msg, albums->path);
-    strcat(msg, "\")</script>");
+    strcat(msg, "\")</script>");*/
     if (!scroll) {
       strcat(msg, "<script>gettracks(\"");
       strcat(msg, albums->path);
       strcat(msg, "\")</script>");
-    }
-    while (albums) {
-      strcat(msg, "<img src=\"");
-      strcat(msg, albums->path);
-      strcat(msg, "\" onclick=gettracks(\"");
-      strcat(msg, albums->path);
-      strcat(msg, "\") alt=picture>");
-      albums = albums->next;
-    }
+    } else
+      while (albums) {
+        strcat(msg, "<img src=\"");
+        strcat(msg, albums->path);
+        strcat(msg, "\" onclick=gettracks(\"");
+        strcat(msg, albums->path);
+        strcat(msg, "\") alt=picture>");
+        albums = albums->next;
+      }
   } else
     strcat(msg, "<script>hidescroll()</script>");
 }
@@ -95,9 +95,17 @@ void create_html(char *msg, char *scroll) {
   strcat(msg, "<link rel=stylesheet href=style_albums.css>");
   strcat(msg, "<script src=script_albums.js></script>");
   strcat(msg, "</head>");
-  strcat(msg, scroll && !strcmp(scroll + 1, "down")
-                  ? "<body onload=showscroll(\"down\")>"
-                  : "<body onscroll=updateposition() onload=showscroll(\"up\")>");
+  if (scroll) {
+    char *end = strchr(scroll, '&');
+    if (end)
+      *end = '\0';
+    strcat(msg, "<body onload=scrollTo(0,");
+    strcat(msg, scroll + 7);
+    strcat(msg, ">");
+    if (end)
+      *end = '&';
+  } else
+    strcat(msg, "<body>");
   list_albums(msg, scroll);
   strcat(msg, "</body>");
   strcat(msg, "</html>");
@@ -119,7 +127,7 @@ int main(int prm_n, char *prm[]) {
   char hdr[getpagesize()];
   char *msg;
   msg = malloc(getpagesize() * 10000);
-  create_html(msg, strchr(prm[2], '?'));
+  create_html(msg, strstr(prm[2], "scroll="));
   create_header(hdr, strlen(msg));
   write_size = write(sock, hdr, strlen(hdr));
   write_size += write(sock, msg, strlen(msg));

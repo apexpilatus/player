@@ -1,4 +1,4 @@
-const controlElem = document.getElementById("control");
+/*const controlElem = document.getElementById("control");
 const albumsElem = document.getElementById("albums");
 const scrollupElem = document.getElementById("scrollup");
 const scrolldownElem = document.getElementById("scrolldown");
@@ -41,4 +41,4 @@ function getcd() {
 
 function poweroff() {
     fetch(location.origin + "/poweroff");
-}
+}*/

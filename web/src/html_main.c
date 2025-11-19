@@ -7,7 +7,6 @@
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   char *url = prm[2];
-  char *album = strchr(url, '?');
   ssize_t write_size;
   char hdr[getpagesize()];
   char msg[getpagesize() * 1000];
@@ -20,29 +19,43 @@ int main(int prm_n, char *prm[]) {
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\">");
   strcat(msg, "<title>player</title>");
   strcat(msg, "<link rel=stylesheet href=style_main.css>");
-  if (strncmp("/inbrowser", url, strlen("/inbrowser")))
-    strcat(msg,
-           "<link id=icon rel=icon href=apple-touch-icon.png>");
-  else {
+  if (!strcmp("/", url)) {
+    strcat(msg, "<link id=icon rel=icon href=apple-touch-icon.png>");
+    strcat(msg, "</head>");
+    strcat(msg, "<body>");
+    strcat(msg, "<iframe id=albums title=albums src=/albums></iframe>");
+  } else {
+    char *album = strstr(url, "album=");
     if (album) {
-      if (*(album + 1) != '/')
+      char *end = strchr(album, '&');
+      if (end)
+        *end = '\0';
+      printf("%s\n", album + 6);
+      if (end)
+        *end = '&';
+    }
+    strcat(msg, "<link id=icon rel=icon href=apple-touch-icon.png>");
+    strcat(msg, "</head>");
+    strcat(msg, "<body>");
+    /*  if (album) {
+        if (*(album + 1) != '/')
+          strcat(msg,
+                 "<link id=icon rel=icon href=apple-touch-icon.png>");
+        else {
+          char *end = strchr(album, '&');
+          if (end)
+            *end = '\0';
+          strcat(msg, "<link id=icon rel=icon href=");
+          strcat(msg, album + 1);
+          strcat(msg, ">");
+          if (end)
+            *end = '&';
+        }
+      } else
         strcat(msg,
-               "<link id=icon rel=icon href=apple-touch-icon.png>");
-      else {
-        char *end = strchr(album, '&');
-        if (end)
-          *end = '\0';
-        strcat(msg, "<link id=icon rel=icon href=");
-        strcat(msg, album + 1);
-        strcat(msg, ">");
-        if (end)
-          *end = '&';
-      }
-    } else
-      strcat(msg,
-             "<link id=icon rel=icon href=apple-touch-icon.png>");
+               "<link id=icon rel=icon href=apple-touch-icon.png>");*/
   }
-  strcat(msg, "</head>");
+  /*strcat(msg, "</head>");
   strcat(msg, "<body>");
   if (strncmp("/inbrowser", url, strlen("/inbrowser")))
     strcat(msg, "<audio id=player title=manual onended=loaddefault()></audio>");
@@ -64,15 +77,12 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<p hidden id=topalbum></p>");
   strcat(msg, "<p hidden id=selectedalbum></p>");
   strcat(msg, "<p id=position onclick=updateposition()>0</p>");
-  strcat(msg, "<iframe id=albums title=albums onscroll=updateposition()></iframe>");
-  strcat(msg, "<iframe id=control title=control class=");
-  if (strncmp("/inbrowser", url, strlen("/inbrowser")) ||
-      (album && *(album + 1) == '/'))
-    strcat(msg, "tracks");
-  else
-    strcat(msg, "cdcontrol src=cdcontrol");
-  strcat(msg, "></iframe>");
-  strcat(msg, "<button type=button id=poweroff onclick=poweroff()>"
+  strcat(msg, "<iframe id=albums title=albums
+  onscroll=updateposition()></iframe>"); strcat(msg, "<iframe id=control
+  title=control class="); if (strncmp("/inbrowser", url, strlen("/inbrowser"))
+  || (album && *(album + 1) == '/')) strcat(msg, "tracks"); else strcat(msg,
+  "cdcontrol src=cdcontrol"); strcat(msg, "></iframe>"); strcat(msg, "<button
+  type=button id=poweroff onclick=poweroff()>"
               "&#9635;</button>");
   if (cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL))
     strcat(msg, "<button type=button id=getcd onclick=getcd()>"
@@ -86,7 +96,7 @@ int main(int prm_n, char *prm[]) {
       (album && *(album + 1) == '/'))
     strcat(msg, "<script>getalbums()</script>");
   else
-    strcat(msg, "<script>scrollup()</script>");
+    strcat(msg, "<script>scrollup()</script>");*/
   strcat(msg, "</body>");
   strcat(msg, "</html>");
   strcpy(hdr, "HTTP/1.1 200 OK\r\n");

@@ -1,4 +1,11 @@
-const controlElem = parent.document.getElementById("control");
+const iconElem = parent.document.getElementById("icon");
+
+function gettracks(album) {
+    if (iconElem.href != album)
+        parent.location.assign(location.origin + "/tracks?" + "album=" + album + "&scroll=" + pageYOffset);
+}
+
+/*const controlElem = parent.document.getElementById("control");
 const scrollupElem = parent.document.getElementById("scrollup");
 const scrolldownElem = parent.document.getElementById("scrolldown");
 const selectedalbumElem = parent.document.getElementById("selectedalbum");
@@ -8,20 +15,16 @@ const iconElem = parent.document.getElementById("icon");
 let empty = false;
 let position = 0;
 
+function updatetop(album) {
+    topalbumElem.innerHTML = album;
+}
+
+
 function updateposition() {
     position = pageYOffset;
 }
 
 function gettracks(album) {
-    if (iconElem.href != album)
-        parent.location.assign(location.origin + "/tracks?" + "album=" + album + "scroll=" + position);
-}
-
-function updatetop(album) {
-    topalbumElem.innerHTML = album;
-}
-
-/*function gettracks(album) {
     if (selectedalbumElem.innerHTML == album) {
         fetch(location.origin + "/playflac?" + album).then(resp => {
             if (resp.status != 200) {
@@ -40,7 +43,7 @@ function updatetop(album) {
         controlElem.hidden = true;
         controlElem.src = location.origin + "/tracks?" + album;
     }
-}*/
+}
 
 function hidescroll() {
     empty = true;
@@ -55,4 +58,4 @@ function showscroll(initscroll) {
         scrollupElem.hidden = false;
         scrolldownElem.hidden = false;
     }
-}
+}*/
