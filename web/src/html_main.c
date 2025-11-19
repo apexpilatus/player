@@ -22,17 +22,17 @@ int main(int prm_n, char *prm[]) {
   strcat(msg, "<link rel=stylesheet href=style_main.css>");
   if (strncmp("/inbrowser", url, strlen("/inbrowser")))
     strcat(msg,
-           "<link id=icon rel=icon title=default href=apple-touch-icon.png>");
+           "<link id=icon rel=icon href=apple-touch-icon.png>");
   else {
     if (album) {
       if (*(album + 1) != '/')
         strcat(msg,
-               "<link id=icon rel=icon title=cd href=apple-touch-icon.png>");
+               "<link id=icon rel=icon href=apple-touch-icon.png>");
       else {
         char *end = strchr(album, '&');
         if (end)
           *end = '\0';
-        strcat(msg, "<link id=icon rel=icon title=album href=");
+        strcat(msg, "<link id=icon rel=icon href=");
         strcat(msg, album + 1);
         strcat(msg, ">");
         if (end)
@@ -40,7 +40,7 @@ int main(int prm_n, char *prm[]) {
       }
     } else
       strcat(msg,
-             "<link id=icon rel=icon title=null href=apple-touch-icon.png>");
+             "<link id=icon rel=icon href=apple-touch-icon.png>");
   }
   strcat(msg, "</head>");
   strcat(msg, "<body>");

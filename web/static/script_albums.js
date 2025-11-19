@@ -17,7 +17,7 @@ function updateposition(album) {
 }
 
 function gettracks(album) {
-    if (selectedalbumElem.innerHTML == album) {
+    /*if (selectedalbumElem.innerHTML == album) {
         fetch(location.origin + "/playflac?" + album).then(resp => {
             if (resp.status != 200) {
                 if (iconElem.href != location.origin + album)
@@ -31,11 +31,11 @@ function gettracks(album) {
                     location.assign(location.origin + "/albums?up");
             }
         });
-    } else {
-        alert(position);
-        controlElem.hidden = true;
-        //controlElem.src = location.origin + "/tracks?" + album;
-    }
+    } else {*/
+        alert(iconElem.href);
+        /*controlElem.hidden = true;
+        controlElem.src = location.origin + "/tracks?" + album;
+    }*/
 }
 
 function hidescroll() {
