@@ -8,16 +8,21 @@ const iconElem = parent.document.getElementById("icon");
 let empty = false;
 let position = 0;
 
-function updatetop(album) {
-    topalbumElem.innerHTML = album;
-}
-
-function updateposition(album) {
+function updateposition() {
     position = pageYOffset;
 }
 
 function gettracks(album) {
-    /*if (selectedalbumElem.innerHTML == album) {
+    if (iconElem.href != album)
+        parent.location.assign(location.origin + "/tracks?" + "album=" + album + "scroll=" + position);
+}
+
+function updatetop(album) {
+    topalbumElem.innerHTML = album;
+}
+
+/*function gettracks(album) {
+    if (selectedalbumElem.innerHTML == album) {
         fetch(location.origin + "/playflac?" + album).then(resp => {
             if (resp.status != 200) {
                 if (iconElem.href != location.origin + album)
@@ -31,12 +36,11 @@ function gettracks(album) {
                     location.assign(location.origin + "/albums?up");
             }
         });
-    } else {*/
-        alert(iconElem.href);
-        /*controlElem.hidden = true;
+    } else {
+        controlElem.hidden = true;
         controlElem.src = location.origin + "/tracks?" + album;
-    }*/
-}
+    }
+}*/
 
 function hidescroll() {
     empty = true;
