@@ -30,11 +30,12 @@ int main(int prm_n, char *prm[]) {
       char *end = strchr(album, '&');
       if (end)
         *end = '\0';
-      printf("%s\n", album + 6);
+    strcat(msg, "<link id=icon rel=");
+    strcat(msg, album + 6);
+    strcat(msg, ">");
       if (end)
         *end = '&';
     }
-    strcat(msg, "<link id=icon rel=icon href=apple-touch-icon.png>");
     strcat(msg, "</head>");
     strcat(msg, "<body>");
     /*  if (album) {
