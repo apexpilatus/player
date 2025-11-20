@@ -194,12 +194,6 @@ int main(int prm_n, char *prm[]) {
       strcat(msg, "</head>");
       strcat(msg, "<body>");
     }
-    strcat(
-        msg,
-        "<button type=button id=poweroff onclick=poweroff()>&#9635;</button>");
-    if (cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL))
-      strcat(msg,
-             "<button type=button id=getcd onclick=getcd()>&#9673</button>");
     if (scroll) {
       char *end = strchr(scroll, '&');
       if (end)
@@ -210,7 +204,6 @@ int main(int prm_n, char *prm[]) {
       if (end)
         *end = '&';
     }
-    strcat(msg, "<script src=script_main.js></script>");
     /*  if (album) {
         if (*(album + 1) != '/')
           strcat(msg,
@@ -271,6 +264,11 @@ int main(int prm_n, char *prm[]) {
     strcat(msg, "<script>getalbums()</script>");
   else
     strcat(msg, "<script>scrollup()</script>");*/
+  if (cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL))
+    strcat(msg, "<button type=button id=getcd onclick=getcd()>&#9673</button>");
+  strcat(msg,
+         "<button type=button id=poweroff onclick=poweroff()>&#9635;</button>");
+  strcat(msg, "<script src=script_main.js></script>");
   strcat(msg, "</body>");
   strcat(msg, "</html>");
   strcpy(hdr, "HTTP/1.1 200 OK\r\n");
