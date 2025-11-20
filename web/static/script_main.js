@@ -21,39 +21,9 @@ function playflac(dirtrack) {
     });
 }
 
-/*const controlElem = document.getElementById("control");
-const albumsElem = document.getElementById("albums");
-const scrollupElem = document.getElementById("scrollup");
-const scrolldownElem = document.getElementById("scrolldown");
-const selectedalbumElem = document.getElementById("selectedalbum");
-const iconElem = document.getElementById("icon");
-const positionElem = document.getElementById("position");
-
-function updateposition() {
-    positionElem.innerHTML = albumsElem.scrollTop;
+function playcd(track) {
+    fetch(location.origin + "/playcd?" + track).then(resp => {
+        if (resp.status != 200)
+            playerElem.src = location.origin + "/stream_cd?" + track;
+    });
 }
-
-function loaddefault() {
-    if (iconElem.title != "default")
-        location = location.origin
-}
-
-function getalbums() {
-    scrollupElem.hidden = true;
-    scrolldownElem.hidden = true;
-    albumsElem.src = location.origin + "/albums";
-}
-
-function scrollup() {
-    scrollupElem.hidden = true;
-    scrolldownElem.hidden = true;
-    albumsElem.src = location.origin + "/albums?up";
-}
-
-function scrolldown() {
-    scrollupElem.hidden = true;
-    scrolldownElem.hidden = true;
-    albumsElem.src = location.origin + "/albums?down";
-}
-
-*/
