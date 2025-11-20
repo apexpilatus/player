@@ -101,7 +101,7 @@ void create_html(char *msg, char *scroll) {
       *end = '\0';
     strcat(msg, "<body onload=scrollTo(0,");
     strcat(msg, scroll + 7);
-    strcat(msg, ">");
+    strcat(msg, ")>");
     if (end)
       *end = '&';
   } else
