@@ -182,7 +182,6 @@ int main(int prm_n, char *prm[]) {
       strcat(msg, ">");
       strcat(msg, "</head>");
       strcat(msg, "<body>");
-      strcat(msg, "<p hidden id=topalbum></p>");
       strcat(msg, "<div class=tracks>");
       if (!chdir(album + 6))
         list_tracks(msg);
@@ -194,6 +193,7 @@ int main(int prm_n, char *prm[]) {
       strcat(msg, "</head>");
       strcat(msg, "<body>");
     }
+    strcat(msg, "<p hidden id=topalbum></p>");
     if (scroll) {
       char *end = strchr(scroll, '&');
       if (end)
