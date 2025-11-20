@@ -1,3 +1,12 @@
+function poweroff() {
+    fetch(location.origin + "/poweroff");
+}
+
+function getcd() {
+    location.assign(location.origin + "/tracks?scroll=0");
+}
+
+
 /*const controlElem = document.getElementById("control");
 const albumsElem = document.getElementById("albums");
 const scrollupElem = document.getElementById("scrollup");
@@ -33,12 +42,4 @@ function scrolldown() {
     albumsElem.src = location.origin + "/albums?down";
 }
 
-function getcd() {
-    selectedalbumElem.innerHTML = "cd";
-    controlElem.hidden = true;
-    controlElem.src = location.origin + "/cdcontrol";
-}
-
-function poweroff() {
-    fetch(location.origin + "/poweroff");
-}*/
+*/
