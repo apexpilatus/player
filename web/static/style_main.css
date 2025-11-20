@@ -136,17 +136,8 @@ button {
     overflow: scroll;
 }
 
-/*
-.tracks {
-    position: fixed;
-    top: 0;
-    left: 2%;
-    width: 70%;
-    height: 87%;
-    border-style: none;
-}
-
 .cdcontrol {
+    display: flex;
     position: fixed;
     top: 40%;
     left: 2%;
@@ -155,18 +146,6 @@ button {
     border-style: none;
 }
 
-
-#getcd {
-    left: 23%;
-    bottom: 5%;
+b {
+    padding: 20px;
 }
-
-#scrollup {
-    left: 41%;
-    bottom: 5%;
-}
-
-#scrolldown {
-    left: 59%;
-    bottom: 5%;
-}*/
