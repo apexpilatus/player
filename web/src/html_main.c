@@ -210,6 +210,7 @@ int main(int prm_n, char *prm[]) {
       }
     }
     strcat(msg, "<p hidden id=topalbum></p>");
+    strcat(msg, "<audio id=player autoplay></audio>");
     if (scroll) {
       char *end = strchr(scroll, '&');
       if (end)

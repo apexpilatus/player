@@ -24,6 +24,10 @@
     #rate {
         color: lightcyan;
     }
+
+    b {
+        color: white;
+    }
 }
 
 @media (prefers-color-scheme: light) {
@@ -51,6 +55,10 @@
 
     #rate {
         color: indigo;
+    }
+
+    b {
+        color: black;
     }
 }
 
