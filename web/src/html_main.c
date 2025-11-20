@@ -26,18 +26,31 @@ int main(int prm_n, char *prm[]) {
     strcat(msg, "<iframe id=albums title=albums src=/albums></iframe>");
   } else {
     char *album = strstr(url, "album=");
+    char *scroll = strstr(url, "scroll=");
     if (album) {
       char *end = strchr(album, '&');
       if (end)
         *end = '\0';
-    strcat(msg, "<link id=icon rel=");
-    strcat(msg, album + 6);
-    strcat(msg, ">");
+      strcat(msg, "<link id=icon rel=icon href=");
+      strcat(msg, album + 6);
+      strcat(msg, ">");
       if (end)
         *end = '&';
+    } else {
+      strcat(msg, "<link id=icon rel=icon href=apple-touch-icon.png>");
     }
     strcat(msg, "</head>");
     strcat(msg, "<body>");
+    if (scroll) {
+      char *end = strchr(album, '&');
+      if (end)
+        *end = '\0';
+      strcat(msg, "<iframe id=albums title=albums src=/albums?");
+      strcat(msg, scroll);
+      strcat(msg, "></iframe>");
+      if (end)
+        *end = '&';
+    }
     /*  if (album) {
         if (*(album + 1) != '/')
           strcat(msg,
