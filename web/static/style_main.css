@@ -144,6 +144,7 @@ button {
     width: 70%;
     height: 47%;
     border-style: none;
+    overflow: scroll;
 }
 
 b {
