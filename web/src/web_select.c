@@ -64,8 +64,6 @@ int main(int prm_n, char *prm[]) {
   } else if (!(strcmp("/", url) &&
                strncmp("/tracks", url, strlen("/tracks")))) {
     execl(html_main, "html_main", prm[1], url, NULL);
-  } else if (!strcmp("/cdcontrol", url)) {
-    execl(html_cd_control, "html_cd_control", prm[1], NULL);
   } else if (!strncmp("/albums", url, strlen("/albums"))) {
     execl(html_albums, "html_albums", prm[1], url, NULL);
   } else if (!strncmp("/stream_cd", url, strlen("/stream_cd"))) {
@@ -82,8 +80,6 @@ int main(int prm_n, char *prm[]) {
     if (system("/root/init.sh finish"))
       execl(resp_err, "resp_err", prm[1], NULL);
     execl(system_poweroff, "system_poweroff", prm[1], NULL);
-  } else if (!strcmp("/cdcontrol", url)) {
-    execl(html_cd_control, "html_cd_control", prm[1], NULL);
   } else {
     execl(data_static, "data_static", prm[1], url, NULL);
   }

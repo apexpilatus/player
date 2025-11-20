@@ -2,7 +2,6 @@
 #include <cdda_interface.h>
 #include <dirent.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -221,66 +220,7 @@ int main(int prm_n, char *prm[]) {
       if (end)
         *end = '&';
     }
-    /*  if (album) {
-        if (*(album + 1) != '/')
-          strcat(msg,
-                 "<link id=icon rel=icon href=apple-touch-icon.png>");
-        else {
-          char *end = strchr(album, '&');
-          if (end)
-            *end = '\0';
-          strcat(msg, "<link id=icon rel=icon href=");
-          strcat(msg, album + 1);
-          strcat(msg, ">");
-          if (end)
-            *end = '&';
-        }
-      } else
-        strcat(msg,
-               "<link id=icon rel=icon href=apple-touch-icon.png>");*/
   }
-  /*strcat(msg, "</head>");
-  strcat(msg, "<body>");
-  if (strncmp("/inbrowser", url, strlen("/inbrowser")))
-    strcat(msg, "<audio id=player title=manual onended=loaddefault()></audio>");
-  else {
-    if (album) {
-      strcat(
-          msg,
-          "<audio id=player title=autoplay onended=loaddefault() src=stream_");
-      if (*(album + 1) != '/')
-        strcat(msg, "cd");
-      else
-        strcat(msg, "album");
-      strcat(msg, album);
-      strcat(msg, "></audio>");
-    } else
-      strcat(msg,
-             "<audio id=player title=manual onended=loaddefault()></audio>");
-  }
-  strcat(msg, "<p hidden id=topalbum></p>");
-  strcat(msg, "<p hidden id=selectedalbum></p>");
-  strcat(msg, "<p id=position onclick=updateposition()>0</p>");
-  strcat(msg, "<iframe id=albums title=albums
-  onscroll=updateposition()></iframe>"); strcat(msg, "<iframe id=control
-  title=control class="); if (strncmp("/inbrowser", url, strlen("/inbrowser"))
-  || (album && *(album + 1) == '/')) strcat(msg, "tracks"); else strcat(msg,
-  "cdcontrol src=cdcontrol"); strcat(msg, "></iframe>"); strcat(msg, "<button
-  type=button id=poweroff onclick=poweroff()>"
-              "&#9635;</button>");
-  if (cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL))
-    strcat(msg, "<button type=button id=getcd onclick=getcd()>"
-                "&#9673</button>");
-  strcat(msg, "<button hidden type=button id=scrollup "
-              "onclick=scrollup()>&#9650</button>");
-  strcat(msg, "<button hidden type=button id=scrolldown "
-              "onclick=scrolldown()>&#9660</button>");
-  strcat(msg, "<script src=script_main.js></script>");
-  if (strncmp("/inbrowser", url, strlen("/inbrowser")) ||
-      (album && *(album + 1) == '/'))
-    strcat(msg, "<script>getalbums()</script>");
-  else
-    strcat(msg, "<script>scrollup()</script>");*/
   if (d)
     strcat(msg, "<button type=button id=getcd onclick=getcd()>&#9673</button>");
   strcat(msg,
