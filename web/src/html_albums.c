@@ -81,8 +81,7 @@ void list_albums(char *msg, char *scroll) {
         albums = albums->next;
       }
     }
-  } else
-    strcat(msg, "<script>trycd()</script>");
+  }
 }
 
 void create_html(char *msg, char *scroll) {
