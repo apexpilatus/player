@@ -64,9 +64,6 @@ albums_list *get_albums() {
 void list_albums(char *msg, char *scroll) {
   albums_list *albums = get_albums();
   if (albums && difftime(time(NULL), albums->mtime) >= 0) {
-    /*strcat(msg, "<script>updatetop(\"");
-    strcat(msg, albums->path);
-    strcat(msg, "\")</script>");*/
     if (!scroll) {
       strcat(msg, "<script>gettracks(\"");
       strcat(msg, albums->path);
