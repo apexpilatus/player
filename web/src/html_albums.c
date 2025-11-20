@@ -68,7 +68,10 @@ void list_albums(char *msg, char *scroll) {
       strcat(msg, "<script>gettracks(\"");
       strcat(msg, albums->path);
       strcat(msg, "\")</script>");
-    } else
+    } else {
+      strcat(msg, "<script>updatetop(\"");
+      strcat(msg, albums->path);
+      strcat(msg, "\")</script>");
       while (albums) {
         strcat(msg, "<img src=\"");
         strcat(msg, albums->path);
@@ -77,8 +80,9 @@ void list_albums(char *msg, char *scroll) {
         strcat(msg, "\") alt=picture>");
         albums = albums->next;
       }
+    }
   } else
-    strcat(msg, "<script>hidescroll()</script>");
+    strcat(msg, "<script>trycd()</script>");
 }
 
 void create_html(char *msg, char *scroll) {
