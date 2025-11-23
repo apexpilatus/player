@@ -74,8 +74,7 @@ int main(int prm_n, char *prm[]) {
     execl(data_flac_extracted, "data_flac_extracted", prm[1], url,
           range ? range : "", NULL);
   } else if (!strncmp("/play", url, strlen("/play"))) {
-    execl(forward_play_request, "forward_play_request", prm[1], url, prm[3],
-          NULL);
+    execl(forward_play_request, "forward_play_request", prm[1], url, NULL);
   } else if (!strcmp("/poweroff", url)) {
     if (system("/root/init.sh finish"))
       execl(resp_err, "resp_err", prm[1], NULL);

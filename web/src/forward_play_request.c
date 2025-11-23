@@ -25,7 +25,7 @@ int main(int prm_n, char *prm[]) {
   int streamer_index = 0;
   addr.sin6_family = AF_INET6;
   addr.sin6_flowinfo = 0;
-  addr.sin6_scope_id = strtol(prm[3], NULL, 10);
+  addr.sin6_scope_id = 2;
   if (!strncmp("/playflac", prm[2], strlen("/playflac"))) {
     char *end = strchr(path, '&');
     sprintf(msg, "/stream_album?%s", path);

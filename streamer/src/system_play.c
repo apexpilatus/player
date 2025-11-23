@@ -259,7 +259,7 @@ int send_request(int sock, char *prm[]) {
   if (!inet_pton(AF_INET6, prm[3], &addr.sin6_addr))
     return 1;
   addr.sin6_flowinfo = 0;
-  addr.sin6_scope_id = strtol(prm[4], NULL, 10);
+  addr.sin6_scope_id = 2;
   addr.sin6_port = htons(store_port);
   if (0 > connect(sock, (struct sockaddr *)&addr, sizeof(addr)))
     return 1;

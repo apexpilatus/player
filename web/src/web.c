@@ -40,7 +40,7 @@ int init_socket(int *sock_listen, struct sockaddr_in6 *addr,
   addr->sin6_family = AF_INET6;
   addr->sin6_addr = in6addr_any;
   addr->sin6_flowinfo = 0;
-  addr->sin6_scope_id = 0;
+  addr->sin6_scope_id = 2;
   addr->sin6_port = htons(listen_port);
   *addr_size = sizeof(struct sockaddr_in6);
   if (bind(*sock_listen, (struct sockaddr *)addr, *addr_size) < 0 ||
@@ -69,13 +69,10 @@ int main(void) {
     pid = fork();
     if (!pid) {
       char sock_txt[15];
-      char scope_txt[15];
       char client_address[INET6_ADDRSTRLEN];
       inet_ntop(AF_INET6, &addr.sin6_addr, client_address, INET6_ADDRSTRLEN);
       sprintf(sock_txt, "%d", sock);
-      sprintf(scope_txt, "%d", addr.sin6_scope_id);
-      execl(web_select, "web_select", sock_txt, client_address, scope_txt,
-            NULL);
+      execl(web_select, "web_select", sock_txt, client_address, NULL);
     }
     if (pid > 0)
       setpriority(PRIO_PROCESS, pid, PRIO_MIN);
