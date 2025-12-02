@@ -195,7 +195,7 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample) {
       data_first = data_first->next;
       free((char *)data_free->buf);
       free((data_list *)data_free);
-      pause_download = !filled_buf_check(data_first, 1000);
+      pause_download = !filled_buf_check(data_first, 10000);
     }
   }
   return 0;
