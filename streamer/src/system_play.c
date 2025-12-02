@@ -24,6 +24,7 @@ const unsigned int alsa_buf_size = 12000;
 const unsigned int data_buf_size = alsa_buf_size / 2;
 unsigned int volatile bytes_left;
 char volatile in_work = 1;
+unsigned int channels = 2;
 
 int data_reader(void *prm) {
   int sock = *((int *)prm);
@@ -85,6 +86,9 @@ card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
     if (snd_pcm_hw_params_test_rate(pcm_p, pcm_hw, rate, 0))
       goto next;
     snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, rate, 0);
+    if (snd_pcm_hw_params_test_channels(pcm_p, pcm_hw, channels))
+      goto next;
+    snd_pcm_hw_params_set_channels(pcm_p, pcm_hw, channels);
     if (snd_pcm_hw_params_test_buffer_size(pcm_p, pcm_hw, alsa_buf_size))
       goto next;
     snd_pcm_hw_params_set_buffer_size(pcm_p, pcm_hw, alsa_buf_size);
@@ -137,7 +141,6 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample) {
   snd_pcm_uframes_t offset;
   snd_pcm_uframes_t frames = 1;
   unsigned char channel;
-  unsigned char channels = 2;
   char *buf_tmp[channels];
   snd_pcm_sframes_t commitres = 0;
   while (in_work && filled_buf_check(data_first, 200))
