@@ -20,8 +20,7 @@ typedef struct data_list_t {
 
 data_list volatile *volatile data_first;
 unsigned char volatile pause_download;
-const unsigned int alsa_buf_size = 12000;
-const unsigned int data_buf_size = alsa_buf_size / 2;
+const unsigned int data_buf_size = 6000;
 unsigned int volatile bytes_left;
 char volatile in_work = 1;
 unsigned int channels = 2;
@@ -32,7 +31,7 @@ int data_reader(void *prm) {
   data_list volatile *data_new = NULL;
   while (bytes_left) {
     if (pause_download) {
-      usleep(5000);
+      usleep(50000);
       continue;
     }
     if (!data_new) {
@@ -58,15 +57,13 @@ int data_reader(void *prm) {
   return 0;
 }
 
-int filled_buf_check(data_list volatile *data, int limit) {
+int buf_len(data_list volatile *data) {
   int count = 0;
   while (data) {
     count++;
-    if (count > limit)
-      return 0;
     data = data->next;
   }
-  return 1;
+  return count;
 }
 
 card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
@@ -89,9 +86,9 @@ card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
     if (snd_pcm_hw_params_test_channels(pcm_p, pcm_hw, channels))
       goto next;
     snd_pcm_hw_params_set_channels(pcm_p, pcm_hw, channels);
-    if (snd_pcm_hw_params_test_buffer_size(pcm_p, pcm_hw, alsa_buf_size))
+    if (snd_pcm_hw_params_test_buffer_size(pcm_p, pcm_hw, data_buf_size))
       goto next;
-    snd_pcm_hw_params_set_buffer_size(pcm_p, pcm_hw, alsa_buf_size);
+    snd_pcm_hw_params_set_buffer_size(pcm_p, pcm_hw, data_buf_size);
     if (bits_per_sample == 16) {
       if (snd_pcm_hw_params_test_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S16))
         goto next;
@@ -141,21 +138,21 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample) {
   snd_pcm_uframes_t offset;
   snd_pcm_uframes_t frames = 1;
   unsigned char channel;
-  char *buf_tmp[channels];
+  char *buf_tmp;
   snd_pcm_sframes_t commitres = 0;
-  while (in_work && filled_buf_check(data_first, 200))
-    usleep(1000);
+  while (in_work && buf_len(data_first) < 200)
+    usleep(50000);
   data_cur = data_first;
   data_free = data_first;
   while (data_cur) {
     cards_tmp = cards_first;
     while (cards_tmp) {
       while ((avail_frames = snd_pcm_avail(cards_tmp->pcm)) <
-             data_cur->data_size)
+             data_cur->data_size / (channels * bytes_per_sample))
         if (avail_frames < 0)
           return 1;
         else
-          usleep(5000);
+          usleep(50000);
       cards_tmp = cards_tmp->next;
     }
     cursor = 0;
@@ -166,10 +163,10 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample) {
             snd_pcm_mmap_begin(cards_tmp->pcm, &areas, &offset, &frames) < 0)
           return 1;
         for (channel = 0; channel < channels; channel++) {
-          buf_tmp[channel] = areas[channel].addr + (areas[channel].first / 8) +
+          buf_tmp = areas[channel].addr + (areas[channel].first / 8) +
                              (offset * areas[channel].step / 8) +
                              cards_tmp->off;
-          memcpy(buf_tmp[channel],
+          memcpy(buf_tmp,
                  (char *)data_cur->buf + (channel * bytes_per_sample) + cursor,
                  bytes_per_sample);
         }
@@ -195,7 +192,7 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample) {
       data_first = data_first->next;
       free((char *)data_free->buf);
       free((data_list *)data_free);
-      pause_download = !filled_buf_check(data_first, 10000);
+      pause_download = buf_len(data_first) > 10000;
     }
   }
   return 0;
