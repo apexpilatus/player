@@ -164,8 +164,7 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample) {
           return 1;
         for (channel = 0; channel < channels; channel++) {
           buf_tmp = areas[channel].addr + (areas[channel].first / 8) +
-                             (offset * areas[channel].step / 8) +
-                             cards_tmp->off;
+                    (offset * areas[channel].step / 8) + cards_tmp->off;
           memcpy(buf_tmp,
                  (char *)data_cur->buf + (channel * bytes_per_sample) + cursor,
                  bytes_per_sample);

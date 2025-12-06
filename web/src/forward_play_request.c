@@ -21,8 +21,6 @@ int main(int prm_n, char *prm[]) {
   struct hostent *host;
   char *path = strchr(prm[2], '?') + 1;
   struct sockaddr_in6 addr;
-  char streamer_N[strlen(streamer_host) + 11];
-  int streamer_index = 0;
   addr.sin6_family = AF_INET6;
   addr.sin6_flowinfo = 0;
   addr.sin6_scope_id = 2;
@@ -36,22 +34,19 @@ int main(int prm_n, char *prm[]) {
       execl(resp_err, "resp_err", prm[1], NULL);
   } else
     sprintf(msg, "/stream_cd?%s", path);
-  strcpy(streamer_N, streamer_host);
-  while ((host = gethostbyname2(streamer_N, AF_INET6))) {
+  if ((host = gethostbyname2(streamer_host, AF_INET6))) {
     addr.sin6_addr = *(struct in6_addr *)host->h_addr;
     addr.sin6_port = htons(streamer_port);
-    if (forward_request(&addr, msg))
-      goto ok;
-    sprintf(streamer_N, "%s%d", streamer_host, ++streamer_index);
+    if (forward_request(&addr, msg)) {
+      strcpy(rsp, "HTTP/1.1 200 OK\r\n");
+      strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
+      strcat(rsp, "Cache-control: no-cache\r\n");
+      strcat(rsp, "X-Content-Type-Options: nosniff\r\n\r\n");
+      if (write(sock, rsp, strlen(rsp)) != strlen(rsp))
+        return 1;
+      else
+        return 0;
+    }
   }
   execl(resp_err, "resp_err", prm[1], NULL);
-ok:
-  strcpy(rsp, "HTTP/1.1 200 OK\r\n");
-  strcat(rsp, "Content-Type: text/html; charset=utf-8\r\n");
-  strcat(rsp, "Cache-control: no-cache\r\n");
-  strcat(rsp, "X-Content-Type-Options: nosniff\r\n\r\n");
-  if (write(sock, rsp, strlen(rsp)) != strlen(rsp))
-    return 1;
-  else
-    return 0;
 }
