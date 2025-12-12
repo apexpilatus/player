@@ -31,7 +31,7 @@ int data_reader(void *prm) {
   data_list volatile *data_new = NULL;
   while (bytes_left) {
     if (pause_download) {
-      usleep(50000);
+      usleep(100000);
       continue;
     }
     if (!data_new) {
@@ -86,9 +86,9 @@ card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
     if (snd_pcm_hw_params_test_channels(pcm_p, pcm_hw, channels))
       goto next;
     snd_pcm_hw_params_set_channels(pcm_p, pcm_hw, channels);
-    if (snd_pcm_hw_params_test_buffer_size(pcm_p, pcm_hw, data_buf_size))
+    if (snd_pcm_hw_params_test_buffer_size(pcm_p, pcm_hw, data_buf_size * 10))
       goto next;
-    snd_pcm_hw_params_set_buffer_size(pcm_p, pcm_hw, data_buf_size);
+    snd_pcm_hw_params_set_buffer_size(pcm_p, pcm_hw, data_buf_size * 10);
     if (bits_per_sample == 16) {
       if (snd_pcm_hw_params_test_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S16))
         goto next;
@@ -141,7 +141,7 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample) {
   char *buf_tmp;
   snd_pcm_sframes_t commitres = 0;
   while (in_work && buf_len(data_first) < 200)
-    usleep(50000);
+    usleep(100000);
   data_cur = data_first;
   data_free = data_first;
   while (data_cur) {
@@ -152,7 +152,7 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample) {
         if (avail_frames < 0)
           return 1;
         else
-          usleep(50000);
+          usleep(100000);
       cards_tmp = cards_tmp->next;
     }
     cursor = 0;
