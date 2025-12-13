@@ -5,7 +5,7 @@ endif
 STREAMER_PATH := /home/streamer
 STREAMER_DEFINES := -D play_pid_path=\"/run/streamer_play_pid\"
 STREAMER_DEFINES += -D mix_pid_path=\"/run/streamer_mixer_pid\"
-STREAMER_DEFINES += -D listen_port=${LISTEN_PORT}
+STREAMER_DEFINES += -D listen_port=$(LISTEN_PORT)
 STREAMER_DEFINES += -D web_select=\"$(STREAMER_PATH)/streamer_select\"
 STREAMER_DEFINES += -D html_volume=\"$(STREAMER_PATH)/html_volume\"
 STREAMER_DEFINES += -D resp_err=\"$(STREAMER_PATH)/resp_err\"
@@ -40,8 +40,13 @@ data_static : Makefile src/data_static.c static/style_volume.css static/script_v
 	$(CC) src/data_static.c style_volume_css.c script_volume_js.c favicon.c favicon152.c favicon180.c -o data_static $(STREAMER_DEFINES)
 	rm *.c
 
-system_play : Makefile src/system_play.c
-	$(CC) src/system_play.c -o system_play $(STREAMER_DEFINES) -lasound
+ifeq ($(DEVICE),pine)
+system_play : Makefile src/system_play_pine.c src/lib_play.c src/lib_play.h
+	$(CC) src/system_play_pine.c src/lib_play.c -o system_play $(STREAMER_DEFINES) -lasound
+else
+system_play : Makefile src/system_play.c src/lib_play.c src/lib_play.h
+	$(CC) src/system_play.c src/lib_play.c -o system_play $(STREAMER_DEFINES) -lasound
+endif
 
 system_volume : Makefile src/system_volume.c
 	$(CC) src/system_volume.c -o system_volume $(STREAMER_DEFINES) -lasound
