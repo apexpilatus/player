@@ -6,7 +6,6 @@
 
 data_list volatile *volatile data_first;
 unsigned char volatile pause_download;
-const unsigned int data_buf_size = 6000;
 char volatile in_work = 1;
 unsigned int channels = 2;
 
@@ -58,7 +57,7 @@ snd_pcm_t *init_alsa(unsigned int rate) {
     else
       snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, 48000, 0);
     snd_pcm_hw_params_set_channels(pcm_p, pcm_hw, channels);
-    snd_pcm_hw_params_set_buffer_size(pcm_p, pcm_hw, data_buf_size * 10);
+    snd_pcm_hw_params_set_buffer_size(pcm_p, pcm_hw, alsa_buf_size);
     snd_pcm_hw_params_test_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S16);
     snd_pcm_hw_params_set_access(pcm_p, pcm_hw,
                                  SND_PCM_ACCESS_MMAP_INTERLEAVED);

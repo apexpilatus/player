@@ -5,6 +5,8 @@ typedef struct data_list_t {
 } data_list;
 
 extern unsigned int volatile bytes_left;
+extern const unsigned int data_buf_size;
+extern const unsigned int alsa_buf_size;
 
 extern int send_request(int sock, char *prm[]);
 extern int buf_len(data_list volatile *data);

@@ -12,7 +12,6 @@ typedef struct card_list_t {
 
 data_list volatile *volatile data_first;
 unsigned char volatile pause_download;
-const unsigned int data_buf_size = 6000;
 char volatile in_work = 1;
 unsigned int channels = 2;
 
@@ -68,9 +67,9 @@ card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
     if (snd_pcm_hw_params_test_channels(pcm_p, pcm_hw, channels))
       goto next;
     snd_pcm_hw_params_set_channels(pcm_p, pcm_hw, channels);
-    if (snd_pcm_hw_params_test_buffer_size(pcm_p, pcm_hw, data_buf_size * 10))
+    if (snd_pcm_hw_params_test_buffer_size(pcm_p, pcm_hw, alsa_buf_size))
       goto next;
-    snd_pcm_hw_params_set_buffer_size(pcm_p, pcm_hw, data_buf_size * 10);
+    snd_pcm_hw_params_set_buffer_size(pcm_p, pcm_hw, alsa_buf_size);
     if (bits_per_sample == 16) {
       if (snd_pcm_hw_params_test_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S16))
         goto next;
