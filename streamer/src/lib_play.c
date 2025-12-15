@@ -5,7 +5,6 @@
 
 #define store_port 80
 
-unsigned int volatile bytes_left;
 const unsigned int data_buf_size = 6000;
 const unsigned int alsa_buf_size = data_buf_size * 20;
 
@@ -37,8 +36,8 @@ int buf_len(data_list volatile *data) {
   return count;
 }
 
-int read_headers(int sock, unsigned int *rate,
-                 unsigned short *bits_per_sample) {
+int read_headers(int sock, unsigned int *rate, unsigned short *bits_per_sample,
+                 unsigned int *bytes_left) {
   int read_size = 0;
   int msg_size = getpagesize() * 100;
   char msg[msg_size];
@@ -77,7 +76,7 @@ int read_headers(int sock, unsigned int *rate,
     }
     if (read_size < 8)
       return 1;
-    bytes_left = *((unsigned int *)(msg + 4));
+    *bytes_left = *((unsigned int *)(msg + 4));
   } else {
     for (read_size = 0; read(sock, msg + read_size, 1) == 1;) {
       read_size++;
@@ -86,7 +85,7 @@ int read_headers(int sock, unsigned int *rate,
     }
     if (read_size < 32)
       return 1;
-    bytes_left = *((unsigned int *)(msg + 28));
+    *bytes_left = *((unsigned int *)(msg + 28));
   }
   return 0;
 }

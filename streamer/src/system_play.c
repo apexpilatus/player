@@ -10,16 +10,21 @@ typedef struct card_list_t {
   uint32_t off;
 } card_list;
 
+typedef struct reader_params_t {
+  int sock;
+  unsigned int bytes_left;
+} read_params;
+
 data_list volatile *volatile data_first;
 unsigned char volatile pause_download;
 char volatile in_work = 1;
 unsigned int channels = 2;
 
 int data_reader(void *prm) {
-  int sock = *((int *)prm);
+  read_params *params = prm;
   ssize_t read_size;
   data_list volatile *data_new = NULL;
-  while (bytes_left) {
+  while (params->bytes_left) {
     if (pause_download) {
       usleep(100000);
       continue;
@@ -34,13 +39,14 @@ int data_reader(void *prm) {
     data_new->next = NULL;
     data_new->buf = malloc(data_buf_size);
     data_new->data_size = 0;
-    while (data_new->data_size != data_buf_size && bytes_left != 0) {
-      read_size = read(sock, (char *)data_new->buf + data_new->data_size,
-                       data_buf_size - data_new->data_size);
+    while (data_new->data_size != data_buf_size && params->bytes_left != 0) {
+      read_size =
+          read(params->sock, (char *)data_new->buf + data_new->data_size,
+               data_buf_size - data_new->data_size);
       if (read_size < 0)
         kill(getpid(), SIGTERM);
       data_new->data_size += read_size;
-      bytes_left -= read_size;
+      params->bytes_left -= read_size;
     }
   }
   in_work = 0;
@@ -106,7 +112,7 @@ card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
   return card_first;
 }
 
-int play(int sock, card_list *cards_first, size_t bytes_per_sample) {
+int play(card_list *cards_first, size_t bytes_per_sample) {
   data_list volatile *data_cur;
   data_list volatile *data_free;
   unsigned char written = 0;
@@ -177,9 +183,9 @@ int play(int sock, card_list *cards_first, size_t bytes_per_sample) {
 }
 
 int main(int prm_n, char *prm[]) {
-  int sock = strtol(prm[1], NULL, 10);
   unsigned int rate;
   unsigned short bits_per_sample;
+  read_params params;
   thrd_t thr;
   card_list *cards;
   ssize_t write_size;
@@ -193,17 +199,18 @@ int main(int prm_n, char *prm[]) {
     unlink(play_pid_path);
     return 1;
   }
-  close(sock);
-  sock = socket(PF_INET6, SOCK_STREAM, 0);
-  if (send_request(sock, prm))
+  params.sock = strtol(prm[1], NULL, 10);
+  close(params.sock);
+  params.sock = socket(PF_INET6, SOCK_STREAM, 0);
+  if (send_request(params.sock, prm))
     return 1;
-  if (read_headers(sock, &rate, &bits_per_sample))
+  if (read_headers(params.sock, &rate, &bits_per_sample, &params.bytes_left))
     return 1;
   cards = init_alsa(rate, bits_per_sample);
   if (!cards)
     return 1;
-  if (thrd_create(&thr, data_reader, &sock) != thrd_success ||
+  if (thrd_create(&thr, data_reader, &params) != thrd_success ||
       thrd_detach(thr) != thrd_success)
     return 1;
-  return play(sock, cards, bits_per_sample / 8);
+  return play(cards, bits_per_sample / 8);
 }
