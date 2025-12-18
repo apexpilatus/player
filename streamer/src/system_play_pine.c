@@ -56,6 +56,7 @@ int data_reader(void *prm) {
       AVPacket *pkt = NULL;
       AVFrame *ff_frame = NULL;
       uint8_t buf[data_buf_size];
+      int bytes_per_sample = 2;
       int data_size = 0;
       while (data_size != data_buf_size && params->bytes_left != 0) {
         read_size =
@@ -76,7 +77,7 @@ int data_reader(void *prm) {
                       swr_get_out_samples(swr, ff_frame->nb_samples),
                       (const uint8_t *const *)ff_frame->data,
                       ff_frame->nb_samples) *
-          params->channels * 2;
+          params->channels * bytes_per_sample;
       av_packet_free(&pkt);
       av_frame_free(&ff_frame);
     } else {
@@ -122,7 +123,7 @@ err:
 }
 
 int play(snd_pcm_t *card, unsigned int channels) {
-  size_t bytes_per_sample = 2;
+  int bytes_per_sample = 2;
   data_list volatile *data_cur;
   data_list volatile *data_free;
   unsigned char written = 0;
