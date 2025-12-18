@@ -42,7 +42,7 @@ data_static : Makefile src/data_static.c static/style_volume.css static/script_v
 
 ifeq ($(DEVICE),pine)
 system_play : Makefile src/system_play_pine.c src/lib_play.c src/lib_play.h
-	$(CC) src/system_play_pine.c src/lib_play.c -o system_play $(STREAMER_DEFINES) -lasound
+	$(CC) src/system_play_pine.c src/lib_play.c -o system_play $(STREAMER_DEFINES) -lasound -lavcodec -lavutil -lswresample
 else
 system_play : Makefile src/system_play.c src/lib_play.c src/lib_play.h
 	$(CC) src/system_play.c src/lib_play.c -o system_play $(STREAMER_DEFINES) -lasound
