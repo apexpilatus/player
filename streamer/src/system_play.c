@@ -24,10 +24,6 @@ int data_reader(void *prm) {
   ssize_t read_size;
   data_list volatile *data_new = NULL;
   while (params->bytes_left) {
-    if (data_first && buf_len(data_first->next) > 10000) {
-      usleep(100000);
-      continue;
-    }
     if (!data_new) {
       data_first = malloc(sizeof(data_list));
       data_new = data_first;
@@ -46,6 +42,10 @@ int data_reader(void *prm) {
         kill(getpid(), SIGTERM);
       data_new->data_size += read_size;
       params->bytes_left -= read_size;
+    }
+    if (buf_len(data_first->next) > 10000) {
+      usleep(100000);
+      continue;
     }
   }
   in_work = 0;
