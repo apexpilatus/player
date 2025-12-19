@@ -7,7 +7,6 @@
 #include <threads.h>
 
 data_list volatile *volatile data_first;
-unsigned char volatile pause_download;
 char volatile in_work = 1;
 
 typedef struct reader_params_t {
@@ -38,7 +37,7 @@ int data_reader(void *prm) {
     swr_init(swr);
   }
   while (params->bytes_left) {
-    if (pause_download) {
+    if (data_first && buf_len(data_first->next) > 10000) {
       usleep(100000);
       continue;
     }
@@ -126,7 +125,6 @@ int play(snd_pcm_t *card, unsigned int channels) {
   int bytes_per_sample = 2;
   data_list volatile *data_cur;
   data_list volatile *data_free;
-  unsigned char written = 0;
   snd_pcm_sframes_t avail_frames;
   int cursor;
   const snd_pcm_channel_area_t *areas;
@@ -135,10 +133,9 @@ int play(snd_pcm_t *card, unsigned int channels) {
   unsigned char channel;
   char *buf_tmp;
   snd_pcm_sframes_t commitres = 0;
-  while (in_work && buf_len(data_first) < 500)
+  while (in_work && buf_len(data_first) < 300)
     usleep(100000);
   data_cur = data_first;
-  data_free = data_first;
   while (data_cur) {
     while ((avail_frames = snd_pcm_avail(card)) <
            data_cur->data_size / (channels * bytes_per_sample))
@@ -166,15 +163,10 @@ int play(snd_pcm_t *card, unsigned int channels) {
     if (snd_pcm_state(card) == SND_PCM_STATE_PREPARED && snd_pcm_start(card))
       return 1;
     data_cur = data_cur->next;
-    if (written < 200)
-      written++;
-    else {
-      data_free = data_first;
-      data_first = data_first->next;
-      free((char *)data_free->buf);
-      free((data_list *)data_free);
-      pause_download = buf_len(data_first) > 10000;
-    }
+    data_free = data_first;
+    data_first = data_first->next;
+    free((char *)data_free->buf);
+    free((data_list *)data_free);
   }
   return 0;
 }

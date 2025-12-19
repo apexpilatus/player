@@ -5,8 +5,8 @@
 
 #define store_port 80
 
-const unsigned int data_buf_size = 6000;
-const unsigned int alsa_buf_size = data_buf_size * 20;
+const unsigned int data_buf_size = 18000;
+const unsigned int alsa_buf_size = data_buf_size * 6;
 
 int send_request(int sock, char *prm[]) {
   char msg[getpagesize()];

@@ -16,7 +16,6 @@ typedef struct reader_params_t {
 } read_params;
 
 data_list volatile *volatile data_first;
-unsigned char volatile pause_download;
 char volatile in_work = 1;
 unsigned int channels = 2;
 
@@ -25,7 +24,7 @@ int data_reader(void *prm) {
   ssize_t read_size;
   data_list volatile *data_new = NULL;
   while (params->bytes_left) {
-    if (pause_download) {
+    if (data_first && buf_len(data_first->next) > 10000) {
       usleep(100000);
       continue;
     }
@@ -115,7 +114,6 @@ card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
 int play(card_list *cards_first, size_t bytes_per_sample) {
   data_list volatile *data_cur;
   data_list volatile *data_free;
-  unsigned char written = 0;
   card_list *cards_tmp;
   snd_pcm_sframes_t avail_frames;
   int cursor;
@@ -128,7 +126,6 @@ int play(card_list *cards_first, size_t bytes_per_sample) {
   while (in_work && buf_len(data_first) < 200)
     usleep(100000);
   data_cur = data_first;
-  data_free = data_first;
   while (data_cur) {
     cards_tmp = cards_first;
     while (cards_tmp) {
@@ -169,15 +166,10 @@ int play(card_list *cards_first, size_t bytes_per_sample) {
       cards_tmp = cards_tmp->next;
     }
     data_cur = data_cur->next;
-    if (written < 200)
-      written++;
-    else {
-      data_free = data_first;
-      data_first = data_first->next;
-      free((char *)data_free->buf);
-      free((data_list *)data_free);
-      pause_download = buf_len(data_first) > 10000;
-    }
+    data_free = data_first;
+    data_first = data_first->next;
+    free((char *)data_free->buf);
+    free((data_list *)data_free);
   }
   return 0;
 }
