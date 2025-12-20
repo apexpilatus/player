@@ -17,13 +17,31 @@ typedef struct reader_params_t {
 
 data_list volatile *volatile data_first;
 char volatile in_work = 1;
+unsigned int volatile to_del;
+unsigned int volatile deleted;
+unsigned char volatile clean_done;
 unsigned int channels = 2;
 
 int data_reader(void *prm) {
   read_params *params = prm;
   ssize_t read_size;
   data_list volatile *data_new = NULL;
+  data_list volatile *data_free = NULL;
+  unsigned int i;
   while (params->bytes_left) {
+    if (data_first && buf_len(data_first->next) > 1000) {
+      if (to_del > 100 && !clean_done) {
+        for (i = to_del, deleted = 0; i; deleted++, i--) {
+          data_free = data_first;
+          data_first = data_first->next;
+          free((char *)data_free->buf);
+          free((data_list *)data_free);
+        }
+        clean_done = 1;
+      } else
+        usleep(65000);
+      continue;
+    }
     if (!data_new) {
       data_first = malloc(sizeof(data_list));
       data_new = data_first;
@@ -42,10 +60,6 @@ int data_reader(void *prm) {
         kill(getpid(), SIGTERM);
       data_new->data_size += read_size;
       params->bytes_left -= read_size;
-    }
-    if (buf_len(data_first->next) > 10000) {
-      usleep(100000);
-      continue;
     }
   }
   in_work = 0;
@@ -113,7 +127,6 @@ card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
 
 int play(card_list *cards_first, size_t bytes_per_sample) {
   data_list volatile *data_cur;
-  data_list volatile *data_free;
   card_list *cards_tmp;
   snd_pcm_sframes_t avail_frames;
   int cursor;
@@ -134,7 +147,7 @@ int play(card_list *cards_first, size_t bytes_per_sample) {
         if (avail_frames < 0)
           return 1;
         else
-          usleep(100000);
+          usleep(65000);
       cards_tmp = cards_tmp->next;
     }
     cursor = 0;
@@ -166,10 +179,11 @@ int play(card_list *cards_first, size_t bytes_per_sample) {
       cards_tmp = cards_tmp->next;
     }
     data_cur = data_cur->next;
-    data_free = data_first;
-    data_first = data_first->next;
-    free((char *)data_free->buf);
-    free((data_list *)data_free);
+    to_del++;
+    if (clean_done) {
+      to_del -= deleted;
+      clean_done = 0;
+    }
   }
   return 0;
 }
