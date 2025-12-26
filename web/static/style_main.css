@@ -134,6 +134,10 @@ button {
     bottom: 5%;
 }
 
+.tracks::-webkit-scrollbar {
+    display: none;
+}
+
 .tracks {
     position: fixed;
     top: 0;
