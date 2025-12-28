@@ -6,7 +6,7 @@ function gettracks(album) {
                 if (iconElem.href != location.origin + album)
                         parent.location.assign(location.origin + "/tracks?" + "album=" + album + "&scroll=" + pageYOffset);
         } else
-                fetch(location.origin + "/playflac?" + album).then(resp => {
+                fetch("http://store/playflac?" + album).then(resp => {
                         if (resp.status == 200)
                                 location.assign(location.origin + "/albums?scroll=0");
                 });
