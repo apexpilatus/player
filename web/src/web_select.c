@@ -75,10 +75,6 @@ int main(int prm_n, char *prm[]) {
           range ? range : "", NULL);
   } else if (!strncmp("/play", url, strlen("/play"))) {
     execl(forward_play_request, "forward_play_request", prm[1], url, NULL);
-  } else if (!strcmp("/poweroff", url)) {
-    if (system("/root/init.sh finish"))
-      execl(resp_err, "resp_err", prm[1], NULL);
-    execl(system_poweroff, "system_poweroff", prm[1], NULL);
   } else {
     execl(data_static, "data_static", prm[1], url, NULL);
   }

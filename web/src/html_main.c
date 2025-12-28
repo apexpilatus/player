@@ -223,8 +223,6 @@ int main(int prm_n, char *prm[]) {
   }
   if (d)
     strcat(msg, "<button type=button id=getcd onclick=getcd()>&#9673</button>");
-  strcat(msg,
-         "<button type=button id=poweroff onclick=poweroff()>&#9635;</button>");
   strcat(msg, "<script src=script_main.js></script>");
   strcat(msg, "</body>");
   strcat(msg, "</html>");

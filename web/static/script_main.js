@@ -3,10 +3,6 @@ const playerElem = document.getElementById("player");
 const topalbumElem = document.getElementById("topalbum");
 const albumsElem = document.getElementById("albums");
 
-function poweroff() {
-    fetch(location.origin + "/poweroff");
-}
-
 function getcd() {
     location.assign(location.origin + "/tracks?scroll=0");
 }

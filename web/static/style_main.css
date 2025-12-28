@@ -113,7 +113,7 @@ tr {
     right: 2%;
     width: 25%;
     max-width: 300px;
-    height: 95%;
+    height: 87%;
     border-style: none;
 }
 
@@ -124,14 +124,9 @@ button {
     border-style: none;
 }
 
-#poweroff {
-    left: 10%;
-    bottom: 5%;
-}
-
 #getcd {
-    right: 35%;
-    bottom: 5%;
+    right: 10%;
+    bottom: 3%;
 }
 
 .tracks::-webkit-scrollbar {
@@ -143,7 +138,7 @@ button {
     top: 0;
     left: 2%;
     width: 70%;
-    height: 87%;
+    height: 97%;
     border-style: none;
     overflow: scroll;
 }
@@ -154,7 +149,7 @@ button {
     top: 40%;
     left: 2%;
     width: 70%;
-    height: 47%;
+    height: 57%;
     border-style: none;
     overflow: scroll;
 }
