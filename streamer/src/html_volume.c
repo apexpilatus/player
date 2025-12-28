@@ -59,7 +59,6 @@ void create_html(char *msg) {
   strcat(msg, "<script src=script_volume.js></script>");
   strcat(msg, "</head>");
   strcat(msg, "<body>");
-  strcat(msg, "<button type=button onclick=poweroff()>&#9769;</button>");
   strcat(msg, "<form>");
   list_controls(msg);
   strcat(msg, "</form>");

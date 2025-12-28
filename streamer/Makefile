@@ -10,7 +10,6 @@ STREAMER_DEFINES += -D web_select=\"$(STREAMER_PATH)/streamer_select\"
 STREAMER_DEFINES += -D html_volume=\"$(STREAMER_PATH)/html_volume\"
 STREAMER_DEFINES += -D resp_err=\"$(STREAMER_PATH)/resp_err\"
 STREAMER_DEFINES += -D data_static=\"$(STREAMER_PATH)/data_static\"
-STREAMER_DEFINES += -D system_poweroff=\"$(STREAMER_PATH)/system_poweroff\"
 STREAMER_DEFINES += -D system_play=\"$(STREAMER_PATH)/system_play\"
 STREAMER_DEFINES += -D system_volume=\"$(STREAMER_PATH)/system_volume\"
 CC := gcc -O2 -Wall
@@ -19,7 +18,7 @@ install: streamer
 	rm -f $(STREAMER_PATH)/*
 	mv $(shell find . -maxdepth 1 -type f -not -name Makefile) $(STREAMER_PATH)
 
-streamer : Makefile src/web.c streamer_select html_volume resp_err data_static system_play system_volume system_poweroff
+streamer : Makefile src/web.c streamer_select html_volume resp_err data_static system_play system_volume
 	$(CC) src/web.c -o streamer $(STREAMER_DEFINES)
 
 streamer_select : Makefile src/streamer_select.c
@@ -50,9 +49,6 @@ endif
 
 system_volume : Makefile src/system_volume.c
 	$(CC) src/system_volume.c -o system_volume $(STREAMER_DEFINES) -lasound
-
-system_poweroff : Makefile src/system_poweroff.c
-	$(CC) src/system_poweroff.c -o system_poweroff
 
 .PHONY: clean
 clean:
