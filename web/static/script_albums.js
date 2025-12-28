@@ -2,11 +2,14 @@ const iconElem = parent.document.getElementById("icon");
 const topalbumElem = parent.document.getElementById("topalbum");
 
 function gettracks(album) {
-	if(iconElem != null && iconElem.href != location.origin + album)
-                parent.location.assign(location.origin + "/tracks?" + "album=" + album + "&scroll=" + pageYOffset);
+        if (iconElem != null) {
+                if (iconElem.href != location.origin + album)
+                        parent.location.assign(location.origin + "/tracks?" + "album=" + album + "&scroll=" + pageYOffset);
+        } else
+                fetch(location.origin + "/playflac?" + album);
 }
 
 function updatetop(album) {
-	if(topalbumElem != null)
-        topalbumElem.innerHTML = album;
+        if (topalbumElem != null)
+                topalbumElem.innerHTML = album;
 }
