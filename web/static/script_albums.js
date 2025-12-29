@@ -17,7 +17,7 @@ function updatetop(album) {
                 topalbumElem.innerHTML = album;
 }
 
-function loaded(scroll){
-	scrollTo(0,scroll);
-	document.body.className="reg";
+function loaded(scroll) {
+        scrollTo(0, scroll);
+        document.body.className = "reg";
 }
