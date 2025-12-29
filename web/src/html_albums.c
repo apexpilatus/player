@@ -99,7 +99,7 @@ void create_html(char *msg, char *scroll) {
     char *end = strchr(scroll, '&');
     if (end)
       *end = '\0';
-    strcat(msg, "<body onload=scrollTo(0,");
+    strcat(msg, "<body class=bw onload=loaded(");
     strcat(msg, scroll + 7);
     strcat(msg, ")>");
     if (end)
