@@ -12,7 +12,7 @@ unsigned int volatile to_del;
 unsigned int volatile deleted;
 unsigned char volatile clean_done;
 
-typedef struct reader_params_t {
+typedef struct {
   int sock;
   unsigned int bytes_left;
   unsigned int rate;

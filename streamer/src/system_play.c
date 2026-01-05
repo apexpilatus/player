@@ -10,7 +10,7 @@ typedef struct card_list_t {
   uint32_t off;
 } card_list;
 
-typedef struct reader_params_t {
+typedef struct {
   int sock;
   unsigned int bytes_left;
 } read_params;
