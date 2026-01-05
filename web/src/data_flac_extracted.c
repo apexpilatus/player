@@ -35,6 +35,9 @@ const unsigned int data_buf_size = 18000;
 data_list volatile *volatile data_first;
 data_list volatile *volatile data_new;
 char volatile in_work = 1;
+unsigned int volatile to_del;
+unsigned int volatile deleted;
+unsigned char volatile clean_done;
 
 void sort_tracks(track_list *track_first) {
   char *file_name_tmp;
@@ -185,6 +188,20 @@ FLAC__StreamDecoderWriteStatus
 write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
                const FLAC__int32 *const buffer[], void *client_data) {
   extract_params *params = client_data;
+  data_list volatile *data_free;
+  unsigned int i;
+  while (buf_len(data_first) > 1000) {
+    if (to_del > 100 && !clean_done) {
+      for (i = to_del, deleted = 0; i; deleted++, i--) {
+        data_free = data_first;
+        data_first = data_first->next;
+        free((char *)data_free->buf);
+        free((data_list *)data_free);
+      }
+      clean_done = 1;
+    } else
+      usleep(65000);
+  }
   if (frame->header.blocksize * 2 * params->bytes_per_sample <=
       params->bytes_skip) {
     params->bytes_skip -=
@@ -356,5 +373,10 @@ int main(int prm_n, char *prm[]) {
       write_size += write_size_pv;
     }
     data_cur = data_cur->next;
+    to_del++;
+    if (clean_done) {
+      to_del -= deleted;
+      clean_done = 0;
+    }
   }
 }

@@ -42,7 +42,7 @@ int data_reader(void *prm) {
     swr_init(swr);
   }
   while (params->bytes_left) {
-    if (data_first && buf_len(data_first) > 1000) {
+    if (buf_len(data_first) > 1000) {
       if (to_del > 100 && !clean_done) {
         for (i = to_del, deleted = 0; i; deleted++, i--) {
           data_free = data_first;
