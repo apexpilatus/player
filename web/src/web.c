@@ -3,6 +3,7 @@
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -49,15 +50,18 @@ int init_socket(int *sock_listen, struct sockaddr_in6 *addr,
   return 0;
 }
 
-int main(void) {
+int main(int prm_n, char *prm[]) {
   pid_t pid;
   int sock_listen;
   int sock;
   struct sockaddr_in6 addr;
+  char cmd[30];
   socklen_t addr_size;
   signal(SIGCHLD, kill_zombie);
   unlink(play_pid_path);
-  if (system("/root/init.sh"))
+  strcpy(cmd, "/root/init.sh ");
+  strcat(cmd, prm[0]);
+  if (system(cmd))
     while (1)
       ;
   if (init_socket(&sock_listen, &addr, &addr_size))
