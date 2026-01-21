@@ -3,8 +3,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#define store_port 80
-
 const unsigned int data_buf_size = 18000;
 const unsigned int alsa_buf_size = data_buf_size * 6;
 
