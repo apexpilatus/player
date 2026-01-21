@@ -4,16 +4,12 @@ ifndef MUSIC_PATH
 $(error "MUSIC_PATH")
 endif
 
-ifndef STREAMER_PORT
-STREAMER_PORT := 80
-endif
-
 PLAYER_DEFINES := -D music_path=\"${MUSIC_PATH}\"
 PLAYER_DEFINES += -D play_pid_path=\"/run/web_play_pid\"
 PLAYER_DEFINES += -D listen_port=80
-PLAYER_DEFINES += -D streamer_port=${STREAMER_PORT}
 PLAYER_DEFINES += -D streamer_host=\"streamer\"
-PLAYER_DEFINES += -D web_select=\"$(WEB_PATH)/web_select\"
+PLAYER_DEFINES += -D select_path=\"$(WEB_PATH)/web_select\"
+PLAYER_DEFINES += -D select_name=\"web_select\"
 PLAYER_DEFINES += -D html_main=\"$(WEB_PATH)/html_main\"
 PLAYER_DEFINES += -D html_albums=\"$(WEB_PATH)/html_albums\"
 PLAYER_DEFINES += -D resp_err=\"$(WEB_PATH)/resp_err\"

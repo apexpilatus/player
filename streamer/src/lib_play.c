@@ -1,5 +1,6 @@
 #include "lib_play.h"
 #include <arpa/inet.h>
+#include <netdb.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -11,9 +12,11 @@ const unsigned int alsa_buf_size = data_buf_size * 6;
 int send_request(int sock, char *prm[]) {
   char msg[getpagesize()];
   struct sockaddr_in6 addr;
+  struct hostent *host;
   addr.sin6_family = AF_INET6;
-  if (!inet_pton(AF_INET6, prm[3], &addr.sin6_addr))
+  if (!(host = gethostbyname2(store_host, AF_INET6)))
     return 1;
+  addr.sin6_addr = *(struct in6_addr *)host->h_addr;
   addr.sin6_flowinfo = 0;
   addr.sin6_scope_id = 2;
   addr.sin6_port = htons(store_port);

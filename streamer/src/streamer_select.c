@@ -59,7 +59,7 @@ int main(int prm_n, char *prm[]) {
   } else if (!strncmp("/stream", req, strlen("/stream"))) {
     if (stop_playing())
       return 1;
-    execl(system_play, "system_play", prm[1], req, prm[2], NULL);
+    execl(system_play, "system_play", prm[1], req, NULL);
   } else {
     execl(data_static, "data_static", prm[1], req, NULL);
   }

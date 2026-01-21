@@ -6,7 +6,9 @@ STREAMER_PATH := /home/streamer
 STREAMER_DEFINES := -D play_pid_path=\"/run/streamer_play_pid\"
 STREAMER_DEFINES += -D mix_pid_path=\"/run/streamer_mixer_pid\"
 STREAMER_DEFINES += -D listen_port=$(LISTEN_PORT)
-STREAMER_DEFINES += -D web_select=\"$(STREAMER_PATH)/streamer_select\"
+STREAMER_DEFINES += -D store_host=\"store\"
+STREAMER_DEFINES += -D select_path=\"$(STREAMER_PATH)/streamer_select\"
+STREAMER_DEFINES += -D select_name=\"streamer_select\"
 STREAMER_DEFINES += -D html_volume=\"$(STREAMER_PATH)/html_volume\"
 STREAMER_DEFINES += -D resp_err=\"$(STREAMER_PATH)/resp_err\"
 STREAMER_DEFINES += -D data_static=\"$(STREAMER_PATH)/data_static\"
