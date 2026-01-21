@@ -73,8 +73,8 @@ int main(int prm_n, char *prm[]) {
   } else if (!strncmp("/stream_album", url, strlen("/stream_album"))) {
     execl(data_flac_extracted, "data_flac_extracted", prm[1], url,
           range ? range : "", NULL);
-  } else if (!strncmp("/play", url, strlen("/play"))) {
-    execl(forward_play_request, "forward_play_request", prm[1], url, NULL);
+  } else if (!strncmp("/touch", url, strlen("/touch"))) {
+    execl(system_touch, "system_touch", prm[1], url, NULL);
   } else {
     execl(data_static, "data_static", prm[1], url, NULL);
   }

@@ -7,10 +7,6 @@ int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   char rsp[getpagesize()];
   char *path = strchr(prm[2], '?') + 1;
-  char *end = strchr(path, '&');
-  if (end) {
-    *end = '\0';
-  }
   if (utime(path, NULL))
     execl(resp_err, "resp_err", prm[1], NULL);
   strcpy(rsp, "HTTP/1.1 200 OK\r\n");
