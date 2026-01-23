@@ -54,7 +54,7 @@ int main(int prm_n, char *prm[]) {
   int sock_listen;
   int sock;
   struct sockaddr_in6 addr;
-  char cmd[30];
+  char cmd[100];
   socklen_t addr_size;
   signal(SIGCHLD, kill_zombie);
   unlink(play_pid_path);

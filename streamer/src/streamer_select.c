@@ -51,8 +51,6 @@ int main(int prm_n, char *prm[]) {
     while (!stat(mix_pid_path, &stat_buf))
       ;
     execl(html_volume, "html_volume", prm[1], NULL);
-  } else if (!strcmp("/store", req)) {
-    execl(html_store, "html_store", prm[1], NULL);
   } else if (!strncmp("/setvolume", req, strlen("/setvolume"))) {
     struct stat stat_buf;
     while (!stat(mix_pid_path, &stat_buf))
