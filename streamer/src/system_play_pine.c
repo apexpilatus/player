@@ -200,6 +200,9 @@ int main(int prm_n, char *prm[]) {
     unlink(play_pid_path);
     return 1;
   }
+  pid = fork();
+  if (!pid)
+    execl(resp_err, "resp_err", prm[1], NULL);
   params.sock = strtol(prm[1], NULL, 10);
   close(params.sock);
   params.sock = socket(PF_INET6, SOCK_STREAM, 0);
