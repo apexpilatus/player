@@ -15,7 +15,7 @@ STREAMER_DEFINES += -D store_host=\"store\"
 STREAMER_DEFINES += -D select_path=\"$(STREAMER_PATH)/streamer_select\"
 STREAMER_DEFINES += -D select_name=\"streamer_select\"
 STREAMER_DEFINES += -D html_volume=\"$(STREAMER_PATH)/html_volume\"
-STREAMER_DEFINES += -D html_albums=\"$(STREAMER_PATH)/html_albums\"
+STREAMER_DEFINES += -D html_proxy=\"$(STREAMER_PATH)/html_proxy\"
 STREAMER_DEFINES += -D resp_err=\"$(STREAMER_PATH)/resp_err\"
 STREAMER_DEFINES += -D data_static=\"$(STREAMER_PATH)/data_static\"
 STREAMER_DEFINES += -D system_play=\"$(STREAMER_PATH)/system_play\"
@@ -26,14 +26,14 @@ install: streamer
 	rm -f $(STREAMER_PATH)/*
 	mv $(shell find . -maxdepth 1 -type f -not -name Makefile) $(STREAMER_PATH)
 
-streamer : Makefile src/web.c streamer_select html_volume html_albums resp_err data_static system_play system_volume
+streamer : Makefile src/web.c streamer_select html_volume html_proxy resp_err data_static system_play system_volume
 	$(CC) src/web.c -o streamer $(STREAMER_DEFINES)
 
 streamer_select : Makefile src/streamer_select.c
 	$(CC) src/streamer_select.c -o streamer_select $(STREAMER_DEFINES)
 
-html_albums : Makefile src/html_albums.c
-	$(CC) src/html_albums.c -o html_albums $(STREAMER_DEFINES)
+html_proxy : Makefile src/html_proxy.c
+	$(CC) src/html_proxy.c -o html_proxy $(STREAMER_DEFINES)
 
 html_volume : Makefile src/html_volume.c
 	$(CC) src/html_volume.c -o html_volume $(STREAMER_DEFINES) -lasound
@@ -41,13 +41,11 @@ html_volume : Makefile src/html_volume.c
 resp_err : src/resp_err.c
 	$(CC) src/resp_err.c -o resp_err
 
-data_static : Makefile src/data_static.c static/style_volume.css static/script_volume.js static/favicon.ico static/favicon152.png static/favicon180.png
+data_static : Makefile src/data_static.c static/style_volume.css static/script_volume.js static/favicon180.png
 	xxd -i static/style_volume.css style_volume_css.c
 	xxd -i static/script_volume.js script_volume_js.c
-	xxd -i static/favicon.ico favicon.c
-	xxd -i static/favicon152.png favicon152.c
 	xxd -i static/favicon180.png favicon180.c
-	$(CC) src/data_static.c style_volume_css.c script_volume_js.c favicon.c favicon152.c favicon180.c -o data_static $(STREAMER_DEFINES)
+	$(CC) src/data_static.c style_volume_css.c script_volume_js.c favicon180.c -o data_static $(STREAMER_DEFINES)
 	rm *.c
 
 ifeq ($(DEVICE),pine)
