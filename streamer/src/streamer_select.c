@@ -60,6 +60,8 @@ int main(int prm_n, char *prm[]) {
     if (stop_playing())
       return 1;
     execl(system_play, "system_play", prm[1], req, NULL);
+  } else if (!strcmp("/albums", req)) {
+    execl(html_albums, "html_albums", prm[1], NULL);
   } else {
     execl(data_static, "data_static", prm[1], req, NULL);
   }
