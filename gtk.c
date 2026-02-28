@@ -11,7 +11,7 @@ static void activate (GtkApplication *app, gpointer user_data)
   gtk_window_set_default_size (GTK_WINDOW (window), 700, 700);
   gtk_window_set_child (GTK_WINDOW (window), webview);
   gtk_window_present(GTK_WINDOW (window));
-  webkit_web_view_load_uri(WEBKIT_WEB_VIEW(webview), "http://store");
+  webkit_web_view_load_uri(WEBKIT_WEB_VIEW(webview), "http://streamer");
 }
 
 int main (int    argc, char **argv)
