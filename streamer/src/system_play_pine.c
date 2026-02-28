@@ -182,6 +182,8 @@ int play(snd_pcm_t *card, unsigned int channels) {
       clean_done = 0;
     }
   }
+  while (snd_pcm_state(card) == SND_PCM_STATE_RUNNING)
+    usleep(100000);
   return 0;
 }
 

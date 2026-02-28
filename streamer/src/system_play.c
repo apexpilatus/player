@@ -185,6 +185,8 @@ int play(card_list *cards_first, size_t bytes_per_sample) {
       clean_done = 0;
     }
   }
+  while (snd_pcm_state(cards_first->pcm) == SND_PCM_STATE_RUNNING)
+    usleep(100000);
   return 0;
 }
 
