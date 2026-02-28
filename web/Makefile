@@ -8,7 +8,7 @@ ifndef LISTEN_PORT
 LISTEN_PORT := 80
 endif
 
-PLAYER_DEFINES := -D music_path=\"${MUSIC_PATH}\"
+PLAYER_DEFINES := -D music_path=\"$(MUSIC_PATH)\"
 PLAYER_DEFINES += -D play_pid_path=\"/run/web_play_pid\"
 PLAYER_DEFINES += -D listen_port=$(LISTEN_PORT)
 PLAYER_DEFINES += -D streamer_host=\"streamer\"
