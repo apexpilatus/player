@@ -3,10 +3,6 @@ const playerElem = document.getElementById("player");
 const topalbumElem = document.getElementById("topalbum");
 const albumsElem = document.getElementById("albums");
 
-function getcd() {
-    location.assign(location.origin + "/tracks?scroll=0");
-}
-
 function playflac(dirtrack) {
     fetch(location.origin + "/touch?" + dirtrack.split("&")[0]).then(resp => {
         if (resp.status == 200) {
@@ -15,8 +11,4 @@ function playflac(dirtrack) {
                 albumsElem.src = location.origin + "/albums?scroll=0";
         }
     });
-}
-
-function playcd(track) {
-    playerElem.src = location.origin + "/stream_cd?" + track;
 }

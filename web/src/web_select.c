@@ -66,10 +66,6 @@ int main(int prm_n, char *prm[]) {
     execl(html_main, "html_main", prm[1], url, NULL);
   } else if (!strncmp("/albums", url, strlen("/albums"))) {
     execl(html_albums, "html_albums", prm[1], url, NULL);
-  } else if (!strncmp("/stream_cd", url, strlen("/stream_cd"))) {
-    if (stop_playing())
-      execl(resp_err, "resp_err", prm[1], NULL);
-    execl(data_cd, "data_cd", prm[1], url, range ? range : "", NULL);
   } else if (!strncmp("/stream_album", url, strlen("/stream_album"))) {
     execl(data_flac_extracted, "data_flac_extracted", prm[1], url,
           range ? range : "", NULL);

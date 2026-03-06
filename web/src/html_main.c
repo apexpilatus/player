@@ -1,5 +1,4 @@
 #include <FLAC/metadata.h>
-#include <cdda_interface.h>
 #include <dirent.h>
 #include <stdio.h>
 #include <string.h>
@@ -155,7 +154,6 @@ int main(int prm_n, char *prm[]) {
   ssize_t write_size;
   char hdr[getpagesize()];
   char msg[getpagesize() * 1000];
-  cdrom_drive *d = cdda_identify("/dev/sr0", CDDA_MESSAGE_FORGETIT, NULL);
   strcpy(msg, "<!DOCTYPE html>");
   strcat(msg, "<html lang=en>");
   strcat(msg, "<head>");
@@ -192,21 +190,6 @@ int main(int prm_n, char *prm[]) {
       strcat(msg, "<link id=icon rel=icon href=apple-touch-icon.png>");
       strcat(msg, "</head>");
       strcat(msg, "<body>");
-      if (d && !cdda_open(d)) {
-        size_t msg_end;
-        strcat(msg, "<div class=cdcontrol>");
-        for (int i = 1; i <= d->tracks; i++)
-          if (cdda_track_audiop(d, i)) {
-            strcat(msg, "<b onclick=playcd(");
-            msg_end = strlen(msg);
-            sprintf(msg + msg_end, "%d", i);
-            strcat(msg, ")>");
-            msg_end = strlen(msg);
-            sprintf(msg + msg_end, "%d", i);
-            strcat(msg, "</b>");
-          }
-        strcat(msg, "</div>");
-      }
     }
     strcat(msg, "<p hidden id=topalbum></p>");
     strcat(msg, "<audio id=player autoplay></audio>");
@@ -221,8 +204,6 @@ int main(int prm_n, char *prm[]) {
         *end = '&';
     }
   }
-  if (d)
-    strcat(msg, "<button type=button id=getcd onclick=getcd()>&#9673</button>");
   strcat(msg, "<script src=script_main.js></script>");
   strcat(msg, "</body>");
   strcat(msg, "</html>");
