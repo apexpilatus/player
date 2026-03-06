@@ -95,7 +95,7 @@ tr {
     right: 2%;
     width: 25%;
     max-width: 300px;
-    height: 87%;
+    height: 100%;
     border-style: none;
 }
 
@@ -108,7 +108,7 @@ tr {
     top: 0;
     left: 2%;
     width: 70%;
-    height: 97%;
+    height: 100%;
     border-style: none;
     overflow: scroll;
 }
