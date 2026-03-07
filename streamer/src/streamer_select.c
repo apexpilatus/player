@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#ifdef play_pid_path
 int stop_playing() {
   pid_t pid = -1;
   ssize_t read_size;
@@ -25,6 +26,7 @@ int stop_playing() {
   }
   return 0;
 }
+#endif
 
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
@@ -46,6 +48,7 @@ int main(int prm_n, char *prm[]) {
   if ((end = strchr(req, ' ')) || (end = strchr(req, '\r')) ||
       (end = strchr(req, '\n')))
     *end = '\0';
+#if defined(play_pid_path) || defined(mix_pid_path)
   if (!strcmp("/getvolume", req)) {
     struct stat stat_buf;
     while (!stat(mix_pid_path, &stat_buf))
@@ -63,4 +66,7 @@ int main(int prm_n, char *prm[]) {
   } else {
     execl(data_static, "data_static", prm[1], req, NULL);
   }
+#else
+  execl(data_proxy, "data_proxy", prm[1], req, NULL);
+#endif
 }

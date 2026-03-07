@@ -45,7 +45,7 @@ int main(int prm_n, char *prm[]) {
   ssize_t write_size;
   char *rsp = malloc(getpagesize());
   if (select_data(prm[2], rsp))
-    execl(html_proxy, "html_proxy", prm[1], prm[2], NULL);
+    execl(data_proxy, "data_proxy", prm[1], prm[2], NULL);
   write_size = write(sock, rsp, strlen(rsp));
   write_size += write(sock, data, data_len);
   if (write_size == strlen(rsp) + data_len)

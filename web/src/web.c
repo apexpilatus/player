@@ -9,10 +9,13 @@
 
 void kill_zombie(int signum) {
   pid_t pid;
+#if defined(play_pid_path) || defined(mix_pid_path)
   pid_t run_pid;
   int fd;
   ssize_t read_size;
+#endif
   while ((pid = waitpid(WAIT_ANY, NULL, WNOHANG)) > 0) {
+#ifdef play_pid_path
     fd = open(play_pid_path, O_RDONLY);
     if (fd >= 0) {
       read_size = read(fd, &run_pid, sizeof(pid_t));
@@ -22,6 +25,7 @@ void kill_zombie(int signum) {
         continue;
       }
     }
+#endif
 #ifdef mix_pid_path
     fd = open(mix_pid_path, O_RDONLY);
     if (fd >= 0) {
@@ -57,7 +61,12 @@ int main(int prm_n, char *prm[]) {
   char cmd[100];
   socklen_t addr_size;
   signal(SIGCHLD, kill_zombie);
+#ifdef play_pid_path
   unlink(play_pid_path);
+#endif
+#ifdef mix_pid_path
+  unlink(mix_pid_path);
+#endif
   strcpy(cmd, "/root/init.sh ");
   strcat(cmd, prm[0]);
   if (system(cmd))

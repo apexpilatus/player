@@ -4,27 +4,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-int stop_playing() {
-  pid_t pid = -1;
-  ssize_t read_size;
-  int fd = open(play_pid_path, O_RDONLY);
-  if (fd >= 0) {
-    read_size = read(fd, &pid, sizeof(pid_t));
-    if (read_size != sizeof(pid_t))
-      return 1;
-    kill(pid, SIGTERM);
-    close(fd);
-  }
-  while ((fd = open(play_pid_path, O_RDONLY)) >= 0) {
-    pid_t pid_check;
-    read_size = read(fd, &pid_check, sizeof(pid_t));
-    close(fd);
-    if (pid_check != pid || read_size != sizeof(pid_t))
-      return 1;
-  }
-  return 0;
-}
-
 int main(int prm_n, char *prm[]) {
   int sock = strtol(prm[1], NULL, 10);
   ssize_t read_size = 0;
