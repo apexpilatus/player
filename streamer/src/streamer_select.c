@@ -33,7 +33,9 @@ int main(int prm_n, char *prm[]) {
   ssize_t read_size = 0;
   ssize_t msg_size = getpagesize() * 100;
   char *req = malloc(msg_size);
+#if defined(play_pid_path) || defined(mix_pid_path)
   char *end;
+#endif
   while (read_size < msg_size && read(sock, req + read_size, 1) == 1) {
     read_size++;
     if (read_size < msg_size)
@@ -43,12 +45,12 @@ int main(int prm_n, char *prm[]) {
   }
   if (read_size == msg_size || read_size < 5)
     return 1;
+#if defined(play_pid_path) || defined(mix_pid_path)
   if (!strncmp(req, "GET ", 4))
     req += 4;
   if ((end = strchr(req, ' ')) || (end = strchr(req, '\r')) ||
       (end = strchr(req, '\n')))
     *end = '\0';
-#if defined(play_pid_path) || defined(mix_pid_path)
   if (!strcmp("/getvolume", req)) {
     struct stat stat_buf;
     while (!stat(mix_pid_path, &stat_buf))

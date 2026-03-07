@@ -144,10 +144,14 @@ ssize_t get_hdr(char *hdr, char *req, read_params *params) {
   addr.sin6_port = htons(store_port);
   if (0 > connect(params->sock, (struct sockaddr *)&addr, sizeof(addr)))
     return -1;
+#if defined(play_pid_path) || defined(mix_pid_path)
   strcpy(hdr, "GET ");
   strcat(hdr, req);
   strcat(hdr, " \r\n\r\n");
   if (write(params->sock, hdr, strlen(hdr)) != strlen(hdr))
+#else
+  if (write(params->sock, req, strlen(req)) != strlen(req))
+#endif
     return -1;
   return read_aswer(params->sock, hdr, params);
 }
