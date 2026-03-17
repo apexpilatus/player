@@ -362,8 +362,8 @@ int main(int prm_n, char *prm[]) {
     return 1;
   data_cur = data_first;
   while (data_cur) {
-    while (in_work && buf_len(data_cur) < 400)
-      usleep(100000);
+    while (in_work && buf_len(data_cur) < 3)
+      usleep(50000);
     for (write_size = 0; write_size < data_cur->data_size;) {
       ssize_t write_size_pv = write_size;
       write_size = write(sock, (char *)(data_cur->buf + write_size),

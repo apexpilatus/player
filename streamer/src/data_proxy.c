@@ -80,12 +80,12 @@ int data_reader(void *prm) {
 int write_data(int sock) {
   data_list volatile *data_cur;
   ssize_t write_size;
-  while (in_work && buf_len(data_first) < 100)
-    usleep(100000);
+  while (in_work && buf_len(data_first) == 0)
+    ;
   data_cur = data_first;
   while (data_cur) {
-    while (in_work && buf_len(data_cur) < 100)
-      usleep(100000);
+    while (in_work && buf_len(data_cur) < 3)
+      usleep(50000);
     write_size = write(sock, (char *)data_cur->buf, data_cur->data_size);
     if (write_size != data_cur->data_size)
       return 1;
