@@ -50,7 +50,7 @@ int data_reader(void *prm) {
         }
         clean_done = 1;
       } else
-        usleep(65000);
+        usleep(sleep_timeout);
       continue;
     }
     if (!data_new) {
@@ -85,7 +85,7 @@ int write_data(int sock) {
   data_cur = data_first;
   while (data_cur) {
     while (in_work && buf_len(data_cur) < 3)
-      usleep(50000);
+      usleep(sleep_timeout);
     write_size = write(sock, (char *)data_cur->buf, data_cur->data_size);
     if (write_size != data_cur->data_size)
       return 1;

@@ -21,6 +21,7 @@ PLAYER_DEFINES += -D data_static=\"$(WEB_PATH)/data_static\"
 PLAYER_DEFINES += -D data_picture=\"$(WEB_PATH)/data_picture\"
 PLAYER_DEFINES += -D data_flac_extracted=\"$(WEB_PATH)/data_flac_extracted\"
 PLAYER_DEFINES += -D system_touch=\"$(WEB_PATH)/system_touch\"
+PLAYER_DEFINES += -D sleep_timeout=50000
 CC := gcc -O2 -Wall
 
 install: web

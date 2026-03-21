@@ -52,7 +52,7 @@ int data_reader(void *prm) {
         }
         clean_done = 1;
       } else
-        usleep(65000);
+        usleep(sleep_timeout);
       continue;
     }
     if (!data_new) {
@@ -147,7 +147,7 @@ int play(snd_pcm_t *card, unsigned int channels) {
   char *buf_tmp;
   snd_pcm_sframes_t commitres = 0;
   while (in_work && buf_len(data_first) < 300)
-    usleep(100000);
+    usleep(sleep_timeout);
   data_cur = data_first;
   while (data_cur) {
     while ((avail_frames = snd_pcm_avail(card)) <
@@ -155,7 +155,7 @@ int play(snd_pcm_t *card, unsigned int channels) {
       if (avail_frames < 0)
         return 1;
       else
-        usleep(65000);
+        usleep(sleep_timeout);
     cursor = 0;
     while (cursor < data_cur->data_size) {
       if (snd_pcm_avail_update(card) < 0 ||
@@ -183,7 +183,7 @@ int play(snd_pcm_t *card, unsigned int channels) {
     }
   }
   while (snd_pcm_state(card) == SND_PCM_STATE_RUNNING)
-    usleep(100000);
+    usleep(sleep_timeout);
   return 0;
 }
 

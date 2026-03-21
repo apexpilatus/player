@@ -14,6 +14,7 @@ STREAMER_DEFINES += -D store_host=\"store\"
 STREAMER_DEFINES += -D data_proxy=\"$(STREAMER_PATH)/data_proxy\"
 STREAMER_DEFINES += -D select_path=\"$(STREAMER_PATH)/streamer_select\"
 STREAMER_DEFINES += -D select_name=\"streamer_select\"
+STREAMER_DEFINES += -D sleep_timeout=50000
 ifneq ($(DEVICE),proxy)
 STREAMER_DEFINES += -D play_pid_path=\"/run/streamer_play_pid\"
 STREAMER_DEFINES += -D mix_pid_path=\"/run/streamer_mixer_pid\"

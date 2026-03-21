@@ -200,7 +200,7 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
       }
       clean_done = 1;
     } else
-      usleep(65000);
+      usleep(sleep_timeout);
   }
   if (frame->header.blocksize * 2 * params->bytes_per_sample <=
       params->bytes_skip) {
@@ -363,7 +363,7 @@ int main(int prm_n, char *prm[]) {
   data_cur = data_first;
   while (data_cur) {
     while (in_work && buf_len(data_cur) < 3)
-      usleep(50000);
+      usleep(sleep_timeout);
     for (write_size = 0; write_size < data_cur->data_size;) {
       ssize_t write_size_pv = write_size;
       write_size = write(sock, (char *)(data_cur->buf + write_size),
