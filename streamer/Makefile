@@ -1,3 +1,5 @@
+ifdef STREAMER_PATH
+
 ifndef LISTEN_PORT
 LISTEN_PORT := 80
 endif
@@ -6,7 +8,6 @@ ifndef STORE_PORT
 STORE_PORT := 80
 endif
 
-STREAMER_PATH := /home/streamer
 STREAMER_DEFINES := -D resp_err=\"$(STREAMER_PATH)/resp_err\"
 STREAMER_DEFINES += -D listen_port=$(LISTEN_PORT)
 STREAMER_DEFINES += -D store_port=$(STORE_PORT)
@@ -65,6 +66,12 @@ system_play : Makefile src/system_play.c src/data_list.c src/data_list.h
 
 system_volume : Makefile src/system_volume.c
 	$(CC) src/system_volume.c -o system_volume $(STREAMER_DEFINES) -lasound
+
+endif
+
+.PHONY: err
+err:
+	$(error "STREAMER_PATH")
 
 .PHONY: clean
 clean:
