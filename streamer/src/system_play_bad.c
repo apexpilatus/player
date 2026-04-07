@@ -1,6 +1,5 @@
 #include "lib_play.h"
 #include <alsa/conf.h>
-#include <arpa/inet.h>
 #include <libavcodec/avcodec.h>
 #include <libswresample/swresample.h>
 #include <signal.h>
@@ -36,8 +35,7 @@ int data_reader(void *prm) {
     decode_context->sample_rate = params->rate;
     avcodec_open2(decode_context, decode_codec, NULL);
     swr_alloc_set_opts2(&swr, &decode_context->ch_layout, AV_SAMPLE_FMT_S16,
-                        params->rate == 44100 ? params->rate : 48000,
-                        &decode_context->ch_layout, AV_SAMPLE_FMT_S32,
+                        48000, &decode_context->ch_layout, AV_SAMPLE_FMT_S32,
                         params->rate, 0, NULL);
     swr_init(swr);
   }
@@ -109,7 +107,8 @@ int data_reader(void *prm) {
   return 0;
 }
 
-snd_pcm_t *init_alsa(unsigned int rate, unsigned int channels) {
+snd_pcm_t *init_alsa(unsigned short bits_per_sample, unsigned int rate,
+                     unsigned int channels) {
   int card_number = -1;
   char card_name[10];
   if (!snd_card_next(&card_number) && card_number != -1) {
@@ -120,7 +119,8 @@ snd_pcm_t *init_alsa(unsigned int rate, unsigned int channels) {
     if (snd_pcm_open(&pcm_p, card_name, SND_PCM_STREAM_PLAYBACK, 0))
       goto err;
     snd_pcm_hw_params_any(pcm_p, pcm_hw);
-    snd_pcm_hw_params_set_rate(pcm_p, pcm_hw, rate == 44100 ? rate : 48000, 0);
+    snd_pcm_hw_params_set_rate(pcm_p, pcm_hw,
+                               bits_per_sample == 24 ? 48000 : rate, 0);
     snd_pcm_hw_params_set_channels(pcm_p, pcm_hw, channels);
     snd_pcm_hw_params_set_buffer_size(pcm_p, pcm_hw, alsa_buf_size);
     snd_pcm_hw_params_test_format(pcm_p, pcm_hw, SND_PCM_FORMAT_S16);
@@ -191,30 +191,12 @@ int main(int prm_n, char *prm[]) {
   read_params params;
   thrd_t thr;
   snd_pcm_t *card;
-  ssize_t write_size;
-  pid_t pid = getpid();
-  int fd = open(play_pid_path, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
-  if (fd < 0)
-    return 1;
-  write_size = write(fd, &pid, sizeof(pid_t));
-  close(fd);
-  if (write_size != sizeof(pid_t)) {
-    unlink(play_pid_path);
-    return 1;
-  }
-  pid = fork();
-  if (!pid)
-    execl(resp_err, "resp_err", prm[1], NULL);
   params.sock = strtol(prm[1], NULL, 10);
-  close(params.sock);
-  params.sock = socket(PF_INET6, SOCK_STREAM, 0);
-  if (send_request(params.sock, prm))
-    return 1;
-  if (read_headers(params.sock, &params.rate, &params.bits_per_sample,
-                   &params.bytes_left))
-    return 1;
   params.channels = 2;
-  card = init_alsa(params.rate, params.channels);
+  params.bits_per_sample = strtol(prm[2], NULL, 10);
+  params.rate = strtol(prm[3], NULL, 10);
+  params.bytes_left = strtol(prm[4], NULL, 10);
+  card = init_alsa(params.bits_per_sample, params.rate, params.channels);
   if (!card)
     return 1;
   if (thrd_create(&thr, data_reader, &params) != thrd_success ||
