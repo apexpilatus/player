@@ -1,4 +1,4 @@
-#include "lib_play.h"
+#include "data_list.h"
 #include <alsa/conf.h>
 #include <netdb.h>
 #include <signal.h>
@@ -71,6 +71,7 @@ card_list *init_alsa(unsigned int rate, unsigned short bits_per_sample) {
   char card_name[10];
   card_list *card_first = NULL;
   card_list *card_tmp = NULL;
+  unsigned int alsa_buf_size = data_buf_size * 6;
   while (!snd_card_next(&card_number) && card_number != -1) {
     uint32_t off = 0;
     snd_pcm_t *pcm_p = NULL;

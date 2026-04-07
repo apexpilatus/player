@@ -1,4 +1,4 @@
-#include "lib_play.h"
+#include "data_list.h"
 #include <alsa/conf.h>
 #include <libavcodec/avcodec.h>
 #include <libswresample/swresample.h>
@@ -111,6 +111,7 @@ snd_pcm_t *init_alsa(unsigned short bits_per_sample, unsigned int rate,
                      unsigned int channels) {
   int card_number = -1;
   char card_name[10];
+  unsigned int alsa_buf_size = data_buf_size * 6;
   if (!snd_card_next(&card_number) && card_number != -1) {
     snd_pcm_t *pcm_p = NULL;
     snd_pcm_hw_params_t *pcm_hw = NULL;

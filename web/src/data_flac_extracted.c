@@ -1,3 +1,4 @@
+#include "data_list.h"
 #include <dirent.h>
 #include <signal.h>
 #include <string.h>
@@ -14,12 +15,6 @@ typedef struct track_list_t {
   char *track_number;
 } track_list;
 
-typedef struct data_list_t {
-  struct data_list_t volatile *next;
-  char volatile *buf;
-  int data_size;
-} data_list;
-
 typedef struct {
   unsigned int bytes_left;
   unsigned int bytes_per_sample;
@@ -31,7 +26,6 @@ typedef struct {
   track_list *tracks;
 } thread_params;
 
-const unsigned int data_buf_size = 18000;
 data_list volatile *volatile data_first;
 data_list volatile *volatile data_new;
 char volatile in_work = 1;
@@ -166,15 +160,6 @@ data_list volatile *volatile new_data(data_list volatile *volatile data_pv) {
   data_new->data_size = 0;
   data_pv->next = data_new;
   return data_new;
-}
-
-int buf_len(data_list volatile *data) {
-  int count = 0;
-  while (data) {
-    count++;
-    data = data->next;
-  }
-  return count;
 }
 
 void metadata_callback(const FLAC__StreamDecoder *decoder,

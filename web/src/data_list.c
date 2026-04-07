@@ -1,7 +1,6 @@
-#include "lib_play.h"
+#include "data_list.h"
 
 const unsigned int data_buf_size = 6000;
-const unsigned int alsa_buf_size = data_buf_size * 6;
 
 int buf_len(data_list volatile *data) {
   int count = 0;

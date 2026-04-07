@@ -57,8 +57,8 @@ data_static : Makefile src/data_static.c static/style_main.css static/script_mai
 data_picture : Makefile src/data_picture.c
 	$(CC) src/data_picture.c -o data_picture $(PLAYER_DEFINES) -lFLAC
 
-data_flac_extracted : Makefile src/data_flac_extracted.c
-	$(CC) src/data_flac_extracted.c -o data_flac_extracted $(PLAYER_DEFINES) -lFLAC
+data_flac_extracted : Makefile src/data_flac_extracted.c src/data_list.c src/data_list.h
+	$(CC) src/data_flac_extracted.c src/data_list.c -o data_flac_extracted $(PLAYER_DEFINES) -lFLAC
 
 system_touch : Makefile src/system_touch.c
 	$(CC) src/system_touch.c -o system_touch $(PLAYER_DEFINES) -lFLAC

@@ -57,11 +57,11 @@ data_static : Makefile src/data_static.c static/style_volume.css static/script_v
 	$(CC) src/data_static.c style_volume_css.c script_volume_js.c favicon180.c -o data_static $(STREAMER_DEFINES)
 	rm *.c
 
-system_play_bad : Makefile src/system_play_bad.c src/lib_play.c src/lib_play.h
-	$(CC) src/system_play_bad.c src/lib_play.c -o system_play_bad $(STREAMER_DEFINES) -lasound -lavcodec -lavutil -lswresample
+system_play_bad : Makefile src/system_play_bad.c src/data_list.c src/data_list.h
+	$(CC) src/system_play_bad.c src/data_list.c -o system_play_bad $(STREAMER_DEFINES) -lasound -lavcodec -lavutil -lswresample
 
-system_play : Makefile src/system_play.c src/lib_play.c src/lib_play.h
-	$(CC) src/system_play.c src/lib_play.c -o system_play $(STREAMER_DEFINES) -lasound
+system_play : Makefile src/system_play.c src/data_list.c src/data_list.h
+	$(CC) src/system_play.c src/data_list.c -o system_play $(STREAMER_DEFINES) -lasound
 
 system_volume : Makefile src/system_volume.c
 	$(CC) src/system_volume.c -o system_volume $(STREAMER_DEFINES) -lasound
