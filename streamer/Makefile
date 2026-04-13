@@ -12,6 +12,7 @@ STREAMER_DEFINES := -D resp_err=\"$(STREAMER_PATH)/resp_err\"
 STREAMER_DEFINES += -D listen_port=$(LISTEN_PORT)
 STREAMER_DEFINES += -D store_port=$(STORE_PORT)
 STREAMER_DEFINES += -D store_host=\"store\"
+STREAMER_DEFINES += -D init_script=\"$(STREAMER_PATH)/init.sh\"
 STREAMER_DEFINES += -D data_proxy=\"$(STREAMER_PATH)/data_proxy\"
 STREAMER_DEFINES += -D select_path=\"$(STREAMER_PATH)/streamer_select\"
 STREAMER_DEFINES += -D select_name=\"streamer_select\"

@@ -58,7 +58,6 @@ int main(int prm_n, char *prm[]) {
   int sock_listen;
   int sock;
   struct sockaddr_in6 addr;
-  char cmd[100];
   socklen_t addr_size;
   signal(SIGCHLD, kill_zombie);
 #ifdef play_pid_path
@@ -67,9 +66,7 @@ int main(int prm_n, char *prm[]) {
 #ifdef mix_pid_path
   unlink(mix_pid_path);
 #endif
-  strcpy(cmd, "/root/init.sh ");
-  strcat(cmd, prm[0]);
-  if (system(cmd))
+  if (system(init_script))
     while (1)
       ;
   if (init_socket(&sock_listen, &addr, &addr_size))
