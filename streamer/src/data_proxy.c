@@ -140,7 +140,7 @@ ssize_t get_hdr(char *hdr, char *req, read_params *params) {
   addr.sin6_family = AF_INET6;
   addr.sin6_addr = *(struct in6_addr *)host->h_addr;
   addr.sin6_flowinfo = 0;
-  addr.sin6_scope_id = 2;
+  addr.sin6_scope_id = 0;
   addr.sin6_port = htons(store_port);
   if (0 > connect(params->sock, (struct sockaddr *)&addr, sizeof(addr)))
     return -1;

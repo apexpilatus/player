@@ -44,7 +44,7 @@ int init_socket(int *sock_listen, struct sockaddr_in6 *addr,
   addr->sin6_family = AF_INET6;
   addr->sin6_addr = in6addr_any;
   addr->sin6_flowinfo = 0;
-  addr->sin6_scope_id = 2;
+  addr->sin6_scope_id = 0;
   addr->sin6_port = htons(listen_port);
   *addr_size = sizeof(struct sockaddr_in6);
   if (bind(*sock_listen, (struct sockaddr *)addr, *addr_size) < 0 ||

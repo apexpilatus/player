@@ -200,7 +200,7 @@ int send_request(int sock, char *prm[]) {
     return 1;
   addr.sin6_addr = *(struct in6_addr *)host->h_addr;
   addr.sin6_flowinfo = 0;
-  addr.sin6_scope_id = 2;
+  addr.sin6_scope_id = 0;
   addr.sin6_port = htons(store_port);
   if (0 > connect(sock, (struct sockaddr *)&addr, sizeof(addr)))
     return 1;
