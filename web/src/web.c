@@ -14,7 +14,7 @@ void kill_zombie(int signum) {
   int fd;
   ssize_t read_size;
 #endif
-  while ((pid = waitpid(WAIT_ANY, NULL, WNOHANG)) > 0) {
+  while ((pid = waitpid(0, NULL, WNOHANG)) > 0) {
 #ifdef play_pid_path
     fd = open(play_pid_path, O_RDONLY);
     if (fd >= 0) {
