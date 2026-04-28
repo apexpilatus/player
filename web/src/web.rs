@@ -15,7 +15,7 @@ fn selector(stream: TcpStream) {
         if let Some(url) = req[0].split(" ").nth(1) {
             match url.split("?").next().unwrap_or_else(|| url) {
                 "/" => page_home::send_home(stream),
-                _ => resp_static::send_static(stream),
+                _ => resp_static::send_static(url, stream),
             }
         }
     }
