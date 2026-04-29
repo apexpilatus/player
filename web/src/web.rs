@@ -1,6 +1,6 @@
 mod page_home;
 mod resp_static;
-use std::io::{BufRead, BufReader, Write};
+use std::io::{BufRead, BufReader};
 use std::net::{TcpListener, TcpStream};
 use std::thread;
 

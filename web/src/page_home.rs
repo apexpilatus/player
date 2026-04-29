@@ -1,5 +1,5 @@
+use std::io::Write;
 use TcpStream;
-use Write;
 
 pub fn send_home(mut stream: TcpStream) {
     let html = include_str!("../static/index.html");
