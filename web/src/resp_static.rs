@@ -32,6 +32,6 @@ Content-Length: {}\r\n\r\n",
         }
     }
     match stream.write_all(ERR.as_bytes()) {
-        _ => return,
+        _ => (),
     }
 }
