@@ -1,5 +1,7 @@
+mod data_picture;
+mod data_static;
+mod err_codes;
 mod page_home;
-mod resp_static;
 use std::io::{BufRead, BufReader};
 use std::net::{TcpListener, TcpStream};
 use std::thread;
@@ -21,9 +23,13 @@ fn selector(stream: TcpStream) {
     }
     if !req.is_empty() {
         if let Some(url) = req[0].split(" ").nth(1) {
-            match url.split("?").next().unwrap_or_else(|| url) {
-                "/" => page_home::send_home(stream),
-                _ => resp_static::send_static(url, stream),
+            let mut url = url.split("?");
+            if let Some(path) = url.next() {
+                match path {
+                    "/" => page_home::send_home(stream),
+                    "/picture" => data_picture::send_picture(url.next(), stream),
+                    _ => data_static::send_static(path, stream),
+                }
             }
         }
     }

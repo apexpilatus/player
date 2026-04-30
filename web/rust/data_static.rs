@@ -1,10 +1,7 @@
+use err_codes;
 use std::collections::HashMap;
 use std::io::Write;
 use TcpStream;
-
-const ERR: &str = "HTTP/1.1 404 shit happens\r\n\
-Cache-control: no-cache\r\n\
-X-Content-Type-Options: nosniff\r\n\r\n";
 
 struct StaticData {
     content_type: String,
@@ -58,7 +55,7 @@ Content-Length: {}\r\n\r\n",
                 Err(_) => (),
             }
         }
-        None => match stream.write_all(ERR.as_bytes()) {
+        None => match stream.write_all(err_codes::ERR_404.as_bytes()) {
             _ => (),
         },
     }
