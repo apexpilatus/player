@@ -6,11 +6,19 @@ use std::thread;
 
 fn selector(stream: TcpStream) {
     let reader = BufReader::new(&stream);
-    let req: Vec<_> = reader
-        .lines()
-        .map(|result| result.unwrap_or(String::from("")))
-        .take_while(|line| !line.is_empty())
-        .collect();
+    let mut req: Vec<String> = Vec::new();
+    for line in reader.lines() {
+        match line {
+            Ok(line) => {
+                if line.is_empty() {
+                    break;
+                } else {
+                    req.push(line);
+                }
+            }
+            Err(_) => return,
+        }
+    }
     if !req.is_empty() {
         if let Some(url) = req[0].split(" ").nth(1) {
             match url.split("?").next().unwrap_or_else(|| url) {
@@ -29,7 +37,7 @@ fn main() {
     };
     for stream in listener.incoming() {
         if let Ok(stream) = stream {
-            thread::spawn(|| selector(stream));
+            thread::spawn(move || selector(stream));
         };
     }
 }
