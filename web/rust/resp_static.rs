@@ -17,21 +17,21 @@ fn data_map() -> HashMap<String, StaticData> {
         "/favicon.ico".to_string(),
         StaticData {
             content_type: "image/x-icon".to_string(),
-            bytes: include_bytes!("../static/favicon.ico").to_vec(),
+            bytes: include_bytes!("../pictures/favicon.ico").to_vec(),
         },
     );
     data.insert(
         "/apple-touch-icon.png".to_string(),
         StaticData {
             content_type: "image/png".to_string(),
-            bytes: include_bytes!("../static/favicon180.png").to_vec(),
+            bytes: include_bytes!("../pictures/favicon180.png").to_vec(),
         },
     );
     data.insert(
         "/style_main.css".to_string(),
         StaticData {
             content_type: "text/css; charset=utf-8".to_string(),
-            bytes: include_bytes!("../static/style_main.css").to_vec(),
+            bytes: include_bytes!("../style/home.css").to_vec(),
         },
     );
     data

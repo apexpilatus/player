@@ -2,7 +2,7 @@ use std::io::Write;
 use TcpStream;
 
 pub fn send_home(mut stream: TcpStream) {
-    let html = include_str!("../static/index.html");
+    let html = include_str!("../html/home.html");
     let hdr = format!(
         "\
 HTTP/1.1 200 OK\r\n\

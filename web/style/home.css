@@ -1,0 +1,114 @@
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: black;
+    }
+
+    #albumtitle {
+        color: lightcyan;
+        background-color: black;
+    }
+
+    #album {
+        color: white;
+    }
+
+    .tracktitle {
+        color: white;
+    }
+
+    #rate {
+        color: lightcyan;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: white;
+    }
+
+    #albumtitle {
+        color: indigo;
+        background-color: white;
+    }
+
+    #album {
+        color: black;
+    }
+
+    .tracktitle {
+        color: black;
+    }
+
+    #rate {
+        color: indigo;
+    }
+}
+
+body {
+    font-size: 22px;
+}
+
+#albumtitle {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    font-weight: bold;
+    padding-bottom: 6px;
+}
+
+#artist {
+    padding-top: 0;
+    padding-left: 2px;
+    font-size: 25px;
+}
+
+#album {
+    padding-top: 0;
+    padding-left: 4px;
+}
+
+#rate {
+    padding-top: 0;
+    padding-left: 6px;
+    font-size: 20px;
+}
+
+tr {
+    vertical-align: text-top;
+}
+
+.tracknumber {
+    color: gray;
+    width: 6%;
+    padding-top: 2px;
+    padding-left: 2px;
+}
+
+.tracktitle {
+    padding-top: 2px;
+    padding-left: 4px;
+}
+
+#albums {
+    position: fixed;
+    top: 0;
+    right: 2%;
+    width: 25%;
+    max-width: 300px;
+    height: 100%;
+    border-style: none;
+}
+
+.tracks::-webkit-scrollbar {
+    display: none;
+}
+
+.tracks {
+    position: fixed;
+    top: 0;
+    left: 2%;
+    width: 70%;
+    height: 100%;
+    border-style: none;
+    overflow: scroll;
+}
