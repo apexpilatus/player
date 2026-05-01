@@ -25,9 +25,10 @@ fn selector(stream: TcpStream) {
         if let Some(url) = req[0].split(" ").nth(1) {
             let mut url = url.split("?");
             if let Some(path) = url.next() {
+                let params = url.next();
                 match path {
                     "/" => page_home::send_home(stream),
-                    "/picture" => data_picture::send_picture(url.next(), stream),
+                    "/picture" => data_picture::send_picture(params, stream),
                     _ => data_static::send_static(path, stream),
                 }
             }
