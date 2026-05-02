@@ -1,6 +1,7 @@
 mod data_picture;
 mod data_static;
 mod err_codes;
+mod page_albums;
 mod page_home;
 use std::io::{BufRead, BufReader};
 use std::net::{TcpListener, TcpStream};
@@ -27,8 +28,9 @@ fn selector(stream: TcpStream) {
             if let Some(path) = url.next() {
                 let params = url.next();
                 match path {
-                    "/" => page_home::send_home(stream),
                     "/picture" => data_picture::send_picture(params, stream),
+                    "/" => page_home::send_home(stream),
+                    "/albums" => page_albums::send_albums(stream),
                     _ => data_static::send_static(path, stream),
                 }
             }

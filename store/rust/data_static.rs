@@ -25,10 +25,17 @@ fn data_map() -> HashMap<String, StaticData> {
         },
     );
     data.insert(
-        "/style_main.css".to_string(),
+        "/home.css".to_string(),
         StaticData {
             content_type: "text/css; charset=utf-8".to_string(),
             bytes: include_bytes!("../style/home.css").to_vec(),
+        },
+    );
+    data.insert(
+        "/albums.css".to_string(),
+        StaticData {
+            content_type: "text/css; charset=utf-8".to_string(),
+            bytes: include_bytes!("../style/albums.css").to_vec(),
         },
     );
     data

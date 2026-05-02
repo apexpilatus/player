@@ -1,0 +1,15 @@
+body::-webkit-scrollbar {
+    display: none;
+}
+
+img {
+    width: 100%;
+}
+
+.bw {
+    filter: grayscale(100%);
+}
+
+.reg {
+    filter: none;
+}
