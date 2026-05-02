@@ -1,4 +1,4 @@
-ifdef WEB_PATH
+ifdef STORE_PATH
 
 ifndef MUSIC_PATH
 $(error "MUSIC_PATH")
@@ -12,29 +12,29 @@ PLAYER_DEFINES := -D music_path=\"$(MUSIC_PATH)\"
 PLAYER_DEFINES += -D play_pid_path=\"/run/web_play_pid\"
 PLAYER_DEFINES += -D listen_port=$(LISTEN_PORT)
 PLAYER_DEFINES += -D streamer_host=\"streamer\"
-PLAYER_DEFINES += -D init_script=\"$(WEB_PATH)/init.sh\"
-PLAYER_DEFINES += -D select_path=\"$(WEB_PATH)/web_select\"
+PLAYER_DEFINES += -D init_script=\"$(STORE_PATH)/init.sh\"
+PLAYER_DEFINES += -D select_path=\"$(STORE_PATH)/web_select\"
 PLAYER_DEFINES += -D select_name=\"web_select\"
-PLAYER_DEFINES += -D html_main=\"$(WEB_PATH)/html_main\"
-PLAYER_DEFINES += -D html_albums=\"$(WEB_PATH)/html_albums\"
-PLAYER_DEFINES += -D resp_err=\"$(WEB_PATH)/resp_err\"
-PLAYER_DEFINES += -D data_static=\"$(WEB_PATH)/data_static\"
-PLAYER_DEFINES += -D data_picture=\"$(WEB_PATH)/data_picture\"
-PLAYER_DEFINES += -D data_flac_extracted=\"$(WEB_PATH)/data_flac_extracted\"
-PLAYER_DEFINES += -D system_touch=\"$(WEB_PATH)/system_touch\"
+PLAYER_DEFINES += -D html_main=\"$(STORE_PATH)/html_main\"
+PLAYER_DEFINES += -D html_albums=\"$(STORE_PATH)/html_albums\"
+PLAYER_DEFINES += -D resp_err=\"$(STORE_PATH)/resp_err\"
+PLAYER_DEFINES += -D data_static=\"$(STORE_PATH)/data_static\"
+PLAYER_DEFINES += -D data_picture=\"$(STORE_PATH)/data_picture\"
+PLAYER_DEFINES += -D data_flac_extracted=\"$(STORE_PATH)/data_flac_extracted\"
+PLAYER_DEFINES += -D system_touch=\"$(STORE_PATH)/system_touch\"
 PLAYER_DEFINES += -D sleep_timeout=50000
 CC := gcc -O2 -Wall
 RC := rustc -O
 
 install: web
-	rm -f $(WEB_PATH)/*
-	mv $(shell find . -maxdepth 1 -type f -not -name Makefile) $(WEB_PATH)
+	rm -f $(STORE_PATH)/*
+	mv $(shell find . -maxdepth 1 -type f -not -name Makefile) $(STORE_PATH)
 
 web : Makefile src/web.c web_select html_main html_albums resp_err data_static data_picture data_flac_extracted system_touch
 	$(CC) src/web.c -o web $(PLAYER_DEFINES)
 
-store: rust/store.rs picture
-	$(RC) -o store rust/store.rs
+store: rust/web.rs picture
+	$(RC) -o web rust/web.rs
 
 picture: c/picture.c
 	$(CC) -o picture c/picture.c -lFLAC
@@ -75,7 +75,7 @@ endif
 
 .PHONY: err
 err:
-	$(error "WEB_PATH")
+	$(error "STORE_PATH")
 
 .PHONY: clean
 clean:
