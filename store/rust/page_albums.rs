@@ -8,7 +8,7 @@ struct Album {
     mtime: SystemTime,
 }
 
-pub fn send_albums(mut stream: TcpStream) {
+pub fn send_albums(params: Option<&str>, mut stream: TcpStream) {
     let mut html = String::from(include_str!("../html/albums.html"));
     if let Some(into) = html.find("</body>") {
         if let Ok(dir) = fs::read_dir(env!("MUSIC_PATH")) {
@@ -24,10 +24,34 @@ pub fn send_albums(mut stream: TcpStream) {
                     }
                 }
             }
-            albums.sort_by(|alb1, alb2| alb1.mtime.cmp(&alb2.mtime));
-            for album in albums {
-                let album = format!("<img src=\"picture?album={}\" alt=\"picture\">", album.name);
-                html.insert_str(into, &album);
+            albums.sort_by_key(|alb| alb.mtime);
+            if let Some(top) = albums.last() {
+                let mut init = true;
+                if let Some(params) = params {
+                    for param in params.split("&") {
+                        if param.starts_with("scroll=") {
+                            init = false;
+                            for album in &albums {
+                                let name = &album.name;
+                                let picture =
+                        format!("<img src=\"picture?album={name}\" onclick=gettracks(\"{name}\") alt=\"picture\">");
+                                html.insert_str(into, &picture);
+                            }
+                            let script = format!("<script>updatetop(\"{}\")</script>", top.name);
+                            html.insert_str(into, &script);
+                            if let Some(into) = html.find("<body>") {
+                                if let Some(scroll) = param.split("=").nth(1) {
+                                    let attr = format!(" class=\"bw\" onload=loaded({scroll})");
+                                    html.insert_str(into + 5, &attr);
+                                }
+                            }
+                        }
+                    }
+                }
+                if init {
+                    let script = format!("<script>gettracks(\"{}\")</script>", top.name);
+                    html.insert_str(into, &script);
+                }
             }
         }
     }

@@ -25,6 +25,20 @@ fn data_map() -> HashMap<String, StaticData> {
         },
     );
     data.insert(
+        "/apple-touch-icon-precomposed.png".to_string(),
+        StaticData {
+            content_type: "image/png".to_string(),
+            bytes: include_bytes!("../pictures/favicon180.png").to_vec(),
+        },
+    );
+    data.insert(
+        "/apple-touch-icon-120x120-precomposed.png".to_string(),
+        StaticData {
+            content_type: "image/png".to_string(),
+            bytes: include_bytes!("../pictures/favicon120.png").to_vec(),
+        },
+    );
+    data.insert(
         "/home.css".to_string(),
         StaticData {
             content_type: "text/css; charset=utf-8".to_string(),
@@ -36,6 +50,20 @@ fn data_map() -> HashMap<String, StaticData> {
         StaticData {
             content_type: "text/css; charset=utf-8".to_string(),
             bytes: include_bytes!("../style/albums.css").to_vec(),
+        },
+    );
+    data.insert(
+        "/home.js".to_string(),
+        StaticData {
+            content_type: "text/javascript; charset=utf-8".to_string(),
+            bytes: include_bytes!("../js/home.js").to_vec(),
+        },
+    );
+    data.insert(
+        "/albums.js".to_string(),
+        StaticData {
+            content_type: "text/javascript; charset=utf-8".to_string(),
+            bytes: include_bytes!("../js/albums.js").to_vec(),
         },
     );
     data

@@ -29,8 +29,8 @@ fn selector(stream: TcpStream) {
                 let params = url.next();
                 match path {
                     "/picture" => data_picture::send_picture(params, stream),
-                    "/" => page_home::send_home(stream),
-                    "/albums" => page_albums::send_albums(stream),
+                    "/" => page_home::send_home(params, stream),
+                    "/albums" => page_albums::send_albums(params, stream),
                     _ => data_static::send_static(path, stream),
                 }
             }
