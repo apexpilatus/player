@@ -10,6 +10,10 @@ function updatetop(album) {
         topalbumElem.innerHTML = album;
 }
 
+function listalbums(albums){
+alert(albums.split(";").length);
+}
+
 function loaded(scroll) {
         scrollTo(0, scroll);
         document.body.className = "reg";

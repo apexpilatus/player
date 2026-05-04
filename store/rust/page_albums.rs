@@ -31,20 +31,17 @@ pub fn send_albums(params: Option<&str>, mut stream: TcpStream) {
                     for param in params.split("&") {
                         if param.starts_with("scroll=") {
                             init = false;
-                            for album in &albums {
-                                let name = &album.name;
-                                let picture =
-                        format!("<img src=\"picture?album={name}\" onclick=gettracks(\"{name}\") alt=\"picture\">");
-                                html.insert_str(into, &picture);
-                            }
-                            let script = format!("<script>updatetop(\"{}\")</script>", top.name);
-                            html.insert_str(into, &script);
-                            if let Some(into) = html.find("<body>") {
-                                if let Some(scroll) = param.split("=").nth(1) {
-                                    let attr = format!(" class=\"bw\" onload=loaded({scroll})");
-                                    html.insert_str(into + 5, &attr);
+                            let mut script = String::from("<script>listalbums(\"");
+                            script.push_str(&albums[0].name);
+                            if albums.len() > 1 {
+                                let albums = &albums[1..];
+                                for album in albums {
+                                    script.push(';');
+                                    script.push_str(&album.name);
                                 }
                             }
+                            script.push_str("\")</script>");
+                            html.insert_str(into, &script);
                         }
                     }
                 }
