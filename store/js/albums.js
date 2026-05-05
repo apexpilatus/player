@@ -10,8 +10,18 @@ function updatetop(album) {
         topalbumElem.innerHTML = album;
 }
 
-function listalbums(albums){
-alert(albums.split(";").length);
+function listalbums(albs) {
+        const albums = albs.split(";");
+        let len = albums.length;
+        updatetop(albums[--len]);
+        for (len; len >= 0; len--) {
+                let img = document.createElement("img");
+                img.src = "picture?album=" + albums[len];
+                const album = albums[len];
+                img.onclick = function () { gettracks(album); };
+                img.alt = "picture";
+                document.body.appendChild(img);
+        }
 }
 
 function loaded(scroll) {
