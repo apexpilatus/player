@@ -1,3 +1,4 @@
+mod data_extracted;
 mod data_picture;
 mod data_static;
 mod err_codes;
@@ -10,12 +11,16 @@ use std::thread;
 fn selector(stream: TcpStream) {
     let reader = BufReader::new(&stream);
     let mut req: Vec<String> = Vec::new();
+    let mut range = String::new();
     for line in reader.lines() {
         match line {
             Ok(line) => {
                 if line.is_empty() {
                     break;
                 } else {
+                    if line.to_lowercase().trim().starts_with("range:") {
+                        range = line.split('=').nth(1).unwrap_or_default().to_string();
+                    }
                     req.push(line);
                 }
             }
@@ -30,6 +35,7 @@ fn selector(stream: TcpStream) {
                 match path {
                     "/picture" => data_picture::send_picture(params, stream),
                     "/" => page_home::send_home(params, stream),
+                    "/stream" => data_extracted::send_extracted(params, &range, stream),
                     "/albums" => page_albums::send_albums(params, stream),
                     _ => data_static::send_static(path, stream),
                 }
