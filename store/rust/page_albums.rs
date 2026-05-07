@@ -44,18 +44,19 @@ pub fn send_albums(params: Option<&str>, mut stream: TcpStream) {
             script.push_str("\")</script>");
             html.insert_str(into, &script);
             match params {
-                Some(params) =>{
-                for param in params.split("&") {
-                    if param.starts_with("scroll=") {
-                        if let Some(scroll) = param.split("=").nth(1) {
-                            let script = format!("<script>setscroll({scroll})</script>");
-                            html.insert_str(into, &script);
+                Some(params) => {
+                    for param in params.split("&") {
+                        if param.starts_with("scroll=") {
+                            if let Some(scroll) = param.split("=").nth(1) {
+                                let script = format!("<script>setscroll({scroll})</script>");
+                                html.insert_str(into, &script);
+                            }
                         }
                     }
-                }},
+                }
                 None => {
-                            let script = format!("<script>gettracks(\"{top}\")</script>");
-                            html.insert_str(into, &script);
+                    let script = format!("<script>gettracks(\"{}\")</script>", top.name);
+                    html.insert_str(into, &script);
                 }
             }
         }
