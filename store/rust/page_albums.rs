@@ -47,7 +47,7 @@ pub fn send_albums(params: Option<&str>, mut stream: TcpStream) {
                 for param in params.split("&") {
                     if param.starts_with("scroll=") {
                         if let Some(scroll) = param.split("=").nth(1) {
-                            let script = format!("<script>setscroll({scroll})</script>");
+                            let script = format!("<script>setscrollonload({scroll})</script>");
                             html.insert_str(into, &script);
                         }
                     }
