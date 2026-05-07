@@ -23,6 +23,7 @@ function listalbums(albs) {
                 const album = albums[len];
                 img.onclick = function () { gettracks(album); };
                 img.alt = "picture";
+                img.width = "50%";
                 document.body.appendChild(img);
         }
 }
