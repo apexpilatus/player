@@ -31,23 +31,21 @@ pub fn send_albums(params: Option<&str>, mut stream: TcpStream) {
     let mut html = String::from(include_str!("../html/albums.html"));
     if let Some(into) = html.find("</body>") {
         let albums = get_albums();
-        if let Some(top) = albums.last() {
-            let mut init = true;
-            if let Some(params) = params {
-                for param in params.split("&") {
-                    if param.starts_with("scroll=") {
-                        init = false;
+        if !albums.is_empty() {
                         let mut script = String::from("<script>listalbums(\"");
                         script.push_str(&albums[0].name);
                         if albums.len() > 1 {
                             let albums = &albums[1..];
                             for album in albums {
-                                script.push(';');
+                                script.push('/');
                                 script.push_str(&album.name);
                             }
                         }
                         script.push_str("\")</script>");
                         html.insert_str(into, &script);
+            if let Some(params) = params {
+                for param in params.split("&") {
+                    if param.starts_with("scroll=") {
                         if let Some(into) = html.find("<body>") {
                             if let Some(scroll) = param.split("=").nth(1) {
                                 let attr = format!(" onload=loaded({scroll})");
@@ -56,10 +54,6 @@ pub fn send_albums(params: Option<&str>, mut stream: TcpStream) {
                         }
                     }
                 }
-            }
-            if init {
-                let script = format!("<script>gettracks(\"{}\")</script>", top.name);
-                html.insert_str(into, &script);
             }
         }
     }
