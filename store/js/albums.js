@@ -16,6 +16,7 @@ function updatetop(album) {
 function listalbums(albs) {
         const albums = albs.split(";");
         let len = albums.length;
+        document.body.style.filter = "grayscale(100%)";
         updatetop(albums[--len]);
         for (len; len >= 0; len--) {
                 let img = document.createElement("img");
@@ -29,5 +30,5 @@ function listalbums(albs) {
 
 function loaded(scroll) {
         scrollTo(0, scroll);
-        document.body.className = "reg";
+        document.body.style.filter = "none";
 }

@@ -50,7 +50,7 @@ pub fn send_albums(params: Option<&str>, mut stream: TcpStream) {
                         html.insert_str(into, &script);
                         if let Some(into) = html.find("<body>") {
                             if let Some(scroll) = param.split("=").nth(1) {
-                                let attr = format!(" class=\"bw\" onload=loaded({scroll})");
+                                let attr = format!(" onload=loaded({scroll})");
                                 html.insert_str(into + 5, &attr);
                             }
                         }

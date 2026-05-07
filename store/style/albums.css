@@ -5,11 +5,3 @@ body::-webkit-scrollbar {
 img {
     width: 100%;
 }
-
-.bw {
-    filter: grayscale(100%);
-}
-
-.reg {
-    filter: none;
-}
