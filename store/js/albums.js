@@ -2,21 +2,20 @@ const iconElem = parent.document.getElementById("icon");
 const playerElem = parent.document.getElementById("player");
 const topalbumElem = parent.document.getElementById("topalbum");
 
-let scrollonload = 0;
+let scroll = 0;
 
 function gettracks(album) {
         if (iconElem.href != location.origin + "/picture?album=" + album)
                 parent.location.assign(location.origin + "/?" + "album=" + album + "&scroll=" + pageYOffset);
-        else
-                playerElem.src = "stream?" + album;
 }
 
 function updatetop(album) {
         topalbumElem.innerHTML = album;
 }
 
-function setscrollonload(scroll) {
-        scrollonload = scroll;
+function setscroll(value) {
+        alert(value);
+        scroll = value;
 }
 
 function listalbums(albs) {
@@ -39,6 +38,6 @@ function listalbums(albs) {
 }
 
 function loaded() {
-        scrollTo(0, scrollonload);
+        scrollTo(0, scroll);
         document.body.style.filter = "none";
 }
