@@ -24,7 +24,7 @@ PLAYER_DEFINES += -D data_flac_extracted=\"$(STORE_PATH)/data_flac_extracted\"
 PLAYER_DEFINES += -D system_touch=\"$(STORE_PATH)/system_touch\"
 PLAYER_DEFINES += -D sleep_timeout=50000
 CC := gcc -O2 -Wall
-RC := rustc -O
+RC := rustc -C debuginfo=0 -C opt-level=3 -C target-cpu=native
 
 install: web
 	rm -f $(STORE_PATH)/*
