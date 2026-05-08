@@ -52,8 +52,7 @@ void sort_tracks(track_list *track_first) {
       }
 }
 
-track_list *get_tracks_in_dir(char *url) {
-  char *album_dir;
+track_list *get_tracks_in_dir(char *album_dir) {
   char *start_track;
   DIR *dp;
   struct dirent *ep;
@@ -61,10 +60,7 @@ track_list *get_tracks_in_dir(char *url) {
   track_list *track_tmp = NULL;
   FLAC__StreamMetadata *tags =
       FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT);
-  album_dir = strchr(url, '?');
-  if (!album_dir)
-    goto exit;
-  start_track = strchr(++album_dir, '&');
+  start_track = strchr(album_dir, '&');
   if (start_track) {
     *start_track = '\0';
     start_track++;
@@ -298,6 +294,7 @@ int main(int prm_n, char *prm[]) {
   data_new->next = NULL;
   data_new->buf = malloc(data_buf_size);
   data_new->data_size = 0;
+  printf("fuck\n");
   if (!(params.tracks &&
         (flac_blocks_size = get_album_size(params.tracks, stream_inf))))
     return 1;
@@ -336,6 +333,7 @@ int main(int prm_n, char *prm[]) {
          min_range, max_range,
          (flac_blocks_size * 2 * params.params.bytes_per_sample) + header_size,
          "Content-Type: audio/wav");
+  return 1;
   if (min_range == 0) {
     if (write_header(flac_blocks_size * 2 * params.params.bytes_per_sample,
                      stream_inf))
