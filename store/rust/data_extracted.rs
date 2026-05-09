@@ -29,14 +29,19 @@ pub fn send_extracted(params: Option<&str>, req: &Vec<String>, mut stream: BufWr
         {
             if let Some(ref mut stdout) = child.stdout {
                 let mut buf: Vec<u8> = vec![0; stream.capacity()];
-                if let Ok(size) = stdout.read(&mut buf) {
-                    buf.truncate(size);
-                    println!("{}", String::from_utf8(buf).unwrap_or_default());
+                loop {
+                    match stdout.read(&mut buf) {
+                        Ok(size) => match stream.write_all(&buf[..size]) {
+                            Ok(_) => (),
+                            Err(_) => break,
+                        },
+                        Err(_) => break,
+                    }
                 }
             }
             match child.kill() {
                 _ => match child.wait() {
-                    _ => (),
+                    _ => return,
                 },
             }
         }

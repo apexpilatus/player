@@ -119,59 +119,41 @@ int write_header(unsigned int size, FLAC__StreamMetadata *stream_inf) {
   short short_var;
   size_t write_size;
   write_size = fwrite("RIFF", 1, 4, stdout);
-  // write_size = write(fd, "RIFF", 4);
   int_var =
       size + (stream_inf->data.stream_info.bits_per_sample == 16 ? 36 : 72);
   write_size += fwrite(&int_var, 1, 4, stdout);
-  // write_size += write(fd, &int_var, 4);
   write_size += fwrite("WAVEfmt ", 1, 8, stdout);
-  // write_size += write(fd, "WAVEfmt ", 8);
   int_var = (stream_inf->data.stream_info.bits_per_sample == 16 ? 16 : 40);
   write_size += fwrite(&int_var, 1, 4, stdout);
-  // write_size += write(fd, &int_var, 4);
   short_var =
       (stream_inf->data.stream_info.bits_per_sample == 16 ? 0x0001 : 0xFFFE);
   write_size += fwrite(&short_var, 1, 2, stdout);
-  // write_size += write(fd, &short_var, 2);
   short_var = 2;
   write_size += fwrite(&short_var, 1, 2, stdout);
-  // write_size += write(fd, &short_var, 2);
   int_var = stream_inf->data.stream_info.sample_rate;
   write_size += fwrite(&int_var, 1, 4, stdout);
-  // write_size += write(fd, &int_var, 4);
   int_var *= stream_inf->data.stream_info.bits_per_sample / 8;
   int_var *= 2;
   write_size += fwrite(&int_var, 1, 4, stdout);
-  // write_size += write(fd, &int_var, 4);
   short_var = stream_inf->data.stream_info.bits_per_sample / 8 * 2;
   write_size += fwrite(&short_var, 1, 2, stdout);
-  // write_size += write(fd, &short_var, 2);
   short_var = stream_inf->data.stream_info.bits_per_sample;
   write_size += fwrite(&short_var, 1, 2, stdout);
-  // write_size += write(fd, &short_var, 2);
   if (stream_inf->data.stream_info.bits_per_sample != 16) {
     short_var = 22;
     write_size += fwrite(&short_var, 1, 2, stdout);
-    // write_size += write(fd, &short_var, 2);
     short_var = stream_inf->data.stream_info.bits_per_sample;
     write_size += fwrite(&short_var, 1, 2, stdout);
-    // write_size += write(fd, &short_var, 2);
     int_var = 0;
     write_size += fwrite(&int_var, 1, 4, stdout);
-    // write_size += write(fd, &int_var, 4);
     short_var = 0x0001;
     write_size += fwrite(&short_var, 1, 2, stdout);
-    // write_size += write(fd, &short_var, 2);
     write_size +=
         fwrite("\x00\x00\x00\x00\x10\x00\x80\x00\x00\xAA\x00\x38\x9B\x71", 1,
                14, stdout);
-    /*write_size += write(
-        fd, "\x00\x00\x00\x00\x10\x00\x80\x00\x00\xAA\x00\x38\x9B\x71", 14);*/
   }
   write_size += fwrite("data", 1, 4, stdout);
-  // write_size += write(fd, "data", 4);
   write_size += fwrite(&size, 1, 4, stdout);
-  // write_size += write(fd, &size, 4);
   if (write_size !=
       (stream_inf->data.stream_info.bits_per_sample == 16 ? 44 : 68))
     return 1;
@@ -285,6 +267,12 @@ int extract_tracks(void *client_data) {
   return 0;
 }
 
+int err(void) {
+  printf("%s\r\n%s\r\n%s\r\n\r\n", "HTTP/1.1 404 shit happens",
+         "Cache-control: no-cache", "X-Content-Type-Options: nosniff");
+  return 1;
+}
+
 int main(int prm_n, char *prm[]) {
   char *end;
   size_t write_size;
@@ -305,7 +293,7 @@ int main(int prm_n, char *prm[]) {
   data_new->data_size = 0;
   if (!(params.tracks &&
         (flac_blocks_size = get_album_size(params.tracks, stream_inf))))
-    return 1;
+    return err();
   params.params.bytes_per_sample =
       stream_inf->data.stream_info.bits_per_sample / 8;
   header_size = stream_inf->data.stream_info.bits_per_sample == 16 ? 44 : 68;
@@ -320,7 +308,7 @@ int main(int prm_n, char *prm[]) {
     min_range = strtol(prm[2], NULL, 10);
   }
   if (min_range > 0 && min_range < header_size)
-    return 1;
+    return err();
   params.params.bytes_left = max_range - min_range + 1;
   if (min_range == 0 && max_range < header_size - 1) {
     char buf[params.params.bytes_left];
@@ -341,7 +329,6 @@ int main(int prm_n, char *prm[]) {
          min_range, max_range,
          (flac_blocks_size * 2 * params.params.bytes_per_sample) + header_size,
          "Content-Type: audio/wav");
-  return 1;
   if (min_range == 0) {
     if (write_header(flac_blocks_size * 2 * params.params.bytes_per_sample,
                      stream_inf))
@@ -373,10 +360,8 @@ int main(int prm_n, char *prm[]) {
     for (write_size = 0; write_size < data_cur->data_size;) {
       size_t write_size_pv = write_size;
       write_size = fwrite((char *)(data_cur->buf + write_size), 1,
-                          data_cur->data_size - write_size, stdout);
-      /*write_size = write(sock, (char *)(data_cur->buf + write_size),
-                         data_cur->data_size - write_size);*/
-      if (write_size != data_cur->data_size - write_size)
+                          data_cur->data_size - write_size_pv, stdout);
+      if (write_size != data_cur->data_size - write_size_pv)
         return 1;
       write_size += write_size_pv;
     }
