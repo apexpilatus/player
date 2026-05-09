@@ -12,9 +12,9 @@ function playflac(dirtrack) {
     });
 }
 
+function gettracks(album) {
+}
+
 function loadalbums(params) {
-    if (params == null)
-        albumsElem.src = location.origin + "/albums";
-    else
-        albumsElem.src = location.origin + "/albums?" + params;
+    albumsElem.src = location.origin + "/albums?" + params;
 }

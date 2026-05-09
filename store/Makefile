@@ -33,14 +33,17 @@ install: web
 web : Makefile src/web.c web_select html_main html_albums resp_err data_static data_picture data_flac_extracted system_touch
 	$(CC) src/web.c -o web $(PLAYER_DEFINES)
 
-store: rust/web.rs picture flac_extract
+store: rust/web.rs picture flac_extract touch
 	$(RC) -o web rust/web.rs
 
 picture: c/picture.c
 	$(CC) -o picture c/picture.c -lFLAC
 
 flac_extract: c/flac_extract.c
-	$(CC) -o flac_extract c/flac_extract.c c/data_list.c -lFLAC
+	$(CC) -o flac_extract c/flac_extract.c -lFLAC
+
+touch: c/touch.c
+	$(CC) -o touch c/touch.c
 
 web_select : Makefile src/web_select.c
 	$(CC) src/web_select.c -o web_select $(PLAYER_DEFINES)

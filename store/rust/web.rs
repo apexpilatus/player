@@ -4,6 +4,7 @@ mod data_static;
 mod err_codes;
 mod page_albums;
 mod page_home;
+mod system_touch;
 use std::io::{BufRead, BufReader, BufWriter};
 use std::net::{TcpListener, TcpStream};
 use std::thread;
@@ -35,6 +36,7 @@ fn selector(stream: TcpStream) {
                         data_extracted::send_extracted(params, &req, BufWriter::new(stream))
                     }
                     "/albums" => page_albums::send_albums(params, BufWriter::new(stream)),
+                    "/touch" => system_touch::touch(params, BufWriter::new(stream)),
                     _ => data_static::send_static(path, BufWriter::new(stream)),
                 }
             }

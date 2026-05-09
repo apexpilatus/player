@@ -4,31 +4,35 @@ use TcpStream;
 
 pub fn send_home(params: Option<&str>, mut stream: BufWriter<TcpStream>) {
     let mut html = String::from(include_str!("../html/home.html"));
-    let mut icon = String::from("<link id=\"icon\" rel=\"icon\" href=\"favicon.ico\">");
-    if let Some(into) = html.find("</body>") {
-        let mut init = true;
-        if let Some(params) = params {
-            for param in params.split("&") {
-                if param.starts_with("scroll=") {
-                    init = false;
-                    let script = format!("<script>loadalbums(\"{param}\")</script>");
-                    html.insert_str(into, &script);
-                }
-                if param.starts_with("album=") {
-                    if let Some(album) = param.split("=").nth(1) {
-                        icon = format!(
-                            "<link id=\"icon\" rel=\"icon\" href=\"picture?album={album}\">"
-                        );
-                    }
-                }
+    let mut scroll = String::from("scroll=0");
+    let mut album = None;
+    if let Some(params) = params {
+        for param in params.split("&") {
+            if param.starts_with("scroll=") {
+                scroll = param.to_string();
+            }
+            if param.starts_with("album=") {
+                album = param.split("=").nth(1);
             }
         }
-        if init {
-            html.insert_str(into, "<script>loadalbums()</script>");
+    }
+    if let Some(into) = html.find("</body>") {
+        if let Some(album) = album {
+            let script = format!("<script>gettracks(\"{album}\")</script>");
+            html.insert_str(into, &script);
         }
+        let script = format!("<script>loadalbums(\"{scroll}\")</script>");
+        html.insert_str(into, &script);
     }
     if let Some(into) = html.find("</head>") {
-        html.insert_str(into, &icon);
+        match album {
+            Some(album) => {
+                let icon =
+                    format!("<link id=\"icon\" rel=\"icon\" href=\"picture?album={album}\">");
+                html.insert_str(into, &icon);
+            }
+            None => html.insert_str(into, "<link id=\"icon\" rel=\"icon\" href=\"favicon.ico\">"),
+        }
     }
     let hdr = format!(
         "\

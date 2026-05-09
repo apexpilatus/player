@@ -31,10 +31,15 @@ pub fn send_extracted(params: Option<&str>, req: &Vec<String>, mut stream: BufWr
                 let mut buf: Vec<u8> = vec![0; stream.capacity()];
                 loop {
                     match stdout.read(&mut buf) {
-                        Ok(size) => match stream.write_all(&buf[..size]) {
-                            Ok(_) => (),
-                            Err(_) => break,
-                        },
+                        Ok(size) => {
+                            if size == 0 {
+                                break;
+                            }
+                            match stream.write_all(&buf[..size]) {
+                                Ok(_) => (),
+                                Err(_) => break,
+                            }
+                        }
                         Err(_) => break,
                     }
                 }

@@ -1,15 +1,8 @@
-#include "data_list.h"
-#include <dirent.h>
-#include <signal.h>
-#include <string.h>
-#include <threads.h>
-#include <unistd.h>
-// clang-format off
 #include <FLAC/metadata.h>
 #include <FLAC/stream_decoder.h>
-// clang-format on
-
-#define sleep_timeout 50000
+#include <dirent.h>
+#include <string.h>
+#include <unistd.h>
 
 typedef struct track_list_t {
   struct track_list_t *next;
@@ -22,18 +15,6 @@ typedef struct {
   unsigned int bytes_per_sample;
   unsigned int bytes_skip;
 } extract_params;
-
-typedef struct {
-  extract_params params;
-  track_list *tracks;
-} thread_params;
-
-data_list volatile *volatile data_first;
-data_list volatile *volatile data_new;
-char volatile in_work = 1;
-unsigned int volatile to_del;
-unsigned int volatile deleted;
-unsigned char volatile clean_done;
 
 void sort_tracks(track_list *track_first) {
   char *file_name_tmp;
@@ -110,6 +91,9 @@ track_list *get_tracks_in_dir(char *params) {
     closedir(dp);
   }
   sort_tracks(track_first);
+  if (track_first && !start_track)
+    while (track_first->next)
+      track_first = track_first->next;
 exit:
   return track_first;
 }
@@ -161,15 +145,6 @@ int write_header(unsigned int size, FLAC__StreamMetadata *stream_inf) {
     return 0;
 }
 
-data_list volatile *volatile new_data(data_list volatile *volatile data_pv) {
-  data_list volatile *volatile data_new = malloc(sizeof(data_list));
-  data_new->next = NULL;
-  data_new->buf = malloc(data_buf_size);
-  data_new->data_size = 0;
-  data_pv->next = data_new;
-  return data_new;
-}
-
 void metadata_callback(const FLAC__StreamDecoder *decoder,
                        const FLAC__StreamMetadata *metadata,
                        void *client_data) {}
@@ -181,20 +156,6 @@ FLAC__StreamDecoderWriteStatus
 write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
                const FLAC__int32 *const buffer[], void *client_data) {
   extract_params *params = client_data;
-  data_list volatile *data_free;
-  unsigned int i;
-  while (buf_len(data_first) > 1000) {
-    if (to_del > 100 && !clean_done) {
-      for (i = to_del, deleted = 0; i; deleted++, i--) {
-        data_free = data_first;
-        data_first = data_first->next;
-        free((char *)data_free->buf);
-        free((data_list *)data_free);
-      }
-      clean_done = 1;
-    } else
-      usleep(sleep_timeout);
-  }
   if (frame->header.blocksize * 2 * params->bytes_per_sample <=
       params->bytes_skip) {
     params->bytes_skip -=
@@ -205,10 +166,8 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
     int j;
     for (j = 0; j < params->bytes_per_sample; j++)
       if (!params->bytes_skip) {
-        if (data_new->data_size == data_buf_size)
-          data_new = new_data(data_new);
-        data_new->buf[data_new->data_size] = *((char *)(buffer[0] + i) + j);
-        data_new->data_size++;
+        if (fwrite((char *)(buffer[0] + i) + j, 1, 1, stdout) != 1)
+          return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
         params->bytes_left--;
         if (params->bytes_left == 0)
           return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
@@ -216,10 +175,8 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
         params->bytes_skip--;
     for (j = 0; j < params->bytes_per_sample; j++)
       if (!params->bytes_skip) {
-        if (data_new->data_size == data_buf_size)
-          data_new = new_data(data_new);
-        data_new->buf[data_new->data_size] = *((char *)(buffer[1] + i) + j);
-        data_new->data_size++;
+        if (fwrite((char *)(buffer[1] + i) + j, 1, 1, stdout) != 1)
+          return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
         params->bytes_left--;
         if (params->bytes_left == 0)
           return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
@@ -241,29 +198,26 @@ unsigned int get_album_size(track_list *tracks,
   return ret;
 }
 
-int extract_tracks(void *client_data) {
-  thread_params *params = client_data;
+int extract_tracks(track_list *tracks, void *params) {
   FLAC__StreamDecoder *decoder = NULL;
   FLAC__StreamDecoderInitStatus init_status;
   decoder = FLAC__stream_decoder_new();
   FLAC__stream_decoder_set_md5_checking(decoder, false);
   FLAC__stream_decoder_set_metadata_ignore_all(decoder);
-  while (params->tracks) {
+  while (tracks) {
     init_status = FLAC__stream_decoder_init_file(
-        decoder, params->tracks->file_name, write_callback, metadata_callback,
-        error_callback, &params->params);
+        decoder, tracks->file_name, write_callback, metadata_callback,
+        error_callback, params);
     if (init_status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
       if (!FLAC__stream_decoder_process_until_end_of_stream(decoder)) {
-        FLAC__stream_decoder_finish(decoder);
-        break;
+        return 1;
       }
       FLAC__stream_decoder_finish(decoder);
     } else {
-      kill(getpid(), SIGTERM);
+      return 1;
     }
-    params->tracks = params->tracks->next;
+    tracks = tracks->next;
   }
-  in_work = 0;
   return 0;
 }
 
@@ -275,33 +229,23 @@ int err(void) {
 
 int main(int prm_n, char *prm[]) {
   char *end;
-  size_t write_size;
   unsigned int min_range = 0;
   unsigned int max_range;
   unsigned int header_size;
-  thrd_t thr;
   FLAC__StreamMetadata *stream_inf =
       FLAC__metadata_object_new(FLAC__METADATA_TYPE_STREAMINFO);
   unsigned int flac_blocks_size;
-  thread_params params;
-  data_list volatile *data_cur;
-  params.tracks = get_tracks_in_dir(prm[1]);
-  data_first = malloc(sizeof(data_list));
-  data_new = data_first;
-  data_new->next = NULL;
-  data_new->buf = malloc(data_buf_size);
-  data_new->data_size = 0;
-  if (!(params.tracks &&
-        (flac_blocks_size = get_album_size(params.tracks, stream_inf))))
+  extract_params params;
+  track_list *tracks = get_tracks_in_dir(prm[1]);
+  if (!(tracks && (flac_blocks_size = get_album_size(tracks, stream_inf))))
     return err();
-  params.params.bytes_per_sample =
-      stream_inf->data.stream_info.bits_per_sample / 8;
+  params.bytes_per_sample = stream_inf->data.stream_info.bits_per_sample / 8;
   header_size = stream_inf->data.stream_info.bits_per_sample == 16 ? 44 : 68;
   if ((end = strchr(prm[2], '-')) && strlen(++end) > 0)
     max_range = strtol(end, NULL, 10);
   else {
-    max_range = (flac_blocks_size * 2 * params.params.bytes_per_sample) - 1 +
-                header_size;
+    max_range =
+        (flac_blocks_size * 2 * params.bytes_per_sample) - 1 + header_size;
   }
   if ((end = strchr(prm[2], '-'))) {
     *end = '\0';
@@ -309,67 +253,45 @@ int main(int prm_n, char *prm[]) {
   }
   if (min_range > 0 && min_range < header_size)
     return err();
-  params.params.bytes_left = max_range - min_range + 1;
+  params.bytes_left = max_range - min_range + 1;
   if (min_range == 0 && max_range < header_size - 1) {
-    char buf[params.params.bytes_left];
+    char buf[params.bytes_left];
     printf("%s\r\n%s%u\r\nContent-Range: bytes %u-%u/%u\r\n%s\r\n\r\n",
-           "HTTP/1.1 200 OK", "Content-Length: ", params.params.bytes_left,
-           min_range, max_range,
-           (flac_blocks_size * 2 * params.params.bytes_per_sample) +
-               header_size,
+           "HTTP/1.1 200 OK", "Content-Length: ", params.bytes_left, min_range,
+           max_range,
+           (flac_blocks_size * 2 * params.bytes_per_sample) + header_size,
            "Content-Type: audio/wav");
 
-    if (fwrite(buf, params.params.bytes_left, 1, stdout) == 1)
+    if (fwrite(buf, params.bytes_left, 1, stdout) == 1)
       return 0;
     else
       return 1;
   }
   printf("%s\r\n%s%u\r\nContent-Range: bytes %u-%u/%u\r\n%s\r\n\r\n",
-         "HTTP/1.1 200 OK", "Content-Length: ", params.params.bytes_left,
-         min_range, max_range,
-         (flac_blocks_size * 2 * params.params.bytes_per_sample) + header_size,
+         "HTTP/1.1 200 OK", "Content-Length: ", params.bytes_left, min_range,
+         max_range,
+         (flac_blocks_size * 2 * params.bytes_per_sample) + header_size,
          "Content-Type: audio/wav");
   if (min_range == 0) {
-    if (write_header(flac_blocks_size * 2 * params.params.bytes_per_sample,
+    if (write_header(flac_blocks_size * 2 * params.bytes_per_sample,
                      stream_inf))
       return 1;
     else {
-      params.params.bytes_skip = 0;
-      params.params.bytes_left -= header_size;
+      params.bytes_skip = 0;
+      params.bytes_left -= header_size;
     }
   } else
-    params.params.bytes_skip = min_range - header_size;
-  while (params.tracks) {
-    if (!FLAC__metadata_get_streaminfo(params.tracks->file_name, stream_inf))
+    params.bytes_skip = min_range - header_size;
+  while (tracks) {
+    if (!FLAC__metadata_get_streaminfo(tracks->file_name, stream_inf))
       return 1;
-    if (params.params.bytes_skip >= stream_inf->data.stream_info.total_samples *
-                                        2 * params.params.bytes_per_sample) {
-      params.params.bytes_skip -= stream_inf->data.stream_info.total_samples *
-                                  2 * params.params.bytes_per_sample;
-      params.tracks = params.tracks->next;
+    if (params.bytes_skip >= stream_inf->data.stream_info.total_samples * 2 *
+                                 params.bytes_per_sample) {
+      params.bytes_skip -= stream_inf->data.stream_info.total_samples * 2 *
+                           params.bytes_per_sample;
+      tracks = tracks->next;
     } else
       break;
   }
-  if (thrd_create(&thr, extract_tracks, &params) != thrd_success ||
-      thrd_detach(thr) != thrd_success)
-    return 1;
-  data_cur = data_first;
-  while (data_cur) {
-    while (in_work && buf_len(data_cur) < 3)
-      usleep(sleep_timeout);
-    for (write_size = 0; write_size < data_cur->data_size;) {
-      size_t write_size_pv = write_size;
-      write_size = fwrite((char *)(data_cur->buf + write_size), 1,
-                          data_cur->data_size - write_size_pv, stdout);
-      if (write_size != data_cur->data_size - write_size_pv)
-        return 1;
-      write_size += write_size_pv;
-    }
-    data_cur = data_cur->next;
-    to_del++;
-    if (clean_done) {
-      to_del -= deleted;
-      clean_done = 0;
-    }
-  }
+  return extract_tracks(tracks, &params);
 }
