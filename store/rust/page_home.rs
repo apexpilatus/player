@@ -1,7 +1,8 @@
 use std::io::Write;
+use BufWriter;
 use TcpStream;
 
-pub fn send_home(params: Option<&str>, mut stream: TcpStream) {
+pub fn send_home(params: Option<&str>, mut stream: BufWriter<TcpStream>) {
     let mut html = String::from(include_str!("../html/home.html"));
     let mut icon = String::from("<link id=\"icon\" rel=\"icon\" href=\"favicon.ico\">");
     if let Some(into) = html.find("</body>") {

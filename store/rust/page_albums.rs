@@ -1,6 +1,7 @@
 use std::fs;
 use std::io::Write;
 use std::time::SystemTime;
+use BufWriter;
 use TcpStream;
 
 struct Album {
@@ -27,7 +28,7 @@ fn get_albums() -> Vec<Album> {
     albums
 }
 
-pub fn send_albums(params: Option<&str>, mut stream: TcpStream) {
+pub fn send_albums(params: Option<&str>, mut stream: BufWriter<TcpStream>) {
     let mut html = String::from(include_str!("../html/albums.html"));
     if let Some(into) = html.find("</body>") {
         let albums = get_albums();

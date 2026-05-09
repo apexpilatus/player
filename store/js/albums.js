@@ -6,9 +6,9 @@ let scroll = 0;
 
 function gettracks(album) {
         if (iconElem.href != location.origin + "/picture?album=" + album)
-                parent.location.assign(location.origin + "/?" + "album=" + album + "&scroll=" + pageYOffset);
+                parent.location.assign(location.origin + "/?album=" + album + "&scroll=" + pageYOffset);
         else
-                playerElem.src = "stream?album";
+                playerElem.src = "stream?album=" + album + "&track=2";
 }
 
 function updatetop(album) {

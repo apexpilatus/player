@@ -4,7 +4,7 @@ mod data_static;
 mod err_codes;
 mod page_albums;
 mod page_home;
-use std::io::{BufRead, BufReader};
+use std::io::{BufRead, BufReader, BufWriter};
 use std::net::{TcpListener, TcpStream};
 use std::thread;
 
@@ -29,11 +29,13 @@ fn selector(stream: TcpStream) {
             if let Some(path) = url.next() {
                 let params = url.next();
                 match path {
-                    "/picture" => data_picture::send_picture(params, stream),
-                    "/" => page_home::send_home(params, stream),
-                    "/stream" => data_extracted::send_extracted(params, &req, stream),
-                    "/albums" => page_albums::send_albums(params, stream),
-                    _ => data_static::send_static(path, stream),
+                    "/picture" => data_picture::send_picture(params, BufWriter::new(stream)),
+                    "/" => page_home::send_home(params, BufWriter::new(stream)),
+                    "/stream" => {
+                        data_extracted::send_extracted(params, &req, BufWriter::new(stream))
+                    }
+                    "/albums" => page_albums::send_albums(params, BufWriter::new(stream)),
+                    _ => data_static::send_static(path, BufWriter::new(stream)),
                 }
             }
         }

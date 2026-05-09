@@ -1,6 +1,7 @@
 use err_codes;
 use std::collections::HashMap;
 use std::io::Write;
+use BufWriter;
 use TcpStream;
 
 struct StaticData {
@@ -69,7 +70,7 @@ fn data_map() -> HashMap<String, StaticData> {
     data
 }
 
-pub fn send_static(url: &str, mut stream: TcpStream) {
+pub fn send_static(url: &str, mut stream: BufWriter<TcpStream>) {
     let static_data = data_map();
     match static_data.get(url) {
         Some(resourse) => {

@@ -1,9 +1,10 @@
 use err_codes;
 use std::io::Write;
 use std::process::Command;
+use BufWriter;
 use TcpStream;
 
-pub fn send_picture(params: Option<&str>, mut stream: TcpStream) {
+pub fn send_picture(params: Option<&str>, mut stream: BufWriter<TcpStream>) {
     if let Some(params) = params {
         for param in params.split("&") {
             if param.starts_with("album=") {
