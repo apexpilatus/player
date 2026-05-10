@@ -1,6 +1,6 @@
 ifdef STORE_PATH
 
-CC := gcc -O2 -Wall
+CC := gcc -O2 -Wall -march=native
 RC := rustc -C debuginfo=0 -C opt-level=3 -C target-cpu=native
 
 install: web
