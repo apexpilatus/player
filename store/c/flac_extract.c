@@ -61,7 +61,8 @@ track_list *get_tracks_in_dir(char *params) {
   if (dp) {
     while ((ep = readdir(dp)))
       if (ep->d_type == DT_REG && FLAC__metadata_get_tags(ep->d_name, &tags)) {
-        for (int i = 0; i < tags->data.vorbis_comment.num_comments; i++)
+        int i;
+        for (i = 0; i < tags->data.vorbis_comment.num_comments; i++)
           if (!strncmp("TRACKNUMBER=",
                        (char *)tags->data.vorbis_comment.comments[i].entry,
                        strlen("TRACKNUMBER="))) {
@@ -162,7 +163,8 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
         frame->header.blocksize * 2 * params->bytes_per_sample;
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
   }
-  for (int i = 0; i < frame->header.blocksize; i++) {
+  int i;
+  for (i = 0; i < frame->header.blocksize; i++) {
     int j;
     for (j = 0; j < params->bytes_per_sample; j++)
       if (!params->bytes_skip) {

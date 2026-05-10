@@ -2,6 +2,11 @@ body::-webkit-scrollbar {
     display: none;
 }
 
+body {
+    display: flex;
+    overflow-y: scroll;
+}
+
 img {
-    width: 100%;
+    height: 80vh;
 }

@@ -18,7 +18,7 @@ pub fn send_home(params: Option<&str>, mut stream: BufWriter<TcpStream>) {
     }
     if let Some(into) = html.find("</body>") {
         if let Some(album) = album {
-            let script = format!("<script>gettracks(\"{album}\")</script>");
+            let script = format!("<script>getmeta(\"{album}\")</script>");
             html.insert_str(into, &script);
         }
         let script = format!("<script>loadalbums(\"{scroll}\")</script>");

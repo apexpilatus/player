@@ -2,6 +2,8 @@ const playerElem = document.getElementById("player");
 const topalbumElem = document.getElementById("topalbum");
 const albumsElem = document.getElementById("albums");
 
+let track = 1;
+
 function playflac(dirtrack) {
     fetch(location.origin + "/touch?" + dirtrack.split("&")[0]).then(resp => {
         if (resp.status == 200) {
@@ -13,6 +15,17 @@ function playflac(dirtrack) {
 }
 
 function gettracks(album) {
+    fetch(location.origin + "/meta?album=" + album + "&meta=TITLE=&track=" + track).then(resp => {
+        if (resp.status == 200) {
+            resp.text().then(txt => alert(txt));
+            track++;
+            gettracks(album);
+        }
+    });
+}
+
+function getmeta(album) {
+    gettracks(album);
 }
 
 function loadalbums(params) {

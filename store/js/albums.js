@@ -6,7 +6,7 @@ let scroll = 0;
 
 function gettracks(album) {
         if (iconElem != null && iconElem.href != location.origin + "/picture?album=" + album)
-                parent.location.assign(location.origin + "/?album=" + album + "&scroll=" + pageYOffset);
+                parent.location.assign(location.origin + "/?album=" + album + "&scroll=" + pageXOffset);
         else if (playerElem != null)
                 fetch(location.origin + "/touch?album=" + album).then(resp => {
                         if (resp.status == 200) {
@@ -45,6 +45,6 @@ function listalbums(albs) {
 }
 
 function loaded() {
-        scrollTo(0, scroll);
+        scrollTo(scroll, 0);
         document.body.style.filter = "none";
 }

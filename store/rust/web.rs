@@ -5,6 +5,7 @@ mod err_codes;
 mod page_albums;
 mod page_home;
 mod system_touch;
+mod text_meta;
 use std::io::{BufRead, BufReader, BufWriter};
 use std::net::{TcpListener, TcpStream};
 use std::thread;
@@ -17,9 +18,8 @@ fn selector(stream: TcpStream) {
             Ok(line) => {
                 if line.is_empty() {
                     break;
-                } else {
-                    req.push(line);
                 }
+                req.push(line);
             }
             Err(_) => return,
         }
@@ -32,6 +32,7 @@ fn selector(stream: TcpStream) {
                 match path {
                     "/picture" => data_picture::send_picture(params, BufWriter::new(stream)),
                     "/" => page_home::send_home(params, BufWriter::new(stream)),
+                    "/meta" => text_meta::send_text(params, BufWriter::new(stream)),
                     "/stream" => {
                         data_extracted::send_extracted(params, &req, BufWriter::new(stream))
                     }
