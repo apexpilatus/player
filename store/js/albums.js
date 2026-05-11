@@ -47,8 +47,8 @@ function listalbums(albs) {
 function loaded() {
         scrollTo(scroll, 0);
         document.body.style.filter = "none";
-addEventListener('wheel', (event) => {
-  event.preventDefault();
-  document.documentElement.scrollLeft += event.deltaY;
-}, { passive: false });
+        addEventListener('wheel', (event) => {
+                event.preventDefault();
+                document.documentElement.scrollLeft += event.deltaY;
+        }, { passive: false });
 }
