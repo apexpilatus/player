@@ -8,13 +8,7 @@ function gettracks(album) {
         if (iconElem != null && iconElem.href != location.origin + "/picture?album=" + album)
                 parent.location.assign(location.origin + "/?album=" + album + "&scroll=" + pageXOffset);
         else if (playerElem != null)
-                fetch(location.origin + "/touch?album=" + album).then(resp => {
-                        if (resp.status == 200) {
-                                playerElem.src = location.origin + "/stream?album=" + album + "&track=1";
-                                if (topalbumElem.innerHTML != album)
-                                        location.assign(location.origin + "/albums?scroll=0");
-                        }
-                });
+                                playerElem.src = location.origin + "/stream?album=" + album;
 }
 
 function updatetop(album) {
