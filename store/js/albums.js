@@ -8,7 +8,7 @@ function gettracks(album) {
         if (iconElem != null && iconElem.href != location.origin + "/picture?album=" + album)
                 parent.location.assign(location.origin + "/?album=" + album + "&scroll=" + pageXOffset);
         else if (playerElem != null)
-                                playerElem.src = location.origin + "/stream?album=" + album;
+                playerElem.src = location.origin + "/stream?album=" + album;
 }
 
 function updatetop(album) {
