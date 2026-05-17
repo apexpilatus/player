@@ -256,19 +256,6 @@ int main(int prm_n, char *prm[]) {
   if (min_range > 0 && min_range < header_size)
     return err();
   params.bytes_left = max_range - min_range + 1;
-  if (min_range == 0 && max_range < header_size - 1) {
-    char buf[params.bytes_left];
-    printf("%s\r\n%s%u\r\nContent-Range: bytes %u-%u/%u\r\n%s\r\n\r\n",
-           "HTTP/1.1 200 OK", "Content-Length: ", params.bytes_left, min_range,
-           max_range,
-           (flac_blocks_size * 2 * params.bytes_per_sample) + header_size,
-           "Content-Type: audio/wav");
-
-    if (fwrite(buf, params.bytes_left, 1, stdout) == 1)
-      return 0;
-    else
-      return 1;
-  }
   printf("%s\r\n%s%u\r\nContent-Range: bytes %u-%u/%u\r\n%s\r\n\r\n",
          "HTTP/1.1 200 OK", "Content-Length: ", params.bytes_left, min_range,
          max_range,
@@ -280,7 +267,10 @@ int main(int prm_n, char *prm[]) {
       return 1;
     else {
       params.bytes_skip = 0;
-      params.bytes_left -= header_size;
+      if (params.bytes_left > header_size)
+        params.bytes_left -= header_size;
+      else
+        params.bytes_left = 0;
     }
   } else
     params.bytes_skip = min_range - header_size;
