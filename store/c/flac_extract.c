@@ -270,7 +270,7 @@ int main(int prm_n, char *prm[]) {
       if (params.bytes_left > header_size)
         params.bytes_left -= header_size;
       else
-        params.bytes_left = 0;
+        return 0;
     }
   } else
     params.bytes_skip = min_range - header_size;
