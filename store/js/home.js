@@ -11,6 +11,8 @@ function play(album, tracknum) {
     fetch(location.origin + "/touch?album=" + album).then(resp => {
         if (resp.status == 200) {
             playerElem.src = location.origin + "/stream?album=" + album + "&track=" + tracknum;
+            if (playerElem.onended == null)
+                playerElem.onended = function () { albumsElem.src = location.origin + "/albums"; };
             if (topalbumElem.innerHTML != album)
                 albumsElem.src = location.origin + "/albums?scroll=0";
         }
