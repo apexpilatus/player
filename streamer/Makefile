@@ -26,7 +26,9 @@ STREAMER_DEFINES += -D system_play=\"$(STREAMER_PATH)/system_play\"
 STREAMER_DEFINES += -D system_play_bad=\"$(STREAMER_PATH)/system_play_bad\"
 STREAMER_DEFINES += -D system_volume=\"$(STREAMER_PATH)/system_volume\"
 endif
-CC := gcc -O2 -Wall
+
+CC := gcc -O3 -Wall -march=native
+RC := rustc -C debuginfo=0 -C opt-level=3 -C target-cpu=native
 
 install: streamer
 	rm -f $(STREAMER_PATH)/*
@@ -40,7 +42,7 @@ streamer : Makefile src/web.c streamer_select html_volume data_proxy resp_err da
 	$(CC) src/web.c -o streamer $(STREAMER_DEFINES)
 endif
 
-web: rust/web.rs picture meta flac_extract touch
+web: rust/web.rs
 	$(RC) -o web rust/web.rs
 
 streamer_select : Makefile src/streamer_select.c
