@@ -40,6 +40,9 @@ streamer : Makefile src/web.c streamer_select html_volume data_proxy resp_err da
 	$(CC) src/web.c -o streamer $(STREAMER_DEFINES)
 endif
 
+web: rust/web.rs picture meta flac_extract touch
+	$(RC) -o web rust/web.rs
+
 streamer_select : Makefile src/streamer_select.c
 	$(CC) src/streamer_select.c -o streamer_select $(STREAMER_DEFINES)
 
