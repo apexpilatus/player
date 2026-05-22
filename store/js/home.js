@@ -12,7 +12,7 @@ function play(album, tracknum) {
         if (resp.status == 200) {
             playerElem.src = location.origin + "/stream?album=" + album + "&track=" + tracknum;
             if (topalbumElem.innerHTML != album)
-                albumsElem.src = location.origin + "/albums";
+                albumsElem.src = location.origin + "/albums?scroll=0";
         }
     });
 }
@@ -68,6 +68,9 @@ function getmeta(album) {
     gettitle(album);
 }
 
-function loadalbums(params) {
-    albumsElem.src = location.origin + "/albums?" + params;
+function loadalbums(scroll) {
+    if (scroll != null)
+        albumsElem.src = location.origin + "/albums?scroll=" + scroll;
+    else
+        albumsElem.src = location.origin + "/albums";
 }

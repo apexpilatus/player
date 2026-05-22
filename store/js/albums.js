@@ -2,7 +2,7 @@ const iconElem = parent.document.getElementById("icon");
 const topalbumElem = parent.document.getElementById("topalbum");
 const playerElem = parent.document.getElementById("player");
 
-let scroll = 0;
+let scroll = null;
 
 function gettracks(album) {
         if (iconElem != null && iconElem.href != location.origin + "/picture?album=" + album)
@@ -39,6 +39,8 @@ function listalbums(albs) {
 }
 
 function loaded() {
+        if (scroll == null)
+                scroll = document.body.scrollWidth / 2;
         scrollTo(scroll, 0);
         document.body.style.filter = "none";
         addEventListener('wheel', (event) => {

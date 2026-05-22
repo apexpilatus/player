@@ -4,12 +4,12 @@ use TcpStream;
 
 pub fn send_home(params: Option<&str>, mut stream: BufWriter<TcpStream>) {
     let mut html = String::from(include_str!("../html/home.html"));
-    let mut scroll = String::from("scroll=0");
+    let mut scroll = None;
     let mut album = None;
     if let Some(params) = params {
         for param in params.split("&") {
             if param.starts_with("scroll=") {
-                scroll = param.to_string();
+                scroll = param.split("=").nth(1);
             }
             if param.starts_with("album=") {
                 album = param.split("=").nth(1);
@@ -21,8 +21,13 @@ pub fn send_home(params: Option<&str>, mut stream: BufWriter<TcpStream>) {
             let script = format!("<script>getmeta(\"{album}\")</script>");
             html.insert_str(into, &script);
         }
-        let script = format!("<script>loadalbums(\"{scroll}\")</script>");
-        html.insert_str(into, &script);
+        match scroll {
+            Some(scroll) => {
+                let script = format!("<script>loadalbums(\"{scroll}\")</script>");
+                html.insert_str(into, &script);
+            }
+            None => html.insert_str(into, "<script>loadalbums()</script>"),
+        }
     }
     if let Some(into) = html.find("</head>") {
         match album {
