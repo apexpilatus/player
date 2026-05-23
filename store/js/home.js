@@ -12,7 +12,7 @@ function play(album, tracknum) {
         if (resp.status == 200) {
             playerElem.src = location.origin + "/stream?album=" + album + "&track=" + tracknum;
             if (playerElem.onended == null)
-                playerElem.onended = function () { albumsElem.src = location.origin + "/albums"; };
+                playerElem.onended = function () { location = location.origin; };
             if (topalbumElem.innerHTML != album)
                 albumsElem.src = location.origin + "/albums?scroll=0";
         }
