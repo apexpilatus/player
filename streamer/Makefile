@@ -85,4 +85,5 @@ clean:
 
 .PHONY: format
 format:
-	clang-format -i src/*
+	clang-format -i c/*
+	rustfmt rust/*
