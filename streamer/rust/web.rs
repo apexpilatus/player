@@ -1,5 +1,6 @@
 mod data_static;
 mod err_codes;
+mod proxy;
 use std::io::{BufRead, BufReader, BufWriter};
 use std::net::{TcpListener, TcpStream};
 use std::thread;
@@ -32,7 +33,7 @@ fn selector(stream: TcpStream) {
 }
 
 fn main() {
-    let bind_addr = env!("BIND_ADDR");
+    let bind_addr = env!("LISTEN_ADDR");
     let listener = match TcpListener::bind(bind_addr) {
         Ok(listener) => listener,
         Err(_) => return,
