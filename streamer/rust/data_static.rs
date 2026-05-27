@@ -5,5 +5,5 @@ use BufWriter;
 use TcpStream;
 
 pub fn send_static(url: &str, req: &Vec<String>, mut stream: BufWriter<TcpStream>) {
-    proxy::forward(req, stream);
+    proxy::forward(req.join("\r\n"), stream);
 }
