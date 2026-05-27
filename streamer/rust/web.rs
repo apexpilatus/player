@@ -33,8 +33,7 @@ fn selector(stream: TcpStream) {
 }
 
 fn main() {
-    let bind_addr = env!("LISTEN_ADDR");
-    let listener = match TcpListener::bind(bind_addr) {
+    let listener = match TcpListener::bind(env!("LISTEN_ADDR")) {
         Ok(listener) => listener,
         Err(_) => return,
     };
