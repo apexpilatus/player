@@ -25,7 +25,6 @@ fn selector(stream: TcpStream) {
         }
     }
     if !req.is_empty() {
-println!("{}",req[0]);
         if let Some(url) = req[0].split(" ").nth(1) {
             let mut url = url.split("?");
             if let Some(path) = url.next() {

@@ -4,12 +4,11 @@ use BufWriter;
 use TcpStream;
 
 pub fn forward(mut req: String, mut streamer: BufWriter<TcpStream>) {
-    req.push_str("\r\n");
+    req.push_str("\r\n\r\n");
     match TcpStream::connect(env!("STORE_ADDR")) {
-        Ok(mut store) => match store.write_all("fuck\r\n".as_bytes()) {
+        Ok(mut store) => match store.write_all(req.as_bytes()) {
             Ok(_) => match store.flush() {
                 Ok(_) => {
-                    println!("{req}");
                     let mut buf: Vec<u8> = vec![0; streamer.capacity()];
                     loop {
                         match store.read(&mut buf) {
