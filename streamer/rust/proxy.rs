@@ -6,6 +6,8 @@ use TcpStream;
 pub fn forward(req: &Vec<String>, mut streamer: BufWriter<TcpStream>) {
     match TcpStream::connect(env!("STORE_ADDR")) {
         Ok(mut store) => {
+    match store.write_all(req.as_bytes()) {
+        Ok(_)  {
             let mut buf: Vec<u8> = vec![0; streamer.capacity()];
             loop {
                 match store.read(&mut buf) {
@@ -22,6 +24,9 @@ pub fn forward(req: &Vec<String>, mut streamer: BufWriter<TcpStream>) {
                 }
             }
             return;
+        },
+        _ => (),
+    }
         }
         Err(_) => match streamer.write_all(err_codes::ERR_404.as_bytes()) {
             _ => (),
