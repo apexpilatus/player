@@ -3,7 +3,7 @@ use std::io::{Read, Write};
 use BufWriter;
 use TcpStream;
 
-pub fn forward(mut streamer: BufWriter<TcpStream>) {
+pub fn forward(req: &Vec<String>, mut streamer: BufWriter<TcpStream>) {
     match TcpStream::connect(env!("STORE_ADDR")) {
         Ok(mut store) => {
             let mut buf: Vec<u8> = vec![0; streamer.capacity()];

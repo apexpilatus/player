@@ -4,6 +4,6 @@ use std::io::Write;
 use BufWriter;
 use TcpStream;
 
-pub fn send_static(url: &str, mut stream: BufWriter<TcpStream>) {
-    proxy::forward(stream);
+pub fn send_static(url: &str, req: &Vec<String>, mut stream: BufWriter<TcpStream>) {
+    proxy::forward(req, stream);
 }
