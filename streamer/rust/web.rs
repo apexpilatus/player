@@ -1,7 +1,7 @@
 mod data_static;
 mod err_codes;
-mod proxy;
 mod page_home;
+mod proxy;
 use std::io::{BufRead, BufReader, BufWriter};
 use std::net::{TcpListener, TcpStream};
 use std::thread;

@@ -2,8 +2,8 @@ use std::io::Write;
 use BufWriter;
 use TcpStream;
 
-pub fn send_home(params: Option<&str>, mut stream: BufWriter<TcpStream>) {
-    let mut html = String::from(include_str!("../html/home.html"));
+pub fn send_home(mut stream: BufWriter<TcpStream>) {
+    let html = String::from(include_str!("../html/home.html"));
     let hdr = format!(
         "\
 HTTP/1.1 200 OK\r\n\
