@@ -1,6 +1,7 @@
 mod data_static;
 mod err_codes;
 mod proxy;
+mod page_home;
 use std::io::{BufRead, BufReader, BufWriter};
 use std::net::{TcpListener, TcpStream};
 use std::thread;
@@ -25,6 +26,7 @@ fn selector(stream: TcpStream) {
             if let Some(path) = url.next() {
                 let params = url.next();
                 match path {
+                    "/" => page_home::send_home(BufWriter::new(stream)),
                     _ => data_static::send_static(path, &req, BufWriter::new(stream)),
                 }
             }
