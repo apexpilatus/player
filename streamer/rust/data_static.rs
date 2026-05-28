@@ -42,7 +42,6 @@ Content-Length: {}\r\n\r\n",
                 Err(_) => return,
             }
         }
-        None => 
-    proxy::forward(req.join("\r\n"), stream);
+        None => proxy::forward(req.join("\r\n"), stream),
     }
 }
