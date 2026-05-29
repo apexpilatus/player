@@ -1,14 +1,11 @@
 const iconElem = parent.document.getElementById("icon");
 const topalbumElem = parent.document.getElementById("topalbum");
-const playerElem = parent.document.getElementById("player");
 
 let scroll = null;
 
 function gettracks(album) {
         if (iconElem != null && iconElem.href != location.origin + "/picture?album=" + album)
                 parent.location.assign(location.origin + "/?album=" + album + "&scroll=" + pageXOffset);
-        else if (playerElem != null)
-                playerElem.src = location.origin + "/stream?album=" + album;
 }
 
 function updatetop(album) {
