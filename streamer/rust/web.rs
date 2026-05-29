@@ -26,7 +26,7 @@ fn selector(stream: TcpStream) {
             if let Some(path) = url.next() {
                 let params = url.next();
                 match path {
-                    "/" => page_home::send_home(BufWriter::new(stream)),
+                    "/" => page_home::send_home(params, BufWriter::new(stream)),
                     _ => data_static::send_static(path, &req, BufWriter::new(stream)),
                 }
             }
