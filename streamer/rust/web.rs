@@ -1,4 +1,3 @@
-mod data_static;
 mod err_codes;
 mod page_home;
 mod proxy;
@@ -27,7 +26,7 @@ fn selector(stream: TcpStream) {
                 let params = url.next();
                 match path {
                     "/" => page_home::send_home(params, BufWriter::new(stream)),
-                    _ => data_static::send_static(path, &req, BufWriter::new(stream)),
+                    _ => proxy::forward_if_no_static(path, &req, BufWriter::new(stream)),
                 }
             }
         }

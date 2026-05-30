@@ -42,7 +42,7 @@ streamer : Makefile src/web.c streamer_select html_volume data_proxy resp_err da
 	$(CC) src/web.c -o streamer $(STREAMER_DEFINES)
 endif
 
-web: rust/web.rs
+web: rust/web.rs rust/err_codes.rs rust/page_home.rs rust/proxy.rs html/home.html js/home.js style/home.css
 	$(RC) -o web rust/web.rs
 
 streamer_select : Makefile src/streamer_select.c
