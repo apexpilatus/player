@@ -1,5 +1,6 @@
 mod err_codes;
 mod page_home;
+mod page_tracks;
 mod proxy;
 use std::io::{BufRead, BufReader, BufWriter};
 use std::net::{TcpListener, TcpStream};
@@ -26,6 +27,7 @@ fn selector(stream: TcpStream) {
                 let params = url.next();
                 match path {
                     "/" => page_home::send_home(params, BufWriter::new(stream)),
+                    "/tracks" => page_tracks::send_tracks(params, BufWriter::new(stream)),
                     _ => proxy::forward_if_no_static(path, &req, BufWriter::new(stream)),
                 }
             }

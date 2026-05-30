@@ -1,0 +1,14 @@
+body::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    display: flex;
+    overflow-y: scroll;
+}
+
+b {
+    font-size: 25vh;
+    padding-left: 25vh;
+    padding-right: 25vh;
+}

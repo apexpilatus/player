@@ -25,6 +25,20 @@ fn data_map() -> HashMap<String, StaticData> {
             bytes: include_bytes!("../js/home.js").to_vec(),
         },
     );
+    data.insert(
+        "/tracks.css".to_string(),
+        StaticData {
+            content_type: "text/css; charset=utf-8".to_string(),
+            bytes: include_bytes!("../style/tracks.css").to_vec(),
+        },
+    );
+    data.insert(
+        "/tracks.js".to_string(),
+        StaticData {
+            content_type: "text/javascript; charset=utf-8".to_string(),
+            bytes: include_bytes!("../js/tracks.js").to_vec(),
+        },
+    );
     data
 }
 
