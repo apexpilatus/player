@@ -1,6 +1,7 @@
 mod err_codes;
 mod page_home;
 mod page_tracks;
+mod player;
 mod proxy;
 use std::io::{BufRead, BufReader, BufWriter};
 use std::net::{TcpListener, TcpStream};
@@ -28,6 +29,7 @@ fn selector(stream: TcpStream) {
                 match path {
                     "/" => page_home::send_home(params, BufWriter::new(stream)),
                     "/tracks" => page_tracks::send_tracks(params, BufWriter::new(stream)),
+                    "/stream" => player::play(req.join("\r\n"), BufWriter::new(stream)),
                     _ => proxy::forward_if_no_static(path, &req, BufWriter::new(stream)),
                 }
             }
