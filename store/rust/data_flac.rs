@@ -4,7 +4,7 @@ use std::process::{Command, Stdio};
 use BufWriter;
 use TcpStream;
 
-pub fn send_extracted(params: Option<&str>, req: &Vec<String>, mut stream: BufWriter<TcpStream>) {
+pub fn send_flac(params: Option<&str>, req: &Vec<String>, mut stream: BufWriter<TcpStream>) {
     if let Some(params) = params {
         let mut range = String::new();
         for line in req {
@@ -17,7 +17,7 @@ pub fn send_extracted(params: Option<&str>, req: &Vec<String>, mut stream: BufWr
                     .to_string();
             }
         }
-        if let Ok(mut child) = Command::new("flac_extract")
+        if let Ok(mut child) = Command::new("flac")
             .env("PATH", env!("STORE_PATH"))
             .stdin(Stdio::null())
             .stderr(Stdio::null())

@@ -18,9 +18,8 @@ int get_tags(FLAC__StreamMetadata **tags, long track) {
                        strlen("TRACKNUMBER="))) {
             if (strtol((char *)((*tags)->data.vorbis_comment.comments[i].entry +
                                 strlen("TRACKNUMBER=")),
-                       NULL, 10) == track) {
+                       NULL, 10) == track)
               return 0;
-            }
           }
       }
     closedir(dp);
