@@ -29,7 +29,7 @@ fn selector(stream: TcpStream) {
                 match path {
                     "/" => page_home::send_home(params, BufWriter::new(stream)),
                     "/tracks" => page_tracks::send_tracks(params, BufWriter::new(stream)),
-                    "/stream" => player::play(req.join("\r\n"), BufWriter::new(stream)),
+                    "/stream" => player::play(params, BufWriter::new(stream)),
                     _ => proxy::forward_if_no_static(path, &req, BufWriter::new(stream)),
                 }
             }
