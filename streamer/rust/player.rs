@@ -1,7 +1,6 @@
 use err_codes;
-use std::io::{BufRead, Read, Write};
+use std::io::{Read, Write};
 use std::process::{Command, Stdio};
-use BufReader;
 use BufWriter;
 use TcpStream;
 
@@ -63,50 +62,50 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                 );
                 match streamer.write_all(hdr.as_bytes()) {
                     Ok(_) => {
-                        let mut buf: Vec<u8> = vec![0; streamer.capacity()];
-                        'get_tracks: loop {
-                            let req = format!(
-                                "GET /fetch?album={}&track={} HTTP/1.1\r\n\r\n",
-                                params.album, params.track
-                            );
-                            if let Ok(mut store) = TcpStream::connect(env!("STORE_ADDR")) {
-                                match store.write_all(req.as_bytes()) {
-                                    Ok(_) => {
-                                        let reader = BufReader::new(&store);
-                                        let mut resp: Vec<String> = Vec::new();
-                                        for line in reader.lines() {
-                                            match line {
-                                                Ok(line) => {
-                                                    if line.is_empty() {
+                        if let Some(ref mut stdin) = child.stdin {
+                            let mut buf: Vec<u8> = vec![0; streamer.capacity()];
+                            'get_tracks: loop {
+                                let req = format!(
+                                    "GET /fetch?album={}&track={} HTTP/1.1\r\n\r\n",
+                                    params.album, params.track
+                                );
+                                if let Ok(mut store) = TcpStream::connect(env!("STORE_ADDR")) {
+                                    match store.write_all(req.as_bytes()) {
+                                        Ok(_) => loop {
+                                            match store.read(&mut buf) {
+                                                Ok(size) => {
+                                                    if size == 0 {
+                                                        println!("read 0 from store; break");
                                                         break;
                                                     }
-                                                    resp.push(line);
+                                                    match stdin.write_all(&buf[..size]) {
+                                                        Ok(_) => (),
+                                                        Err(_) => {
+                                                            println!("err write all to stdin");
+                                                            match child.kill() {
+                                                                _ => (),
+                                                            }
+                                                            break 'get_tracks;
+                                                        }
+                                                    }
                                                 }
                                                 Err(_) => {
-                                                    println!("err read");
-                                                    break 'get_tracks;
+                                                    println!("err read from store");
+                                                    break;
                                                 }
                                             }
-                                        }
-                                        if !(resp.is_empty()
-                                            || resp[0].contains("404 shit happens"))
-                                        {
-                                            println!("{}", resp.join("\r\n"));
-                                        } else {
-                                            println!("empty or shit");
+                                        },
+                                        Err(_) => {
+                                            println!("err send req to store");
                                             break;
                                         }
                                     }
-                                    Err(_) => {
-                                        println!("err write");
-                                        break;
-                                    }
+                                } else {
+                                    println!("cannot connect to store");
+                                    break;
                                 }
-                            } else {
-                                println!("cannot connect");
-                                break;
+                                params.track += 1;
                             }
-                            params.track += 1;
                         }
                     }
                     Err(_) => match child.kill() {
@@ -114,7 +113,10 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                     },
                 }
                 match child.wait() {
-                    _ => return,
+                    _ => {
+                        println!("finish");
+                        return;
+                    }
                 }
             }
         }
