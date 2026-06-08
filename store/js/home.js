@@ -37,7 +37,7 @@ function gettracks(album, track) {
                     num.innerHTML = "&nbsp;&nbsp;" + track;
                 else
                     num.innerHTML = track;
-                num.className = "trackber";
+                num.className = "tracknumber";
                 tr.append(num);
                 let title = document.createElement("td");
                 title.innerHTML = txt;

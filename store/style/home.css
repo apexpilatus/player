@@ -4,8 +4,11 @@
     }
 
     #albumtitle {
-        color: lightcyan;
         background-color: black;
+    }
+
+    #artist {
+        color: lightcyan;
     }
 
     #album {
@@ -23,8 +26,11 @@
     }
 
     #albumtitle {
-        color: indigo;
         background-color: white;
+    }
+
+    #artist {
+        color: indigo;
     }
 
     #album {
