@@ -8,6 +8,7 @@ body {
 }
 
 b {
+    color: gray;
     font-size: 25vh;
     padding-left: 25vh;
     padding-right: 25vh;
