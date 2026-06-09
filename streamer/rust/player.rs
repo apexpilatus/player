@@ -70,21 +70,19 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                                     params.album, params.track
                                 );
                                 if let Ok(mut store) = TcpStream::connect(env!("STORE_ADDR")) {
+                                    println!("new req {}", req);
                                     match store.write_all(req.as_bytes()) {
                                         Ok(_) => loop {
                                             match store.read(&mut buf) {
                                                 Ok(size) => {
                                                     if size == 0 {
-                                                        println!("read 0 from store; break");
+                                                        println!("read 0 from store");
                                                         break;
                                                     }
                                                     match stdin.write_all(&buf[..size]) {
                                                         Ok(_) => (),
                                                         Err(_) => {
                                                             println!("err write all to stdin");
-                                                            match child.kill() {
-                                                                _ => (),
-                                                            }
                                                             break 'get_tracks;
                                                         }
                                                     }
@@ -108,9 +106,7 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                             }
                         }
                     }
-                    Err(_) => match child.kill() {
-                        _ => (),
-                    },
+                    Err(_) => (),
                 }
                 match child.wait() {
                     _ => {
