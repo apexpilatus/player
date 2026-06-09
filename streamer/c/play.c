@@ -5,6 +5,9 @@
 #include <string.h>
 #include <unistd.h>
 
+FLAC__uint64 total_samples;
+char *header;
+
 int read_hdr() {
   ssize_t msg_size = getpagesize();
   ssize_t read_size = 0;
@@ -18,7 +21,8 @@ int read_hdr() {
   }
   if (read_size == msg_size || read_size < 9 || strstr(hdr, "404 shit happens"))
     return 1;
-  printf("%s", hdr);
+  printf("hdr size - %ld\n%s", read_size, hdr);
+  header = hdr;
   return 0;
 }
 
@@ -30,12 +34,17 @@ void error_callback(const FLAC__StreamDecoder *decoder,
 void metadata_callback(const FLAC__StreamDecoder *decoder,
                        const FLAC__StreamMetadata *metadata,
                        void *client_data) {
-  printf("%lu\n", metadata->data.stream_info.total_samples);
+  total_samples = metadata->data.stream_info.total_samples;
+  printf("%u - %u\n", metadata->data.stream_info.bits_per_sample,
+         metadata->data.stream_info.sample_rate);
 }
 
 FLAC__StreamDecoderWriteStatus
 write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
                const FLAC__int32 *const buffer[], void *client_data) {
+  total_samples -= frame->header.blocksize;
+  printf("%ld;", total_samples);
+  usleep(5000);
   return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 

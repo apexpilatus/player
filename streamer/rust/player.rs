@@ -63,7 +63,13 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                 match streamer.write_all(hdr.as_bytes()) {
                     Ok(_) => {
                         if let Some(ref mut stdin) = child.stdin {
-                            let mut buf: Vec<u8> = vec![0; streamer.capacity()];
+                            let mut writer = BufWriter::new(stdin);
+                            let mut buf: Vec<u8> = vec![0; writer.capacity()];
+                            println!(
+                                "streamer.capacity - {}; stdin.capacity - {}",
+                                streamer.capacity(),
+                                writer.capacity()
+                            );
                             'get_tracks: loop {
                                 let req = format!(
                                     "GET /fetch?album={}&track={} HTTP/1.1\r\n\r\n",
@@ -71,15 +77,19 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                                 );
                                 if let Ok(mut store) = TcpStream::connect(env!("STORE_ADDR")) {
                                     println!("new req {}", req);
+                                    let mut tot = 0;
                                     match store.write_all(req.as_bytes()) {
                                         Ok(_) => loop {
                                             match store.read(&mut buf) {
                                                 Ok(size) => {
                                                     if size == 0 {
                                                         println!("read 0 from store");
-                                                        break;
+                                                        break 'get_tracks;
+                                                        //continue;
                                                     }
-                                                    match stdin.write_all(&buf[..size]) {
+                                                    tot += size;
+                                                    //print!("tot = {};", tot);
+                                                    match writer.write_all(&buf[..size]) {
                                                         Ok(_) => (),
                                                         Err(_) => {
                                                             println!("err write all to stdin");
