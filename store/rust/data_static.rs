@@ -88,7 +88,9 @@ Content-Length: {}\r\n\r\n",
                 Ok(_) => match stream.write_all(&resourse.bytes) {
                     _ => (),
                 },
-                Err(_) => return,
+                Err(_) => {
+                    return;
+                }
             }
         }
         None => match stream.write_all(err_codes::ERR_404.as_bytes()) {

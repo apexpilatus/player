@@ -37,16 +37,26 @@ pub fn send_flac(params: Option<&str>, req: &Vec<String>, mut stream: BufWriter<
                             }
                             match stream.write_all(&buf[..size]) {
                                 Ok(_) => (),
-                                Err(_) => break,
+                                Err(_) => {
+                                    break;
+                                }
                             }
                         }
-                        Err(_) => break,
+                        Err(_) => {
+                            break;
+                        }
                     }
+                }
+            } else {
+                match stream.write_all(err_codes::ERR_404.as_bytes()) {
+                    _ => (),
                 }
             }
             match child.kill() {
                 _ => match child.wait() {
-                    _ => return,
+                    _ => {
+                        return;
+                    }
                 },
             }
         }

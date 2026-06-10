@@ -45,7 +45,7 @@ int send_track(char *file_name) {
       }
     }
   }
-  return 1;
+  return err();
 }
 
 int get_track(long track) {
@@ -70,7 +70,7 @@ int get_track(long track) {
       }
     closedir(dp);
   }
-  return 1;
+  return err();
 }
 
 int main(int prm_n, char *prm[]) {

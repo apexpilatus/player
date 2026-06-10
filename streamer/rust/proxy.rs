@@ -56,10 +56,14 @@ fn forward(mut req: String, mut streamer: BufWriter<TcpStream>) {
                             }
                             match streamer.write_all(&buf[..size]) {
                                 Ok(_) => (),
-                                Err(_) => break,
+                                Err(_) => {
+                                    break;
+                                }
                             }
                         }
-                        Err(_) => break,
+                        Err(_) => {
+                            break;
+                        }
                     }
                 }
                 return;

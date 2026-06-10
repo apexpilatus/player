@@ -21,7 +21,9 @@ fn selector(stream: TcpStream) {
                 }
                 req.push(line);
             }
-            Err(_) => return,
+            Err(_) => {
+                return;
+            }
         }
     }
     if !req.is_empty() {
@@ -47,7 +49,9 @@ fn main() {
     let bind_addr = env!("BIND_ADDR");
     let listener = match TcpListener::bind(bind_addr) {
         Ok(listener) => listener,
-        Err(_) => return,
+        Err(_) => {
+            return;
+        }
     };
     for stream in listener.incoming() {
         if let Ok(stream) = stream {

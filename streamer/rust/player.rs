@@ -79,30 +79,49 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                                     println!("new req {}", req);
                                     let mut tot = 0;
                                     match store.write_all(req.as_bytes()) {
-                                        Ok(_) => loop {
-                                            match store.read(&mut buf) {
-                                                Ok(size) => {
-                                                    if size == 0 {
-                                                        println!("read 0 from store");
-                                                        break 'get_tracks;
-                                                        //continue;
-                                                    }
-                                                    tot += size;
-                                                    //print!("tot = {};", tot);
-                                                    match writer.write_all(&buf[..size]) {
-                                                        Ok(_) => (),
-                                                        Err(_) => {
-                                                            println!("err write all to stdin");
-                                                            break 'get_tracks;
+                                        Ok(_) => {
+                                            let reader = BufReader::new(&stream);
+
+                                            let mut hdr: Vec<String> = Vec::new();
+                                            for line in reader.lines() {
+                                                match line {
+                                                    Ok(line) => {
+                                                        if line.is_empty() {
+                                                            break;
                                                         }
+                                                        hdr.push(line);
                                                     }
-                                                }
-                                                Err(_) => {
-                                                    println!("err read from store");
-                                                    break;
+                                                    Err(_) => {
+                                                        break 'get_tracks;
+                                                    }
                                                 }
                                             }
-                                        },
+
+                                            loop {
+                                                match store.read(&mut buf) {
+                                                    Ok(size) => {
+                                                        if size == 0 {
+                                                            println!("read 0 from store");
+                                                            break 'get_tracks;
+                                                            //continue;
+                                                        }
+                                                        tot += size;
+                                                        //print!("tot = {};", tot);
+                                                        match writer.write_all(&buf[..size]) {
+                                                            Ok(_) => (),
+                                                            Err(_) => {
+                                                                println!("err write all to stdin");
+                                                                break 'get_tracks;
+                                                            }
+                                                        }
+                                                    }
+                                                    Err(_) => {
+                                                        println!("err read from store");
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
                                         Err(_) => {
                                             println!("err send req to store");
                                             break;

@@ -14,7 +14,9 @@ pub fn send_text(params: Option<&str>, mut stream: BufWriter<TcpStream>) {
         {
             if output.status.success() {
                 match stream.write_all(&output.stdout) {
-                    _ => return,
+                    _ => {
+                        return;
+                    }
                 }
             }
         }
