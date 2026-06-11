@@ -42,39 +42,68 @@ fn parse_params(params: &str) -> Option<Params> {
     }
 }
 
-fn get_hdr(req: String) -> Vec<String> {
-    let mut hdr: Vec<String> = Vec::new();
-    match TcpStream::connect(env!("STORE_ADDR")) {
-        Ok(mut store) => {
-            println!("new req {}", req);
-            match store.write_all(req.as_bytes()) {
-                Ok(_) => {
-                    let reader = BufReader::new(store);
-                    for line in reader.lines() {
-                        match line {
-                            Ok(line) => {
-                                if line.is_empty() {
-                                    break;
-                                }
-                                hdr.push(line);
-                            }
-                            Err(_) => {
-                                println!("err send req to store");
-                                break;
-                            }
+// fn get_hdr(req: String) -> Vec<String> {
+//     let mut hdr: Vec<String> = Vec::new();
+//     match TcpStream::connect(env!("STORE_ADDR")) {
+//         Ok(mut store) => {
+//             println!("new req {}", req);
+//             match store.write_all(req.as_bytes()) {
+//                 Ok(_) => {
+//                     let reader = BufReader::new(store);
+//                     for line in reader.lines() {
+//                         match line {
+//                             Ok(line) => {
+//                                 if line.is_empty() {
+//                                     break;
+//                                 }
+//                                 hdr.push(line);
+//                             }
+//                             Err(_) => {
+//                                 println!("err send req to store");
+//                                 break;
+//                             }
+//                         }
+//                     }
+//                 }
+//                 Err(_) => {
+//                     println!("err send req to store");
+//                 }
+//             }
+//         }
+//         Err(_) => {
+//             println!("cannot connect to store to send meta");
+//         }
+//     }
+//     hdr
+// }
+
+fn get_hdr(buf: &mut [u8], mut store: &TcpStream) -> Option<String> {
+    let mut size: usize = 0;
+    while size < buf.len() {
+        match store.read_exact(&mut buf[size..size + 1]) {
+            Ok(_) => {
+                size += 1;
+                if size > 3 {
+                    if let Ok(hdr) = str::from_utf8(&buf[..size]) {
+                        if hdr.ends_with("\r\n\r\n") {
+                            println!("and was found");
+                            break;
                         }
                     }
                 }
-                Err(_) => {
-                    println!("err send req to store");
-                }
             }
-        }
-        Err(_) => {
-            println!("cannot connect to store to send meta");
+            Err(_) => return None,
         }
     }
-    hdr
+    if size == buf.len() {
+        println!("size = len");
+        None
+    } else {
+        match str::from_utf8(&buf[..size]) {
+            Ok(ret) => Some(ret.to_string()),
+            Err(_) => None,
+        }
+    }
 }
 
 pub fn play(params: Option<&str>, mut streamer: BufWriter<TcpStream>) {
@@ -102,16 +131,16 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                             let mut writer = BufWriter::new(stdin);
                             let mut buf: Vec<u8> = vec![0; writer.capacity()];
                             'get_tracks: loop {
-                                let req = format!(
-                                    "GET /meta?album={}&meta=TITLE=&track={} HTTP/1.1\r\n\r\n",
-                                    params.album, params.track
-                                );
-                                let hdr = get_hdr(req);
-                                println!("{}", hdr.join("\r\n"));
-                                if hdr.is_empty() || hdr.join("").contains("404 shit happens") {
-                                    println!("shit!");
-                                    break;
-                                }
+                                // let req = format!(
+                                //     "GET /meta?album={}&meta=TITLE=&track={} HTTP/1.1\r\n\r\n",
+                                //     params.album, params.track
+                                // );
+                                // let hdr = get_hdr(req);
+                                // println!("{}", hdr.join("\r\n"));
+                                // if hdr.is_empty() || hdr.join("").contains("404 shit happens") {
+                                //     println!("shit!");
+                                //     break;
+                                // }
                                 let req = format!(
                                     "GET /fetch?album={}&track={} HTTP/1.1\r\n\r\n",
                                     params.album, params.track
@@ -121,6 +150,13 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                                         println!("new req {}", req);
                                         match store.write_all(req.as_bytes()) {
                                             Ok(_) => {
+                                                if let Some(hdr) = get_hdr(&mut buf, &store) {
+                                                    if hdr.contains("404 shit happens") {
+                                                        break;
+                                                    } else {
+                                                        println!("{}", hdr);
+                                                    }
+                                                }
                                                 let mut reader = BufReader::new(store);
                                                 loop {
                                                     match reader.read(&mut buf) {

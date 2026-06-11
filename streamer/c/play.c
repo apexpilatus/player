@@ -5,7 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
-FLAC__uint64 total_samples;
+//FLAC__uint64 total_samples;
 
 int read_hdr() {
   ssize_t msg_size = getpagesize();
@@ -18,7 +18,7 @@ int read_hdr() {
     if (read_size > 3 && !strcmp(hdr + read_size - 4, "\r\n\r\n"))
       break;
   }
-printf("\nhere\n");
+  printf("\nhere\n");
   if (read_size == msg_size || read_size < 9 || strstr(hdr, "404 shit happens"))
     return 1;
   printf("hdr size - %ld\n%s", read_size, hdr);
@@ -28,12 +28,13 @@ printf("\nhere\n");
 void error_callback(const FLAC__StreamDecoder *decoder,
                     FLAC__StreamDecoderErrorStatus status, void *client_data) {
   printf("flac error\n");
+  exit(1);
 }
 
 void metadata_callback(const FLAC__StreamDecoder *decoder,
                        const FLAC__StreamMetadata *metadata,
                        void *client_data) {
-  total_samples = metadata->data.stream_info.total_samples;
+  //total_samples = metadata->data.stream_info.total_samples;
   printf("%u - %u\n", metadata->data.stream_info.bits_per_sample,
          metadata->data.stream_info.sample_rate);
 }
@@ -41,11 +42,11 @@ void metadata_callback(const FLAC__StreamDecoder *decoder,
 FLAC__StreamDecoderWriteStatus
 write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
                const FLAC__int32 *const buffer[], void *client_data) {
-  total_samples -= frame->header.blocksize;
+  /*total_samples -= frame->header.blocksize;
   printf("%ld;", total_samples);
   if (total_samples == 0)
     return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
-  else
+  else*/
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
@@ -66,16 +67,20 @@ int extract_track() {
 
 int main(void) {
   printf("c start\n");
-  /*if*/while (!read_hdr()) {
-    printf("header ok\n");
-    if (!extract_track()) {
-      printf("\nextracted\n");
-    } else {
-      printf("not extracted");
-    }
-  } /*else {
-    printf("bad header");
-  }*/
+  // if while (!read_hdr()) {
+  // printf("header ok\n");
+  while (!extract_track()) {
+    /*if ((long)total_samples < 0){
+      printf("fuck\n");
+      break;
+    }*/
+    printf("\nextracted\n");
+  } /* else {
+     printf("not extracted");
+   }*/
+  // } else {
+  //   printf("bad header");
+  // }
   printf("c end\n");
   return 0;
 }
