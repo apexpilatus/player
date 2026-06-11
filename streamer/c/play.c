@@ -6,25 +6,6 @@
 #include <unistd.h>
 
 FLAC__uint64 total_samples;
-char *header;
-
-int read_hdr() {
-  ssize_t msg_size = getpagesize();
-  ssize_t read_size = 0;
-  char *hdr = malloc(msg_size);
-  while (read_size < msg_size && fread(hdr + read_size, 1, 1, stdin) == 1) {
-    read_size++;
-    if (read_size < msg_size)
-      hdr[read_size] = '\0';
-    if (read_size > 3 && !strcmp(hdr + read_size - 4, "\r\n\r\n"))
-      break;
-  }
-  if (read_size == msg_size || read_size < 9 || strstr(hdr, "404 shit happens"))
-    return 1;
-  printf("hdr size - %ld\n%s", read_size, hdr);
-  header = hdr;
-  return 0;
-}
 
 void error_callback(const FLAC__StreamDecoder *decoder,
                     FLAC__StreamDecoderErrorStatus status, void *client_data) {
@@ -37,6 +18,7 @@ void metadata_callback(const FLAC__StreamDecoder *decoder,
   total_samples = metadata->data.stream_info.total_samples;
   printf("%u - %u\n", metadata->data.stream_info.bits_per_sample,
          metadata->data.stream_info.sample_rate);
+  return 1;
 }
 
 FLAC__StreamDecoderWriteStatus
@@ -67,17 +49,11 @@ int extract_track() {
 
 int main(void) {
   printf("c start\n");
-  if (!read_hdr()) {
-    printf("header ok\n");
-    if (!extract_track()) {
-      printf("\nextracted\n");
-    } else {
-      printf("not extracted");
-    }
+  if (!extract_track()) {
+    printf("\nextracted\n");
   } else {
-    printf("bad header");
+    printf("not extracted");
   }
-  printf("c after while\n");
   printf("c end\n");
   return 0;
 }

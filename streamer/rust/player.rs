@@ -1,6 +1,7 @@
 use err_codes;
-use std::io::{Read, Write};
+use std::io::{BufRead, Read, Write};
 use std::process::{Command, Stdio};
+use BufReader;
 use BufWriter;
 use TcpStream;
 
@@ -65,11 +66,6 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                         if let Some(ref mut stdin) = child.stdin {
                             let mut writer = BufWriter::new(stdin);
                             let mut buf: Vec<u8> = vec![0; writer.capacity()];
-                            println!(
-                                "streamer.capacity - {}; stdin.capacity - {}",
-                                streamer.capacity(),
-                                writer.capacity()
-                            );
                             'get_tracks: loop {
                                 let req = format!(
                                     "GET /fetch?album={}&track={} HTTP/1.1\r\n\r\n",
@@ -80,8 +76,7 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                                     let mut tot = 0;
                                     match store.write_all(req.as_bytes()) {
                                         Ok(_) => {
-                                            let reader = BufReader::new(&stream);
-
+                                            let reader = BufReader::new(&store);
                                             let mut hdr: Vec<String> = Vec::new();
                                             for line in reader.lines() {
                                                 match line {
@@ -96,7 +91,12 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                                                     }
                                                 }
                                             }
-
+                                            println!("{}", hdr.join("\r\n"));
+                                            if req.is_empty()
+                                                || hdr.join("").contains("404 shit happens")
+                                            {
+                                                break;
+                                            }
                                             loop {
                                                 match store.read(&mut buf) {
                                                     Ok(size) => {
