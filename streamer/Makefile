@@ -46,7 +46,7 @@ web: rust/web.rs rust/err_codes.rs rust/page_home.rs rust/page_tracks.rs rust/pl
 	$(RC) -o web rust/web.rs
 
 play: c/play.c
-	$(CC) -o play c/play.c -lFLAC
+	$(CC) -o play c/play.c -lFLAC -lasound
 
 streamer_select : Makefile src/streamer_select.c
 	$(CC) src/streamer_select.c -o streamer_select $(STREAMER_DEFINES)

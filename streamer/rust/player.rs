@@ -77,7 +77,8 @@ fn parse_params(params: &str) -> Option<Params> {
 //     hdr
 // }
 
-fn get_hdr(buf: &mut [u8], mut store: &TcpStream) -> Option<String> {
+fn get_hdr(mut store: &TcpStream) -> Option<String> {
+    let mut buf: [u8; 4096] = [0; 4096];
     let mut size: usize = 0;
     while size < buf.len() {
         match store.read_exact(&mut buf[size..size + 1]) {
@@ -113,7 +114,7 @@ pub fn play(params: Option<&str>, mut streamer: BufWriter<TcpStream>) {
             if let Ok(mut child) = Command::new("play")
                 .env("PATH", env!("STREAMER_PATH"))
                 .stdin(Stdio::piped())
-                //.stderr(Stdio::null())
+                .stderr(Stdio::piped())
                 //.stdout(Stdio::null())
                 .current_dir(env!("STREAMER_PATH"))
                 .spawn()
@@ -128,8 +129,6 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                 match streamer.write_all(resp.as_bytes()) {
                     Ok(_) => {
                         if let Some(ref mut stdin) = child.stdin {
-                            let mut writer = BufWriter::new(stdin);
-                            let mut buf: Vec<u8> = vec![0; writer.capacity()];
                             'get_tracks: loop {
                                 // let req = format!(
                                 //     "GET /meta?album={}&meta=TITLE=&track={} HTTP/1.1\r\n\r\n",
@@ -150,7 +149,7 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                                         println!("new req {}", req);
                                         match store.write_all(req.as_bytes()) {
                                             Ok(_) => {
-                                                if let Some(hdr) = get_hdr(&mut buf, &store) {
+                                                if let Some(hdr) = get_hdr(&store) {
                                                     if hdr.contains("404 shit happens") {
                                                         break;
                                                     } else {
@@ -158,14 +157,21 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                                                     }
                                                 }
                                                 let mut reader = BufReader::new(store);
+                                                let mut buf: Vec<u8> = vec![0; reader.capacity()];
                                                 loop {
                                                     match reader.read(&mut buf) {
                                                         Ok(size) => {
                                                             if size == 0 {
                                                                 println!("read 0 from store");
+                                                                if let Some(ref mut stderr) =
+                                                                    child.stderr
+                                                                {
+                                                                    stderr.read_exact(&mut buf);
+                                                                }
                                                                 break;
+                                                                // continue;
                                                             }
-                                                            match writer.write_all(&buf[..size]) {
+                                                            match stdin.write_all(&buf[..size]) {
                                                                 Ok(_) => (),
                                                                 Err(_) => {
                                                                     println!(
