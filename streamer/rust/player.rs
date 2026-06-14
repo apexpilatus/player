@@ -128,79 +128,98 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                 );
                 match streamer.write_all(resp.as_bytes()) {
                     Ok(_) => {
-                        if let Some(ref mut stdin) = child.stdin {
-                            'get_tracks: loop {
-                                // let req = format!(
-                                //     "GET /meta?album={}&meta=TITLE=&track={} HTTP/1.1\r\n\r\n",
-                                //     params.album, params.track
-                                // );
-                                // let hdr = get_hdr(req);
-                                // println!("{}", hdr.join("\r\n"));
-                                // if hdr.is_empty() || hdr.join("").contains("404 shit happens") {
-                                //     println!("shit!");
-                                //     break;
-                                // }
-                                let req = format!(
-                                    "GET /fetch?album={}&track={} HTTP/1.1\r\n\r\n",
-                                    params.album, params.track
-                                );
-                                match TcpStream::connect(env!("STORE_ADDR")) {
-                                    Ok(mut store) => {
-                                        println!("new req {}", req);
-                                        match store.write_all(req.as_bytes()) {
-                                            Ok(_) => {
-                                                if let Some(hdr) = get_hdr(&store) {
-                                                    if hdr.contains("404 shit happens") {
-                                                        break;
-                                                    } else {
-                                                        println!("{}", hdr);
-                                                    }
-                                                }
-                                                let mut reader = BufReader::new(store);
-                                                let mut buf: Vec<u8> = vec![0; reader.capacity()];
-                                                loop {
-                                                    match reader.read(&mut buf) {
-                                                        Ok(size) => {
-                                                            if size == 0 {
-                                                                println!("read 0 from store");
-                                                                if let Some(ref mut stderr) =
-                                                                    child.stderr
-                                                                {
-                                                                    stderr.read_exact(&mut buf);
-                                                                }
+                        match streamer.flush() {
+                            Ok(_) => {
+                                if let Some(ref mut stdin) = child.stdin {
+                                    'get_tracks: loop {
+                                        // let req = format!(
+                                        //     "GET /meta?album={}&meta=TITLE=&track={} HTTP/1.1\r\n\r\n",
+                                        //     params.album, params.track
+                                        // );
+                                        // let hdr = get_hdr(req);
+                                        // println!("{}", hdr.join("\r\n"));
+                                        // if hdr.is_empty() || hdr.join("").contains("404 shit happens") {
+                                        //     println!("shit!");
+                                        //     break;
+                                        // }
+                                        let req = format!(
+                                            "GET /fetch?album={}&track={} HTTP/1.1\r\n\r\n",
+                                            params.album, params.track
+                                        );
+                                        match TcpStream::connect(env!("STORE_ADDR")) {
+                                            Ok(mut store) => {
+                                                println!("new req {}", req);
+                                                match store.write_all(req.as_bytes()) {
+                                                    Ok(_) => {
+                                                        if let Some(hdr) = get_hdr(&store) {
+                                                            if hdr.contains("404 shit happens") {
                                                                 break;
-                                                                // continue;
+                                                            } else {
+                                                                println!("{}", hdr);
                                                             }
-                                                            match stdin.write_all(&buf[..size]) {
-                                                                Ok(_) => (),
-                                                                Err(_) => {
-                                                                    println!(
+                                                        }
+                                                        let mut reader = BufReader::new(store);
+                                                        let mut buf: Vec<u8> =
+                                                            vec![0; 2048];
+                                                            let mut tot = 0;
+                                                        loop {
+                                                            match reader.read(&mut buf) {
+                                                                Ok(size) => {
+                                                                    tot+=size;
+                                                                    if size == 0 {
+                                                                        println!(
+                                                                            "read 0 from store"
+                                                                        );
+                                                                        println!("all - {}", tot);
+                                                                        stdin.flush();
+                                                                        if let Some(
+                                                                            ref mut stderr,
+                                                                        ) = child.stderr
+                                                                        {
+                                                                            stderr.read_exact(
+                                                                                &mut buf,
+                                                                            );
+                                                                        }
+                                                                        break;
+                                                                        // continue;
+                                                                    }
+                                                                    match stdin
+                                                                        .write_all(&buf[..size])
+                                                                    {
+                                                                        Ok(_) => {
+                                                                        stdin.flush();
+                                                                        },
+                                                                        Err(_) => {
+                                                                            println!(
                                                                         "err write all to stdin"
                                                                     );
-                                                                    break 'get_tracks;
+                                                                            break 'get_tracks;
+                                                                        }
+                                                                    }
+                                                                }
+                                                                Err(_) => {
+                                                                    println!("err read from store");
+                                                                    break;
                                                                 }
                                                             }
                                                         }
-                                                        Err(_) => {
-                                                            println!("err read from store");
-                                                            break;
-                                                        }
+                                                    }
+                                                    Err(_) => {
+                                                        println!("err send req to store");
+                                                        break;
                                                     }
                                                 }
                                             }
                                             Err(_) => {
-                                                println!("err send req to store");
+                                                println!("cannot connect to store to get file");
                                                 break;
                                             }
                                         }
-                                    }
-                                    Err(_) => {
-                                        println!("cannot connect to store to get file");
-                                        break;
+                                        params.track += 1;
                                     }
                                 }
-                                params.track += 1;
                             }
+                            Err(_) => println!("cannot flash streamer"),
                         }
                     }
                     Err(_) => (),

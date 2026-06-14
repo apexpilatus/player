@@ -16,7 +16,6 @@ typedef struct {
   uint32_t not_started;
   uint32_t rate;
   uint32_t bytes_per_sample;
-  uint32_t channels;
   FLAC__uint64 total_samples;
   card_list *cards;
 } extract_params;
@@ -108,12 +107,10 @@ void metadata_callback(const FLAC__StreamDecoder *decoder,
                        void *client_data) {
   extract_params *params = client_data;
   params->total_samples = metadata->data.stream_info.total_samples;
-  printf("%u - %u\n", metadata->data.stream_info.bits_per_sample,
-         metadata->data.stream_info.sample_rate);
+  printf("%lu\n", params->total_samples);
 
   params->rate = metadata->data.stream_info.sample_rate;
   params->bytes_per_sample = metadata->data.stream_info.bits_per_sample / 8;
-  params->channels = metadata->data.stream_info.channels;
   params->cards = init_alsa(metadata->data.stream_info.sample_rate,
                             metadata->data.stream_info.bits_per_sample,
                             metadata->data.stream_info.channels);
@@ -251,7 +248,7 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
       if (snd_pcm_avail_update(cards_tmp->pcm) < 0 ||
           snd_pcm_mmap_begin(cards_tmp->pcm, &areas, &offset, &frames) < 0)
         return 1;
-      for (channel = 0; channel < params->channels; channel++) {
+      for (channel = 0; channel < frame->header.channels; channel++) {
         buf_tmp = areas[channel].addr + (areas[channel].first / 8) +
                   (offset * areas[channel].step / 8) + cards_tmp->off;
         memcpy(buf_tmp, (char *)(buffer[channel] + i),
@@ -274,8 +271,8 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
     }
   }
   printf("ok;");
-  if (params->total_samples == 0) {
-    printf("en of stream");
+  if (params->total_samples < 3000) {
+    printf("end of stream");
     return FLAC__STREAM_DECODER_READ_STATUS_END_OF_STREAM;
   } else
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
