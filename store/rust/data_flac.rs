@@ -6,7 +6,7 @@ use TcpStream;
 
 pub fn send_flac(params: Option<&str>, req: &Vec<String>, mut stream: BufWriter<TcpStream>) {
     if let Some(params) = params {
-        let mut range = String::from("0-");
+        let mut range = String::new();
         for line in req {
             if line.to_lowercase().trim().starts_with("range") {
                 range = line

@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -19,28 +20,28 @@ int send_track(char *file_name) {
   long max_range;
   struct stat stat_buf;
   if (!stat(file_name, &stat_buf)) {
-    char *data = malloc(stat_buf.st_size);
     int fd;
-    ssize_t read_size;
     if ((fd = open(file_name, O_RDONLY)) >= 0) {
       char *end;
-      read_size = read(fd, data, stat_buf.st_size);
+      void *shd_addr =
+          mmap(NULL, stat_buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
       close(fd);
       if ((end = strchr(range, '-')) && strlen(++end) > 0)
         max_range = strtol(end, NULL, 10);
       else {
-        max_range = read_size - 1;
+        max_range = stat_buf.st_size - 1;
       }
       if ((end = strchr(range, '-'))) {
         *end = '\0';
         min_range = strtol(range, NULL, 10);
       }
-      if (read_size == stat_buf.st_size) {
+      if (shd_addr != MAP_FAILED) {
         long content_length = max_range - min_range + 1;
         printf("%s\r\n%s%ld\r\n%s%ld-%ld/%ld\r\n%s\r\n\r\n", "HTTP/1.1 200 OK",
                "Content-Length: ", content_length, "Content-Range: bytes ",
-               min_range, max_range, read_size, "Content-Type: audio/flac");
-        fwrite(data + min_range, content_length, 1, stdout);
+               min_range, max_range, stat_buf.st_size,
+               "Content-Type: audio/flac");
+        fwrite(shd_addr + min_range, content_length, 1, stdout);
         return 0;
       }
     }
