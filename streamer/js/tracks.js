@@ -1,5 +1,7 @@
-let track = 1;
 const topalbumElem = parent.document.getElementById("topalbum");
+const albumsElem = parent.document.getElementById("albums");
+
+let track = 1;
 
 function play(album, tracknum) {
     fetch(location.origin + "/stream?album=" + album + "&track=" + tracknum).then(resp => {
