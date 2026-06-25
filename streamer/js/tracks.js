@@ -1,7 +1,16 @@
 let track = 1;
 
 function play(album, tracknum) {
-    fetch(location.origin + "/stream?album=" + album + "&track=" + tracknum);
+    fetch(location.origin + "/stream?album=" + album + "&track=" + tracknum).then(resp => {
+        if (resp.status == 200) {
+            fetch(location.origin + "/touch?album=" + album).then(resp => {
+                if (resp.status == 200) {
+                    if (topalbumElem.innerHTML != album)
+                        albumsElem.src = location.origin + "/albums?scroll=0";
+                }
+            });
+        }
+    });
 }
 
 function getmeta(album) {
