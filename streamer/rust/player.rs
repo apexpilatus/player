@@ -97,8 +97,7 @@ fn get_tracks(mut params: Params, mut stdin: &ChildStdin) {
                     } else {
                         break;
                     }
-                    //let mut reader = BufReader::new(store);
-                    let mut buf: Vec<u8> = vec![0; /*reader.capacity()*/2048];
+                    let mut buf: Vec<u8> = vec![0; 2048];
                     match stdin.write_all(length.as_bytes()) {
                         Ok(_) => (),
                         Err(_) => {

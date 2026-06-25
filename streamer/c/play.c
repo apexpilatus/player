@@ -4,7 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 #include <unistd.h>
+
+#define play_pid_path "pid"
 
 typedef struct card_list_t {
   struct card_list_t *next;
@@ -94,6 +97,19 @@ card_list *init_alsa(uint32_t rate, uint32_t bits_per_sample,
   return card_first;
 }
 
+int clear_alsa(card_list *cards) {
+  if (snd_pcm_drain(cards->pcm))
+    return 1;
+  while (cards) {
+    card_list *card_to_del = cards;
+    if (snd_pcm_close(cards->pcm))
+      return 1;
+    cards = cards->next;
+    free(card_to_del);
+  }
+  return 0;
+}
+
 void error_callback(const FLAC__StreamDecoder *decoder,
                     FLAC__StreamDecoderErrorStatus status, void *client_data) {
   exit(1);
@@ -107,13 +123,28 @@ void metadata_callback(const FLAC__StreamDecoder *decoder,
   if (metadata->data.stream_info.sample_rate != params->rate ||
       metadata->data.stream_info.bits_per_sample / 8 !=
           params->bytes_per_sample) {
+    ssize_t write_size;
+    pid_t pid;
+    int fd;
     params->rate = metadata->data.stream_info.sample_rate;
     params->bytes_per_sample = metadata->data.stream_info.bits_per_sample / 8;
+    if (params->cards && clear_alsa(params->cards))
+      exit(1);
     params->cards = init_alsa(metadata->data.stream_info.sample_rate,
                               metadata->data.stream_info.bits_per_sample,
                               metadata->data.stream_info.channels);
     if (!params->cards)
       exit(1);
+    fd = open(play_pid_path, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+    if (fd < 0)
+      exit(1);
+    pid = getpid();
+    write_size = write(fd, &pid, sizeof(pid_t));
+    close(fd);
+    if (write_size != sizeof(pid_t)) {
+      unlink(play_pid_path);
+      exit(1);
+    }
     params->not_started = 1;
   }
 }
@@ -133,12 +164,17 @@ write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
   snd_pcm_sframes_t commitres = 0;
   if (params->total_samples == 0)
     return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
-  for (i = 0; i < frame->header.blocksize; i++) {
-    while ((avail_frames = snd_pcm_avail(params->cards->pcm)) < frames)
+  cards_tmp = params->cards;
+  while (cards_tmp) {
+    while ((avail_frames = snd_pcm_avail(cards_tmp->pcm)) <
+           frame->header.blocksize)
       if (avail_frames < 0)
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
       else
-        usleep(100);
+        usleep(1000);
+    cards_tmp = cards_tmp->next;
+  }
+  for (i = 0; i < frame->header.blocksize; i++) {
     cards_tmp = params->cards;
     while (cards_tmp) {
       if (snd_pcm_avail_update(cards_tmp->pcm) < 0 ||
@@ -187,9 +223,18 @@ FLAC__StreamDecoderReadStatus read_callback(const FLAC__StreamDecoder *decoder,
 
 int main(void) {
   extract_params params = {.rate = 0, .bytes_per_sample = 0};
-  FLAC__StreamDecoder *decoder = NULL;
-  decoder = FLAC__stream_decoder_new();
-  FLAC__stream_decoder_set_md5_checking(decoder, false);
+  FLAC__StreamDecoder *decoder = FLAC__stream_decoder_new();
+  int fd = open(play_pid_path, O_RDONLY);
+  if (fd >= 0) {
+    pid_t run_pid;
+    ssize_t read_size = read(fd, &run_pid, sizeof(pid_t));
+    close(fd);
+    if (read_size == sizeof(pid_t)) {
+      kill(run_pid, SIGTERM);
+      usleep(10000);
+    }
+    unlink(play_pid_path);
+  }
   while ((params.stream_length = get_length()) > 0) {
     if (FLAC__stream_decoder_init_stream(
             decoder, read_callback, NULL, NULL, NULL, NULL, write_callback,
