@@ -1,11 +1,6 @@
-#include <FLAC/metadata.h>
 #include <FLAC/stream_decoder.h>
 #include <alsa/conf.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/wait.h>
-#include <unistd.h>
 
 #define play_pid_path "pid"
 
