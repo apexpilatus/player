@@ -26,6 +26,7 @@ function getvolume() {
                                 let vol = document.createElement("p");
                                 let lab = document.createElement("label");
                                 lab.setAttribute("for", name);
+                                vol.appendChild(lab);
                                 document.body.appendChild(vol);
                             });
                         }
