@@ -31,3 +31,14 @@ body {
     height: 15%;
     border-style: none;
 }
+
+form {
+    position: fixed;
+    bottom: 40%;
+    left: 5%;
+    width: 90%;
+}
+
+input {
+    width: 100%;
+}

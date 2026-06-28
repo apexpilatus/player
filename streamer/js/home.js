@@ -4,6 +4,7 @@ let volumeTimeId = setTimeout(function () { canSetVol = true }, volumeTimeout);
 
 const albumsElem = document.getElementById("albums");
 const tracksElem = document.getElementById("tracks");
+const controlsElem = document.getElementById("controls");
 
 function loadalbums(scroll) {
     if (scroll != null)
@@ -53,7 +54,7 @@ function getvolume() {
                                 vol.appendChild(lab);
                                 vol.appendChild(br);
                                 vol.appendChild(inp);
-                                document.body.appendChild(vol);
+                                controlsElem.appendChild(vol);
                             });
                         }
                     });
