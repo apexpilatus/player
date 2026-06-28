@@ -1,3 +1,7 @@
+let canSetVol = false;
+const volumeTimeout = 200;
+let volumeTimeId = setTimeout(function () { canSetVol = true }, volumeTimeout);
+
 const albumsElem = document.getElementById("albums");
 const tracksElem = document.getElementById("tracks");
 
@@ -11,10 +15,15 @@ function loadalbums(scroll) {
 function getmeta(album) {
     tracksElem.src = location.origin + "/tracks?album=" + album;
 }
-function setvolume(name) {
-    alert(name);
-}
 
+function setvolume(name) {
+    if (canSetVol) {
+        canSetVol = false;
+        clearTimeout(volumeTimeId);
+        alert(name);
+        volumeTimeId = setTimeout(function () { canSetVol = true }, volumeTimeout);
+    }
+}
 
 function getvolume() {
     fetch(location.origin + "/getcards").then(resp => {
