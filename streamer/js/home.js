@@ -31,6 +31,10 @@ function getvolume() {
                                 let inp = document.createElement("input");
                                 inp.type = "range";
                                 inp.id = name;
+                                inp.name = name;
+                                inp.min = resp.statusText.split(";")[0];
+                                inp.value = resp.statusText.split(";")[1];
+                                inp.max = resp.statusText.split(";")[2];
                                 vol.appendChild(lab);
                                 vol.appendChild(br);
                                 vol.appendChild(inp);
