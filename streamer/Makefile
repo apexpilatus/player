@@ -42,11 +42,14 @@ streamer : Makefile src/web.c streamer_select html_volume data_proxy resp_err da
 	$(CC) src/web.c -o streamer $(STREAMER_DEFINES)
 endif
 
-web: rust/web.rs rust/err_codes.rs rust/page_home.rs rust/page_tracks.rs rust/player.rs rust/proxy.rs html/home.html html/tracks.html js/home.js style/home.css js/tracks.js style/tracks.css play
+web: rust/web.rs rust/err_codes.rs rust/page_home.rs rust/page_tracks.rs rust/player.rs rust/proxy.rs rust/volume.rs html/home.html html/tracks.html js/home.js style/home.css js/tracks.js style/tracks.css play getvolume
 	$(RC) -o web rust/web.rs
 
 play: c/play.c
 	$(CC) -o play c/play.c -lFLAC -lasound
+
+getvolume: c/getvolume.c
+	$(CC) -o getvolume c/getvolume.c -lasound
 
 streamer_select : Makefile src/streamer_select.c
 	$(CC) src/streamer_select.c -o streamer_select $(STREAMER_DEFINES)

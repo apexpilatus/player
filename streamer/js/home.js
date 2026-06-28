@@ -13,9 +13,21 @@ function getmeta(album) {
 }
 
 function getvolume() {
-    fetch(location.origin + "/getvolume").then(resp => {
+    fetch(location.origin + "/getcards").then(resp => {
         if (resp.status == 200) {
-            alert(resp.statusText);
+            const cards = resp.statusText.split(" ");
+            let len = cards.length;
+            if (len > 0) {
+                for (--len; len >= 0; len--) {
+                    fetch(location.origin + "/getvolume?name=hw:" + len).then(resp => {
+                        if (resp.status == 200) {
+                            resp.text().then(txt => {
+                                 alert(resp.statusText+" "+txt);
+                            });
+                        }
+                    });
+                }
+            }
         }
     });
 }

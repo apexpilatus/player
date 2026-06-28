@@ -3,6 +3,7 @@ mod page_home;
 mod page_tracks;
 mod player;
 mod proxy;
+mod volume;
 use std::io::{BufRead, BufReader, BufWriter};
 use std::net::{TcpListener, TcpStream};
 use std::thread;
@@ -30,6 +31,8 @@ fn selector(stream: TcpStream) {
                     "/" => page_home::send_home(params, BufWriter::new(stream)),
                     "/tracks" => page_tracks::send_tracks(params, BufWriter::new(stream)),
                     "/stream" => player::play(params, BufWriter::new(stream)),
+                    "/getcards" => volume::get_cards(BufWriter::new(stream)),
+                    "/getvolume" => volume::get_volume(params, BufWriter::new(stream)),
                     _ => proxy::forward_if_no_static(path, &req, BufWriter::new(stream)),
                 }
             }
