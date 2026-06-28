@@ -11,3 +11,11 @@ function loadalbums(scroll) {
 function getmeta(album) {
     tracksElem.src = location.origin + "/tracks?album=" + album;
 }
+
+function getvolume() {
+    fetch(location.origin + "/getvolume").then(resp => {
+        if (resp.status == 200) {
+            alert(resp.statusText);
+        }
+    });
+}
