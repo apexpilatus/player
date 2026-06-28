@@ -33,6 +33,7 @@ fn selector(stream: TcpStream) {
                     "/stream" => player::play(params, BufWriter::new(stream)),
                     "/getcards" => volume::get_cards(BufWriter::new(stream)),
                     "/getvolume" => volume::get_volume(params, BufWriter::new(stream)),
+                    "/setvolume" => volume::set_volume(params, BufWriter::new(stream)),
                     _ => proxy::forward_if_no_static(path, &req, BufWriter::new(stream)),
                 }
             }

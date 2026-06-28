@@ -4,6 +4,27 @@ use std::process::Command;
 use BufWriter;
 use TcpStream;
 
+pub fn set_volume(params: Option<&str>, mut stream: BufWriter<TcpStream>) {
+    if let Some(params) = params {
+        if let Ok(output) = Command::new("setvolume")
+            .env("PATH", env!("STREAMER_PATH"))
+            .arg(params)
+            .output()
+        {
+            if output.status.success() {
+                match stream.write_all(&output.stdout) {
+                    _ => {
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    match stream.write_all(err_codes::ERR_404.as_bytes()) {
+        _ => (),
+    }
+}
+
 pub fn get_volume(params: Option<&str>, mut stream: BufWriter<TcpStream>) {
     if let Some(params) = params {
         for param in params.split("&") {

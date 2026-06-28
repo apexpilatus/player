@@ -1,5 +1,5 @@
 let canSetVol = false;
-const volumeTimeout = 200;
+const volumeTimeout = 100;
 let volumeTimeId = setTimeout(function () { canSetVol = true }, volumeTimeout);
 
 const albumsElem = document.getElementById("albums");
@@ -21,7 +21,7 @@ function setvolume(name) {
         canSetVol = false;
         clearTimeout(volumeTimeId);
         inputElem = document.getElementById(name);
-        fetch("setvolume?" + name + "&" + inputElem.value);
+        fetch("setvolume?name=" + name + "&value=" + inputElem.value);
         volumeTimeId = setTimeout(function () { canSetVol = true }, volumeTimeout);
     }
 }
