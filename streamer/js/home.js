@@ -25,9 +25,13 @@ function getvolume() {
                             resp.text().then(txt => {
                                 let vol = document.createElement("p");
                                 let lab = document.createElement("label");
-                                lab.setAttribute("for", name);
+                                lab.for = name;
                                 lab.innerHTML = txt;
+                                let inp = document.createElement("input");
+                                inp.type = "range";
+                                inp.id = name;
                                 vol.appendChild(lab);
+                                vol.appendChild(inp);
                                 document.body.appendChild(vol);
                             });
                         }
