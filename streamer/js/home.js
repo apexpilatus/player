@@ -19,11 +19,13 @@ function getvolume() {
             let len = cards.length;
             if (len > 0) {
                 for (--len; len >= 0; len--) {
-                    fetch(location.origin + "/getvolume?name=hw:" + len).then(resp => {
+                    const name = "hw:" + len;
+                    fetch(location.origin + "/getvolume?name=" + name).then(resp => {
                         if (resp.status == 200) {
                             resp.text().then(txt => {
                                 let vol = document.createElement("p");
-                                vol.innerHTML = txt;
+                                let lab = document.createElement("label");
+                                lab.setAttribute("for", name);
                                 document.body.appendChild(vol);
                             });
                         }
