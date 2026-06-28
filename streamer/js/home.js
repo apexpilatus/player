@@ -20,7 +20,8 @@ function setvolume(name) {
     if (canSetVol) {
         canSetVol = false;
         clearTimeout(volumeTimeId);
-        alert(name);
+        inputElem = document.getElementById(name);
+        fetch("setvolume?" + name + "&" + inputElem.value);
         volumeTimeId = setTimeout(function () { canSetVol = true }, volumeTimeout);
     }
 }
