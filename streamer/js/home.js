@@ -22,7 +22,9 @@ function getvolume() {
                     fetch(location.origin + "/getvolume?name=hw:" + len).then(resp => {
                         if (resp.status == 200) {
                             resp.text().then(txt => {
-                                 alert(resp.statusText+" "+txt);
+                                let vol = document.createElement("p");
+                                vol.innerHTML = txt;
+                                document.body.appendChild(vol);
                             });
                         }
                     });
