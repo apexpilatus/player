@@ -35,6 +35,7 @@ function getvolume() {
                                 inp.min = resp.statusText.split(";")[0];
                                 inp.value = resp.statusText.split(";")[1];
                                 inp.max = resp.statusText.split(";")[2];
+                                inp.oninput = function () { setvolume(name); };
                                 vol.appendChild(lab);
                                 vol.appendChild(br);
                                 vol.appendChild(inp);
