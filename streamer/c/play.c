@@ -226,7 +226,7 @@ int main(void) {
     close(fd);
     if (read_size == sizeof(pid_t)) {
       kill(run_pid, SIGTERM);
-      usleep(10000);
+      usleep(50000);
     }
     unlink(play_pid_path);
   }
