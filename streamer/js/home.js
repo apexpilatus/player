@@ -11,6 +11,10 @@ function loadalbums(scroll) {
 function getmeta(album) {
     tracksElem.src = location.origin + "/tracks?album=" + album;
 }
+function setvolume(name) {
+    alert(name);
+}
+
 
 function getvolume() {
     fetch(location.origin + "/getcards").then(resp => {
