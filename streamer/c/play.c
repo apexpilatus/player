@@ -243,5 +243,13 @@ int main(void) {
   }
   if (params.cards)
     snd_pcm_drain(params.cards->pcm);
+  fd = open(play_pid_path, O_RDONLY);
+  if (fd >= 0) {
+    pid_t run_pid;
+    ssize_t read_size = read(fd, &run_pid, sizeof(pid_t));
+    close(fd);
+    if (read_size == sizeof(pid_t) && run_pid == getpid())
+      unlink(play_pid_path);
+  }
   return 0;
 }
