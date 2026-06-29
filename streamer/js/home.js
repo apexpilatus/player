@@ -34,7 +34,7 @@ function getvolume() {
             let len = cards.length;
             if (len > 0) {
                 for (--len; len >= 0; len--) {
-                    const name = "hw:" + len;
+                    const name = "hw:" + cards[len];
                     fetch(location.origin + "/getvolume?name=" + name).then(resp => {
                         if (resp.status == 200) {
                             resp.text().then(txt => {
