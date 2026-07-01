@@ -14,6 +14,7 @@ typedef struct {
   uint32_t not_started;
   uint32_t rate;
   uint32_t bytes_per_sample;
+  uint32_t channels;
   FLAC__uint64 total_samples;
   long stream_length;
   card_list *cards;
@@ -30,9 +31,21 @@ long get_length() {
     if (length[read_size - 1] == '\n')
       break;
   }
-  if (read_size == msg_size || read_size == 1)
+  if (read_size == msg_size || read_size < 2)
     return -1;
   return strtol(length, NULL, 10);
+}
+
+void ret(int status) {
+  int fd = open(play_pid_path, O_RDONLY);
+  if (fd >= 0) {
+    pid_t run_pid;
+    ssize_t read_size = read(fd, &run_pid, sizeof(pid_t));
+    close(fd);
+    if (read_size == sizeof(pid_t) && run_pid == getpid())
+      unlink(play_pid_path);
+  }
+  exit(status);
 }
 
 card_list *init_alsa(uint32_t rate, uint32_t bits_per_sample,
@@ -107,7 +120,7 @@ int clear_alsa(card_list *cards) {
 
 void error_callback(const FLAC__StreamDecoder *decoder,
                     FLAC__StreamDecoderErrorStatus status, void *client_data) {
-  exit(1);
+  ret(1);
 }
 
 void metadata_callback(const FLAC__StreamDecoder *decoder,
@@ -116,30 +129,35 @@ void metadata_callback(const FLAC__StreamDecoder *decoder,
   extract_params *params = client_data;
   params->total_samples = metadata->data.stream_info.total_samples;
   if (metadata->data.stream_info.sample_rate != params->rate ||
+      metadata->data.stream_info.channels != params->channels ||
       metadata->data.stream_info.bits_per_sample / 8 !=
           params->bytes_per_sample) {
     ssize_t write_size;
     pid_t pid;
-    int fd;
     params->rate = metadata->data.stream_info.sample_rate;
+    params->channels = metadata->data.stream_info.channels;
     params->bytes_per_sample = metadata->data.stream_info.bits_per_sample / 8;
-    if (params->cards && clear_alsa(params->cards))
-      exit(1);
+    if (params->cards) {
+      if (clear_alsa(params->cards))
+        ret(1);
+    } else {
+      int fd =
+          open(play_pid_path, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+      if (fd < 0)
+        exit(1);
+      pid = getpid();
+      write_size = write(fd, &pid, sizeof(pid_t));
+      close(fd);
+      if (write_size != sizeof(pid_t)) {
+        unlink(play_pid_path);
+        exit(1);
+      }
+    }
     params->cards = init_alsa(metadata->data.stream_info.sample_rate,
                               metadata->data.stream_info.bits_per_sample,
                               metadata->data.stream_info.channels);
     if (!params->cards)
-      exit(1);
-    fd = open(play_pid_path, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
-    if (fd < 0)
-      exit(1);
-    pid = getpid();
-    write_size = write(fd, &pid, sizeof(pid_t));
-    close(fd);
-    if (write_size != sizeof(pid_t)) {
-      unlink(play_pid_path);
-      exit(1);
-    }
+      ret(1);
     params->not_started = 1;
   }
 }
@@ -236,20 +254,12 @@ int main(void) {
             metadata_callback, error_callback,
             &params) == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
       if (!FLAC__stream_decoder_process_until_end_of_stream(decoder))
-        return 1;
+        ret(1);
       FLAC__stream_decoder_finish(decoder);
     } else
-      return 1;
+      ret(1);
   }
   if (params.cards)
     snd_pcm_drain(params.cards->pcm);
-  fd = open(play_pid_path, O_RDONLY);
-  if (fd >= 0) {
-    pid_t run_pid;
-    ssize_t read_size = read(fd, &run_pid, sizeof(pid_t));
-    close(fd);
-    if (read_size == sizeof(pid_t) && run_pid == getpid())
-      unlink(play_pid_path);
-  }
-  return 0;
+  ret(0);
 }
