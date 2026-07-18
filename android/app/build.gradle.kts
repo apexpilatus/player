@@ -4,16 +4,16 @@ plugins {
 
 android {
     namespace = "home.music.streamer"
-    compileSdk = 37
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "home.music.streamer"
-        minSdk = 37
+        minSdk = 36
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        targetSdk = 37
+        targetSdk = 36
     }
 
     buildTypes {
@@ -29,5 +29,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    compileSdkMinor = 0
+}
+dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
 }
