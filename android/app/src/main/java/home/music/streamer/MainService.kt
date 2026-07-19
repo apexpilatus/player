@@ -31,11 +31,10 @@ class MainService : Service() {
                 reader.read(buf, 0, 1)
                 req += String(buf)
             }
-            Proxy().forwardIfConnected(
-                req,
-                connection.getOutputStream(),
-                baseContext
-            )
+            when (req.split("\r\n")[0].split(" ")[1].split("?")[0]) {
+                "/setip" -> Proxy().setIp(req, connection.getOutputStream(), baseContext)
+                else -> Proxy().forwardIfConnected(req, connection.getOutputStream(), baseContext)
+            }
         } catch (_: Exception) {
             notificationManager.notify(
                 1,

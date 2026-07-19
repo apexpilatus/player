@@ -11,7 +11,7 @@ const val PREFS_FILE = "prefs"
 const val PREF_IP = "ip"
 
 class Proxy {
-    private fun senConfigPage(writer: OutputStream, context: Context) {
+    private fun sendConfigPage(writer: OutputStream, context: Context) {
         context.assets.open("config.html").use {
             val buf = ByteArray(4096)
             val size: Int = it.read(buf)
@@ -19,7 +19,7 @@ class Proxy {
                 return
             val hdr =
                 "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: $size\r\n\r\n"
-            writer.write(hdr.toByteArray(Charsets.UTF_8), 0, hdr.length)
+            writer.write(hdr.toByteArray(), 0, hdr.length)
             writer.write(buf, 0, size)
             writer.flush()
         }
@@ -41,6 +41,19 @@ class Proxy {
         }
     }
 
+    fun setIp(req: String, writer: OutputStream, context: Context) {
+        val prefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE).edit()
+        prefs.putString(PREF_IP, req.split("\r\n")[0].split(" ")[1].split("?")[1].split("=")[1])
+        if (prefs.commit()) {
+            forwardIfConnected("GET / HTTP/1.1\r\n\r\n", writer, context)
+            return
+        }
+        val resp =
+            "HTTP/1.1 404 shit happens\r\nCache-control: no-cache\r\nX-Content-Type-Options: nosniff\r\n\r\n"
+        writer.write(resp.toByteArray(), 0, resp.length)
+        writer.flush()
+    }
+
     fun forwardIfConnected(req: String, writer: OutputStream, context: Context) {
         Socket().use {
             val prefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE)
@@ -53,7 +66,7 @@ class Proxy {
                 )
             } catch (_: Exception) {
                 if (req.split("\r\n")[0].split(" ")[1] == "/")
-                    senConfigPage(writer, context)
+                    sendConfigPage(writer, context)
                 return
             }
             forward(req, it, writer)

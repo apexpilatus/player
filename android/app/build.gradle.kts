@@ -4,16 +4,16 @@ plugins {
 
 android {
     namespace = "home.music.streamer"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "home.music.streamer"
-        minSdk = 36
+        minSdk = 37
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        targetSdk = 36
+        targetSdk = 37
     }
 
     buildTypes {
@@ -29,4 +29,5 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    compileSdkMinor = 1
 }
