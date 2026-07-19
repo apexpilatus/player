@@ -31,7 +31,11 @@ class MainService : Service() {
                 reader.read(buf, 0, 1)
                 req += String(buf)
             }
-            Proxy().forwardIfNoStatic(req, connection.getOutputStream())
+            Proxy().forwardIfConnected(
+                req,
+                connection.getOutputStream(),
+                baseContext
+            )
         } catch (_: Exception) {
             notificationManager.notify(
                 1,
