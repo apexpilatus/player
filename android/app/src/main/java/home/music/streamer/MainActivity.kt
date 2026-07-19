@@ -17,7 +17,8 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val permissions = arrayOf(
-            android.Manifest.permission.POST_NOTIFICATIONS
+            android.Manifest.permission.POST_NOTIFICATIONS,
+            android.Manifest.permission.ACCESS_LOCAL_NETWORK
         )
         var needPermission = false
         for (permission in permissions) if (checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED) {
