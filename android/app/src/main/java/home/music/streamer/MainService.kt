@@ -36,13 +36,6 @@ class MainService : Service() {
                 else -> Proxy().forwardIfConnected(req, connection.getOutputStream(), baseContext)
             }
         } catch (_: Exception) {
-            notificationManager.notify(
-                1,
-                Notification.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_notification)
-                    .setOnlyAlertOnce(true).setShowWhen(false).setContentText("fuck")
-                    .build()
-            )
         } finally {
             connection.close()
         }
