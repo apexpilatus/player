@@ -7,9 +7,6 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
 
-const val PREFS_FILE = "prefs"
-const val PREF_IP = "ip"
-
 class Proxy {
     private fun sendConfigPage(writer: OutputStream, context: Context) {
         context.assets.open("config.html").use {
