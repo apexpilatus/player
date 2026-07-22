@@ -2,6 +2,10 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+dependencies {
+    implementation(libs.kotlinx.coroutines.core)
+}
+
 android {
     namespace = "home.music.streamer"
     compileSdk = 37
