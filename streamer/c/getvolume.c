@@ -33,7 +33,7 @@ int get_volume(char *card_id) {
                        melem, SND_MIXER_SCHN_UNKNOWN, &curr_vol))) {
       printf("HTTP/1.1 200 %ld;%ld;%ld\r\n%s%lu\r\n%s\r\n\r\n%s", min_vol,
              curr_vol, max_vol, "Content-Length: ", strlen(card_name),
-             "Content-Type: text/plain", card_name);
+             "Content-Type: text/plain; charset=utf-8", card_name);
       return 0;
     }
   }

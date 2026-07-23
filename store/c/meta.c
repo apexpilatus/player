@@ -35,7 +35,7 @@ int send_meta(FLAC__StreamMetadata *tags, char *meta) {
       printf("HTTP/1.1 200 OK\r\n%s%lu\r\n%s\r\n\r\n%s", "Content-Length: ",
              strlen((char *)tags->data.vorbis_comment.comments[i].entry) -
                  strlen(meta),
-             "Content-Type: text/plain",
+             "Content-Type: text/plain; charset=utf-8",
              tags->data.vorbis_comment.comments[i].entry + strlen(meta));
       return 0;
     }
