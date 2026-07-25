@@ -42,6 +42,10 @@
     }
 }
 
+html {
+    overscroll-behavior-y: none;
+}
+
 body {
     font-size: 22px;
 }
