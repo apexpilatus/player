@@ -26,6 +26,7 @@ const val PREF_IP = "ip"
 class MainService : Service(), MediaPlayer.OnCompletionListener {
     private val sockServer by lazy { ServerSocket(8888) }
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
+    private val proxy = Proxy()
 
     companion object {
         @Volatile
@@ -72,7 +73,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
             }
             val url = req.split("\r\n")[0].split(" ")[1]
             when (url.split("?")[0]) {
-                "/setip" -> Proxy().setIp(req, connection.getOutputStream(), baseContext)
+                "/setip" -> proxy.setIp(req, connection.getOutputStream(), baseContext)
                 "/stream" -> {
                     val resp =
                         "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nCache-control: no-cache\r\nX-Content-Type-Options: nosniff\r\n\r\n"
@@ -111,7 +112,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
                     players.first().setNextMediaPlayer(players.last())
                 }
 
-                else -> Proxy().forwardIfConnected(req, connection.getOutputStream(), baseContext)
+                else -> proxy.forwardIfConnected(req, connection.getOutputStream(), baseContext)
             }
         } catch (_: Exception) {
         } finally {
