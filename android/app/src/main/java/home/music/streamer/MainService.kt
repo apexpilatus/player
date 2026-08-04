@@ -75,7 +75,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
                 "/setip" -> Proxy().setIp(req, connection.getOutputStream(), baseContext)
                 "/stream" -> {
                     val resp =
-                        "HTTP/1.1 404 shit happens\r\nCache-control: no-cache\r\nX-Content-Type-Options: nosniff\r\n\r\n"
+                        "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nCache-control: no-cache\r\nX-Content-Type-Options: nosniff\r\n\r\n"
                     val writer = OutputStreamWriter(connection.getOutputStream())
                     writer.write(resp, 0, resp.length)
                     writer.flush()
