@@ -7,7 +7,7 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
 
-class Proxy {
+class Proxy(val context: Context) {
     private fun sendConfigPage(writer: OutputStream, context: Context) {
         context.assets.open("config.html").use {
             val buf = ByteArray(4096)
@@ -38,11 +38,11 @@ class Proxy {
         }
     }
 
-    fun setIp(req: String, writer: OutputStream, context: Context) {
+    fun setIp(req: String, writer: OutputStream) {
         val prefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE).edit()
         prefs.putString(PREF_IP, req.split("\r\n")[0].split(" ")[1].split("?")[1].split("=")[1])
         if (prefs.commit()) {
-            forwardIfConnected("GET / HTTP/1.1\r\n\r\n", writer, context)
+            forwardIfConnected("GET / HTTP/1.1\r\n\r\n", writer)
             return
         }
         val resp =
@@ -51,7 +51,7 @@ class Proxy {
         writer.flush()
     }
 
-    fun forwardIfConnected(req: String, writer: OutputStream, context: Context) {
+    fun forwardIfConnected(req: String, writer: OutputStream) {
         Socket().use {
             val prefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE)
             try {
