@@ -27,6 +27,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
     private val sockServer by lazy { ServerSocket(8888) }
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
     private val proxy = Proxy(this)
+    private val mixer = Mixer(this)
 
     companion object {
         @Volatile
@@ -74,6 +75,9 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
             val url = req.split("\r\n")[0].split(" ")[1]
             when (url.split("?")[0]) {
                 "/setip" -> proxy.setIp(req, connection.getOutputStream())
+                "/getcards" -> mixer.getCards(connection.getOutputStream())
+                "/getvolume" -> mixer.getVolume(connection.getOutputStream())
+                "/setvolume" -> mixer.setVolume(url, connection.getOutputStream())
                 "/stream" -> {
                     val resp =
                         "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nCache-control: no-cache\r\nX-Content-Type-Options: nosniff\r\n\r\n"
