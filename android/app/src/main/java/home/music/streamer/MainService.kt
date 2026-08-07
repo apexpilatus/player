@@ -29,15 +29,14 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
     private val proxy = Proxy(this)
     private val mixer = Mixer(this)
 
+    @Volatile
+    private var track = 1
+    private var album = ""
+    private val players = LinkedList<MediaPlayer>()
+
     companion object {
         @Volatile
         var started = false
-
-        @Volatile
-        var track = 1
-
-        var album = ""
-        private val players = LinkedList<MediaPlayer>()
     }
 
     @Synchronized
@@ -146,12 +145,12 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
             )
             setOnCompletionListener(this@MainService)
         })
-        Thread {
+        CoroutineScope(Job()).launch {
             while (true) {
                 val connection = sockServer.accept()
-                Thread { handle(connection) }.start()
+                CoroutineScope(Job()).launch { handle(connection) }
             }
-        }.start()
+        }
         return START_STICKY
     }
 
@@ -167,42 +166,40 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
     override fun onCompletion(mp: MediaPlayer?) {
         val context = this
         val ip = getSharedPreferences(PREFS_FILE, MODE_PRIVATE).getString(PREF_IP, "1.2.3.4")
-        CoroutineScope(Job()).launch {
+        try {
+            val title = URL(
+                "http://$ip/meta?album=${album()}&meta=TITLE=&track=$track"
+            ).readText()
+            notificationManager.notify(
+                1,
+                Notification.Builder(context, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_notification).setOnlyAlertOnce(true)
+                    .setShowWhen(false).setContentText(title).build()
+            )
+        } catch (_: Exception) {
+        }
+        track++
+        with(mp) {
             try {
-                val title = URL(
+                this!!.reset()
+                URL(
                     "http://$ip/meta?album=${album()}&meta=TITLE=&track=$track"
                 ).readText()
-                notificationManager.notify(
-                    1,
-                    Notification.Builder(context, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_notification).setOnlyAlertOnce(true)
-                        .setShowWhen(false).setContentText(title).build()
-                )
+                setDataSource("http://$ip/fetch?album=${album()}&track=$track")
+                prepare()
+                for (player in players)
+                    if (player !== this)
+                        player.setNextMediaPlayer(this)
             } catch (_: Exception) {
-            }
-            track++
-            with(mp) {
-                try {
-                    this!!.reset()
-                    URL(
-                        "http://$ip/meta?album=${album()}&meta=TITLE=&track=$track"
-                    ).readText()
-                    setDataSource("http://$ip/fetch?album=${album()}&track=$track")
-                    prepare()
-                    for (player in players)
-                        if (player !== this)
-                            player.setNextMediaPlayer(this)
-                } catch (_: Exception) {
-                    for (player in players)
-                        if (player !== this && !player.isPlaying)
-                            notificationManager.notify(
-                                1,
-                                Notification.Builder(context, CHANNEL_ID)
-                                    .setSmallIcon(R.drawable.ic_notification)
-                                    .setOnlyAlertOnce(true).setShowWhen(false).setContentText("")
-                                    .build()
-                            )
-                }
+                for (player in players)
+                    if (player !== this && !player.isPlaying)
+                        notificationManager.notify(
+                            1,
+                            Notification.Builder(context, CHANNEL_ID)
+                                .setSmallIcon(R.drawable.ic_notification)
+                                .setOnlyAlertOnce(true).setShowWhen(false).setContentText("")
+                                .build()
+                        )
             }
         }
     }

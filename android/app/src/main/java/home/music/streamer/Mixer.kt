@@ -8,7 +8,6 @@ import java.io.OutputStream
 
 class Mixer(val context: Context) {
     private val audioManager by lazy { context.getSystemService(AUDIO_SERVICE) as AudioManager }
-
     fun getCards(writer: OutputStream) {
         val resp =
             "HTTP/1.1 200 android\r\nContent-Type: text/html; charset=utf-8\r\nCache-control: no-cache\r\nX-Content-Type-Options: nosniff\r\n\r\n"
