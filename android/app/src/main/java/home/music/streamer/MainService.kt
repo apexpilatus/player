@@ -166,40 +166,42 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
     override fun onCompletion(mp: MediaPlayer?) {
         val context = this
         val ip = getSharedPreferences(PREFS_FILE, MODE_PRIVATE).getString(PREF_IP, "1.2.3.4")
-        try {
-            val title = URL(
-                "http://$ip/meta?album=${album()}&meta=TITLE=&track=$track"
-            ).readText()
-            notificationManager.notify(
-                1,
-                Notification.Builder(context, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_notification).setOnlyAlertOnce(true)
-                    .setShowWhen(false).setContentText(title).build()
-            )
-        } catch (_: Exception) {
-        }
-        track++
-        with(mp) {
+        CoroutineScope(Job()).launch {
             try {
-                this!!.reset()
-                URL(
+                val title = URL(
                     "http://$ip/meta?album=${album()}&meta=TITLE=&track=$track"
                 ).readText()
-                setDataSource("http://$ip/fetch?album=${album()}&track=$track")
-                prepare()
-                for (player in players)
-                    if (player !== this)
-                        player.setNextMediaPlayer(this)
+                notificationManager.notify(
+                    1,
+                    Notification.Builder(context, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_notification).setOnlyAlertOnce(true)
+                        .setShowWhen(false).setContentText(title).build()
+                )
             } catch (_: Exception) {
-                for (player in players)
-                    if (player !== this && !player.isPlaying)
-                        notificationManager.notify(
-                            1,
-                            Notification.Builder(context, CHANNEL_ID)
-                                .setSmallIcon(R.drawable.ic_notification)
-                                .setOnlyAlertOnce(true).setShowWhen(false).setContentText("")
-                                .build()
-                        )
+            }
+            track++
+            with(mp) {
+                try {
+                    this!!.reset()
+                    URL(
+                        "http://$ip/meta?album=${album()}&meta=TITLE=&track=$track"
+                    ).readText()
+                    setDataSource("http://$ip/fetch?album=${album()}&track=$track")
+                    prepare()
+                    for (player in players)
+                        if (player !== this)
+                            player.setNextMediaPlayer(this)
+                } catch (_: Exception) {
+                    for (player in players)
+                        if (player !== this && !player.isPlaying)
+                            notificationManager.notify(
+                                1,
+                                Notification.Builder(context, CHANNEL_ID)
+                                    .setSmallIcon(R.drawable.ic_notification)
+                                    .setOnlyAlertOnce(true).setShowWhen(false).setContentText("")
+                                    .build()
+                            )
+                }
             }
         }
     }
