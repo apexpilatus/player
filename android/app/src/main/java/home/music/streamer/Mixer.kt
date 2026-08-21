@@ -58,15 +58,12 @@ class Mixer(val context: Context) : AudioDeviceCallback() {
         if (addedDevices != null) {
             for (device in addedDevices) {
                 if (device?.type == AudioDeviceInfo.TYPE_USB_HEADSET) {
-                    var frameSize = 0
-                    var sampleRate = 0
                     var prefMixerAttr: AudioMixerAttributes? = null
                     audioManager.clearPreferredMixerAttributes(audioAttr, device)
                     for (mixerAttr in audioManager.getSupportedMixerAttributes(device)) {
-                        if (mixerAttr.format.frameSizeInBytes >= frameSize && mixerAttr.format.sampleRate >= sampleRate) {
-                            frameSize = mixerAttr.format.frameSizeInBytes
-                            sampleRate = mixerAttr.format.sampleRate
-                            prefMixerAttr = mixerAttr
+                        with(mixerAttr.format) {
+                            if (prefMixerAttr == null || (frameSizeInBytes >= prefMixerAttr.format.frameSizeInBytes && sampleRate >= prefMixerAttr.format.sampleRate))
+                                prefMixerAttr = mixerAttr
                         }
                     }
                     if (prefMixerAttr != null)
