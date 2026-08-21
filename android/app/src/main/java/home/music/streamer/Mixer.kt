@@ -2,12 +2,21 @@ package home.music.streamer
 
 import android.content.Context
 import android.content.Context.AUDIO_SERVICE
+import android.media.AudioAttributes
+import android.media.AudioDeviceCallback
+import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.media.AudioManager.STREAM_MUSIC
+import android.media.AudioMixerAttributes
 import java.io.OutputStream
 
-class Mixer(val context: Context) {
+class Mixer(val context: Context) : AudioDeviceCallback() {
     private val audioManager by lazy { context.getSystemService(AUDIO_SERVICE) as AudioManager }
+    val audioAttr: AudioAttributes by lazy {
+        AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+            .setUsage(AudioAttributes.USAGE_MEDIA).build()
+    }
+
     fun getCards(writer: OutputStream) {
         val resp =
             "HTTP/1.1 200 android\r\nContent-Type: text/html; charset=utf-8\r\nCache-control: no-cache\r\nX-Content-Type-Options: nosniff\r\n\r\n"
@@ -39,5 +48,32 @@ class Mixer(val context: Context) {
             "HTTP/1.1 200 $value\r\nContent-Type: text/html; charset=utf-8\r\nCache-control: no-cache\r\nX-Content-Type-Options: nosniff\r\n\r\n"
         writer.write(resp.toByteArray(), 0, resp.length)
         writer.flush()
+    }
+
+    fun registerCallBack() {
+        audioManager.registerAudioDeviceCallback(this@Mixer, null)
+    }
+
+    override fun onAudioDevicesAdded(addedDevices: Array<out AudioDeviceInfo?>?) {
+        if (addedDevices != null) {
+            for (device in addedDevices) {
+                if (device?.type == AudioDeviceInfo.TYPE_USB_HEADSET) {
+                    var frameSize = 0
+                    var sampleRate = 0
+                    var prefMixerAttr: AudioMixerAttributes? = null
+                    audioManager.clearPreferredMixerAttributes(audioAttr, device)
+                    for (mixerAttr in audioManager.getSupportedMixerAttributes(device)) {
+                        if (mixerAttr.format.frameSizeInBytes >= frameSize && mixerAttr.format.sampleRate >= sampleRate) {
+                            frameSize = mixerAttr.format.frameSizeInBytes
+                            sampleRate = mixerAttr.format.sampleRate
+                            prefMixerAttr = mixerAttr
+                        }
+                    }
+                    if (prefMixerAttr != null)
+                        audioManager.setPreferredMixerAttributes(audioAttr, device, prefMixerAttr)
+                    break
+                }
+            }
+        }
     }
 }

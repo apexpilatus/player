@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "home.music.streamer"
-        minSdk = 37
+        minSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -33,5 +33,5 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    compileSdkMinor = 1
+    compileSdkMinor = 0
 }

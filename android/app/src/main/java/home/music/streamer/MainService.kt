@@ -5,7 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
-import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.IBinder
 import kotlinx.coroutines.CoroutineScope
@@ -138,10 +137,10 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
             Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
                 .setShowWhen(false).setContentText("").build()
         )
+        mixer.registerCallBack()
         while (players.size < 2) players.add(MediaPlayer().apply {
             setAudioAttributes(
-                AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .setUsage(AudioAttributes.USAGE_MEDIA).build()
+                mixer.audioAttr
             )
             setOnCompletionListener(this@MainService)
         })
