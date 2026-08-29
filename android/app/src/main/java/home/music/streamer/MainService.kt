@@ -28,14 +28,14 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
     private val proxy = Proxy(this)
     private val mixer = Mixer(this)
 
-    @Volatile
-    private var track = 1
-    private var album = ""
-    private val players = LinkedList<MediaPlayer>()
 
     companion object {
         @Volatile
         var started = false
+        @Volatile
+        private var track = 1
+        private var album = ""
+        private val players = LinkedList<MediaPlayer>()
     }
 
     @Synchronized
