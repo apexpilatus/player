@@ -13,9 +13,7 @@ pub fn set_volume(params: Option<&str>, mut stream: BufWriter<TcpStream>) {
         {
             if output.status.success() {
                 match stream.write_all(&output.stdout) {
-                    _ => {
-                        return;
-                    }
+                    _ => return,
                 }
             }
         }
@@ -37,9 +35,7 @@ pub fn get_volume(params: Option<&str>, mut stream: BufWriter<TcpStream>) {
                     {
                         if output.status.success() {
                             match stream.write_all(&output.stdout) {
-                                _ => {
-                                    return;
-                                }
+                                _ => return,
                             }
                         }
                     }
@@ -59,9 +55,7 @@ pub fn get_cards(mut stream: BufWriter<TcpStream>) {
     {
         if output.status.success() {
             match stream.write_all(&output.stdout) {
-                _ => {
-                    return;
-                }
+                _ => return,
             }
         }
     }

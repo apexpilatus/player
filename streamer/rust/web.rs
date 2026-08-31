@@ -1,8 +1,10 @@
+mod data_static;
 mod err_codes;
 mod page_home;
 mod page_tracks;
 mod player;
 mod proxy;
+mod statics;
 mod volume;
 use std::io::{BufRead, BufReader, BufWriter};
 use std::net::{TcpListener, TcpStream};
@@ -34,7 +36,10 @@ fn selector(stream: TcpStream) {
                     "/getcards" => volume::get_cards(BufWriter::new(stream)),
                     "/getvolume" => volume::get_volume(params, BufWriter::new(stream)),
                     "/setvolume" => volume::set_volume(params, BufWriter::new(stream)),
-                    _ => proxy::forward_if_no_static(path, &req, BufWriter::new(stream)),
+                    "/home.css" | "/home.js" | "/tracks.css" | "/tracks.js" => {
+                        data_static::send_static(path, BufWriter::new(stream))
+                    }
+                    _ => proxy::forward(req.join("\r\n"), BufWriter::new(stream)),
                 }
             }
         }

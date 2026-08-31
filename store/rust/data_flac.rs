@@ -54,9 +54,7 @@ pub fn send_flac(params: Option<&str>, req: &Vec<String>, mut stream: BufWriter<
             }
             match child.kill() {
                 _ => match child.wait() {
-                    _ => {
-                        return;
-                    }
+                    _ => return,
                 },
             }
         }

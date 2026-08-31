@@ -1,0 +1,1 @@
+../../store/rust/data_static.rs

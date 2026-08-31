@@ -166,9 +166,7 @@ X-Content-Type-Options: nosniff\r\n\r\n"
                     Err(_) => (),
                 }
                 match child.wait() {
-                    _ => {
-                        return;
-                    }
+                    _ => return,
                 }
             }
         }

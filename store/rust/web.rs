@@ -4,6 +4,7 @@ mod data_static;
 mod err_codes;
 mod page_albums;
 mod page_home;
+mod statics;
 mod system_touch;
 mod text_meta;
 use std::io::{BufRead, BufReader, BufWriter};
@@ -21,9 +22,7 @@ fn selector(stream: TcpStream) {
                 }
                 req.push(line);
             }
-            Err(_) => {
-                return;
-            }
+            Err(_) => return,
         }
     }
     if !req.is_empty() {
@@ -49,9 +48,7 @@ fn main() {
     let bind_addr = env!("BIND_ADDR");
     let listener = match TcpListener::bind(bind_addr) {
         Ok(listener) => listener,
-        Err(_) => {
-            return;
-        }
+        Err(_) => return,
     };
     for stream in listener.incoming() {
         if let Ok(stream) = stream {
