@@ -58,6 +58,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
         with(player) {
             setDataSource(ref)
             prepare()
+            mixer.prefDev(this)
         }
     }
 
@@ -187,6 +188,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
                     ).readText()
                     setDataSource("http://$ip/fetch?album=${album()}&track=$track")
                     prepare()
+                    mixer.prefDev(this)
                     for (player in players)
                         if (player !== this)
                             player.setNextMediaPlayer(this)

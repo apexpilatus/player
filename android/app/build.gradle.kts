@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "home.music.streamer"
-        minSdk = 36
+        minSdk = 37
         versionCode = 1
         versionName = "1.0"
 

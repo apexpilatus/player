@@ -8,6 +8,7 @@ import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.media.AudioManager.STREAM_MUSIC
 import android.media.AudioMixerAttributes
+import android.media.MediaPlayer
 import java.io.OutputStream
 
 class Mixer(val context: Context) : AudioDeviceCallback() {
@@ -50,24 +51,33 @@ class Mixer(val context: Context) : AudioDeviceCallback() {
         writer.flush()
     }
 
+    fun prefDev(player: MediaPlayer) {
+        for (device in audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS))
+            if (device.type == AudioDeviceInfo.TYPE_USB_HEADSET) player.setPreferredDevice(device)
+    }
+
     fun registerCallBack() {
         audioManager.registerAudioDeviceCallback(this@Mixer, null)
     }
 
     override fun onAudioDevicesAdded(addedDevices: Array<out AudioDeviceInfo?>?) {
         if (addedDevices != null) {
-            for (device in addedDevices) {
-                if (device?.type == AudioDeviceInfo.TYPE_USB_HEADSET) {
+            for (newDevice in addedDevices) {
+                if (newDevice?.type == AudioDeviceInfo.TYPE_USB_HEADSET) {
                     var prefMixerAttr: AudioMixerAttributes? = null
-                    audioManager.clearPreferredMixerAttributes(audioAttr, device)
-                    for (mixerAttr in audioManager.getSupportedMixerAttributes(device)) {
+                    audioManager.clearPreferredMixerAttributes(audioAttr, newDevice)
+                    for (mixerAttr in audioManager.getSupportedMixerAttributes(newDevice)) {
                         with(mixerAttr.format) {
                             if (prefMixerAttr == null || (frameSizeInBytes >= prefMixerAttr.format.frameSizeInBytes && sampleRate >= prefMixerAttr.format.sampleRate))
                                 prefMixerAttr = mixerAttr
                         }
                     }
                     if (prefMixerAttr != null)
-                        audioManager.setPreferredMixerAttributes(audioAttr, device, prefMixerAttr)
+                        audioManager.setPreferredMixerAttributes(
+                            audioAttr,
+                            newDevice,
+                            prefMixerAttr
+                        )
                     break
                 }
             }
