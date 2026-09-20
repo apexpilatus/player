@@ -3,6 +3,7 @@ package home.music.streamer
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import home.music.streamer.MainService.Companion.started
 
@@ -16,10 +17,16 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val permissions = arrayOf(
-            android.Manifest.permission.POST_NOTIFICATIONS,
-            android.Manifest.permission.ACCESS_LOCAL_NETWORK
-        )
+        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            arrayOf(
+                android.Manifest.permission.POST_NOTIFICATIONS,
+                android.Manifest.permission.ACCESS_LOCAL_NETWORK
+            )
+        } else {
+            arrayOf(
+                android.Manifest.permission.POST_NOTIFICATIONS
+            )
+        }
         var needPermission = false
         for (permission in permissions) if (checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED) {
             needPermission = true
