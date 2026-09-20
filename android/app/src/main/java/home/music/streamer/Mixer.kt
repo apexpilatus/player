@@ -11,8 +11,8 @@ import android.media.AudioMixerAttributes
 import android.media.MediaPlayer
 import java.io.OutputStream
 
-class Mixer(val context: Context) : AudioDeviceCallback() {
-    private val audioManager by lazy { context.getSystemService(AUDIO_SERVICE) as AudioManager }
+class Mixer(context: Context) : AudioDeviceCallback() {
+    val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
     val audioAttr: AudioAttributes by lazy {
         AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
             .setUsage(AudioAttributes.USAGE_MEDIA).build()
@@ -53,11 +53,10 @@ class Mixer(val context: Context) : AudioDeviceCallback() {
 
     fun prefDev(player: MediaPlayer) {
         for (device in audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS))
-            if (device.type == AudioDeviceInfo.TYPE_USB_HEADSET) player.setPreferredDevice(device)
-    }
-
-    fun registerCallBack() {
-        audioManager.registerAudioDeviceCallback(this@Mixer, null)
+            if (device.type == AudioDeviceInfo.TYPE_USB_HEADSET) {
+                player.setPreferredDevice(device)
+                break
+            }
     }
 
     override fun onAudioDevicesAdded(addedDevices: Array<out AudioDeviceInfo?>?) {

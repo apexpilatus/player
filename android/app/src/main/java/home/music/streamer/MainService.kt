@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.IBinder
 import kotlinx.coroutines.CoroutineScope
@@ -26,12 +27,13 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
     private val sockServer by lazy { ServerSocket(8888) }
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
     private val proxy = Proxy(this)
-    private val mixer = Mixer(this)
+    private val mixer by lazy { Mixer(this) }
 
 
     companion object {
         @Volatile
         var started = false
+
         @Volatile
         private var track = 1
         private var album = ""
@@ -105,7 +107,9 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
                             .setSmallIcon(R.drawable.ic_notification).setOnlyAlertOnce(true)
                             .setShowWhen(false).setContentText(title).build()
                     )
+                    mixer.audioManager.registerAudioDeviceCallback(mixer, null)
                     prepareMedia(players.first())
+                    mixer.audioManager.mode = AudioManager.MODE_NORMAL
                     players.first().start()
                     track++
                     URL(
@@ -113,6 +117,7 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
                     ).readText()
                     prepareMedia(players.last())
                     players.first().setNextMediaPlayer(players.last())
+                    mixer.audioManager.unregisterAudioDeviceCallback(mixer)
                 }
 
                 else -> proxy.forwardIfConnected(req, connection.getOutputStream())
@@ -138,7 +143,6 @@ class MainService : Service(), MediaPlayer.OnCompletionListener {
             Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
                 .setShowWhen(false).setContentText("").build()
         )
-        mixer.registerCallBack()
         while (players.size < 2) players.add(MediaPlayer().apply {
             setAudioAttributes(
                 mixer.audioAttr
