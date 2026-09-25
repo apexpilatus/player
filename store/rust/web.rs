@@ -33,7 +33,8 @@ fn selector(stream: TcpStream) {
                 match path {
                     "/picture" => data_picture::send_picture(params, BufWriter::new(stream)),
                     "/" => page_home::send_home(params, BufWriter::new(stream)),
-                    "/meta" => text_meta::send_text(params, BufWriter::new(stream)),
+                    "/meta" => text_meta::send_text(params, "meta", BufWriter::new(stream)),
+                    "/tracks" => text_meta::send_text(params, "tracks", BufWriter::new(stream)),
                     "/fetch" => data_flac::send_flac(params, &req, BufWriter::new(stream)),
                     "/albums" => page_albums::send_albums(params, BufWriter::new(stream)),
                     "/touch" => system_touch::touch(params, BufWriter::new(stream)),

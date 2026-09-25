@@ -4,9 +4,9 @@ use std::process::Command;
 use BufWriter;
 use TcpStream;
 
-pub fn send_text(params: Option<&str>, mut stream: BufWriter<TcpStream>) {
+pub fn send_text(params: Option<&str>, command: &str, mut stream: BufWriter<TcpStream>) {
     if let Some(params) = params {
-        if let Ok(output) = Command::new("meta")
+        if let Ok(output) = Command::new(command)
             .env("PATH", env!("STORE_PATH"))
             .arg(params)
             .current_dir(env!("MUSIC_PATH"))
