@@ -17,6 +17,10 @@ function play(album, tracknum) {
 function getmeta(album) {
     fetch(location.origin + "/files?album=" + album).then(resp => {
         if (resp.status == 200) {
+            addEventListener('wheel', (event) => {
+                event.preventDefault();
+                document.documentElement.scrollLeft += event.deltaY;
+            }, { passive: false });
             resp.text().then(tracks => gettracks(album, tracks.split("\r\n"), 0));
         }
     });
