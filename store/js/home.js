@@ -59,11 +59,11 @@ function gettitle(album, tracks) {
     });
 }
 
-function getalbum(album, track) {
+function getalbum(album, tracks) {
     fetch(location.origin + "/meta?album=" + album + "&tag=ALBUM=&track=" + tracks.split("\r\n")[0]).then(resp => {
         if (resp.status == 200) {
             resp.text().then(txt => albumElem.innerHTML = txt);
-            // gettracks(album, track);
+            // gettracks(album, tracks);
         }
     });
 }
