@@ -29,15 +29,15 @@ function play(album, track) {
 function getmeta(album) {
     fetch(location.origin + "/tracks?album=" + album).then(resp => {
         if (resp.status == 200) {
-            resp.text().then(txt => gettitle(album, txt.split("\r\n")));
+            resp.text().then(tracks => getartist(album, tracks.split("\r\n")));
         }
     });
 }
 
-function gettitle(album, tracks) {
+function getartist(album, tracks) {
     fetch(location.origin + "/meta?album=" + album + "&tag=ARTIST=&file=" + tracks[0]).then(resp => {
         if (resp.status == 200) {
-            resp.text().then(txt => artistElem.innerHTML = txt);
+            resp.text().then(artist => artistElem.innerHTML = artist);
             getalbum(album, tracks);
         }
     });
@@ -46,7 +46,7 @@ function gettitle(album, tracks) {
 function getalbum(album, tracks) {
     fetch(location.origin + "/meta?album=" + album + "&tag=ALBUM=&file=" + tracks[0]).then(resp => {
         if (resp.status == 200) {
-            resp.text().then(txt => { if (txt != artistElem.innerHTML) albumElem.innerHTML = txt });
+            resp.text().then(title => { if (title != artistElem.innerHTML) albumElem.innerHTML = title });
             gettracks(album, tracks, 0);
         }
     });
@@ -59,6 +59,7 @@ function gettracks(album, tracks, track) {
                 resp.text().then(txt => {
                     let tr = document.createElement("tr");
                     tr.onclick = function () { play(album, track); };
+                    fetch(location.origin + "/meta?album=" + album + "&tag=TRACKNUMBER=&file=" + tracks[track])
                     let num = document.createElement("td");
                     if (track < 10)
                         num.innerHTML = "&nbsp;&nbsp;" + track;
@@ -66,10 +67,10 @@ function gettracks(album, tracks, track) {
                         num.innerHTML = track;
                     num.className = "tracknumber";
                     tr.append(num);
-                    let title = document.createElement("td");
-                    title.innerHTML = txt;
-                    title.className = "tracktitle";
-                    tr.append(title);
+                    let name = document.createElement("td");
+                    name.innerHTML = txt;
+                    name.className = "tracktitle";
+                    tr.append(name);
                     tracksElem.appendChild(tr);
                     gettracks(album, tracks, track + 1);
                 });
