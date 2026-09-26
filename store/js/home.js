@@ -71,7 +71,11 @@ function getalbum(album, track) {
 }
 
 function getmeta(album) {
-    fetch(location.origin + "/tracks?album=" + album);
+    fetch(location.origin + "/tracks?album=" + album).then(resp => {
+        if (resp.status == 200) {
+            resp.text().then(txt => alert(txt.split("\r\n")[0]));
+        }
+    });
     gettitle(album, 1);
 }
 
