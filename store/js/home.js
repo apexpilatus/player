@@ -26,26 +26,10 @@ function play(album, track) {
     });
 }
 
-function gettracks(album, track) {
-    fetch(location.origin + "/meta?album=" + album + "&meta=TITLE=&track=" + track).then(resp => {
+function getmeta(album) {
+    fetch(location.origin + "/tracks?album=" + album).then(resp => {
         if (resp.status == 200) {
-            resp.text().then(txt => {
-                let tr = document.createElement("tr");
-                tr.onclick = function () { play(album, track); };
-                let num = document.createElement("td");
-                if (track < 10)
-                    num.innerHTML = "&nbsp;&nbsp;" + track;
-                else
-                    num.innerHTML = track;
-                num.className = "tracknumber";
-                tr.append(num);
-                let title = document.createElement("td");
-                title.innerHTML = txt;
-                title.className = "tracktitle";
-                tr.append(title);
-                tracksElem.appendChild(tr);
-                gettracks(album, track + 1);
-            });
+            resp.text().then(txt => gettitle(album, txt));
         }
     });
 }
@@ -63,17 +47,34 @@ function getalbum(album, tracks) {
     fetch(location.origin + "/meta?album=" + album + "&tag=ALBUM=&file=" + tracks.split("\r\n")[0]).then(resp => {
         if (resp.status == 200) {
             resp.text().then(txt => { if (txt != artistElem.innerHTML) albumElem.innerHTML = txt });
-            // gettracks(album, tracks);
+            gettracks(album, tracks, 0);
         }
     });
 }
 
-function getmeta(album) {
-    fetch(location.origin + "/tracks?album=" + album).then(resp => {
-        if (resp.status == 200) {
-            resp.text().then(txt => gettitle(album, txt));
-        }
-    });
+function gettracks(album, tracks, track) {
+    if (track < tracks.length)
+        fetch(location.origin + "/meta?album=" + album + "&tag=TITLE=&file=" + tracks.split("\r\n")[track]).then(resp => {
+            if (resp.status == 200) {
+                resp.text().then(txt => {
+                    let tr = document.createElement("tr");
+                    tr.onclick = function () { play(album, track); };
+                    let num = document.createElement("td");
+                    if (track < 10)
+                        num.innerHTML = "&nbsp;&nbsp;" + track;
+                    else
+                        num.innerHTML = track;
+                    num.className = "tracknumber";
+                    tr.append(num);
+                    let title = document.createElement("td");
+                    title.innerHTML = txt;
+                    title.className = "tracktitle";
+                    tr.append(title);
+                    tracksElem.appendChild(tr);
+                    gettracks(album, tracks, track + 1);
+                });
+            }
+        });
 }
 
 function loadalbums(scroll) {
