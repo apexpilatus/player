@@ -52,14 +52,14 @@ function gettracks(album, track) {
 
 function gettitle(album, tracks) {
     alert(tracks);
-    // fetch(location.origin + "/meta?album=" + album + "&meta=ARTIST=&track=" + track).then(resp => {
-    //     if (resp.status == 200) {
-    //         resp.text().then(txt => artistElem.innerHTML = txt);
-    //         getalbum(album, track);
-    //     } else if (track < 100) {
-    //         gettitle(album, track + 1);
-    //     }
-    // });
+    fetch(location.origin + "/meta?album=" + album + "&tag=ARTIST=&file=" + tracks.split("\r\n")[0]).then(resp => {
+        if (resp.status == 200)
+            resp.text().then(txt => artistElem.innerHTML = txt);
+        //         getalbum(album, track);
+        //     } else if (track < 100) {
+        //         gettitle(album, track + 1);
+        //     }
+    });
 }
 
 function getalbum(album, track) {
