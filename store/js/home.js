@@ -52,7 +52,7 @@ function gettracks(album, track) {
 
 function gettitle(album, tracks) {
     alert(tracks);
-    fetch(location.origin + "/meta?album=" + album + "&tag=ARTIST=&file=" + encodeURIComponent(tracks.split("\r\n")[0])).then(resp => {
+    fetch(location.origin + "/meta?album=" + album + "&tag=ARTIST=&file=" + decodeURIComponent(tracks.split("\r\n")[0])).then(resp => {
         if (resp.status == 200)
             resp.text().then(txt => artistElem.innerHTML = txt);
         //         getalbum(album, track);
