@@ -7,16 +7,14 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-static char *range;
-
 int err(void) {
   printf("%s\r\n%s\r\n%s\r\n\r\n", "HTTP/1.1 404 shit happens",
          "Cache-control: no-cache", "X-Content-Type-Options: nosniff");
   return 1;
 }
 
-int send_track(char *file_name) {
-  long min_range = 0;
+int send_track(char *file_name, char *range) {
+  long min_range;
   long max_range;
   struct stat stat_buf;
   if (!stat(file_name, &stat_buf)) {
@@ -28,13 +26,13 @@ int send_track(char *file_name) {
       close(fd);
       if ((end = strchr(range, '-')) && strlen(++end) > 0)
         max_range = strtol(end, NULL, 10);
-      else {
+      else
         max_range = stat_buf.st_size - 1;
-      }
       if ((end = strchr(range, '-'))) {
         *end = '\0';
         min_range = strtol(range, NULL, 10);
-      }
+      } else
+        min_range = 0;
       if (shd_addr != MAP_FAILED) {
         long content_length = max_range - min_range + 1;
         printf("%s\r\n%s%ld\r\n%s%ld-%ld/%ld\r\n%s\r\n\r\n", "HTTP/1.1 200 OK",
@@ -49,49 +47,21 @@ int send_track(char *file_name) {
   return err();
 }
 
-int get_track(long track) {
-  FLAC__StreamMetadata *tags =
-      FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT);
-  DIR *dp;
-  struct dirent *ep;
-  dp = opendir(".");
-  if (dp) {
-    while ((ep = readdir(dp)))
-      if (ep->d_type == DT_REG && FLAC__metadata_get_tags(ep->d_name, &tags)) {
-        int i;
-        for (i = 0; i < tags->data.vorbis_comment.num_comments; i++)
-          if (!strncmp("TRACKNUMBER=",
-                       (char *)tags->data.vorbis_comment.comments[i].entry,
-                       strlen("TRACKNUMBER="))) {
-            if (strtol((char *)(tags->data.vorbis_comment.comments[i].entry +
-                                strlen("TRACKNUMBER=")),
-                       NULL, 10) == track)
-              return send_track(ep->d_name);
-          }
-      }
-    closedir(dp);
-  }
-  return err();
-}
-
 int main(int prm_n, char *prm[]) {
   char *album = strstr(prm[1], "album=");
-  char *track = strstr(prm[1], "track=");
-  if (album) {
+  char *file = strstr(prm[1], "file=");
+  if (album && file) {
     char *end = strchr(album, '&');
     if (end)
       *end = '\0';
     album += 6;
-  }
-  if (track) {
-    char *end = strchr(track, '&');
+    end = strchr(file, '&');
     if (end)
       *end = '\0';
-    track += 6;
-  }
-  if (!(chdir(album) || prm_n < 3)) {
-    range = prm[2];
-    return get_track(track ? strtol(track, NULL, 10) : 1);
+    file += 5;
+    if (!(chdir(album))) {
+      return send_track(file, prm[2]);
+    }
   }
   return err();
 }
