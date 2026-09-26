@@ -20,7 +20,7 @@ tracks: c/tracks.c
 	$(CC) -o tracks c/tracks.c -lFLAC
 
 flac: c/flac.c
-	$(CC) -o flac c/flac.c -lFLAC
+	$(CC) -o flac c/flac.c
 
 touch: c/touch.c
 	$(CC) -o touch c/touch.c
