@@ -1,12 +1,13 @@
 use err_codes;
 use std::io::{Read, Write};
 use std::process::{ChildStdin, Command, Stdio};
+use BufReader;
 use BufWriter;
 use TcpStream;
 
 struct Params {
     album: String,
-    track: u32,
+    track: usize,
 }
 
 fn parse_params(params: &str) -> Option<Params> {
@@ -22,19 +23,19 @@ fn parse_params(params: &str) -> Option<Params> {
     }
     match album {
         Some(album) => match track {
-            Some(track) => match track.parse::<u32>() {
+            Some(track) => match track.parse::<usize>() {
                 Ok(track) => Some(Params {
                     album: album.to_string(),
                     track,
                 }),
                 Err(_) => Some(Params {
                     album: album.to_string(),
-                    track: 1,
+                    track: 0,
                 }),
             },
             None => Some(Params {
                 album: album.to_string(),
-                track: 1,
+                track: 0,
             }),
         },
         None => None,
@@ -69,29 +70,43 @@ fn get_hdr(mut store: &TcpStream) -> Option<String> {
     }
 }
 
-fn get_tracks(mut params: Params, mut stdin: &ChildStdin) {
-    'get_tracks: loop {
+fn get_files(params: &Params) -> Option<String> {
+    let req = format!("GET /files?album={} HTTP/1.1\r\n\r\n", params.album);
+    match TcpStream::connect(env!("STORE_ADDR")) {
+        Ok(mut store) => match store.write_all(req.as_bytes()) {
+            Ok(_) => match get_hdr(&store) {
+                Some(_) => {
+                    let mut reader = BufReader::new(&store);
+                    let mut files = String::new();
+                    match reader.read_to_string(&mut files) {
+                        Ok(_) => Some(files),
+                        Err(_) => None,
+                    }
+                }
+                None => None,
+            },
+            Err(_) => None,
+        },
+        Err(_) => None,
+    }
+}
+
+fn get_tracks(files: String, params: Params, mut stdin: &ChildStdin) {
+    let files: Vec<&str> = files.split("\r\n").collect();
+    'get_tracks: for file in &files[params.track..] {
         let req = format!(
-            "GET /fetch?album={}&track={} HTTP/1.1\r\n\r\n",
-            params.album, params.track
+            "GET /fetch?album={}&file={} HTTP/1.1\r\n\r\n",
+            params.album, file
         );
         match TcpStream::connect(env!("STORE_ADDR")) {
             Ok(mut store) => match store.write_all(req.as_bytes()) {
                 Ok(_) => {
                     let mut length = String::from("-1\n");
                     if let Some(hdr) = get_hdr(&store) {
-                        if hdr.contains("404 shit happens") {
-                            match stdin.write_all(length.as_bytes()) {
-                                _ => (),
-                            }
-                            break;
-                        } else {
-                            for line in hdr.split("\r\n") {
-                                if line.to_lowercase().trim().starts_with("content-length") {
-                                    length =
-                                        line.split(":").nth(1).unwrap_or("-1").trim().to_string()
-                                            + "\n";
-                                }
+                        for line in hdr.split("\r\n") {
+                            if line.to_lowercase().trim().starts_with("content-length") {
+                                length = line.split(":").nth(1).unwrap_or("-1").trim().to_string()
+                                    + "\n";
                             }
                         }
                     } else {
@@ -131,42 +146,45 @@ fn get_tracks(mut params: Params, mut stdin: &ChildStdin) {
                 break;
             }
         }
-        params.track += 1;
+    }
+    match stdin.write_all("-1\n".as_bytes()) {
+        _ => (),
     }
 }
 
 pub fn play(params: Option<&str>, mut streamer: BufWriter<TcpStream>) {
     if let Some(params) = params {
-        let params = parse_params(params);
-        if let Some(params) = params {
-            if let Ok(mut child) = Command::new("play")
-                .env("PATH", env!("STREAMER_PATH"))
-                .stdin(Stdio::piped())
-                .stderr(Stdio::null())
-                .stdout(Stdio::null())
-                .current_dir(env!("STREAMER_PATH"))
-                .spawn()
-            {
-                let resp = format!(
-                    "\
+        if let Some(params) = parse_params(params) {
+            if let Some(files) = get_files(&params) {
+                if let Ok(mut child) = Command::new("play")
+                    .env("PATH", env!("STREAMER_PATH"))
+                    .stdin(Stdio::piped())
+                    .stderr(Stdio::null())
+                    .stdout(Stdio::null())
+                    .current_dir(env!("STREAMER_PATH"))
+                    .spawn()
+                {
+                    let resp = format!(
+                        "\
 HTTP/1.1 200 OK\r\n\
 Content-Type: text/html; charset=utf-8\r\n\
 Cache-control: no-cache\r\n\
 X-Content-Type-Options: nosniff\r\n\r\n"
-                );
-                match streamer.write_all(resp.as_bytes()) {
-                    Ok(_) => match streamer.flush() {
-                        Ok(_) => {
-                            if let Some(ref mut stdin) = child.stdin {
-                                get_tracks(params, stdin);
+                    );
+                    match streamer.write_all(resp.as_bytes()) {
+                        Ok(_) => match streamer.flush() {
+                            Ok(_) => {
+                                if let Some(ref mut stdin) = child.stdin {
+                                    get_tracks(files, params, stdin);
+                                }
                             }
-                        }
+                            Err(_) => (),
+                        },
                         Err(_) => (),
-                    },
-                    Err(_) => (),
-                }
-                match child.wait() {
-                    _ => return,
+                    }
+                    match child.wait() {
+                        _ => return,
+                    }
                 }
             }
         }
