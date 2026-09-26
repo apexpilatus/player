@@ -50,15 +50,16 @@ function gettracks(album, track) {
     });
 }
 
-function gettitle(album, track) {
-    fetch(location.origin + "/meta?album=" + album + "&meta=ARTIST=&track=" + track).then(resp => {
-        if (resp.status == 200) {
-            resp.text().then(txt => artistElem.innerHTML = txt);
-            getalbum(album, track);
-        } else if (track < 100) {
-            gettitle(album, track + 1);
-        }
-    });
+function gettitle(album, tracks) {
+    alert(tracks);
+    // fetch(location.origin + "/meta?album=" + album + "&meta=ARTIST=&track=" + track).then(resp => {
+    //     if (resp.status == 200) {
+    //         resp.text().then(txt => artistElem.innerHTML = txt);
+    //         getalbum(album, track);
+    //     } else if (track < 100) {
+    //         gettitle(album, track + 1);
+    //     }
+    // });
 }
 
 function getalbum(album, track) {
@@ -73,10 +74,9 @@ function getalbum(album, track) {
 function getmeta(album) {
     fetch(location.origin + "/tracks?album=" + album).then(resp => {
         if (resp.status == 200) {
-            resp.text().then(txt => alert(txt.split("\r\n")[0]));
+            resp.text().then(txt => gettitle(album, txt));
         }
     });
-    gettitle(album, 1);
 }
 
 function loadalbums(scroll) {
