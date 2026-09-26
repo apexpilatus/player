@@ -1,8 +1,6 @@
 const topalbumElem = parent.document.getElementById("topalbum");
 const albumsElem = parent.document.getElementById("albums");
 
-let track = 1;
-
 function play(album, tracknum) {
     fetch(location.origin + "/stream?album=" + album + "&track=" + tracknum).then(resp => {
         if (resp.status == 200) {
@@ -17,30 +15,36 @@ function play(album, tracknum) {
 }
 
 function getmeta(album) {
-    fetch(location.origin + "/meta?album=" + album + "&meta=TITLE=&track=" + track).then(resp => {
+    fetch(location.origin + "/files?album=" + album).then(resp => {
         if (resp.status == 200) {
-            addEventListener('wheel', (event) => {
-                event.preventDefault();
-                document.documentElement.scrollLeft += event.deltaY;
-            }, { passive: false });
-            gettracks(album);
-        } else if (track < 100) {
-            track++;
-            getmeta(album);
+            resp.text().then(tracks => gettracks(album, tracks.split("\r\n"), 0));
         }
     });
+    // fetch(location.origin + "/meta?album=" + album + "&meta=TITLE=&track=" + track).then(resp => {
+    //     if (resp.status == 200) {
+    //         addEventListener('wheel', (event) => {
+    //             event.preventDefault();
+    //             document.documentElement.scrollLeft += event.deltaY;
+    //         }, { passive: false });
+    //         gettracks(album);
+    //     } else if (track < 100) {
+    //         track++;
+    //         getmeta(album);
+    //     }
+    // });
 }
 
-function gettracks(album) {
-    fetch(location.origin + "/meta?album=" + album + "&meta=TITLE=&track=" + track).then(resp => {
-        if (resp.status == 200) {
-            let tr = document.createElement("b");
-            tr.innerHTML = track;
-            const tracknum = track;
-            tr.onclick = function () { play(album, tracknum); };
-            document.body.appendChild(tr);
-            track++;
-            gettracks(album);
-        }
-    });
+function gettracks(album, tracks, track) {
+    if (track < tracks.length)
+        fetch(location.origin + "/meta?album=" + album + "&tag=TRACKNUMBER=&file=" + tracks[track]).then(resp => {
+            if (resp.status == 200) {
+                resp.text().then(num => {
+                    let tr = document.createElement("b");
+                    tr.innerHTML = num;
+                    tr.onclick = function () { play(album, track); };
+                    document.body.appendChild(tr);
+                    gettracks(album, tracks, track + 1);
+                });
+            }
+        });
 }
