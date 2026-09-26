@@ -29,7 +29,7 @@ function play(album, tracks, track) {
 }
 
 function getmeta(album) {
-    fetch(location.origin + "/tracks?album=" + album).then(resp => {
+    fetch(location.origin + "/files?album=" + album).then(resp => {
         if (resp.status == 200) {
             resp.text().then(tracks => getartist(album, tracks.split("\r\n")));
         }
