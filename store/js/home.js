@@ -6,13 +6,11 @@ const tracksElem = document.getElementById("tracks");
 const playerElem = document.getElementById("player");
 
 function playnext(album, tracks, track) {
-    playerElem.src = location.origin + "/fetch?album=" + album + "&track=" + track;
-    fetch(location.origin + "/meta?album=" + album + "&meta=TITLE=&track=" + track).then(resp => {
-        if (resp.status == 200)
+    if (track < tracks.length) {
+        playerElem.src = location.origin + "/fetch?album=" + album + "&file=" + tracks[track];
+        if (track < tracks.length - 1)
             playerElem.onended = function () { playnext(album, track + 1); };
-        else
-            location = location.origin;
-    });
+    }
 }
 
 function play(album, tracks, track) {
@@ -20,7 +18,8 @@ function play(album, tracks, track) {
         fetch(location.origin + "/touch?album=" + album).then(resp => {
             if (resp.status == 200) {
                 playerElem.src = location.origin + "/fetch?album=" + album + "&file=" + tracks[track];
-                playerElem.onended = function () { playnext(album, tracks, track + 1); };
+                if (track < tracks.length - 1)
+                    playerElem.onended = function () { playnext(album, tracks, track + 1); };
                 if (topalbumElem.innerHTML != album)
                     albumsElem.src = location.origin + "/albums?scroll=0";
             }
