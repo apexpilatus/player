@@ -31,11 +31,11 @@ int main(int prm_n, char *prm[]) {
     end = strchr(tag, '&');
     if (end)
       *end = '\0';
-    tag += 5;
+    tag += 4;
     end = strchr(file, '&');
     if (end)
       *end = '\0';
-    file += 6;
+    file += 5;
     if (!chdir(album)) {
       FLAC__StreamMetadata *tags =
           FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT);
