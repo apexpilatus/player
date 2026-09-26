@@ -29,13 +29,13 @@ function play(album, track) {
 function getmeta(album) {
     fetch(location.origin + "/tracks?album=" + album).then(resp => {
         if (resp.status == 200) {
-            resp.text().then(txt => gettitle(album, txt));
+            resp.text().then(txt => gettitle(album, txt.split("\r\n")));
         }
     });
 }
 
 function gettitle(album, tracks) {
-    fetch(location.origin + "/meta?album=" + album + "&tag=ARTIST=&file=" + tracks.split("\r\n")[0]).then(resp => {
+    fetch(location.origin + "/meta?album=" + album + "&tag=ARTIST=&file=" + tracks[0]).then(resp => {
         if (resp.status == 200) {
             resp.text().then(txt => artistElem.innerHTML = txt);
             getalbum(album, tracks);
@@ -44,7 +44,7 @@ function gettitle(album, tracks) {
 }
 
 function getalbum(album, tracks) {
-    fetch(location.origin + "/meta?album=" + album + "&tag=ALBUM=&file=" + tracks.split("\r\n")[0]).then(resp => {
+    fetch(location.origin + "/meta?album=" + album + "&tag=ALBUM=&file=" + tracks[0]).then(resp => {
         if (resp.status == 200) {
             resp.text().then(txt => { if (txt != artistElem.innerHTML) albumElem.innerHTML = txt });
             gettracks(album, tracks, 0);
@@ -54,7 +54,7 @@ function getalbum(album, tracks) {
 
 function gettracks(album, tracks, track) {
     if (track < tracks.length)
-        fetch(location.origin + "/meta?album=" + album + "&tag=TITLE=&file=" + tracks.split("\r\n")[track]).then(resp => {
+        fetch(location.origin + "/meta?album=" + album + "&tag=TITLE=&file=" + tracks[track]).then(resp => {
             if (resp.status == 200) {
                 resp.text().then(txt => {
                     let tr = document.createElement("tr");
