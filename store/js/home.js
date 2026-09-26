@@ -56,24 +56,24 @@ function gettracks(album, tracks, track) {
     if (track < tracks.length)
         fetch(location.origin + "/meta?album=" + album + "&tag=TITLE=&file=" + tracks[track]).then(resp => {
             if (resp.status == 200) {
-                resp.text().then(txt => {
-                    let tr = document.createElement("tr");
-                    tr.onclick = function () { play(album, track); };
+                resp.text().then(title => {
                     fetch(location.origin + "/meta?album=" + album + "&tag=TRACKNUMBER=&file=" + tracks[track]).then(resp => {
                         if (resp.status == 200)
                             resp.text().then(num => {
+                                let tr = document.createElement("tr");
+                                tr.onclick = function () { play(album, track); };
                                 let trnum = document.createElement("td");
                                 trnum.innerHTML = num;
                                 trnum.className = "tracknumber";
                                 tr.append(trnum);
+                                let name = document.createElement("td");
+                                name.innerHTML = title;
+                                name.className = "tracktitle";
+                                tr.append(name);
+                                tracksElem.appendChild(tr);
+                                gettracks(album, tracks, track + 1);
                             });
                     });
-                    let name = document.createElement("td");
-                    name.innerHTML = txt;
-                    name.className = "tracktitle";
-                    tr.append(name);
-                    tracksElem.appendChild(tr);
-                    gettracks(album, tracks, track + 1);
                 });
             }
         });
