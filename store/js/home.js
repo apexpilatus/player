@@ -71,6 +71,7 @@ function getalbum(album, track) {
 }
 
 function getmeta(album) {
+    fetch(location.origin + "/tracks?album=" + album);
     gettitle(album, 1);
 }
 

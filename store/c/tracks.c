@@ -69,7 +69,7 @@ tracks_list *sort_tracks(tracks_list *tracks) {
         fast->pv = slow;
         slow->nx = fast;
         slow = tmp;
-	break;
+        break;
       }
       fast = fast->nx;
     }
