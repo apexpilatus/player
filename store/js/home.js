@@ -10,6 +10,8 @@ function playnext(album, tracks, track) {
         playerElem.src = location.origin + "/fetch?album=" + album + "&file=" + tracks[track];
         if (track + 1 < tracks.length)
             playerElem.onended = function () { playnext(album, tracks, track + 1); };
+        else
+            playerElem.onended = null;
     }
 }
 
