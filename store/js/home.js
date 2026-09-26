@@ -59,14 +59,15 @@ function gettracks(album, tracks, track) {
                 resp.text().then(txt => {
                     let tr = document.createElement("tr");
                     tr.onclick = function () { play(album, track); };
-                    fetch(location.origin + "/meta?album=" + album + "&tag=TRACKNUMBER=&file=" + tracks[track])
-                    let num = document.createElement("td");
-                    if (track < 10)
-                        num.innerHTML = "&nbsp;&nbsp;" + track;
-                    else
-                        num.innerHTML = track;
-                    num.className = "tracknumber";
-                    tr.append(num);
+                    fetch(location.origin + "/meta?album=" + album + "&tag=TRACKNUMBER=&file=" + tracks[track]).then(resp => {
+                        if (resp.status == 200)
+                            resp.text().then(num => {
+                                let trnum = document.createElement("td");
+                                trnum.innerHTML = num;
+                                trnum.className = "tracknumber";
+                                tr.append(trnum);
+                            });
+                    });
                     let name = document.createElement("td");
                     name.innerHTML = txt;
                     name.className = "tracktitle";
