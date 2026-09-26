@@ -5,7 +5,7 @@ const albumElem = document.getElementById("album");
 const tracksElem = document.getElementById("tracks");
 const playerElem = document.getElementById("player");
 
-function playnext(album, track) {
+function playnext(album, tracks, track) {
     playerElem.src = location.origin + "/fetch?album=" + album + "&track=" + track;
     fetch(location.origin + "/meta?album=" + album + "&meta=TITLE=&track=" + track).then(resp => {
         if (resp.status == 200)
@@ -15,15 +15,16 @@ function playnext(album, track) {
     });
 }
 
-function play(album, track) {
-    fetch(location.origin + "/touch?album=" + album).then(resp => {
-        if (resp.status == 200) {
-            playerElem.src = location.origin + "/fetch?album=" + album + "&track=" + track;
-            playerElem.onended = function () { playnext(album, track + 1); };
-            if (topalbumElem.innerHTML != album)
-                albumsElem.src = location.origin + "/albums?scroll=0";
-        }
-    });
+function play(album, tracks, track) {
+    if (track < tracks.length)
+        fetch(location.origin + "/touch?album=" + album).then(resp => {
+            if (resp.status == 200) {
+                playerElem.src = location.origin + "/fetch?album=" + album + "&file=" + tracks[track];
+                playerElem.onended = function () { playnext(album, tracks, track + 1); };
+                if (topalbumElem.innerHTML != album)
+                    albumsElem.src = location.origin + "/albums?scroll=0";
+            }
+        });
 }
 
 function getmeta(album) {
@@ -61,7 +62,7 @@ function gettracks(album, tracks, track) {
                         if (resp.status == 200)
                             resp.text().then(num => {
                                 let tr = document.createElement("tr");
-                                tr.onclick = function () { play(album, track); };
+                                tr.onclick = function () { play(album, tracks, track); };
                                 let trnum = document.createElement("td");
                                 trnum.innerHTML = num;
                                 trnum.className = "tracknumber";
