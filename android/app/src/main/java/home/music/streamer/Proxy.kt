@@ -38,11 +38,11 @@ class Proxy(val context: Context) {
         }
     }
 
-    fun setIp(req: String, writer: OutputStream) {
+    fun setIp(url: String, writer: OutputStream) {
         val prefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE).edit()
-        prefs.putString(PREF_IP, req.split("\r\n")[0].split(" ")[1].split("?")[1].split("=")[1])
+        prefs.putString(PREF_IP, url.split("?")[1].split("=")[1])
         if (prefs.commit()) {
-            forwardIfConnected("GET / HTTP/1.1\r\n\r\n", writer)
+            forwardIfConnected("/", writer)
             return
         }
         val resp =
@@ -51,7 +51,7 @@ class Proxy(val context: Context) {
         writer.flush()
     }
 
-    fun forwardIfConnected(req: String, writer: OutputStream) {
+    fun forwardIfConnected(url: String, writer: OutputStream) {
         Socket().use {
             val prefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE)
             try {
@@ -62,11 +62,11 @@ class Proxy(val context: Context) {
                     ), 7000
                 )
             } catch (_: Exception) {
-                if (req.split("\r\n")[0].split(" ")[1] == "/")
+                if (url == "/")
                     sendConfigPage(writer, context)
                 return
             }
-            forward(req, it, writer)
+            forward("GET $url HTTP/1.1\r\n\r\n", it, writer)
         }
     }
 }

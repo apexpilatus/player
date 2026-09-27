@@ -8,7 +8,6 @@ import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.media.AudioManager.STREAM_MUSIC
 import android.media.AudioMixerAttributes
-import android.media.MediaPlayer
 import java.io.OutputStream
 
 class Mixer(context: Context) : AudioDeviceCallback() {
@@ -49,14 +48,6 @@ class Mixer(context: Context) : AudioDeviceCallback() {
             "HTTP/1.1 200 $value\r\nContent-Type: text/html; charset=utf-8\r\nCache-control: no-cache\r\nX-Content-Type-Options: nosniff\r\n\r\n"
         writer.write(resp.toByteArray(), 0, resp.length)
         writer.flush()
-    }
-
-    fun prefDev(player: MediaPlayer) {
-        for (device in audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS))
-            if (device.type == AudioDeviceInfo.TYPE_USB_HEADSET) {
-                player.setPreferredDevice(device)
-                break
-            }
     }
 
     override fun onAudioDevicesAdded(addedDevices: Array<out AudioDeviceInfo?>?) {
