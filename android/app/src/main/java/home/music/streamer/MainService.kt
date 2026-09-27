@@ -149,10 +149,13 @@ class MainService : Service(), AudioManager.OnModeChangedListener {
     }
 
     override fun onModeChanged(mode: Int) {
+        if (mode == AudioManager.MODE_RINGTONE) {
+            player.stop()
+            player.clearMediaItems()
+        }
         if (mode == AudioManager.MODE_NORMAL) {
             mixer.audioManager.registerAudioDeviceCallback(mixer, null)
             val ip = getSharedPreferences(PREFS_FILE, MODE_PRIVATE).getString(PREF_IP, "1.2.3.4")
-            player.clearMediaItems()
             player.setMediaItem(MediaItem.fromUri("http://$ip/fetch?album=$album&file=${files[track]}"))
             while (++track < files.size)
                 player.addMediaItem(MediaItem.fromUri("http://$ip/fetch?album=$album&file=${files[track]}"))
