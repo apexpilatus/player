@@ -25,11 +25,11 @@ const val PREF_IP = "ip"
 class MainService : Service(), AudioManager.OnModeChangedListener {
     private val sockServer by lazy { ServerSocket(8888) }
     private val mixer by lazy { Mixer(this) }
-    private val player by lazy { ExoPlayer.Builder(this).build() }
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
-    private var album = ""
     private var track = 0
+    private lateinit var album: String
     private lateinit var files: List<String>
+    private lateinit var player: ExoPlayer
 
     companion object {
         @Volatile
@@ -133,6 +133,7 @@ class MainService : Service(), AudioManager.OnModeChangedListener {
                 .setShowWhen(false).setContentText("").build()
         )
         mixer.audioManager.addOnModeChangedListener(this.mainExecutor, this@MainService)
+        player = ExoPlayer.Builder(this).build()
         CoroutineScope(Job()).launch {
             handle()
         }
@@ -151,10 +152,11 @@ class MainService : Service(), AudioManager.OnModeChangedListener {
     override fun onModeChanged(mode: Int) {
         if (mode == AudioManager.MODE_RINGTONE) {
             player.stop()
-            player.clearMediaItems()
+            player.release()
         }
         if (mode == AudioManager.MODE_NORMAL) {
             mixer.audioManager.registerAudioDeviceCallback(mixer, null)
+            player = ExoPlayer.Builder(this).build()
             val ip = getSharedPreferences(PREFS_FILE, MODE_PRIVATE).getString(PREF_IP, "1.2.3.4")
             player.setMediaItem(MediaItem.fromUri("http://$ip/fetch?album=$album&file=${files[track]}"))
             while (++track < files.size)
