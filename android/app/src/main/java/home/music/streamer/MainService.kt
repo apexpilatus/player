@@ -5,7 +5,10 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.media.AudioAttributes
+import android.media.AudioDeviceInfo
 import android.media.AudioManager
+import android.media.AudioMixerAttributes
 import android.os.IBinder
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
@@ -22,14 +25,11 @@ const val CHANNEL_NAME = "main"
 const val PREFS_FILE = "prefs"
 const val PREF_IP = "ip"
 
-class MainService : Service(), AudioManager.OnModeChangedListener {
-    private val sockServer by lazy { ServerSocket(8888) }
-    private val mixer by lazy { Mixer(this) }
+class MainService : Service() {
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
+    private val audioManager by lazy { getSystemService(AUDIO_SERVICE) as AudioManager }
     private val player by lazy { ExoPlayer.Builder(this).build() }
-    private var track = 0
-    private lateinit var album: String
-    private lateinit var files: List<String>
+    private val sockServer = ServerSocket(8888)
 
     companion object {
         @Volatile
@@ -38,6 +38,7 @@ class MainService : Service(), AudioManager.OnModeChangedListener {
 
     private fun handle() {
         val proxy = Proxy(this)
+        val mixer = Mixer(audioManager)
         while (true) {
             val connection = sockServer.accept()
             var req = ""
@@ -80,23 +81,29 @@ class MainService : Service(), AudioManager.OnModeChangedListener {
                         val writer = OutputStreamWriter(connection.getOutputStream())
                         writer.write(resp, 0, resp.length)
                         writer.flush()
-                        mixer.audioManager.mode = AudioManager.MODE_RINGTONE
+                        var album = ""
+                        var track = ""
                         for (param in url.split("?")[1].split("&")) {
                             if (param.startsWith("album=")) {
                                 album = param.split("=")[1]
                             }
                             if (param.startsWith("track=")) {
-                                track = param.split("=")[1].toInt()
+                                track = param.split("=")[1]
                             }
                         }
                         val ip = getSharedPreferences(PREFS_FILE, MODE_PRIVATE).getString(
                             PREF_IP,
                             "1.2.3.4."
                         )
-                        files = URL(
+                        val files = URL(
                             "http://$ip/files?album=$album"
-                        ).readText().split("\r\n")
-                        mixer.audioManager.mode = AudioManager.MODE_NORMAL
+                        ).readText()
+                        checkUSB()
+                        startForegroundService(Intent(this, MainService::class.java).apply {
+                            putExtra("album", album)
+                            putExtra("track", track)
+                            putExtra("files", files)
+                        })
                         connection.close()
                         continue
                     }
@@ -125,16 +132,57 @@ class MainService : Service(), AudioManager.OnModeChangedListener {
         )
     }
 
+    private fun checkUSB() {
+        for (devevice in audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS))
+            if (devevice.type == AudioDeviceInfo.TYPE_USB_HEADSET) {
+                val attr: AudioAttributes by lazy {
+                    AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(AudioAttributes.USAGE_MEDIA).build()
+                }
+                audioManager.clearPreferredMixerAttributes(attr, devevice)//if (audioManager.getPreferredMixerAttributes(attr, devevice) == null) {
+                    var prefMixerAttr: AudioMixerAttributes? = null
+                    for (mixerAttr in audioManager.getSupportedMixerAttributes(devevice)) {
+                        with(mixerAttr.format) {
+                            if (prefMixerAttr == null || (frameSizeInBytes >= prefMixerAttr.format.frameSizeInBytes && sampleRate >= prefMixerAttr.format.sampleRate))
+                                prefMixerAttr = mixerAttr
+                        }
+                    }
+                    if (prefMixerAttr != null)
+                        audioManager.setPreferredMixerAttributes(
+                            attr,
+                            devevice,
+                            prefMixerAttr
+                        )
+                    break
+                //}
+            }
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        started = true
-        this.startForeground(
-            1,
-            Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
-                .setShowWhen(false).setContentText("").build()
-        )
-        mixer.audioManager.addOnModeChangedListener(this.mainExecutor, this@MainService)
-        CoroutineScope(Job()).launch {
-            handle()
+        val album = intent?.getParcelableExtra("album", String::class.java)
+        val track = intent?.getParcelableExtra("track", String::class.java)
+        val files = intent?.getParcelableExtra("files", String::class.java)
+        if (album != null && track != null && files != null) {
+            player.stop()
+            player.clearMediaItems()
+            val ip = getSharedPreferences(PREFS_FILE, MODE_PRIVATE).getString(PREF_IP, "1.2.3.4")
+            val filesList = files.split("\r\n")
+            var trackNum = track.toInt()
+            player.setMediaItem(MediaItem.fromUri("http://$ip/fetch?album=$album&file=${filesList[trackNum]}"))
+            while (++trackNum < filesList.size)
+                player.addMediaItem(MediaItem.fromUri("http://$ip/fetch?album=$album&file=${filesList[trackNum]}"))
+            player.prepare()
+            player.play()
+        } else {
+            started = true
+            this.startForeground(
+                1,
+                Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
+                    .setShowWhen(false).setContentText("").build()
+            )
+            CoroutineScope(Job()).launch {
+                handle()
+            }
         }
         return START_STICKY
     }
@@ -146,22 +194,5 @@ class MainService : Service(), AudioManager.OnModeChangedListener {
     override fun onDestroy() {
         sockServer.close()
         started = false
-    }
-
-    override fun onModeChanged(mode: Int) {
-        if (mode == AudioManager.MODE_RINGTONE) {
-            player.stop()
-            player.clearMediaItems()
-        }
-        if (mode == AudioManager.MODE_NORMAL) {
-            mixer.audioManager.registerAudioDeviceCallback(mixer, null)
-            val ip = getSharedPreferences(PREFS_FILE, MODE_PRIVATE).getString(PREF_IP, "1.2.3.4")
-            player.setMediaItem(MediaItem.fromUri("http://$ip/fetch?album=$album&file=${files[track]}"))
-            while (++track < files.size)
-                player.addMediaItem(MediaItem.fromUri("http://$ip/fetch?album=$album&file=${files[track]}"))
-            mixer.audioManager.unregisterAudioDeviceCallback(mixer)
-            player.prepare()
-            player.play()
-        }
     }
 }
