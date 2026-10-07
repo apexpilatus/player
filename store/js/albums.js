@@ -17,7 +17,7 @@ function listalbums(albs) {
         if (len > 0) {
                 document.body.style.filter = "grayscale(100%)";
                 document.body.onload = function () { loaded(); };
-                for (len; len >= 0; len--) {
+                for (--len; len >= 0; len--) {
                         let img = document.createElement("img");
                         img.src = "picture?album=" + albums[len];
                         const album = albums[len];
