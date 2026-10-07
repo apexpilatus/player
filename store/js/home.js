@@ -16,16 +16,13 @@ function playnext(album, tracks, track) {
 }
 
 function play(album, tracks, track) {
-    if (track < tracks.length)
-        fetch(location.origin + "/touch?album=" + album).then(resp => {
-            if (resp.status == 200) {
-                playerElem.src = location.origin + "/fetch?album=" + album + "&file=" + tracks[track];
-                if (track + 1 < tracks.length)
-                    playerElem.onended = function () { playnext(album, tracks, track + 1); };
-                if (topalbumElem.innerHTML != album)
-                    albumsElem.src = location.origin + "/albums?scroll=0";
-            }
-        });
+    if (track < tracks.length) {
+        playerElem.src = location.origin + "/fetch?album=" + album + "&file=" + tracks[track];
+        if (track + 1 < tracks.length)
+            playerElem.onended = function () { playnext(album, tracks, track + 1); };
+        if (topalbumElem.innerHTML != album)
+            albumsElem.src = location.origin + "/albums?scroll=0";
+    }
 }
 
 function getmeta(album) {
