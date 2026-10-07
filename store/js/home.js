@@ -1,4 +1,3 @@
-const topalbumElem = document.getElementById("topalbum");
 const albumsElem = document.getElementById("albums");
 const artistElem = document.getElementById("artist");
 const albumElem = document.getElementById("album");
@@ -20,8 +19,6 @@ function play(album, tracks, track) {
         playerElem.src = location.origin + "/fetch?album=" + album + "&file=" + tracks[track];
         if (track + 1 < tracks.length)
             playerElem.onended = function () { playnext(album, tracks, track + 1); };
-        if (topalbumElem.innerHTML != album)
-            albumsElem.src = location.origin + "/albums?scroll=0";
     }
 }
 

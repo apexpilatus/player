@@ -1,16 +1,10 @@
 const iconElem = parent.document.getElementById("icon");
-const topalbumElem = parent.document.getElementById("topalbum");
 
 let scroll = null;
 
 function gettracks(album) {
         if (iconElem != null && iconElem.href != location.origin + "/picture?album=" + album)
                 parent.location.assign(location.origin + "/?album=" + album + "&scroll=" + pageXOffset);
-}
-
-function updatetop(album) {
-        if (topalbumElem != null)
-                topalbumElem.innerHTML = album;
 }
 
 function setscroll(value) {
@@ -23,7 +17,6 @@ function listalbums(albs) {
         if (len > 0) {
                 document.body.style.filter = "grayscale(100%)";
                 document.body.onload = function () { loaded(); };
-                updatetop(albums[--len]);
                 for (len; len >= 0; len--) {
                         let img = document.createElement("img");
                         img.src = "picture?album=" + albums[len];
