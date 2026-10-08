@@ -49,30 +49,31 @@ function getalbum(album, tracks) {
 }
 
 function gettracks(album, tracks, track) {
-    if (track < tracks.length)
+    if (track < tracks.length) {
+        let tr = document.createElement("tr");
+        tr.onclick = function () { play(album, tracks, track); };
+        let trnum = document.createElement("td");
+        trnum.className = "tracknumber";
+        tr.append(trnum);
+        let trname = document.createElement("td");
+        trname.className = "tracktitle";
+        tr.append(trname);
+        tracksElem.appendChild(tr);
         fetch(location.origin + "/meta?album=" + album + "&tag=TITLE=&file=" + tracks[track]).then(resp => {
             if (resp.status == 200) {
                 resp.text().then(title => {
                     fetch(location.origin + "/meta?album=" + album + "&tag=TRACKNUMBER=&file=" + tracks[track]).then(resp => {
                         if (resp.status == 200)
                             resp.text().then(num => {
-                                let tr = document.createElement("tr");
-                                tr.onclick = function () { play(album, tracks, track); };
-                                let trnum = document.createElement("td");
                                 trnum.innerHTML = num;
-                                trnum.className = "tracknumber";
-                                tr.append(trnum);
-                                let name = document.createElement("td");
-                                name.innerHTML = title;
-                                name.className = "tracktitle";
-                                tr.append(name);
-                                tracksElem.appendChild(tr);
-                                gettracks(album, tracks, track + 1);
+                                trname.innerHTML = title;
                             });
                     });
                 });
             }
         });
+        gettracks(album, tracks, track + 1);
+    }
 }
 
 function loadalbums(scroll) {
