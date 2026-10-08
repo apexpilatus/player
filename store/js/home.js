@@ -34,18 +34,18 @@ function getartist(album, tracks) {
     fetch(location.origin + "/meta?album=" + album + "&tag=ARTIST=&file=" + tracks[0]).then(resp => {
         if (resp.status == 200) {
             resp.text().then(artist => artistElem.innerHTML = artist);
-            getalbum(album, tracks);
         }
     });
+    getalbum(album, tracks);
 }
 
 function getalbum(album, tracks) {
     fetch(location.origin + "/meta?album=" + album + "&tag=ALBUM=&file=" + tracks[0]).then(resp => {
         if (resp.status == 200) {
             resp.text().then(title => { if (title != artistElem.innerHTML) albumElem.innerHTML = title });
-            gettracks(album, tracks, 0);
         }
     });
+    gettracks(album, tracks, 0);
 }
 
 function gettracks(album, tracks, track) {
