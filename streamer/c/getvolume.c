@@ -24,13 +24,13 @@ int get_volume(char *card_id) {
       snd_card_get_name(card_index, &card_name) == 0 &&
       snd_mixer_attach(mxr, card_id) == 0 && snd_mixer_load(mxr) == 0) {
     melem = snd_mixer_first_elem(mxr);
-    for (; melem && !snd_mixer_selem_has_playback_volume_joined(melem);
+    for (; melem && !snd_mixer_selem_has_playback_volume(melem);
          melem = snd_mixer_elem_next(melem))
       ;
     if (melem && !(snd_mixer_selem_get_playback_volume_range(melem, &min_vol,
                                                              &max_vol) ||
                    snd_mixer_selem_get_playback_volume(
-                       melem, SND_MIXER_SCHN_UNKNOWN, &curr_vol))) {
+                       melem, SND_MIXER_SCHN_MONO, &curr_vol))) {
       printf("HTTP/1.1 200 %ld;%ld;%ld\r\n%s%lu\r\n%s\r\n\r\n%s", min_vol,
              curr_vol, max_vol, "Content-Length: ", strlen(card_name),
              "Content-Type: text/plain; charset=utf-8", card_name);
