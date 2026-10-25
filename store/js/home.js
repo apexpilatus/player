@@ -31,20 +31,16 @@ function getmeta(album) {
 }
 
 function getartist(album, tracks) {
-    fetch(location.origin + "/meta?album=" + album + "&tag=ARTIST=&file=" + tracks[0]).then(resp => {
-        if (resp.status == 200) {
-            resp.text().then(artist => {
+    fetch(location.origin + "/meta?album=" + album + "&tag=ARTIST=&file=" + tracks[0]).then(respAR => {
+        if (respAR.status == 200) {
+            respAR.text().then(artist => {
                 artistElem.innerHTML = artist;
-                getalbum(album, tracks);
+                fetch(location.origin + "/meta?album=" + album + "&tag=ALBUM=&file=" + tracks[0]).then(respAL => {
+                    if (respAL.status == 200) {
+                        respAL.text().then(title => { if (title !== artist) albumElem.innerHTML = title });
+                    }
+                });
             });
-        }
-    });
-}
-
-function getalbum(album, tracks) {
-    fetch(location.origin + "/meta?album=" + album + "&tag=ALBUM=&file=" + tracks[0]).then(resp => {
-        if (resp.status == 200) {
-            resp.text().then(title => { if (title !== artistElem.innerHTML) albumElem.innerHTML = title });
         }
     });
     gettracks(album, tracks, 0);
