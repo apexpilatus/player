@@ -44,7 +44,7 @@ function getartist(album, tracks) {
 function getalbum(album, tracks) {
     fetch(location.origin + "/meta?album=" + album + "&tag=ALBUM=&file=" + tracks[0]).then(resp => {
         if (resp.status == 200) {
-            resp.text().then(title => { if (title != artistElem.innerHTML) albumElem.innerHTML = title });
+            resp.text().then(title => { if (title !== artistElem.innerHTML) albumElem.innerHTML = title });
         }
     });
     gettracks(album, tracks, 0);
