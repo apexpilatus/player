@@ -33,10 +33,12 @@ function getmeta(album) {
 function getartist(album, tracks) {
     fetch(location.origin + "/meta?album=" + album + "&tag=ARTIST=&file=" + tracks[0]).then(resp => {
         if (resp.status == 200) {
-            resp.text().then(artist => artistElem.innerHTML = artist);
+            resp.text().then(artist => {
+                artistElem.innerHTML = artist;
+                getalbum(album, tracks);
+            });
         }
     });
-    getalbum(album, tracks);
 }
 
 function getalbum(album, tracks) {
